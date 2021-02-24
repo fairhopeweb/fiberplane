@@ -1,5 +1,5 @@
 [package]
-name = "fiberplane-rs"
+name = "fiberplane"
 version = "0.1.0"
 authors = ["Benno van den Berg <benno@fiberplane.com>"]
 edition = "2018"

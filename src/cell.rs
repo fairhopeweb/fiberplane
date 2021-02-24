@@ -1,77 +1,76 @@
-use std::collections::HashMap;
-use std::usize;
+use std::{collections::HashMap, usize};
 
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Deserialize, Serialize)]
-#[serde(rename_all = "snake_case")]
-pub enum CellRole {
-    Title,
+#[serde(tag = "type", rename_all = "snake_case")]
+pub enum Cell {
+    Graph(GraphCell),
+    Heading(HeadingCell),
+    Markdown(MarkdownCell),
+    Prometheus(PrometheusCell),
+    Table(TableCell),
+    Text(TextCell),
 }
 
-#[derive(Clone, Deserialize, Serialize)]
-#[serde(rename_all = "snake_case")]
-pub enum GraphType {
-    Bar,
-    Line,
+impl Cell {
+    pub fn content(&self) -> Option<&str> {
+        match self {
+            Cell::Graph(_) => None,
+            Cell::Heading(cell) => Some(&cell.content),
+            Cell::Markdown(cell) => Some(&cell.content),
+            Cell::Prometheus(cell) => Some(&cell.content),
+            Cell::Table(_) => None,
+            Cell::Text(cell) => Some(&cell.content),
+        }
+    }
+
+    pub fn id(&self) -> &String {
+        match self {
+            Cell::Graph(cell) => &cell.id,
+            Cell::Heading(cell) => &cell.id,
+            Cell::Markdown(cell) => &cell.id,
+            Cell::Prometheus(cell) => &cell.id,
+            Cell::Table(cell) => &cell.id,
+            Cell::Text(cell) => &cell.id,
+        }
+    }
+
+    pub fn is_output_cell(&self) -> bool {
+        match self {
+            Cell::Graph(_) => true,
+            Cell::Table(_) => true,
+            _ => false,
+        }
+    }
+
+    pub fn with_appended_content(&self, content: &str) -> Self {
+        self.with_content(&format!("{}{}", self.content().unwrap_or(""), content))
+    }
+
+    pub fn with_content(&self, content: &str) -> Self {
+        match self {
+            Cell::Graph(cell) => Cell::Graph(cell.clone()),
+            Cell::Heading(cell) => Cell::Heading(HeadingCell {
+                content: content.to_owned(),
+                ..cell.clone()
+            }),
+            Cell::Markdown(cell) => Cell::Markdown(MarkdownCell {
+                content: content.to_owned(),
+                ..cell.clone()
+            }),
+            Cell::Prometheus(cell) => Cell::Prometheus(PrometheusCell {
+                content: content.to_owned(),
+                ..cell.clone()
+            }),
+            Cell::Table(cell) => Cell::Table(cell.clone()),
+            Cell::Text(cell) => Cell::Text(TextCell {
+                content: content.to_owned(),
+                ..cell.clone()
+            }),
+        }
+    }
 }
-
-#[derive(Clone, Deserialize, Serialize)]
-#[serde(rename_all = "snake_case")]
-pub enum HeadingType {
-    H1,
-    H2,
-    H3,
-}
-
-#[derive(Clone, Deserialize, Serialize)]
-// A range in time from a given timestamp (inclusive) up to another timestamp (exclusive).
-pub struct TimeRange {
-    pub from: Timestamp,
-    pub to: Timestamp,
-}
-
-/// Timestamp specified in seconds, with subsecond precision.
-pub type Timestamp = f64;
-
-#[derive(Clone, Deserialize, Serialize)]
-pub struct Metric {
-    pub name: String,
-    pub labels: HashMap<String, String>,
-}
-
-#[derive(Clone, Deserialize, Serialize)]
-pub struct Point<T> {
-    pub timestamp: Timestamp,
-    pub value: T,
-}
-
-#[derive(Clone, Deserialize, Serialize)]
-#[serde(rename_all = "snake_case")]
-pub enum PointType {
-    F64,
-    String,
-}
-
-#[derive(Clone, Deserialize, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Instant<T> {
-    pub metric: Metric,
-    pub point: Point<T>,
-    pub point_type: PointType,
-}
-
-pub type InstantsBySourceId<T> = HashMap<String, Vec<Instant<T>>>;
-
-#[derive(Clone, Deserialize, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Series<T> {
-    pub metric: Metric,
-    pub point_type: PointType,
-    pub points: Vec<Point<T>>,
-}
-
-pub type SeriesBySourceId<T> = HashMap<String, Vec<Series<T>>>;
 
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -125,72 +124,124 @@ pub struct TextCell {
     pub content: String,
 }
 
+#[derive(Clone, Copy, Deserialize, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum CellRole {
+    Title,
+}
+
+#[derive(Clone, Copy, Deserialize, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum GraphType {
+    Bar,
+    Line,
+}
+
+#[derive(Clone, Copy, Deserialize, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum HeadingType {
+    H1,
+    H2,
+    H3,
+}
+
+// A range in time from a given timestamp (inclusive) up to another timestamp (exclusive).
 #[derive(Clone, Deserialize, Serialize)]
-#[serde(tag = "type", rename_all = "snake_case")]
-pub enum Cell {
-    Graph(GraphCell),
-    Heading(HeadingCell),
-    Markdown(MarkdownCell),
-    Prometheus(PrometheusCell),
-    Table(TableCell),
-    Text(TextCell),
+pub struct TimeRange {
+    pub from: Timestamp,
+    pub to: Timestamp,
 }
 
-impl Cell {
-    pub fn content(&self) -> Option<&str> {
-        match self {
-            Cell::Graph(_) => None,
-            Cell::Heading(cell) => Some(&cell.content),
-            Cell::Markdown(cell) => Some(&cell.content),
-            Cell::Prometheus(cell) => Some(&cell.content),
-            Cell::Table(_) => None,
-            Cell::Text(cell) => Some(&cell.content),
-        }
-    }
+/// Timestamp specified in seconds since the UNIX epoch, with subsecond precision.
+pub type Timestamp = f64;
 
-    pub fn id(&self) -> &String {
-        match self {
-            Cell::Graph(cell) => &cell.id,
-            Cell::Heading(cell) => &cell.id,
-            Cell::Markdown(cell) => &cell.id,
-            Cell::Prometheus(cell) => &cell.id,
-            Cell::Table(cell) => &cell.id,
-            Cell::Text(cell) => &cell.id,
-        }
-    }
+#[derive(Clone, Deserialize, Serialize)]
+pub struct Metric {
+    pub name: String,
+    pub labels: HashMap<String, String>,
+}
 
-    pub fn is_output_cell(&self) -> bool {
-        match self {
-            Cell::Graph { .. } => true,
-            Cell::Table { .. } => true,
-            _ => false,
-        }
-    }
+#[derive(Clone, Deserialize, Serialize)]
+pub struct Point<T> {
+    pub timestamp: Timestamp,
+    pub value: T,
+}
 
-    pub fn with_appended_content(&self, content: &str) -> Self {
-        self.with_content(&format!("{}{}", self.content().unwrap_or(""), content))
-    }
+#[derive(Clone, Copy, Deserialize, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum PointType {
+    F64,
+    String,
+}
 
-    pub fn with_content(&self, content: &str) -> Self {
-        match self {
-            Cell::Graph(cell) => Cell::Graph(cell.clone()),
-            Cell::Heading(cell) => Cell::Heading(HeadingCell {
-                content: content.to_owned(),
-                ..cell.clone()
-            }),
-            Cell::Markdown(cell) => Cell::Markdown(MarkdownCell {
-                content: content.to_owned(),
-                ..cell.clone()
-            }),
-            Cell::Prometheus(cell) => Cell::Prometheus(PrometheusCell {
-                content: content.to_owned(),
-                ..cell.clone()
-            }),
-            Cell::Table(cell) => Cell::Table(cell.clone()),
-            Cell::Text(cell) => Cell::Text(TextCell {
-                content: content.to_owned(),
-                ..cell.clone()
-            }),
+#[derive(Clone, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Instant<T> {
+    pub metric: Metric,
+    pub point: Point<T>,
+    point_type: PointType,
+}
+
+impl<T> Instant<T> {
+    pub fn point_type(&self) -> PointType {
+        self.point_type
+    }
+}
+
+impl Instant<f64> {
+    pub fn new_f64(metric: Metric, point: Point<f64>) -> Self {
+        Self {
+            metric,
+            point,
+            point_type: PointType::F64,
         }
     }
 }
+
+impl Instant<String> {
+    pub fn new_string(metric: Metric, point: Point<String>) -> Self {
+        Self {
+            metric,
+            point,
+            point_type: PointType::String,
+        }
+    }
+}
+
+pub type InstantsBySourceId<T> = HashMap<String, Vec<Instant<T>>>;
+
+#[derive(Clone, Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct Series<T> {
+    pub metric: Metric,
+    pub points: Vec<Point<T>>,
+    point_type: PointType,
+}
+
+impl<T> Series<T> {
+    pub fn point_type(&self) -> PointType {
+        self.point_type
+    }
+}
+
+impl Series<f64> {
+    pub fn new_f64(metric: Metric, points: Vec<Point<f64>>) -> Self {
+        Self {
+            metric,
+            points,
+            point_type: PointType::F64,
+        }
+    }
+}
+
+impl Series<String> {
+    pub fn new_string(metric: Metric, points: Vec<Point<String>>) -> Self {
+        Self {
+            metric,
+            points,
+            point_type: PointType::String,
+        }
+    }
+}
+
+pub type SeriesBySourceId<T> = HashMap<String, Vec<Series<T>>>;

@@ -1,5 +1,7 @@
-use std::cmp::{max, min};
-use std::usize;
+use std::{
+    cmp::{max, min},
+    usize,
+};
 
 use serde::{Deserialize, Serialize};
 

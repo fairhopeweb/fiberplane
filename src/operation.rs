@@ -2,6 +2,24 @@ use serde::Deserialize;
 
 use crate::{Cell, CursorPosition};
 
+/// An operation is the representation for a mutation to be performed to a notebook.
+///
+/// Operations are intended to be atomic (they should either be performed in their entirety or not
+/// at all), while also capturing the intent of the user.
+///
+/// For more information, please see RFC 8:
+///   https://www.notion.so/fiberplane/RFC-8-Notebook-Operations-f9d18676d0d9437d81de30faa219deb4
+#[derive(Deserialize)]
+#[serde(tag = "type", rename_all = "snake_case")]
+pub enum Operation {
+    AddCells(AddCellsOperation),
+    MergeCells(MergeCellsOperation),
+    RemoveCells(RemoveCellsOperation),
+    SplitCell(SplitCellOperation),
+    SwapCells(SwapCellsOperation),
+    UpdateCell(UpdateCellOperation),
+}
+
 /// Adds one or more cells at the given position.
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -85,15 +103,4 @@ pub struct SwapCellsOperation {
 #[serde(rename_all = "camelCase")]
 pub struct UpdateCellOperation {
     pub updated_cell: Cell,
-}
-
-#[derive(Deserialize)]
-#[serde(tag = "type", rename_all = "snake_case")]
-pub enum Operation {
-    AddCells(AddCellsOperation),
-    MergeCells(MergeCellsOperation),
-    RemoveCells(RemoveCellsOperation),
-    SplitCell(SplitCellOperation),
-    SwapCells(SwapCellsOperation),
-    UpdateCell(UpdateCellOperation),
 }
