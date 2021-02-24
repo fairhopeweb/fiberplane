@@ -27,28 +27,28 @@ pub enum HeadingType {
 #[derive(Clone, Deserialize, Serialize)]
 // A range in time from a given timestamp (inclusive) up to another timestamp (exclusive).
 pub struct TimeRange {
-    from: Timestamp,
-    to: Timestamp,
+    pub from: Timestamp,
+    pub to: Timestamp,
 }
 
 /// Timestamp specified in seconds, with subsecond precision.
 pub type Timestamp = f64;
 
 #[derive(Clone, Deserialize, Serialize)]
-struct Metric {
-    name: String,
-    labels: HashMap<String, String>,
+pub struct Metric {
+    pub name: String,
+    pub labels: HashMap<String, String>,
 }
 
 #[derive(Clone, Deserialize, Serialize)]
 pub struct Point<T> {
-    timestamp: Timestamp,
-    value: T,
+    pub timestamp: Timestamp,
+    pub value: T,
 }
 
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(rename_all = "snake_case")]
-enum PointType {
+pub enum PointType {
     F64,
     String,
 }
@@ -56,9 +56,9 @@ enum PointType {
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Instant<T> {
-    metric: Metric,
-    point: Point<T>,
-    point_type: PointType,
+    pub metric: Metric,
+    pub point: Point<T>,
+    pub point_type: PointType,
 }
 
 pub type InstantsBySourceId<T> = HashMap<String, Vec<Instant<T>>>;
@@ -66,9 +66,9 @@ pub type InstantsBySourceId<T> = HashMap<String, Vec<Instant<T>>>;
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Series<T> {
-    metric: Metric,
-    point_type: PointType,
-    points: Vec<Point<T>>,
+    pub metric: Metric,
+    pub point_type: PointType,
+    pub points: Vec<Point<T>>,
 }
 
 pub type SeriesBySourceId<T> = HashMap<String, Vec<Series<T>>>;
@@ -76,53 +76,53 @@ pub type SeriesBySourceId<T> = HashMap<String, Vec<Series<T>>>;
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GraphCell {
-    id: String,
-    graph_type: GraphType,
-    source_ids: Vec<String>,
-    time_range: TimeRange,
-    title: String,
+    pub id: String,
+    pub graph_type: GraphType,
+    pub source_ids: Vec<String>,
+    pub time_range: TimeRange,
+    pub title: String,
     #[serde(skip_serializing_if = "Option::is_none")]
-    data: Option<SeriesBySourceId<f64>>,
+    pub data: Option<SeriesBySourceId<f64>>,
 }
 
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct HeadingCell {
-    id: String,
-    heading_type: HeadingType,
-    content: String,
+    pub id: String,
+    pub heading_type: HeadingType,
+    pub content: String,
     #[serde(skip_serializing_if = "Option::is_none")]
-    role: Option<CellRole>,
+    pub role: Option<CellRole>,
 }
 
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct MarkdownCell {
-    id: String,
-    content: String,
+    pub id: String,
+    pub content: String,
 }
 
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PrometheusCell {
-    id: String,
-    content: String,
+    pub id: String,
+    pub content: String,
 }
 
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct TableCell {
-    id: String,
-    source_ids: Vec<String>,
+    pub id: String,
+    pub source_ids: Vec<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    data: Option<InstantsBySourceId<f64>>,
+    pub data: Option<InstantsBySourceId<f64>>,
 }
 
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct TextCell {
-    id: String,
-    content: String,
+    pub id: String,
+    pub content: String,
 }
 
 #[derive(Clone, Deserialize, Serialize)]
