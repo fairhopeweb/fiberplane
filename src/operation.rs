@@ -1,6 +1,6 @@
 use serde::Deserialize;
 
-use crate::{Cell, CursorPosition};
+use crate::{cell::Cell, cursor_position::CursorPosition};
 
 /// An operation is the representation for a mutation to be performed to a notebook.
 ///
