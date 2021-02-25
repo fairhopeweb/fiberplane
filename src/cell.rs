@@ -2,6 +2,7 @@ use std::{collections::HashMap, usize};
 
 use serde::{Deserialize, Serialize};
 
+/// Representation of a single notebook cell.
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Cell {
@@ -14,6 +15,7 @@ pub enum Cell {
 }
 
 impl Cell {
+    /// Returns the cell's content, if any.
     pub fn content(&self) -> Option<&str> {
         match self {
             Cell::Graph(_) => None,
@@ -25,6 +27,7 @@ impl Cell {
         }
     }
 
+    /// Returns the cell's ID.
     pub fn id(&self) -> &String {
         match self {
             Cell::Graph(cell) => &cell.id,
@@ -36,18 +39,17 @@ impl Cell {
         }
     }
 
+    /// Returns whether the cell is an output cell.
     pub fn is_output_cell(&self) -> bool {
-        match self {
-            Cell::Graph(_) => true,
-            Cell::Table(_) => true,
-            _ => false,
-        }
+        matches!(self, Cell::Graph(_) | Cell::Table(_))
     }
 
+    /// Returns a copy of the cell with the given content appended.
     pub fn with_appended_content(&self, content: &str) -> Self {
         self.with_content(&format!("{}{}", self.content().unwrap_or(""), content))
     }
 
+    /// Returns a copy of the cell with its content replaced by the given content.
     pub fn with_content(&self, content: &str) -> Self {
         match self {
             Cell::Graph(cell) => Cell::Graph(cell.clone()),
@@ -124,9 +126,12 @@ pub struct TextCell {
     pub content: String,
 }
 
+/// A special role that can be assigned to certain cells, giving it unique capabilities.
 #[derive(Clone, Copy, Deserialize, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum CellRole {
+    /// A cell with the Title role will cause the notebook title to be updated when its content is
+    /// updated.
     Title,
 }
 
@@ -174,6 +179,7 @@ pub enum PointType {
     String,
 }
 
+/// A single data-point in time, with meta-data about the metric it was taken from.
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Instant<T> {
@@ -210,6 +216,7 @@ impl Instant<String> {
 
 pub type InstantsBySourceId<T> = HashMap<String, Vec<Instant<T>>>;
 
+/// A series of data-points in time, with meta-data about the metric it was taken from.
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Series<T> {
