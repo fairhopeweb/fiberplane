@@ -1,9 +1,6 @@
-use std::{
-    cmp::{max, min},
-    usize,
-};
-
 use serde::{Deserialize, Serialize};
+use std::cmp::{max, min};
+use std::usize;
 
 /// The position of the user's cursor, including an optional selection.
 #[derive(Clone, Deserialize, Serialize)]
