@@ -1,6 +1,6 @@
-use serde::Deserialize;
-
-use crate::{cell::Cell, cursor_position::CursorPosition};
+use crate::protocols::core::Cell;
+use crate::protocols::cursor_position::CursorPosition;
+use serde::{Deserialize, Serialize};
 
 /// An operation is the representation for a mutation to be performed to a notebook.
 ///
@@ -9,7 +9,7 @@ use crate::{cell::Cell, cursor_position::CursorPosition};
 ///
 /// For more information, please see RFC 8:
 ///   https://www.notion.so/fiberplane/RFC-8-Notebook-Operations-f9d18676d0d9437d81de30faa219deb4
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Operation {
     AddCells(AddCellsOperation),
@@ -21,7 +21,7 @@ pub enum Operation {
 }
 
 /// Adds one or more cells at the given position.
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct AddCellsOperation {
     pub cells: Vec<Cell>,
@@ -29,21 +29,21 @@ pub struct AddCellsOperation {
 }
 
 /// The position where to insert newly added cells. Either before or after the given reference cell.
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct AddCellsPosition {
     pub reference_id: String,
     pub relation: AddCellsRelation,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum AddCellsRelation {
     Before,
     After,
 }
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CellWithIndex {
     pub cell: Cell,
@@ -51,7 +51,7 @@ pub struct CellWithIndex {
 }
 
 /// Merges the source cell into the target cell by appending its content.
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct MergeCellsOperation {
     pub source_id: String,
@@ -62,13 +62,13 @@ pub struct MergeCellsOperation {
 ///
 /// Clients are responsible for making sure all cells that are relevant to a given operation are
 /// included in this struct. A naive client may simply include all cells.
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 pub struct NotebookState {
     pub cells: Vec<CellWithIndex>,
 }
 
 /// Removes one or more cells with the given IDs.
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct RemoveCellsOperation {
     pub cell_ids: Vec<String>,
@@ -79,7 +79,7 @@ pub struct RemoveCellsOperation {
 /// If the cursor position includes an active selection, that selection is removed; only the part
 /// before the selection is retained in the split cell, while only the part after the selection ends
 /// up in the new cell.
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SplitCellOperation {
     pub cell_id: String,
@@ -88,7 +88,7 @@ pub struct SplitCellOperation {
 }
 
 /// Swaps the position of two cells.
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SwapCellsOperation {
     pub cell_id1: String,
@@ -99,7 +99,7 @@ pub struct SwapCellsOperation {
 ///
 /// **FIXME:** Because this operation is so coarse, it currently breaks assumptions about intent and
 ///            convergence.
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateCellOperation {
     pub updated_cell: Cell,

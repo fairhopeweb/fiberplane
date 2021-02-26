@@ -1,6 +1,5 @@
-use std::{collections::HashMap, usize};
-
 use serde::{Deserialize, Serialize};
+use std::{collections::HashMap, usize};
 
 /// Representation of a single notebook cell.
 #[derive(Clone, Deserialize, Serialize)]
