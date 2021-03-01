@@ -1,4 +1,5 @@
 use crate::protocols::core::Cell;
+use crate::protocols::core::TimeRange;
 use crate::protocols::cursor_position::CursorPosition;
 use serde::{Deserialize, Serialize};
 
@@ -18,6 +19,7 @@ pub enum Operation {
     SplitCell(SplitCellOperation),
     SwapCells(SwapCellsOperation),
     UpdateCell(UpdateCellOperation),
+    UpdateGlobalTimeRange(UpdateGlobalTimeRangeOperation),
 }
 
 /// Adds one or more cells at the given position.
@@ -103,4 +105,11 @@ pub struct SwapCellsOperation {
 #[serde(rename_all = "camelCase")]
 pub struct UpdateCellOperation {
     pub updated_cell: Cell,
+}
+
+/// Updates the notebook time range (sometimes referred to as the global)
+#[derive(Deserialize, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct UpdateGlobalTimeRangeOperation {
+    pub time_range: TimeRange,
 }
