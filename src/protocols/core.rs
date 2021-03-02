@@ -78,6 +78,8 @@ impl Cell {
 pub struct GraphCell {
     pub id: String,
     pub graph_type: GraphType,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub read_only: Option<bool>,
     pub source_ids: Vec<String>,
     pub time_range: Option<TimeRange>,
     pub title: String,
@@ -92,6 +94,8 @@ pub struct HeadingCell {
     pub heading_type: HeadingType,
     pub content: String,
     #[serde(skip_serializing_if = "Option::is_none")]
+    pub read_only: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub role: Option<CellRole>,
 }
 
@@ -100,6 +104,8 @@ pub struct HeadingCell {
 pub struct MarkdownCell {
     pub id: String,
     pub content: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub read_only: Option<bool>,
 }
 
 #[derive(Clone, Deserialize, Serialize)]
@@ -107,12 +113,16 @@ pub struct MarkdownCell {
 pub struct PrometheusCell {
     pub id: String,
     pub content: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub read_only: Option<bool>,
 }
 
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct TableCell {
     pub id: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub read_only: Option<bool>,
     pub source_ids: Vec<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub data: Option<InstantsBySourceId<f64>>,
@@ -123,6 +133,8 @@ pub struct TableCell {
 pub struct TextCell {
     pub id: String,
     pub content: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub read_only: Option<bool>,
 }
 
 /// A special role that can be assigned to certain cells, giving it unique capabilities.
