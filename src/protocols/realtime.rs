@@ -24,12 +24,12 @@ pub enum ServerRealtimeMessage {
     ApplyOperation(ApplyOperationMessage),
 
     /// An Ack message will be sent once an operation is received and processed.
-    /// No Ack message will sent if the opid of the original message was empty.
+    /// No Ack message will sent if the op_id of the original message was empty.
     /// Gets rejected if sent to the server.
     Ack(AckMessage),
 
     /// An Err message will be sent once an operation is received, but could not
-    /// be processed. It includes the opid if that was present. Gets rejected if
+    /// be processed. It includes the op_id if that was present. Gets rejected if
     /// sent to the server.
     Err(ErrMessage),
 
@@ -46,7 +46,7 @@ pub struct SubscribeMessage {
 
     /// Operation ID
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub opid: Option<String>,
+    pub op_id: Option<String>,
 }
 
 #[derive(Deserialize, Serialize, Clone)]
@@ -57,7 +57,7 @@ pub struct UnsubscribeMessage {
 
     /// Operation ID
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub opid: Option<String>,
+    pub op_id: Option<String>,
 }
 
 #[derive(Deserialize, Serialize, Clone)]
@@ -71,15 +71,15 @@ pub struct ApplyOperationMessage {
 
     /// Operation ID
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub opid: Option<String>,
+    pub op_id: Option<String>,
 }
 
 impl ApplyOperationMessage {
-    pub fn new(notebook_id: String, operation: Operation, opid: Option<String>) -> Self {
+    pub fn new(notebook_id: String, operation: Operation, op_id: Option<String>) -> Self {
         Self {
             notebook_id,
             operation,
-            opid,
+            op_id,
         }
     }
 }
@@ -88,7 +88,7 @@ impl ApplyOperationMessage {
 #[serde(rename_all = "camelCase")]
 pub struct AckMessage {
     /// Operation ID.
-    pub opid: String,
+    pub op_id: String,
 }
 
 #[derive(Deserialize, Serialize, Clone)]
@@ -97,9 +97,9 @@ pub struct ErrMessage {
     /// Error message.
     pub error_message: String,
 
-    /// Operation ID. Empty if the user has not provided a opid.
+    /// Operation ID. Empty if the user has not provided a op_id.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub opid: Option<String>,
+    pub op_id: Option<String>,
 }
 
 #[derive(Deserialize, Serialize, Clone)]
@@ -107,7 +107,7 @@ pub struct ErrMessage {
 pub struct DebugRequestMessage {
     /// Operation ID.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub opid: Option<String>,
+    pub op_id: Option<String>,
 }
 
 #[derive(Deserialize, Serialize, Clone)]
@@ -119,7 +119,7 @@ pub struct DebugResponseMessage {
     /// Notebooks that the user is subscribed to.
     pub subscribed_notebooks: Vec<String>,
 
-    /// Operation ID. Empty if the user has not provided a opid.
+    /// Operation ID. Empty if the user has not provided a op_id.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub opid: Option<String>,
+    pub op_id: Option<String>,
 }
