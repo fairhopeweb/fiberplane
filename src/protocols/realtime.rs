@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 
 #[derive(Deserialize, Serialize, Clone)]
 #[serde(tag = "type", rename_all = "snake_case")]
-pub enum RealtimeMessage {
+pub enum ClientRealtimeMessage {
     /// Subscribe to changes from a specific Notebook.
     Subscribe(SubscribeMessage),
 
@@ -15,6 +15,13 @@ pub enum RealtimeMessage {
 
     /// Request a DebugResponse from the server.
     DebugRequest(DebugRequestMessage),
+}
+
+#[derive(Deserialize, Serialize, Clone)]
+#[serde(tag = "type", rename_all = "snake_case")]
+pub enum ServerRealtimeMessage {
+    /// Apply an operation to a specific Notebook.
+    ApplyOperation(ApplyOperationMessage),
 
     /// An Ack message will be sent once an operation is received and processed.
     /// No Ack message will sent if the opid of the original message was empty.
