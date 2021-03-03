@@ -1,7 +1,7 @@
 use crate::protocols::operations::Operation;
 use serde::{Deserialize, Serialize};
 
-#[derive(Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum ClientRealtimeMessage {
     /// Subscribe to changes from a specific Notebook.
@@ -17,7 +17,7 @@ pub enum ClientRealtimeMessage {
     DebugRequest(DebugRequestMessage),
 }
 
-#[derive(Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum ServerRealtimeMessage {
     /// Apply an operation to a specific Notebook.
@@ -38,7 +38,7 @@ pub enum ServerRealtimeMessage {
     DebugResponse(DebugResponseMessage),
 }
 
-#[derive(Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct SubscribeMessage {
     /// ID of the notebook
@@ -49,7 +49,7 @@ pub struct SubscribeMessage {
     pub op_id: Option<String>,
 }
 
-#[derive(Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct UnsubscribeMessage {
     /// ID of the notebook
@@ -60,7 +60,7 @@ pub struct UnsubscribeMessage {
     pub op_id: Option<String>,
 }
 
-#[derive(Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct ApplyOperationMessage {
     /// ID of the notebook
@@ -84,14 +84,20 @@ impl ApplyOperationMessage {
     }
 }
 
-#[derive(Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct AckMessage {
     /// Operation ID.
     pub op_id: String,
 }
 
-#[derive(Deserialize, Serialize, Clone)]
+impl AckMessage {
+    pub fn new(op_id: String) -> Self {
+        Self { op_id }
+    }
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct ErrMessage {
     /// Error message.
@@ -102,7 +108,7 @@ pub struct ErrMessage {
     pub op_id: Option<String>,
 }
 
-#[derive(Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct DebugRequestMessage {
     /// Operation ID.
@@ -110,7 +116,7 @@ pub struct DebugRequestMessage {
     pub op_id: Option<String>,
 }
 
-#[derive(Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct DebugResponseMessage {
     /// Session ID.

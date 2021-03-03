@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 ///
 /// For more information, please see RFC 8:
 ///   https://www.notion.so/fiberplane/RFC-8-Notebook-Operations-f9d18676d0d9437d81de30faa219deb4
-#[derive(Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Operation {
     AddCells(AddCellsOperation),
@@ -23,7 +23,7 @@ pub enum Operation {
 }
 
 /// Adds one or more cells at the given position.
-#[derive(Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct AddCellsOperation {
     pub cells: Vec<Cell>,
@@ -31,21 +31,21 @@ pub struct AddCellsOperation {
 }
 
 /// The position where to insert newly added cells. Either before or after the given reference cell.
-#[derive(Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct AddCellsPosition {
     pub reference_id: String,
     pub relation: AddCellsRelation,
 }
 
-#[derive(Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "snake_case")]
 pub enum AddCellsRelation {
     Before,
     After,
 }
 
-#[derive(Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct CellWithIndex {
     pub cell: Cell,
@@ -53,7 +53,7 @@ pub struct CellWithIndex {
 }
 
 /// Merges the source cell into the target cell by appending its content.
-#[derive(Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct MergeCellsOperation {
     pub source_id: String,
@@ -64,13 +64,13 @@ pub struct MergeCellsOperation {
 ///
 /// Clients are responsible for making sure all cells that are relevant to a given operation are
 /// included in this struct. A naive client may simply include all cells.
-#[derive(Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 pub struct NotebookState {
     pub cells: Vec<CellWithIndex>,
 }
 
 /// Removes one or more cells with the given IDs.
-#[derive(Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct RemoveCellsOperation {
     pub cell_ids: Vec<String>,
@@ -81,7 +81,7 @@ pub struct RemoveCellsOperation {
 /// If the cursor position includes an active selection, that selection is removed; only the part
 /// before the selection is retained in the split cell, while only the part after the selection ends
 /// up in the new cell.
-#[derive(Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct SplitCellOperation {
     pub cell_id: String,
@@ -90,7 +90,7 @@ pub struct SplitCellOperation {
 }
 
 /// Swaps the position of two cells.
-#[derive(Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct SwapCellsOperation {
     pub cell_id1: String,
@@ -101,14 +101,14 @@ pub struct SwapCellsOperation {
 ///
 /// **FIXME:** Because this operation is so coarse, it currently breaks assumptions about intent and
 ///            convergence.
-#[derive(Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateCellOperation {
     pub updated_cell: Cell,
 }
 
 /// Updates the notebook time range (sometimes referred to as the global)
-#[derive(Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateGlobalTimeRangeOperation {
     pub time_range: TimeRange,
