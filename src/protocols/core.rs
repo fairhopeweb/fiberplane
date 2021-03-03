@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use std::{collections::HashMap, usize};
 
 /// Representation of a single notebook cell.
-#[derive(Clone, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Cell {
     Graph(GraphCell),
@@ -73,7 +73,7 @@ impl Cell {
     }
 }
 
-#[derive(Clone, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct GraphCell {
     pub id: String,
@@ -87,7 +87,7 @@ pub struct GraphCell {
     pub data: Option<SeriesBySourceId<f64>>,
 }
 
-#[derive(Clone, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct HeadingCell {
     pub id: String,
@@ -99,7 +99,7 @@ pub struct HeadingCell {
     pub role: Option<CellRole>,
 }
 
-#[derive(Clone, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct MarkdownCell {
     pub id: String,
@@ -108,7 +108,7 @@ pub struct MarkdownCell {
     pub read_only: Option<bool>,
 }
 
-#[derive(Clone, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct PrometheusCell {
     pub id: String,
@@ -117,7 +117,7 @@ pub struct PrometheusCell {
     pub read_only: Option<bool>,
 }
 
-#[derive(Clone, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct TableCell {
     pub id: String,
@@ -128,7 +128,7 @@ pub struct TableCell {
     pub data: Option<InstantsBySourceId<f64>>,
 }
 
-#[derive(Clone, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct TextCell {
     pub id: String,
@@ -138,7 +138,7 @@ pub struct TextCell {
 }
 
 /// A special role that can be assigned to certain cells, giving it unique capabilities.
-#[derive(Clone, Copy, Deserialize, Serialize)]
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum CellRole {
     /// A cell with the Title role will cause the notebook title to be updated when its content is
@@ -146,14 +146,14 @@ pub enum CellRole {
     Title,
 }
 
-#[derive(Clone, Copy, Deserialize, Serialize)]
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum GraphType {
     Bar,
     Line,
 }
 
-#[derive(Clone, Copy, Deserialize, Serialize)]
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum HeadingType {
     H1,
@@ -162,7 +162,7 @@ pub enum HeadingType {
 }
 
 // A range in time from a given timestamp (inclusive) up to another timestamp (exclusive).
-#[derive(Clone, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct TimeRange {
     pub from: Timestamp,
     pub to: Timestamp,
@@ -171,19 +171,19 @@ pub struct TimeRange {
 /// Timestamp specified in seconds since the UNIX epoch, with subsecond precision.
 pub type Timestamp = f64;
 
-#[derive(Clone, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct Metric {
     pub name: String,
     pub labels: HashMap<String, String>,
 }
 
-#[derive(Clone, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct Point<T> {
     pub timestamp: Timestamp,
     pub value: T,
 }
 
-#[derive(Clone, Copy, Deserialize, Serialize)]
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum PointType {
     F64,
@@ -191,7 +191,7 @@ pub enum PointType {
 }
 
 /// A single data-point in time, with meta-data about the metric it was taken from.
-#[derive(Clone, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Instant<T> {
     pub metric: Metric,
@@ -228,7 +228,7 @@ impl Instant<String> {
 pub type InstantsBySourceId<T> = HashMap<String, Vec<Instant<T>>>;
 
 /// A series of data-points in time, with meta-data about the metric it was taken from.
-#[derive(Clone, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Series<T> {
     pub metric: Metric,
