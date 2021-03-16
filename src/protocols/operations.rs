@@ -17,7 +17,6 @@ pub enum Operation {
     MergeCells(MergeCellsOperation),
     RemoveCells(RemoveCellsOperation),
     SplitCell(SplitCellOperation),
-    SwapCells(SwapCellsOperation),
     UpdateCell(UpdateCellOperation),
     UpdateGlobalTimeRange(UpdateGlobalTimeRangeOperation),
 }
@@ -31,14 +30,14 @@ pub struct AddCellsOperation {
 }
 
 /// The position where to insert newly added cells. Either before or after the given reference cell.
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct AddCellsPosition {
     pub reference_id: String,
     pub relation: AddCellsRelation,
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
 pub enum AddCellsRelation {
     Before,
@@ -69,11 +68,22 @@ pub struct NotebookState {
     pub cells: Vec<CellWithIndex>,
 }
 
-/// Removes one or more cells with the given IDs.
+/// (Re)moves one or more cells with the given IDs. If multiple cell IDs are given, they must be
+/// adjacent.
+///
+/// Note it is an illegal operation to remove all cells from a notebook, meaning either
+/// `next_cell_id` or `previous_cell_id` should still contain *Some* cell ID.
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct RemoveCellsOperation {
     pub cell_ids: Vec<String>,
+    /// ID of the cell after the removed cell(s), if any.
+    pub next_cell_id: Option<String>,
+    /// ID of the cell before the removed cell(s), if any.
+    pub previous_cell_id: Option<String>,
+    /// If given, the removed cells will be reinserted at the given position, effectively making
+    /// this a Move operation rather than Remove.
+    pub new_position: Option<AddCellsPosition>,
 }
 
 /// Splits a cell at the given cursor position.
@@ -87,14 +97,6 @@ pub struct SplitCellOperation {
     pub cell_id: String,
     pub cursor_position: CursorPosition,
     pub new_cell_id: String,
-}
-
-/// Swaps the position of two cells.
-#[derive(Debug, Deserialize, Serialize, Clone)]
-#[serde(rename_all = "camelCase")]
-pub struct SwapCellsOperation {
-    pub cell_id1: String,
-    pub cell_id2: String,
 }
 
 /// Updates arbitrary properties of a cell.
