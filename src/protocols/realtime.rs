@@ -4,6 +4,9 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum ClientRealtimeMessage {
+    /// Authenticate this client
+    Authenticate(AuthenticateMessage),
+
     /// Subscribe to changes from a specific Notebook.
     Subscribe(SubscribeMessage),
 
@@ -36,6 +39,17 @@ pub enum ServerRealtimeMessage {
     /// Response from a DebugRequest. Contains some useful data regarding the
     /// connection. Gets rejected if sent to the server.
     DebugResponse(DebugResponseMessage),
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct AuthenticateMessage {
+    /// Bearer token
+    pub token: String,
+
+    /// Operation ID
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub op_id: Option<String>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
