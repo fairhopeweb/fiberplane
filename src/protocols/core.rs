@@ -95,8 +95,6 @@ pub struct HeadingCell {
     pub content: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub read_only: Option<bool>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub role: Option<CellRole>,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -135,15 +133,6 @@ pub struct TextCell {
     pub content: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub read_only: Option<bool>,
-}
-
-/// A special role that can be assigned to certain cells, giving it unique capabilities.
-#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize)]
-#[serde(rename_all = "snake_case")]
-pub enum CellRole {
-    /// A cell with the Title role will cause the notebook title to be updated when its content is
-    /// updated.
-    Title,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize)]

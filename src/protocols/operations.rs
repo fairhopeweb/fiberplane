@@ -1,6 +1,6 @@
 use crate::protocols::core::Cell;
 use crate::protocols::core::TimeRange;
-use crate::protocols::cursor_position::CursorPosition;
+use crate::protocols::notebook_state::CellWithIndex;
 use serde::{Deserialize, Serialize};
 
 /// An operation is the representation for a mutation to be performed to a notebook.
@@ -15,87 +15,89 @@ use serde::{Deserialize, Serialize};
 pub enum Operation {
     AddCells(AddCellsOperation),
     MergeCells(MergeCellsOperation),
+    MoveCells(MoveCellsOperation),
     RemoveCells(RemoveCellsOperation),
     SplitCell(SplitCellOperation),
     UpdateCell(UpdateCellOperation),
-    UpdateGlobalTimeRange(UpdateGlobalTimeRangeOperation),
+    UpdateNotebookTimeRange(UpdateNotebookTimeRangeOperation),
+    UpdateNotebookTitle(UpdateNotebookTitleOperation),
 }
 
 /// Adds one or more cells at the given position.
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct AddCellsOperation {
-    pub cells: Vec<Cell>,
-    pub position: AddCellsPosition,
-}
-
-/// The position where to insert newly added cells. Either before or after the given reference cell.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct AddCellsPosition {
-    pub reference_id: String,
-    pub relation: AddCellsRelation,
-}
-
-#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize)]
-#[serde(rename_all = "snake_case")]
-pub enum AddCellsRelation {
-    Before,
-    After,
-}
-
-#[derive(Debug, Deserialize, Serialize, Clone)]
-#[serde(rename_all = "camelCase")]
-pub struct CellWithIndex {
-    pub cell: Cell,
-    pub index: u32,
-}
-
-/// Merges the source cell into the target cell by appending its content.
-#[derive(Debug, Deserialize, Serialize, Clone)]
-#[serde(rename_all = "camelCase")]
-pub struct MergeCellsOperation {
-    pub source_id: String,
-    pub target_id: String,
-}
-
-/// State of a notebook to apply an operation to.
-///
-/// Clients are responsible for making sure all cells that are relevant to a given operation are
-/// included in this struct. A naive client may simply include all cells.
-#[derive(Debug, Deserialize, Serialize, Clone)]
-pub struct NotebookState {
+    /// The new cells, including their index after adding.
     pub cells: Vec<CellWithIndex>,
 }
 
-/// (Re)moves one or more cells with the given IDs. If multiple cell IDs are given, they must be
-/// adjacent.
-///
-/// Note it is an illegal operation to remove all cells from a notebook, meaning either
-/// `next_cell_id` or `previous_cell_id` should still contain *Some* cell ID.
+/// Merges the cell immediately after the target cell into it by appending its content.
+#[derive(Debug, Deserialize, Serialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct MergeCellsOperation {
+    /// Optional text we want to "glue" between the content of the target cell and the source cell.
+    /// This is useful if we want to revert a `SplitCellOperation` that contained selected text.
+    pub glue_text: Option<String>,
+
+    /// ID of the source cell that will be merged into the target cell. This must be the cell
+    /// immediately after the target cell. This ID is explicitly specified to be able to reuse
+    /// the same ID if the merge operation is reverted.
+    pub source_cell_id: String,
+
+    /// The length of the text content of the target cell right before the merge. This is the index
+    /// at which we will want to split the cell if we need to revert the merge.
+    pub target_content_length: usize,
+
+    /// Index of the target cell into which the merge will be performed.
+    pub target_cell_index: String,
+}
+
+/// Moves one or more cells.
+#[derive(Debug, Deserialize, Serialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct MoveCellsOperation {
+    /// IDs of all the cells to be moved.
+    ///
+    /// These must be adjacent and given in the order they appear in the notebook.
+    cell_ids: Vec<String>,
+
+    /// Index the cells will be moved from. This is the index of the first cell before the move.
+    from_index: usize,
+
+    /// Index the cells will be moved to. This is the index of the first cell after the move.
+    to_index: usize,
+}
+
+/// Removes one or more cells.
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct RemoveCellsOperation {
-    pub cell_ids: Vec<String>,
-    /// ID of the cell after the removed cell(s), if any.
-    pub next_cell_id: Option<String>,
-    /// ID of the cell before the removed cell(s), if any.
-    pub previous_cell_id: Option<String>,
-    /// If given, the removed cells will be reinserted at the given position, effectively making
-    /// this a Move operation rather than Remove.
-    pub new_position: Option<AddCellsPosition>,
+    /// Like removed cells, but these are removed as a side-effect of the removal of
+    /// `removed_cells`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cascade_removed_cells: Option<Vec<CellWithIndex>>,
+
+    /// The removed cells, including their index before the removal.
+    pub removed_cells: Vec<CellWithIndex>,
 }
 
-/// Splits a cell at the given cursor position.
-///
-/// If the cursor position includes an active selection, that selection is removed; only the part
-/// before the selection is retained in the split cell, while only the part after the selection ends
-/// up in the new cell.
+/// Splits a cell at the given position.
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct SplitCellOperation {
-    pub cell_id: String,
-    pub cursor_position: CursorPosition,
+    /// Index of the cell that will be split.
+    pub cell_index: usize,
+
+    /// The character index inside the cell to split at.
+    pub split_index: usize,
+
+    /// If any text was selected at the moment of splitting, that selection is removed; only the
+    /// part before the selection is retained in the split cell, while only the part after the
+    /// selection ends up in the new cell.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub selected_text: Option<String>,
+
+    /// ID of the newly created cell after the split.
     pub new_cell_id: String,
 }
 
@@ -106,12 +108,27 @@ pub struct SplitCellOperation {
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateCellOperation {
-    pub updated_cell: Cell,
+    /// The old cell with its content, so that we can revert the update if necessary.
+    ///
+    /// Must have the same ID as the new cell.
+    pub old_cell: Box<Cell>,
+
+    /// The newly updated cell.
+    pub updated_cell: Box<Cell>,
 }
 
-/// Updates the notebook time range (sometimes referred to as the global)
+/// Updates the notebook time range.
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
-pub struct UpdateGlobalTimeRangeOperation {
+pub struct UpdateNotebookTimeRangeOperation {
+    pub old_time_range: TimeRange,
     pub time_range: TimeRange,
+}
+
+/// Updates the notebook title.
+#[derive(Debug, Deserialize, Serialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct UpdateNotebookTitleOperation {
+    pub old_title: String,
+    pub title: String,
 }

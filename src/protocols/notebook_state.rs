@@ -1,0 +1,20 @@
+use crate::protocols::core::Cell;
+use serde::{Deserialize, Serialize};
+
+/// State of a notebook to apply an operation to. This differs from a full `Notebook` in that it
+/// only needs to include the minimal necessary state for an operation to be converted into changes
+/// by the Mill.
+///
+/// Users of this struct are responsible for making sure all cells that are relevant to a given
+/// operation are included. A naive implementation may simply include all of a notebook's cells.
+#[derive(Debug, Deserialize, Serialize, Clone)]
+pub struct NotebookState {
+    pub cells: Vec<CellWithIndex>,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct CellWithIndex {
+    pub cell: Cell,
+    pub index: usize,
+}
