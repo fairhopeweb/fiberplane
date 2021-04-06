@@ -3,7 +3,7 @@ use std::cmp::{max, min};
 use std::usize;
 
 /// The position of the user's cursor, including an optional selection.
-#[derive(Debug, Clone, Deserialize, Serialize)]
+#[derive(Debug, Clone, Deserialize, PartialEq, Serialize)]
 #[serde(untagged)]
 pub enum CursorPosition {
     Offset(usize),
