@@ -86,7 +86,7 @@ pub struct RemoveCellsOperation {
 #[serde(rename_all = "camelCase")]
 pub struct SplitCellOperation {
     /// ID of the cell that will be split.
-    pub cell_id: usize,
+    pub cell_id: String,
 
     /// The character index inside the cell to split at.
     pub split_index: usize,
