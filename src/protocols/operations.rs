@@ -29,6 +29,13 @@ pub enum Operation {
 pub struct AddCellsOperation {
     /// The new cells, including their index after adding.
     pub cells: Vec<CellWithIndex>,
+
+    /// Optional, existing cells to which references to the newly added cells have been added.
+    ///
+    /// This is not something that currently happens from the UI, but is useful to atomically
+    /// revert a `RemoveCellsOperation`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub referencing_cells: Option<Vec<CellWithIndex>>,
 }
 
 /// Merges the cell immediately after the target cell into it by appending its content.
@@ -72,13 +79,15 @@ pub struct MoveCellsOperation {
 #[derive(Debug, Deserialize, Serialize, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct RemoveCellsOperation {
-    /// Like removed cells, but these are removed as a side-effect of the removal of
-    /// `removed_cells`.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub cascade_removed_cells: Option<Vec<CellWithIndex>>,
-
     /// The removed cells, including their index before the removal.
     pub removed_cells: Vec<CellWithIndex>,
+
+    /// Optional cells that referenced the removed cells and which are affected by the removal.
+    ///
+    /// If a referencing cell *only* references the removed cells, it may be cascade removed.
+    /// Otherwise, the removed cells may simply be unreferenced and the cell will be retained.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub referencing_cells: Option<Vec<CellWithIndex>>,
 }
 
 /// Splits a cell at the given position.
