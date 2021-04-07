@@ -59,13 +59,13 @@ pub struct MoveCellsOperation {
     /// IDs of all the cells to be moved.
     ///
     /// These must be adjacent and given in the order they appear in the notebook.
-    cell_ids: Vec<String>,
+    pub cell_ids: Vec<String>,
 
     /// Index the cells will be moved from. This is the index of the first cell before the move.
-    from_index: usize,
+    pub from_index: usize,
 
     /// Index the cells will be moved to. This is the index of the first cell after the move.
-    to_index: usize,
+    pub to_index: usize,
 }
 
 /// Removes one or more cells.
