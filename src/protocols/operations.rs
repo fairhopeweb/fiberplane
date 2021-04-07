@@ -48,8 +48,8 @@ pub struct MergeCellsOperation {
     /// at which we will want to split the cell if we need to revert the merge.
     pub target_content_length: usize,
 
-    /// Index of the target cell into which the merge will be performed.
-    pub target_cell_index: String,
+    /// ID of the target cell into which the merge will be performed.
+    pub target_cell_id: String,
 }
 
 /// Moves one or more cells.
@@ -85,8 +85,8 @@ pub struct RemoveCellsOperation {
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct SplitCellOperation {
-    /// Index of the cell that will be split.
-    pub cell_index: usize,
+    /// ID of the cell that will be split.
+    pub cell_id: usize,
 
     /// The character index inside the cell to split at.
     pub split_index: usize,
