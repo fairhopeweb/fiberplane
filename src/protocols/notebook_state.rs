@@ -7,12 +7,12 @@ use serde::{Deserialize, Serialize};
 ///
 /// Users of this struct are responsible for making sure all cells that are relevant to a given
 /// operation are included. A naive implementation may simply include all of a notebook's cells.
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, PartialEq, Clone)]
 pub struct NotebookState {
     pub cells: Vec<CellWithIndex>,
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct CellWithIndex {
     pub cell: Cell,

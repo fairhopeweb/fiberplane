@@ -10,7 +10,7 @@ use serde::{Deserialize, Serialize};
 ///
 /// For more information, please see RFC 8:
 ///   https://www.notion.so/fiberplane/RFC-8-Notebook-Operations-f9d18676d0d9437d81de30faa219deb4
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, PartialEq, Clone)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Operation {
     AddCells(AddCellsOperation),
@@ -24,7 +24,7 @@ pub enum Operation {
 }
 
 /// Adds one or more cells at the given position.
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct AddCellsOperation {
     /// The new cells, including their index after adding.
@@ -32,7 +32,7 @@ pub struct AddCellsOperation {
 }
 
 /// Merges the cell immediately after the target cell into it by appending its content.
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct MergeCellsOperation {
     /// Optional text we want to "glue" between the content of the target cell and the source cell.
@@ -53,7 +53,7 @@ pub struct MergeCellsOperation {
 }
 
 /// Moves one or more cells.
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct MoveCellsOperation {
     /// IDs of all the cells to be moved.
@@ -69,7 +69,7 @@ pub struct MoveCellsOperation {
 }
 
 /// Removes one or more cells.
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct RemoveCellsOperation {
     /// Like removed cells, but these are removed as a side-effect of the removal of
@@ -82,7 +82,7 @@ pub struct RemoveCellsOperation {
 }
 
 /// Splits a cell at the given position.
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct SplitCellOperation {
     /// ID of the cell that will be split.
@@ -105,7 +105,7 @@ pub struct SplitCellOperation {
 ///
 /// **FIXME:** Because this operation is so coarse, it currently breaks assumptions about intent and
 ///            convergence.
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateCellOperation {
     /// The old cell with its content, so that we can revert the update if necessary.
@@ -118,7 +118,7 @@ pub struct UpdateCellOperation {
 }
 
 /// Updates the notebook time range.
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateNotebookTimeRangeOperation {
     pub old_time_range: TimeRange,
@@ -126,7 +126,7 @@ pub struct UpdateNotebookTimeRangeOperation {
 }
 
 /// Updates the notebook title.
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, PartialEq, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateNotebookTitleOperation {
     pub old_title: String,
