@@ -95,7 +95,7 @@ pub struct SplitCellOperation {
     /// part before the selection is retained in the split cell, while only the part after the
     /// selection ends up in the new cell.
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub selected_text: Option<String>,
+    pub removed_text: Option<String>,
 
     /// ID of the newly created cell after the split.
     pub new_cell_id: String,
