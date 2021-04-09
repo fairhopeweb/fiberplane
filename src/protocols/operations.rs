@@ -48,7 +48,7 @@ pub struct MergeCellsOperation {
     /// ID of the source cell that will be merged into the target cell. This must be the cell
     /// immediately after the target cell. This ID is explicitly specified to be able to reuse
     /// the same ID if the merge operation is reverted.
-    pub source_cell_id: String,
+    pub source_cell: Cell,
 
     /// The length of the text content of the target cell right before the merge. This is the index
     /// at which we will want to split the cell if we need to revert the merge.
@@ -105,8 +105,8 @@ pub struct SplitCellOperation {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub removed_text: Option<String>,
 
-    /// ID of the newly created cell after the split.
-    pub new_cell_id: String,
+    /// Newly created cell after the split.
+    pub new_cell: Cell,
 }
 
 /// Updates arbitrary properties of a cell.
