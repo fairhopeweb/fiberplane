@@ -43,6 +43,15 @@ impl Cell {
         matches!(self, Cell::Graph(_) | Cell::Table(_))
     }
 
+    /// Returns all the source IDs referenced by the cell.
+    pub fn source_ids(&self) -> Vec<&str> {
+        match self {
+            Cell::Graph(cell) => cell.source_ids.iter().map(String::as_str).collect(),
+            Cell::Table(cell) => cell.source_ids.iter().map(String::as_str).collect(),
+            Cell::Heading(_) | Cell::Markdown(_) | Cell::Prometheus(_) | Cell::Text(_) => vec![],
+        }
+    }
+
     /// Returns a copy of the cell with the given content appended.
     pub fn with_appended_content(&self, content: &str) -> Self {
         self.with_content(&format!("{}{}", self.content().unwrap_or(""), content))
@@ -53,22 +62,63 @@ impl Cell {
         match self {
             Cell::Graph(cell) => Cell::Graph(cell.clone()),
             Cell::Heading(cell) => Cell::Heading(HeadingCell {
+                id: cell.id.clone(),
                 content: content.to_owned(),
-                ..cell.clone()
+                ..*cell
             }),
             Cell::Markdown(cell) => Cell::Markdown(MarkdownCell {
+                id: cell.id.clone(),
                 content: content.to_owned(),
-                ..cell.clone()
+                ..*cell
             }),
             Cell::Prometheus(cell) => Cell::Prometheus(PrometheusCell {
+                id: cell.id.clone(),
                 content: content.to_owned(),
-                ..cell.clone()
+                ..*cell
             }),
             Cell::Table(cell) => Cell::Table(cell.clone()),
             Cell::Text(cell) => Cell::Text(TextCell {
+                id: cell.id.clone(),
                 content: content.to_owned(),
-                ..cell.clone()
+                ..*cell
             }),
+        }
+    }
+
+    /// Returns a copy of the cell with its source IDs replaced by the given IDs.
+    ///
+    /// If the cell contains any data, only data that belongs to any of the new
+    /// source IDs is retained.
+    pub fn with_source_ids(&self, source_ids: Vec<String>) -> Self {
+        match self {
+            Cell::Graph(cell) => Cell::Graph(GraphCell {
+                id: cell.id.clone(),
+                data: cell.data.as_ref().map(|data| {
+                    data.iter()
+                        .filter(|(k, _)| source_ids.contains(k))
+                        .map(|(k, v)| (k.clone(), v.clone()))
+                        .collect()
+                }),
+                source_ids,
+                time_range: cell.time_range.clone(),
+                title: cell.title.clone(),
+                ..*cell
+            }),
+            Cell::Heading(cell) => Cell::Heading(cell.clone()),
+            Cell::Markdown(cell) => Cell::Markdown(cell.clone()),
+            Cell::Prometheus(cell) => Cell::Prometheus(cell.clone()),
+            Cell::Table(cell) => Cell::Table(TableCell {
+                id: cell.id.clone(),
+                data: cell.data.as_ref().map(|data| {
+                    data.iter()
+                        .filter(|(k, _)| source_ids.contains(k))
+                        .map(|(k, v)| (k.clone(), v.clone()))
+                        .collect()
+                }),
+                source_ids,
+                ..*cell
+            }),
+            Cell::Text(cell) => Cell::Text(cell.clone()),
         }
     }
 }
@@ -95,8 +145,6 @@ pub struct HeadingCell {
     pub content: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub read_only: Option<bool>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub role: Option<CellRole>,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -135,15 +183,6 @@ pub struct TextCell {
     pub content: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub read_only: Option<bool>,
-}
-
-/// A special role that can be assigned to certain cells, giving it unique capabilities.
-#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize)]
-#[serde(rename_all = "snake_case")]
-pub enum CellRole {
-    /// A cell with the Title role will cause the notebook title to be updated when its content is
-    /// updated.
-    Title,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize)]
