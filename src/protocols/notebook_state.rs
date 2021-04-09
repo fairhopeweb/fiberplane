@@ -1,4 +1,4 @@
-use crate::protocols::core::Cell;
+use crate::protocols::operations::CellWithIndex;
 use serde::{Deserialize, Serialize};
 
 /// State of a notebook to apply an operation to. This differs from a full `Notebook` in that it
@@ -10,11 +10,4 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Deserialize, Serialize, PartialEq, Clone)]
 pub struct NotebookState {
     pub cells: Vec<CellWithIndex>,
-}
-
-#[derive(Debug, Deserialize, Serialize, PartialEq, Clone)]
-#[serde(rename_all = "camelCase")]
-pub struct CellWithIndex {
-    pub cell: Cell,
-    pub index: usize,
 }

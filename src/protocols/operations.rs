@@ -1,6 +1,5 @@
 use crate::protocols::core::Cell;
 use crate::protocols::core::TimeRange;
-use crate::protocols::notebook_state::CellWithIndex;
 use serde::{Deserialize, Serialize};
 
 /// An operation is the representation for a mutation to be performed to a notebook.
@@ -140,4 +139,11 @@ pub struct UpdateNotebookTimeRangeOperation {
 pub struct UpdateNotebookTitleOperation {
     pub old_title: String,
     pub title: String,
+}
+
+#[derive(Debug, Deserialize, Serialize, PartialEq, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct CellWithIndex {
+    pub cell: Cell,
+    pub index: usize,
 }
