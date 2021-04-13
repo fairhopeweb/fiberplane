@@ -118,7 +118,8 @@ pub struct SplitCellOperation {
 pub struct UpdateCellOperation {
     /// The old cell with its content, so that we can revert the update if necessary.
     ///
-    /// Must have the same ID as the new cell.
+    /// Note this cell may even have a different ID, in which case the old cell is swapped out for
+    /// the updated one while maintaining its position.
     pub old_cell: Box<Cell>,
 
     /// The newly updated cell.
