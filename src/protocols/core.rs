@@ -85,6 +85,46 @@ impl Cell {
         }
     }
 
+    /// Returns a copy of the cell with a new ID.
+    pub fn with_id(&self, id: &str) -> Self {
+        match self {
+            Cell::Graph(cell) => Cell::Graph(GraphCell {
+                id: id.to_owned(),
+                data: cell.data.clone(),
+                source_ids: cell.source_ids.clone(),
+                time_range: cell.time_range.clone(),
+                title: cell.title.clone(),
+                ..*cell
+            }),
+            Cell::Heading(cell) => Cell::Heading(HeadingCell {
+                id: id.to_owned(),
+                content: cell.content.clone(),
+                ..*cell
+            }),
+            Cell::Markdown(cell) => Cell::Markdown(MarkdownCell {
+                id: id.to_owned(),
+                content: cell.content.clone(),
+                ..*cell
+            }),
+            Cell::Prometheus(cell) => Cell::Prometheus(PrometheusCell {
+                id: id.to_owned(),
+                content: cell.content.clone(),
+                ..*cell
+            }),
+            Cell::Table(cell) => Cell::Table(TableCell {
+                id: id.to_owned(),
+                data: cell.data.clone(),
+                source_ids: cell.source_ids.clone(),
+                ..*cell
+            }),
+            Cell::Text(cell) => Cell::Text(TextCell {
+                id: id.to_owned(),
+                content: cell.content.clone(),
+                ..*cell
+            }),
+        }
+    }
+
     /// Returns a copy of the cell with its source IDs replaced by the given IDs.
     ///
     /// If the cell contains any data, only data that belongs to any of the new
