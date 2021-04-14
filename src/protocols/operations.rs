@@ -56,6 +56,14 @@ pub struct MergeCellsOperation {
 
     /// ID of the target cell into which the merge will be performed.
     pub target_cell_id: String,
+
+    /// Optional cells that referenced the source cell and which are affected by the removal of it.
+    ///
+    /// If a referencing cell *only* references the source cell, it may be removed.
+    /// Otherwise, the source cell may simply be unreferenced and the referencing cell will be
+    /// retained.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub referencing_cells: Option<Vec<CellWithIndex>>,
 }
 
 /// Moves one or more cells.
@@ -84,7 +92,8 @@ pub struct RemoveCellsOperation {
     /// Optional cells that referenced the removed cells and which are affected by the removal.
     ///
     /// If a referencing cell *only* references the removed cells, it may be cascade removed.
-    /// Otherwise, the removed cells may simply be unreferenced and the cell will be retained.
+    /// Otherwise, the removed cells may simply be unreferenced and the referencing cell will be
+    /// retained.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub referencing_cells: Option<Vec<CellWithIndex>>,
 }
@@ -107,6 +116,14 @@ pub struct SplitCellOperation {
 
     /// Newly created cell after the split.
     pub new_cell: Cell,
+
+    /// Optional cells to which a reference to the newly added cell should be added. These may be
+    /// cells that will need to be newly inserted.
+    ///
+    /// This is not something that currently happens from the UI, but is useful to atomically
+    /// revert a `MergeCellsOperation`.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub referencing_cells: Option<Vec<CellWithIndex>>,
 }
 
 /// Updates arbitrary properties of a cell.
