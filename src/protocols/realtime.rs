@@ -83,16 +83,26 @@ pub struct ApplyOperationMessage {
     /// Operation
     pub operation: Operation,
 
+    /// Revision, for a client sending this message it means the desired new
+    /// revision. When it is sent from a server it is the actual revision.
+    pub revision: u32,
+
     /// Operation ID
     #[serde(skip_serializing_if = "Option::is_none")]
     pub op_id: Option<String>,
 }
 
 impl ApplyOperationMessage {
-    pub fn new(notebook_id: String, operation: Operation, op_id: Option<String>) -> Self {
+    pub fn new(
+        notebook_id: String,
+        operation: Operation,
+        revision: u32,
+        op_id: Option<String>,
+    ) -> Self {
         Self {
             notebook_id,
             operation,
+            revision,
             op_id,
         }
     }
