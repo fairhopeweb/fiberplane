@@ -52,7 +52,7 @@ pub struct MergeCellsOperation {
 
     /// The length of the text content of the target cell right before the merge. This is the index
     /// at which we will want to split the cell if we need to revert the merge.
-    pub target_content_length: usize,
+    pub target_content_length: u32,
 
     /// ID of the target cell into which the merge will be performed.
     pub target_cell_id: String,
@@ -76,10 +76,10 @@ pub struct MoveCellsOperation {
     pub cell_ids: Vec<String>,
 
     /// Index the cells will be moved from. This is the index of the first cell before the move.
-    pub from_index: usize,
+    pub from_index: u32,
 
     /// Index the cells will be moved to. This is the index of the first cell after the move.
-    pub to_index: usize,
+    pub to_index: u32,
 }
 
 /// Removes one or more cells.
@@ -106,7 +106,7 @@ pub struct SplitCellOperation {
     pub cell_id: String,
 
     /// The character index inside the cell to split at.
-    pub split_index: usize,
+    pub split_index: u32,
 
     /// If any text was selected at the moment of splitting, that selection is removed; only the
     /// part before the selection is retained in the split cell, while only the part after the
@@ -163,5 +163,5 @@ pub struct UpdateNotebookTitleOperation {
 #[serde(rename_all = "camelCase")]
 pub struct CellWithIndex {
     pub cell: Cell,
-    pub index: usize,
+    pub index: u32,
 }
