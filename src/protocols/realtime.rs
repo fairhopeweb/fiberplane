@@ -39,6 +39,10 @@ pub enum ServerRealtimeMessage {
     /// Response from a DebugRequest. Contains some useful data regarding the
     /// connection. Gets rejected if sent to the server.
     DebugResponse(DebugResponseMessage),
+
+    /// Reject an apply operation. This happens when a ApplyOperation is sent,
+    /// but the notebook has already applied another operation.
+    Reject(RejectMessage),
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -148,6 +152,17 @@ pub struct DebugResponseMessage {
 
     /// Notebooks that the user is subscribed to.
     pub subscribed_notebooks: Vec<String>,
+
+    /// Operation ID. Empty if the user has not provided a op_id.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub op_id: Option<String>,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct RejectMessage {
+    /// The current revision of the notebook.
+    pub current_revision: u32,
 
     /// Operation ID. Empty if the user has not provided a op_id.
     #[serde(skip_serializing_if = "Option::is_none")]
