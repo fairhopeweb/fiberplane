@@ -62,6 +62,12 @@ pub struct SubscribeMessage {
     /// ID of the notebook
     pub notebook_id: String,
 
+    /// The current revision that the client knows about. If this is not the
+    /// current revision according to the server, than the server will sent
+    /// all operations starting from this revision.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub revision: Option<u32>,
+
     /// Operation ID
     #[serde(skip_serializing_if = "Option::is_none")]
     pub op_id: Option<String>,
