@@ -20,6 +20,19 @@ pub enum ClientRealtimeMessage {
     DebugRequest(DebugRequestMessage),
 }
 
+impl ClientRealtimeMessage {
+    pub fn op_id(&self) -> &Option<String> {
+        use ClientRealtimeMessage::*;
+        match self {
+            Authenticate(msg) => &msg.op_id,
+            Subscribe(msg) => &msg.op_id,
+            Unsubscribe(msg) => &msg.op_id,
+            ApplyOperation(msg) => &msg.op_id,
+            DebugRequest(msg) => &msg.op_id,
+        }
+    }
+}
+
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum ServerRealtimeMessage {
