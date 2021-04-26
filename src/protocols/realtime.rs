@@ -1,4 +1,5 @@
 use crate::protocols::operations::Operation;
+use chrono::prelude::*;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -54,6 +55,12 @@ pub enum ServerRealtimeMessage {
     /// Reject an apply operation. This happens when a ApplyOperation is sent,
     /// but the notebook has already applied another operation.
     Reject(RejectMessage),
+
+    /// A user has joined as a subscriber to a notebook.
+    SubscriberAdded(SubscriberAddedMessage),
+
+    /// A previously subscribed user has left a notebook.
+    SubscriberRemoved(SubscriberRemovedMessage),
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -184,4 +191,38 @@ pub struct RejectMessage {
     /// Operation ID. Empty if the user has not provided a op_id.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub op_id: Option<String>,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct SubscriberAddedMessage {
+    /// ID associated with the newly connected session. Guaranteed to be unique.
+    pub session_id: String,
+
+    /// The moment the session was created.
+    pub created_at: DateTime<Utc>,
+
+    /// The last time the user was active in this session.
+    pub updated_at: DateTime<Utc>,
+
+    /// User details associated with the session.
+    pub user: User,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct SubscriberRemovedMessage {
+    /// ID of the session that was removed.
+    pub session_id: String,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct User {
+    /// The ID of the user. Will always be the same for the same user, so can be
+    /// used for de-dupping or input for color generation.
+    pub id: String,
+
+    /// Name of the user
+    pub name: String,
 }
