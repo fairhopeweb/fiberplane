@@ -41,16 +41,14 @@ pub enum ServerRealtimeMessage {
 
     /// An Ack message will be sent once an operation is received and processed.
     /// No Ack message will sent if the op_id of the original message was empty.
-    /// Gets rejected if sent to the server.
     Ack(AckMessage),
 
     /// An Err message will be sent once an operation is received, but could not
-    /// be processed. It includes the op_id if that was present. Gets rejected if
-    /// sent to the server.
+    /// be processed. It includes the op_id if that was present.
     Err(ErrMessage),
 
     /// Response from a DebugRequest. Contains some useful data regarding the
-    /// connection. Gets rejected if sent to the server.
+    /// connection.
     DebugResponse(DebugResponseMessage),
 
     /// Reject an apply operation. This happens when a ApplyOperation is sent,
