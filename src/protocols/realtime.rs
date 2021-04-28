@@ -17,6 +17,9 @@ pub enum ClientRealtimeMessage {
     /// Apply an operation to a specific Notebook.
     ApplyOperation(Box<ApplyOperationMessage>),
 
+    /// Apply multiple operations to a specific Notebook.
+    ApplyOperationBatch(Box<ApplyOperationBatchMessage>),
+
     /// Request a DebugResponse from the server.
     DebugRequest(DebugRequestMessage),
 }
@@ -29,6 +32,7 @@ impl ClientRealtimeMessage {
             Subscribe(msg) => &msg.op_id,
             Unsubscribe(msg) => &msg.op_id,
             ApplyOperation(msg) => &msg.op_id,
+            ApplyOperationBatch(msg) => &msg.op_id,
             DebugRequest(msg) => &msg.op_id,
         }
     }
@@ -130,6 +134,40 @@ impl ApplyOperationMessage {
         Self {
             notebook_id,
             operation,
+            revision,
+            op_id,
+        }
+    }
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct ApplyOperationBatchMessage {
+    /// ID of the notebook
+    pub notebook_id: String,
+
+    /// Operation
+    pub operations: Vec<Operation>,
+
+    /// Revision, this will be the revision of the first operation. The other
+    /// operations will keep bumping the revision.
+    pub revision: u32,
+
+    /// Operation ID
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub op_id: Option<String>,
+}
+
+impl ApplyOperationBatchMessage {
+    pub fn new(
+        notebook_id: String,
+        operations: Vec<Operation>,
+        revision: u32,
+        op_id: Option<String>,
+    ) -> Self {
+        Self {
+            notebook_id,
+            operations,
             revision,
             op_id,
         }
