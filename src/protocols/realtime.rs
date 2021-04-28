@@ -234,7 +234,13 @@ pub struct RejectMessage {
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct SubscriberAddedMessage {
-    /// ID associated with the newly connected session. Guaranteed to be unique.
+    /// The ID of the notebook that the user subscribed to.
+    pub notebook_id: String,
+
+    /// ID associated with the newly connected session. There can be multiple
+    /// sessions for a single (notebook|user) pair. The ID can be used multiple
+    /// times for different (notebook|user) pairs. The combination of notebook,
+    /// user and session will be unique.
     pub session_id: String,
 
     /// The moment the session was created.
@@ -250,6 +256,9 @@ pub struct SubscriberAddedMessage {
 #[derive(Debug, Deserialize, Serialize, Clone)]
 #[serde(rename_all = "camelCase")]
 pub struct SubscriberRemovedMessage {
+    /// The ID of the notebook that the user unsubscribed from.
+    pub notebook_id: String,
+
     /// ID of the session that was removed.
     pub session_id: String,
 }
