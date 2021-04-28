@@ -15,7 +15,7 @@ pub enum ClientRealtimeMessage {
     Unsubscribe(UnsubscribeMessage),
 
     /// Apply an operation to a specific Notebook.
-    ApplyOperation(ApplyOperationMessage),
+    ApplyOperation(Box<ApplyOperationMessage>),
 
     /// Request a DebugResponse from the server.
     DebugRequest(DebugRequestMessage),
@@ -38,7 +38,7 @@ impl ClientRealtimeMessage {
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum ServerRealtimeMessage {
     /// Apply an operation to a specific Notebook.
-    ApplyOperation(ApplyOperationMessage),
+    ApplyOperation(Box<ApplyOperationMessage>),
 
     /// An Ack message will be sent once an operation is received and processed.
     /// No Ack message will sent if the op_id of the original message was empty.
