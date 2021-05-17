@@ -5,9 +5,10 @@ use std::collections::HashMap;
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Cell {
+    Checkbox(CheckboxCell),
     Graph(GraphCell),
     Heading(HeadingCell),
-    Markdown(MarkdownCell),
+    ListItem(ListItemCell),
     Prometheus(PrometheusCell),
     Table(TableCell),
     Text(TextCell),
@@ -17,9 +18,10 @@ impl Cell {
     /// Returns the cell's content, if any.
     pub fn content(&self) -> Option<&str> {
         match self {
+            Cell::Checkbox(cell) => Some(&cell.content),
             Cell::Graph(_) => None,
             Cell::Heading(cell) => Some(&cell.content),
-            Cell::Markdown(cell) => Some(&cell.content),
+            Cell::ListItem(cell) => Some(&cell.content),
             Cell::Prometheus(cell) => Some(&cell.content),
             Cell::Table(_) => None,
             Cell::Text(cell) => Some(&cell.content),
@@ -29,9 +31,10 @@ impl Cell {
     /// Returns the cell's ID.
     pub fn id(&self) -> &String {
         match self {
+            Cell::Checkbox(cell) => &cell.id,
             Cell::Graph(cell) => &cell.id,
             Cell::Heading(cell) => &cell.id,
-            Cell::Markdown(cell) => &cell.id,
+            Cell::ListItem(cell) => &cell.id,
             Cell::Prometheus(cell) => &cell.id,
             Cell::Table(cell) => &cell.id,
             Cell::Text(cell) => &cell.id,
@@ -48,7 +51,11 @@ impl Cell {
         match self {
             Cell::Graph(cell) => cell.source_ids.iter().map(String::as_str).collect(),
             Cell::Table(cell) => cell.source_ids.iter().map(String::as_str).collect(),
-            Cell::Heading(_) | Cell::Markdown(_) | Cell::Prometheus(_) | Cell::Text(_) => vec![],
+            Cell::Checkbox(_)
+            | Cell::Heading(_)
+            | Cell::ListItem(_)
+            | Cell::Prometheus(_)
+            | Cell::Text(_) => vec![],
         }
     }
 
@@ -60,13 +67,18 @@ impl Cell {
     /// Returns a copy of the cell with its content replaced by the given content.
     pub fn with_content(&self, content: &str) -> Self {
         match self {
+            Cell::Checkbox(cell) => Cell::Checkbox(CheckboxCell {
+                id: cell.id.clone(),
+                content: content.to_owned(),
+                ..*cell
+            }),
             Cell::Graph(cell) => Cell::Graph(cell.clone()),
             Cell::Heading(cell) => Cell::Heading(HeadingCell {
                 id: cell.id.clone(),
                 content: content.to_owned(),
                 ..*cell
             }),
-            Cell::Markdown(cell) => Cell::Markdown(MarkdownCell {
+            Cell::ListItem(cell) => Cell::ListItem(ListItemCell {
                 id: cell.id.clone(),
                 content: content.to_owned(),
                 ..*cell
@@ -88,6 +100,11 @@ impl Cell {
     /// Returns a copy of the cell with a new ID.
     pub fn with_id(&self, id: &str) -> Self {
         match self {
+            Cell::Checkbox(cell) => Cell::Checkbox(CheckboxCell {
+                id: id.to_owned(),
+                content: cell.content.clone(),
+                ..*cell
+            }),
             Cell::Graph(cell) => Cell::Graph(GraphCell {
                 id: id.to_owned(),
                 data: cell.data.clone(),
@@ -101,7 +118,7 @@ impl Cell {
                 content: cell.content.clone(),
                 ..*cell
             }),
-            Cell::Markdown(cell) => Cell::Markdown(MarkdownCell {
+            Cell::ListItem(cell) => Cell::ListItem(ListItemCell {
                 id: id.to_owned(),
                 content: cell.content.clone(),
                 ..*cell
@@ -131,6 +148,7 @@ impl Cell {
     /// source IDs is retained.
     pub fn with_source_ids(&self, source_ids: Vec<String>) -> Self {
         match self {
+            Cell::Checkbox(cell) => Cell::Checkbox(cell.clone()),
             Cell::Graph(cell) => Cell::Graph(GraphCell {
                 id: cell.id.clone(),
                 data: cell.data.as_ref().map(|data| {
@@ -145,7 +163,7 @@ impl Cell {
                 ..*cell
             }),
             Cell::Heading(cell) => Cell::Heading(cell.clone()),
-            Cell::Markdown(cell) => Cell::Markdown(cell.clone()),
+            Cell::ListItem(cell) => Cell::ListItem(cell.clone()),
             Cell::Prometheus(cell) => Cell::Prometheus(cell.clone()),
             Cell::Table(cell) => Cell::Table(TableCell {
                 id: cell.id.clone(),
@@ -161,6 +179,18 @@ impl Cell {
             Cell::Text(cell) => Cell::Text(cell.clone()),
         }
     }
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CheckboxCell {
+    pub id: String,
+    pub checked: bool,
+    pub content: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub level: Option<u8>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub read_only: Option<bool>,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -189,9 +219,12 @@ pub struct HeadingCell {
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct MarkdownCell {
+pub struct ListItemCell {
     pub id: String,
     pub content: String,
+    pub list_type: ListType,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub level: Option<u8>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub read_only: Option<bool>,
 }
@@ -238,6 +271,13 @@ pub enum HeadingType {
     H1,
     H2,
     H3,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum ListType {
+    Ordered,
+    Unordered,
 }
 
 // A range in time from a given timestamp (inclusive) up to another timestamp (exclusive).
