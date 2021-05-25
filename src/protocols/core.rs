@@ -107,6 +107,8 @@ impl Cell {
             }),
             Cell::Graph(cell) => Cell::Graph(GraphCell {
                 id: id.to_owned(),
+                stacking_type: cell.stacking_type,
+                hidden: cell.hidden.clone(),
                 data: cell.data.clone(),
                 source_ids: cell.source_ids.clone(),
                 time_range: cell.time_range.clone(),
@@ -157,6 +159,8 @@ impl Cell {
                         .map(|(k, v)| (k.clone(), v.clone()))
                         .collect()
                 }),
+                stacking_type: cell.stacking_type,
+                hidden: cell.hidden.clone(),
                 source_ids,
                 time_range: cell.time_range.clone(),
                 title: cell.title.clone(),
@@ -198,6 +202,8 @@ pub struct CheckboxCell {
 pub struct GraphCell {
     pub id: String,
     pub graph_type: GraphType,
+    pub stacking_type: StackingType,
+    pub hidden: Vec<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub read_only: Option<bool>,
     pub source_ids: Vec<String>,
@@ -263,6 +269,14 @@ pub struct TextCell {
 pub enum GraphType {
     Bar,
     Line,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum StackingType {
+    Default,
+    Stacked,
+    Percentage,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize)]
