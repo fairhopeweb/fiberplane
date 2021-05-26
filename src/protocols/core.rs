@@ -399,6 +399,4 @@ pub struct SourceData<T> {
     pub visible: bool,
 }
 
-// While we're at it, I think it might also be better to use a BTreeMap rather than the current
-// HashMap, so we know the order (and thus coloring) is consistent across clients.
 pub type SeriesBySourceId<T> = BTreeMap<String, SourceData<Series<T>>>;
