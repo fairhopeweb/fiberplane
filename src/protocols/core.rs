@@ -1,6 +1,6 @@
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
 use std::collections::BTreeMap;
+use std::collections::HashMap;
 
 /// Representation of a single notebook cell.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -153,11 +153,12 @@ impl Cell {
             Cell::Checkbox(cell) => Cell::Checkbox(cell.clone()),
             Cell::Graph(cell) => Cell::Graph(GraphCell {
                 id: cell.id.clone(),
-                data: cell.data.as_ref().map(|data|
+                data: cell.data.as_ref().map(|data| {
                     data.iter()
-                    .filter(|&(k, _)| source_ids.contains(&k))
-                    .map(|(k, v)| (k.clone(), v.clone()))
-                    .collect()),
+                        .filter(|&(k, _)| source_ids.contains(&k))
+                        .map(|(k, v)| (k.clone(), v.clone()))
+                        .collect()
+                }),
                 stacking_type: cell.stacking_type,
                 source_ids,
                 time_range: cell.time_range.clone(),
@@ -396,8 +397,8 @@ impl Series<String> {
 pub struct SourceData<T> {
     pub data: Option<Vec<T>>,
     pub visible: bool,
-  }
-  
+}
+
 // While we're at it, I think it might also be better to use a BTreeMap rather than the current
 // HashMap, so we know the order (and thus coloring) is consistent across clients.
 pub type SeriesBySourceId<T> = BTreeMap<String, SourceData<Series<T>>>;
