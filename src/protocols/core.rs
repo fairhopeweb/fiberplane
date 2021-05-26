@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use std::collections::BTreeMap;
 
 /// Representation of a single notebook cell.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -108,7 +109,6 @@ impl Cell {
             Cell::Graph(cell) => Cell::Graph(GraphCell {
                 id: id.to_owned(),
                 stacking_type: cell.stacking_type,
-                hidden: cell.hidden.clone(),
                 data: cell.data.clone(),
                 source_ids: cell.source_ids.clone(),
                 time_range: cell.time_range.clone(),
@@ -153,14 +153,12 @@ impl Cell {
             Cell::Checkbox(cell) => Cell::Checkbox(cell.clone()),
             Cell::Graph(cell) => Cell::Graph(GraphCell {
                 id: cell.id.clone(),
-                data: cell.data.as_ref().map(|data| {
+                data: cell.data.as_ref().map(|data|
                     data.iter()
-                        .filter(|(k, _)| source_ids.contains(k))
-                        .map(|(k, v)| (k.clone(), v.clone()))
-                        .collect()
-                }),
+                    .filter(|&(k, _)| source_ids.contains(&k))
+                    .map(|(k, v)| (k.clone(), v.clone()))
+                    .collect()),
                 stacking_type: cell.stacking_type,
-                hidden: cell.hidden.clone(),
                 source_ids,
                 time_range: cell.time_range.clone(),
                 title: cell.title.clone(),
@@ -203,7 +201,6 @@ pub struct GraphCell {
     pub id: String,
     pub graph_type: GraphType,
     pub stacking_type: StackingType,
-    pub hidden: Vec<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub read_only: Option<bool>,
     pub source_ids: Vec<String>,
@@ -395,4 +392,12 @@ impl Series<String> {
     }
 }
 
-pub type SeriesBySourceId<T> = HashMap<String, Vec<Series<T>>>;
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+pub struct SourceData<T> {
+    pub data: Option<Vec<T>>,
+    pub visible: bool,
+  }
+  
+// While we're at it, I think it might also be better to use a BTreeMap rather than the current
+// HashMap, so we know the order (and thus coloring) is consistent across clients.
+pub type SeriesBySourceId<T> = BTreeMap<String, SourceData<Series<T>>>;
