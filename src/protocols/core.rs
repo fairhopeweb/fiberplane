@@ -393,10 +393,10 @@ impl Series<String> {
     }
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-pub struct SourceData<T> {
-    pub data: Option<Vec<T>>,
+#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct VisibleData<T> {
+    pub data: T,
     pub visible: bool,
 }
 
-pub type SeriesBySourceId<T> = BTreeMap<String, SourceData<Series<T>>>;
+pub type SeriesBySourceId<T> = BTreeMap<String, Vec<VisibleData<Series<T>>>>;
