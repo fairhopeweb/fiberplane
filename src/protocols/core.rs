@@ -7,6 +7,7 @@ use std::collections::HashMap;
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Cell {
     Checkbox(CheckboxCell),
+    Code(CodeCell),
     Graph(GraphCell),
     Heading(HeadingCell),
     ListItem(ListItemCell),
@@ -20,6 +21,7 @@ impl Cell {
     pub fn content(&self) -> Option<&str> {
         match self {
             Cell::Checkbox(cell) => Some(&cell.content),
+            Cell::Code(cell) => Some(&cell.content),
             Cell::Graph(_) => None,
             Cell::Heading(cell) => Some(&cell.content),
             Cell::ListItem(cell) => Some(&cell.content),
@@ -33,6 +35,7 @@ impl Cell {
     pub fn id(&self) -> &String {
         match self {
             Cell::Checkbox(cell) => &cell.id,
+            Cell::Code(cell) => &cell.id,
             Cell::Graph(cell) => &cell.id,
             Cell::Heading(cell) => &cell.id,
             Cell::ListItem(cell) => &cell.id,
@@ -53,6 +56,7 @@ impl Cell {
             Cell::Graph(cell) => cell.source_ids.iter().map(String::as_str).collect(),
             Cell::Table(cell) => cell.source_ids.iter().map(String::as_str).collect(),
             Cell::Checkbox(_)
+            | Cell::Code(_)
             | Cell::Heading(_)
             | Cell::ListItem(_)
             | Cell::Prometheus(_)
@@ -71,6 +75,12 @@ impl Cell {
             Cell::Checkbox(cell) => Cell::Checkbox(CheckboxCell {
                 id: cell.id.clone(),
                 content: content.to_owned(),
+                ..*cell
+            }),
+            Cell::Code(cell) => Cell::Code(CodeCell {
+                id: cell.id.clone(),
+                content: content.to_owned(),
+                syntax: cell.syntax.clone(),
                 ..*cell
             }),
             Cell::Graph(cell) => Cell::Graph(cell.clone()),
@@ -104,6 +114,12 @@ impl Cell {
             Cell::Checkbox(cell) => Cell::Checkbox(CheckboxCell {
                 id: id.to_owned(),
                 content: cell.content.clone(),
+                ..*cell
+            }),
+            Cell::Code(cell) => Cell::Code(CodeCell {
+                id: id.to_owned(),
+                content: cell.content.clone(),
+                syntax: cell.syntax.clone(),
                 ..*cell
             }),
             Cell::Graph(cell) => Cell::Graph(GraphCell {
@@ -151,6 +167,7 @@ impl Cell {
     pub fn with_source_ids(&self, source_ids: Vec<String>) -> Self {
         match self {
             Cell::Checkbox(cell) => Cell::Checkbox(cell.clone()),
+            Cell::Code(cell) => Cell::Code(cell.clone()),
             Cell::Graph(cell) => Cell::Graph(GraphCell {
                 id: cell.id.clone(),
                 data: cell.data.as_ref().map(|data| {
@@ -194,6 +211,18 @@ pub struct CheckboxCell {
     pub level: Option<u8>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub read_only: Option<bool>,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CodeCell {
+    pub id: String,
+    pub content: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub read_only: Option<bool>,
+    /// Optional MIME type to use for syntax highlighting.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub syntax: Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -292,7 +321,7 @@ pub enum ListType {
     Unordered,
 }
 
-// A range in time from a given timestamp (inclusive) up to another timestamp (exclusive).
+/// A range in time from a given timestamp (inclusive) up to another timestamp (exclusive).
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct TimeRange {
     pub from: Timestamp,
