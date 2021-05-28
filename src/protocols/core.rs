@@ -365,6 +365,7 @@ pub struct Series<T> {
     pub metric: Metric,
     pub points: Vec<Point<T>>,
     point_type: PointType,
+    pub visible: bool,
 }
 
 impl<T> Series<T> {
@@ -374,29 +375,25 @@ impl<T> Series<T> {
 }
 
 impl Series<f64> {
-    pub fn new_f64(metric: Metric, points: Vec<Point<f64>>) -> Self {
+    pub fn new_f64(metric: Metric, points: Vec<Point<f64>>, visible: bool) -> Self {
         Self {
             metric,
             points,
             point_type: PointType::F64,
+            visible,
         }
     }
 }
 
 impl Series<String> {
-    pub fn new_string(metric: Metric, points: Vec<Point<String>>) -> Self {
+    pub fn new_string(metric: Metric, points: Vec<Point<String>>, visible: bool) -> Self {
         Self {
             metric,
             points,
             point_type: PointType::String,
+            visible,
         }
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct VisibleData<T> {
-    pub data: T,
-    pub visible: bool,
-}
-
-pub type SeriesBySourceId<T> = BTreeMap<String, Vec<VisibleData<Series<T>>>>;
+pub type SeriesBySourceId<T> = BTreeMap<String, Vec<Series<T>>>;
