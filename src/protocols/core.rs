@@ -1,4 +1,5 @@
 use serde::{Deserialize, Serialize};
+use std::collections::BTreeMap;
 use std::collections::HashMap;
 
 /// Representation of a single notebook cell.
@@ -123,6 +124,7 @@ impl Cell {
             }),
             Cell::Graph(cell) => Cell::Graph(GraphCell {
                 id: id.to_owned(),
+                stacking_type: cell.stacking_type,
                 data: cell.data.clone(),
                 source_ids: cell.source_ids.clone(),
                 time_range: cell.time_range.clone(),
@@ -170,10 +172,11 @@ impl Cell {
                 id: cell.id.clone(),
                 data: cell.data.as_ref().map(|data| {
                     data.iter()
-                        .filter(|(k, _)| source_ids.contains(k))
+                        .filter(|&(k, _)| source_ids.contains(&k))
                         .map(|(k, v)| (k.clone(), v.clone()))
                         .collect()
                 }),
+                stacking_type: cell.stacking_type,
                 source_ids,
                 time_range: cell.time_range.clone(),
                 title: cell.title.clone(),
@@ -227,6 +230,7 @@ pub struct CodeCell {
 pub struct GraphCell {
     pub id: String,
     pub graph_type: GraphType,
+    pub stacking_type: StackingType,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub read_only: Option<bool>,
     pub source_ids: Vec<String>,
@@ -292,6 +296,14 @@ pub struct TextCell {
 pub enum GraphType {
     Bar,
     Line,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum StackingType {
+    None,
+    Stacked,
+    Percentage,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize)]
@@ -382,6 +394,7 @@ pub struct Series<T> {
     pub metric: Metric,
     pub points: Vec<Point<T>>,
     point_type: PointType,
+    pub visible: bool,
 }
 
 impl<T> Series<T> {
@@ -391,23 +404,25 @@ impl<T> Series<T> {
 }
 
 impl Series<f64> {
-    pub fn new_f64(metric: Metric, points: Vec<Point<f64>>) -> Self {
+    pub fn new_f64(metric: Metric, points: Vec<Point<f64>>, visible: bool) -> Self {
         Self {
             metric,
             points,
             point_type: PointType::F64,
+            visible,
         }
     }
 }
 
 impl Series<String> {
-    pub fn new_string(metric: Metric, points: Vec<Point<String>>) -> Self {
+    pub fn new_string(metric: Metric, points: Vec<Point<String>>, visible: bool) -> Self {
         Self {
             metric,
             points,
             point_type: PointType::String,
+            visible,
         }
     }
 }
 
-pub type SeriesBySourceId<T> = HashMap<String, Vec<Series<T>>>;
+pub type SeriesBySourceId<T> = BTreeMap<String, Vec<Series<T>>>;
