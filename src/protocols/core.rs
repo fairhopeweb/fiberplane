@@ -433,11 +433,20 @@ pub type SeriesBySourceId<T> = BTreeMap<String, Vec<Series<T>>>;
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum NotebookDataSource {
     /// Inline is a data-source which only exists in this notebook.
-    Inline(DataSource),
+    Inline(InlineDataSource),
 
     /// Organization is a data-source which is stored on the API server,
     /// allowing for data-source reuse.
     Organization(OrganizationDataSource),
+}
+
+/// OrganizationDataSource represents a data-source as stored for a organization
+/// on the API.
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct InlineDataSource {
+    /// The actual data-source.
+    pub data_source: DataSource,
 }
 
 /// OrganizationDataSource represents a data-source as stored for a organization
