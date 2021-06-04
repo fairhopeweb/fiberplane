@@ -426,3 +426,65 @@ impl Series<String> {
 }
 
 pub type SeriesBySourceId<T> = BTreeMap<String, Vec<Series<T>>>;
+
+/// NotebookDataSource represents the way a data-source can be embedded in a
+/// Notebook.
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(tag = "type", rename_all = "snake_case")]
+pub enum NotebookDataSource {
+    /// Inline is a data-source which only exists in this notebook.
+    Inline(InlineDataSource),
+
+    /// Organization is a data-source which is stored on the API server,
+    /// allowing for data-source reuse.
+    Organization(OrganizationDataSource),
+}
+
+/// OrganizationDataSource represents a data-source as stored for a organization
+/// on the API.
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct InlineDataSource {
+    /// The actual data-source.
+    pub data_source: DataSource,
+}
+
+/// OrganizationDataSource represents a data-source as stored for a organization
+/// on the API.
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct OrganizationDataSource {
+    /// identifier used to manipulate this data-source.
+    pub id: String,
+
+    /// Name to identify this organization data-source. This does not have to be
+    /// the same as the name in the data-source.
+    pub name: String,
+
+    /// If default_data_source is true, then this data-source will be added to
+    /// any newly created notebooks.
+    pub default_data_source: bool,
+
+    /// The actual data-source.
+    pub data_source: DataSource,
+}
+
+/// A data-source represents all the configuration for a specific component or
+/// service. It will be used by provider.
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(tag = "type", rename_all = "snake_case")]
+pub enum DataSource {
+    Prometheus(PrometheusDataSource),
+    // Elasticsearch
+    // Kubernetes
+    // Proxy
+}
+
+/// A data-source for Prometheus. Currently only requires a url. This should be
+/// a full URL starting with http:// or https:// the domain, and optionally a
+/// port and a path.
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PrometheusDataSource {
+    pub url: String,
+}
