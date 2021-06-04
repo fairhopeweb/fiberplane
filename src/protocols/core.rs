@@ -14,6 +14,7 @@ pub enum Cell {
     Prometheus(PrometheusCell),
     Table(TableCell),
     Text(TextCell),
+    Image(ImageCell),
 }
 
 impl Cell {
@@ -28,6 +29,7 @@ impl Cell {
             Cell::Prometheus(cell) => Some(&cell.content),
             Cell::Table(_) => None,
             Cell::Text(cell) => Some(&cell.content),
+            Cell::Image(_) => None,
         }
     }
 
@@ -42,6 +44,7 @@ impl Cell {
             Cell::Prometheus(cell) => &cell.id,
             Cell::Table(cell) => &cell.id,
             Cell::Text(cell) => &cell.id,
+            Cell::Image(cell) => &cell.id,
         }
     }
 
@@ -60,7 +63,8 @@ impl Cell {
             | Cell::Heading(_)
             | Cell::ListItem(_)
             | Cell::Prometheus(_)
-            | Cell::Text(_) => vec![],
+            | Cell::Text(_) 
+            | Cell::Image(_) => vec![],
         }
     }
 
@@ -105,6 +109,7 @@ impl Cell {
                 content: content.to_owned(),
                 ..*cell
             }),
+            Cell::Image(cell) => Cell::Image(cell.clone()),
         }
     }
 
@@ -124,7 +129,7 @@ impl Cell {
             }),
             Cell::Graph(cell) => Cell::Graph(GraphCell {
                 id: id.to_owned(),
-                stacking_type: cell.stacking_type,
+                stacking_type: cell.stacking_type.clone(),
                 data: cell.data.clone(),
                 source_ids: cell.source_ids.clone(),
                 time_range: cell.time_range.clone(),
@@ -157,6 +162,16 @@ impl Cell {
                 content: cell.content.clone(),
                 ..*cell
             }),
+            Cell::Image(cell) => Cell::Image(ImageCell {
+                id: id.to_owned(),
+                file_id: cell.file_id.clone(),
+                preview: cell.preview.clone(),
+                ..*cell
+                // progress: cell.progress.clone(),
+                // width: cell.width.clone(),
+                // height: cell.height.clone(),
+                // file_id: cell.file_id.
+            })
         }
     }
 
@@ -197,6 +212,7 @@ impl Cell {
                 ..*cell
             }),
             Cell::Text(cell) => Cell::Text(cell.clone()),
+            Cell::Image(cell) => Cell::Image(cell.clone())
         }
     }
 }
@@ -290,6 +306,31 @@ pub struct TextCell {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub read_only: Option<bool>,
 }
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ImageCell {
+    pub id: String,
+
+    // Refers to the id for a file (used to retrieve the file)
+    pub file_id: Option<String>,
+
+    /// Used to indicates the upload progress. 
+    /// If file_id is set this shouldn't be set
+    /// Also: if no progress is set and no file_id exists
+    /// it means the cell is in the initial state (ready for upload)
+    pub progress: Option<f64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub read_only: Option<bool>,
+    
+    pub width: Option<i32>,
+    pub height: Option<i32>,
+    /**
+     * Will contain a hash to show as a preview for the image
+     */
+    pub preview: Option<String>,
+}
+
 
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
