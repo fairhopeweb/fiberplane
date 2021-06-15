@@ -166,10 +166,7 @@ impl Cell {
                 id: id.to_owned(),
                 file_id: cell.file_id.clone(),
                 preview: cell.preview.clone(),
-                ..*cell // progress: cell.progress.clone(),
-                        // width: cell.width.clone(),
-                        // height: cell.height.clone(),
-                        // file_id: cell.file_id.
+                ..*cell
             }),
         }
     }
