@@ -7,6 +7,7 @@ use std::collections::HashMap;
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Cell {
     Checkbox(CheckboxCell),
+    Code(CodeCell),
     Graph(GraphCell),
     Heading(HeadingCell),
     ListItem(ListItemCell),
@@ -20,6 +21,7 @@ impl Cell {
     pub fn content(&self) -> Option<&str> {
         match self {
             Cell::Checkbox(cell) => Some(&cell.content),
+            Cell::Code(cell) => Some(&cell.content),
             Cell::Graph(_) => None,
             Cell::Heading(cell) => Some(&cell.content),
             Cell::ListItem(cell) => Some(&cell.content),
@@ -33,6 +35,7 @@ impl Cell {
     pub fn id(&self) -> &String {
         match self {
             Cell::Checkbox(cell) => &cell.id,
+            Cell::Code(cell) => &cell.id,
             Cell::Graph(cell) => &cell.id,
             Cell::Heading(cell) => &cell.id,
             Cell::ListItem(cell) => &cell.id,
@@ -53,6 +56,7 @@ impl Cell {
             Cell::Graph(cell) => cell.source_ids.iter().map(String::as_str).collect(),
             Cell::Table(cell) => cell.source_ids.iter().map(String::as_str).collect(),
             Cell::Checkbox(_)
+            | Cell::Code(_)
             | Cell::Heading(_)
             | Cell::ListItem(_)
             | Cell::Prometheus(_)
@@ -71,6 +75,12 @@ impl Cell {
             Cell::Checkbox(cell) => Cell::Checkbox(CheckboxCell {
                 id: cell.id.clone(),
                 content: content.to_owned(),
+                ..*cell
+            }),
+            Cell::Code(cell) => Cell::Code(CodeCell {
+                id: cell.id.clone(),
+                content: content.to_owned(),
+                syntax: cell.syntax.clone(),
                 ..*cell
             }),
             Cell::Graph(cell) => Cell::Graph(cell.clone()),
@@ -104,6 +114,12 @@ impl Cell {
             Cell::Checkbox(cell) => Cell::Checkbox(CheckboxCell {
                 id: id.to_owned(),
                 content: cell.content.clone(),
+                ..*cell
+            }),
+            Cell::Code(cell) => Cell::Code(CodeCell {
+                id: id.to_owned(),
+                content: cell.content.clone(),
+                syntax: cell.syntax.clone(),
                 ..*cell
             }),
             Cell::Graph(cell) => Cell::Graph(GraphCell {
@@ -151,6 +167,7 @@ impl Cell {
     pub fn with_source_ids(&self, source_ids: Vec<String>) -> Self {
         match self {
             Cell::Checkbox(cell) => Cell::Checkbox(cell.clone()),
+            Cell::Code(cell) => Cell::Code(cell.clone()),
             Cell::Graph(cell) => Cell::Graph(GraphCell {
                 id: cell.id.clone(),
                 data: cell.data.as_ref().map(|data| {
@@ -194,6 +211,18 @@ pub struct CheckboxCell {
     pub level: Option<u8>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub read_only: Option<bool>,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct CodeCell {
+    pub id: String,
+    pub content: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub read_only: Option<bool>,
+    /// Optional MIME type to use for syntax highlighting.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub syntax: Option<String>,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -292,7 +321,7 @@ pub enum ListType {
     Unordered,
 }
 
-// A range in time from a given timestamp (inclusive) up to another timestamp (exclusive).
+/// A range in time from a given timestamp (inclusive) up to another timestamp (exclusive).
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 pub struct TimeRange {
     pub from: Timestamp,
@@ -365,6 +394,7 @@ pub struct Series<T> {
     pub metric: Metric,
     pub points: Vec<Point<T>>,
     point_type: PointType,
+    pub visible: bool,
 }
 
 impl<T> Series<T> {
@@ -374,29 +404,87 @@ impl<T> Series<T> {
 }
 
 impl Series<f64> {
-    pub fn new_f64(metric: Metric, points: Vec<Point<f64>>) -> Self {
+    pub fn new_f64(metric: Metric, points: Vec<Point<f64>>, visible: bool) -> Self {
         Self {
             metric,
             points,
             point_type: PointType::F64,
+            visible,
         }
     }
 }
 
 impl Series<String> {
-    pub fn new_string(metric: Metric, points: Vec<Point<String>>) -> Self {
+    pub fn new_string(metric: Metric, points: Vec<Point<String>>, visible: bool) -> Self {
         Self {
             metric,
             points,
             point_type: PointType::String,
+            visible,
         }
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Serialize, Deserialize)]
-pub struct VisibleData<T> {
-    pub data: T,
-    pub visible: bool,
+pub type SeriesBySourceId<T> = BTreeMap<String, Vec<Series<T>>>;
+
+/// NotebookDataSource represents the way a data-source can be embedded in a
+/// Notebook.
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(tag = "type", rename_all = "snake_case")]
+pub enum NotebookDataSource {
+    /// Inline is a data-source which only exists in this notebook.
+    Inline(InlineDataSource),
+
+    /// Organization is a data-source which is stored on the API server,
+    /// allowing for data-source reuse.
+    Organization(OrganizationDataSource),
 }
 
-pub type SeriesBySourceId<T> = BTreeMap<String, Vec<VisibleData<Series<T>>>>;
+/// OrganizationDataSource represents a data-source as stored for a organization
+/// on the API.
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct InlineDataSource {
+    /// The actual data-source.
+    pub data_source: DataSource,
+}
+
+/// OrganizationDataSource represents a data-source as stored for a organization
+/// on the API.
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct OrganizationDataSource {
+    /// identifier used to manipulate this data-source.
+    pub id: String,
+
+    /// Name to identify this organization data-source. This does not have to be
+    /// the same as the name in the data-source.
+    pub name: String,
+
+    /// If default_data_source is true, then this data-source will be added to
+    /// any newly created notebooks.
+    pub default_data_source: bool,
+
+    /// The actual data-source.
+    pub data_source: DataSource,
+}
+
+/// A data-source represents all the configuration for a specific component or
+/// service. It will be used by provider.
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(tag = "type", rename_all = "snake_case")]
+pub enum DataSource {
+    Prometheus(PrometheusDataSource),
+    // Elasticsearch
+    // Kubernetes
+    // Proxy
+}
+
+/// A data-source for Prometheus. Currently only requires a url. This should be
+/// a full URL starting with http:// or https:// the domain, and optionally a
+/// port and a path.
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct PrometheusDataSource {
+    pub url: String,
+}
