@@ -129,7 +129,7 @@ impl Cell {
             }),
             Cell::Graph(cell) => Cell::Graph(GraphCell {
                 id: id.to_owned(),
-                stacking_type: cell.stacking_type.clone(),
+                stacking_type: cell.stacking_type,
                 data: cell.data.clone(),
                 source_ids: cell.source_ids.clone(),
                 time_range: cell.time_range.clone(),
@@ -309,21 +309,25 @@ pub struct ImageCell {
     pub id: String,
 
     // Refers to the id for a file (used to retrieve the file)
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub file_id: Option<String>,
 
     /// Used to indicates the upload progress.
     /// If file_id is set this shouldn't be set
     /// Also: if no progress is set and no file_id exists
     /// it means the cell is in the initial state (ready for upload)
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub progress: Option<f64>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub read_only: Option<bool>,
 
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub width: Option<i32>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub height: Option<i32>,
-    /**
-     * Will contain a hash to show as a preview for the image
-     */
+
+    /// Will contain a hash to show as a preview for the image
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub preview: Option<String>,
 }
 
