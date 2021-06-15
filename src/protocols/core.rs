@@ -63,7 +63,7 @@ impl Cell {
             | Cell::Heading(_)
             | Cell::ListItem(_)
             | Cell::Prometheus(_)
-            | Cell::Text(_) 
+            | Cell::Text(_)
             | Cell::Image(_) => vec![],
         }
     }
@@ -166,12 +166,11 @@ impl Cell {
                 id: id.to_owned(),
                 file_id: cell.file_id.clone(),
                 preview: cell.preview.clone(),
-                ..*cell
-                // progress: cell.progress.clone(),
-                // width: cell.width.clone(),
-                // height: cell.height.clone(),
-                // file_id: cell.file_id.
-            })
+                ..*cell // progress: cell.progress.clone(),
+                        // width: cell.width.clone(),
+                        // height: cell.height.clone(),
+                        // file_id: cell.file_id.
+            }),
         }
     }
 
@@ -212,7 +211,7 @@ impl Cell {
                 ..*cell
             }),
             Cell::Text(cell) => Cell::Text(cell.clone()),
-            Cell::Image(cell) => Cell::Image(cell.clone())
+            Cell::Image(cell) => Cell::Image(cell.clone()),
         }
     }
 }
@@ -315,14 +314,14 @@ pub struct ImageCell {
     // Refers to the id for a file (used to retrieve the file)
     pub file_id: Option<String>,
 
-    /// Used to indicates the upload progress. 
+    /// Used to indicates the upload progress.
     /// If file_id is set this shouldn't be set
     /// Also: if no progress is set and no file_id exists
     /// it means the cell is in the initial state (ready for upload)
     pub progress: Option<f64>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub read_only: Option<bool>,
-    
+
     pub width: Option<i32>,
     pub height: Option<i32>,
     /**
@@ -330,7 +329,6 @@ pub struct ImageCell {
      */
     pub preview: Option<String>,
 }
-
 
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
