@@ -1,5 +1,4 @@
-use crate::protocols::core::Cell;
-use crate::protocols::core::TimeRange;
+use crate::protocols::core::{Cell, NotebookDataSource, TimeRange};
 use serde::{Deserialize, Serialize};
 
 /// An operation is the representation for a mutation to be performed to a notebook.
@@ -20,6 +19,9 @@ pub enum Operation {
     UpdateCell(UpdateCellOperation),
     UpdateNotebookTimeRange(UpdateNotebookTimeRangeOperation),
     UpdateNotebookTitle(UpdateNotebookTitleOperation),
+    AddDataSource(AddDataSourceOperation),
+    UpdateDataSource(UpdateDataSourceOperation),
+    RemoveDataSource(RemoveDataSourceOperation),
 }
 
 /// Adds one or more cells at the given position.
@@ -157,6 +159,42 @@ pub struct UpdateNotebookTimeRangeOperation {
 pub struct UpdateNotebookTitleOperation {
     pub old_title: String,
     pub title: String,
+}
+
+/// Adds an data-source to an notebook.
+#[derive(Debug, Deserialize, Serialize, PartialEq, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct AddDataSourceOperation {
+    /// The identifier of this data-source within the notebook
+    pub name: String,
+
+    /// The new data-source
+    pub data_source: Box<NotebookDataSource>,
+}
+
+/// Updates an data-source in an notebook.
+#[derive(Debug, Deserialize, Serialize, PartialEq, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct UpdateDataSourceOperation {
+    /// The identifier of this data-source within the notebook
+    pub name: String,
+
+    /// The new data-source content
+    pub data_source: Box<NotebookDataSource>,
+
+    /// The old data-source content
+    pub old_data_source: Box<NotebookDataSource>,
+}
+
+/// Remove an data-source to an notebook.
+#[derive(Debug, Deserialize, Serialize, PartialEq, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct RemoveDataSourceOperation {
+    /// The identifier of this data-source within the notebook
+    pub name: String,
+
+    /// The previous data-source content
+    pub data_source: Box<NotebookDataSource>,
 }
 
 #[derive(Debug, Deserialize, Serialize, PartialEq, Clone)]
