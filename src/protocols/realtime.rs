@@ -22,6 +22,8 @@ pub enum ClientRealtimeMessage {
 
     /// Request a DebugResponse from the server.
     DebugRequest(DebugRequestMessage),
+
+    FocusInfo(FocusInfoMessage),
 }
 
 impl ClientRealtimeMessage {
@@ -34,6 +36,7 @@ impl ClientRealtimeMessage {
             ApplyOperation(msg) => &msg.op_id,
             ApplyOperationBatch(msg) => &msg.op_id,
             DebugRequest(msg) => &msg.op_id,
+            FocusInfo(msg) => &msg.op_id,
         }
     }
 }
@@ -65,6 +68,8 @@ pub enum ServerRealtimeMessage {
 
     /// A previously subscribed user has left a notebook.
     SubscriberRemoved(SubscriberRemovedMessage),
+
+    SubscriberChangedFocus(SubscriberChangedFocusMessage),
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -251,6 +256,10 @@ pub struct SubscriberAddedMessage {
 
     /// User details associated with the session.
     pub user: User,
+
+    /// ID of the focused cell. Empty if no cell is focused.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub focused_cell_id: Option<String>,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
@@ -272,4 +281,33 @@ pub struct User {
 
     /// Name of the user
     pub name: String,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct FocusInfoMessage {
+    /// ID of the notebook.
+    pub notebook_id: String,
+
+    /// ID of the focused cell. Empty if no cell is focused.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cell_id: Option<String>,
+
+    /// Operation ID. Empty if the user has not provided a op_id.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub op_id: Option<String>,
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone)]
+#[serde(rename_all = "camelCase")]
+pub struct SubscriberChangedFocusMessage {
+    /// ID of the session.
+    pub session_id: String,
+
+    /// ID of the notebook.
+    pub notebook_id: String,
+
+    /// ID of the focused cell. Empty if no cell is focused.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub cell_id: Option<String>,
 }
