@@ -247,6 +247,7 @@ pub struct GraphCell {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub read_only: Option<bool>,
     pub source_ids: Vec<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub time_range: Option<TimeRange>,
     pub title: String,
     #[serde(skip_serializing_if = "Option::is_none")]
