@@ -1,9 +1,10 @@
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::collections::HashMap;
+use ts_rs::TS;
 
 /// Representation of a single notebook cell.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, TS)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Cell {
     Checkbox(CheckboxCell),
@@ -213,7 +214,7 @@ impl Cell {
     }
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
 pub struct CheckboxCell {
     pub id: String,
@@ -225,7 +226,7 @@ pub struct CheckboxCell {
     pub read_only: Option<bool>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
 pub struct CodeCell {
     pub id: String,
@@ -237,7 +238,7 @@ pub struct CodeCell {
     pub syntax: Option<String>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
 pub struct GraphCell {
     pub id: String,
@@ -246,13 +247,14 @@ pub struct GraphCell {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub read_only: Option<bool>,
     pub source_ids: Vec<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub time_range: Option<TimeRange>,
     pub title: String,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub data: Option<SeriesBySourceId<f64>>,
+    pub data: Option<BTreeMap<String, Vec<Series<f64>>>>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
 pub struct HeadingCell {
     pub id: String,
@@ -262,7 +264,7 @@ pub struct HeadingCell {
     pub read_only: Option<bool>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
 pub struct ListItemCell {
     pub id: String,
@@ -274,7 +276,7 @@ pub struct ListItemCell {
     pub read_only: Option<bool>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
 pub struct PrometheusCell {
     pub id: String,
@@ -283,7 +285,7 @@ pub struct PrometheusCell {
     pub read_only: Option<bool>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
 pub struct TableCell {
     pub id: String,
@@ -291,10 +293,10 @@ pub struct TableCell {
     pub read_only: Option<bool>,
     pub source_ids: Vec<String>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub data: Option<InstantsBySourceId<f64>>,
+    pub data: Option<BTreeMap<String, Vec<Instant<f64>>>>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
 pub struct TextCell {
     pub id: String,
@@ -303,7 +305,7 @@ pub struct TextCell {
     pub read_only: Option<bool>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
 pub struct ImageCell {
     pub id: String,
@@ -331,14 +333,14 @@ pub struct ImageCell {
     pub preview: Option<String>,
 }
 
-#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize, TS)]
 #[serde(rename_all = "snake_case")]
 pub enum GraphType {
     Bar,
     Line,
 }
 
-#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize, TS)]
 #[serde(rename_all = "snake_case")]
 pub enum StackingType {
     None,
@@ -346,7 +348,7 @@ pub enum StackingType {
     Percentage,
 }
 
-#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize, TS)]
 #[serde(rename_all = "snake_case")]
 pub enum HeadingType {
     H1,
@@ -354,7 +356,7 @@ pub enum HeadingType {
     H3,
 }
 
-#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize, TS)]
 #[serde(rename_all = "snake_case")]
 pub enum ListType {
     Ordered,
@@ -362,7 +364,7 @@ pub enum ListType {
 }
 
 /// A range in time from a given timestamp (inclusive) up to another timestamp (exclusive).
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, TS)]
 pub struct TimeRange {
     pub from: Timestamp,
     pub to: Timestamp,
@@ -371,19 +373,22 @@ pub struct TimeRange {
 /// Timestamp specified in seconds since the UNIX epoch, with subsecond precision.
 pub type Timestamp = f64;
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, TS)]
 pub struct Metric {
     pub name: String,
     pub labels: HashMap<String, String>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-pub struct Point<T> {
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, TS)]
+pub struct Point<T>
+where
+    T: TS,
+{
     pub timestamp: Timestamp,
     pub value: T,
 }
 
-#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize, TS)]
 #[serde(rename_all = "snake_case")]
 pub enum PointType {
     F64,
@@ -391,15 +396,21 @@ pub enum PointType {
 }
 
 /// A single data-point in time, with meta-data about the metric it was taken from.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
-pub struct Instant<T> {
+pub struct Instant<T>
+where
+    T: TS,
+{
     pub metric: Metric,
     pub point: Point<T>,
     point_type: PointType,
 }
 
-impl<T> Instant<T> {
+impl<T> Instant<T>
+where
+    T: TS,
+{
     pub fn point_type(&self) -> PointType {
         self.point_type
     }
@@ -425,19 +436,23 @@ impl Instant<String> {
     }
 }
 
-pub type InstantsBySourceId<T> = HashMap<String, Vec<Instant<T>>>;
-
 /// A series of data-points in time, with meta-data about the metric it was taken from.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
-pub struct Series<T> {
+pub struct Series<T>
+where
+    T: TS,
+{
     pub metric: Metric,
     pub points: Vec<Point<T>>,
     point_type: PointType,
     pub visible: bool,
 }
 
-impl<T> Series<T> {
+impl<T> Series<T>
+where
+    T: TS,
+{
     pub fn point_type(&self) -> PointType {
         self.point_type
     }
@@ -465,11 +480,9 @@ impl Series<String> {
     }
 }
 
-pub type SeriesBySourceId<T> = BTreeMap<String, Vec<Series<T>>>;
-
 /// NotebookDataSource represents the way a data-source can be embedded in a
 /// Notebook.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, TS)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum NotebookDataSource {
     /// Inline is a data-source which only exists in this notebook.
@@ -482,7 +495,7 @@ pub enum NotebookDataSource {
 
 /// OrganizationDataSource represents a data-source as stored for a organization
 /// on the API.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
 pub struct InlineDataSource {
     /// The actual data-source.
@@ -491,7 +504,7 @@ pub struct InlineDataSource {
 
 /// OrganizationDataSource represents a data-source as stored for a organization
 /// on the API.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
 pub struct OrganizationDataSource {
     /// identifier used to manipulate this data-source.
@@ -511,7 +524,7 @@ pub struct OrganizationDataSource {
 
 /// A data-source represents all the configuration for a specific component or
 /// service. It will be used by provider.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, TS)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum DataSource {
     Prometheus(PrometheusDataSource),
@@ -523,7 +536,7 @@ pub enum DataSource {
 /// A data-source for Prometheus. Currently only requires a url. This should be
 /// a full URL starting with http:// or https:// the domain, and optionally a
 /// port and a path.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
 pub struct PrometheusDataSource {
     pub url: String,
