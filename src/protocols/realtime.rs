@@ -1,8 +1,9 @@
 use crate::protocols::operations::Operation;
 use chrono::prelude::*;
 use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Clone, Debug, Deserialize, Serialize, TS)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum ClientRealtimeMessage {
     /// Authenticate this client
@@ -41,7 +42,7 @@ impl ClientRealtimeMessage {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Clone, Debug, Deserialize, Serialize, TS)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum ServerRealtimeMessage {
     /// Apply an operation to a specific Notebook.
@@ -72,7 +73,7 @@ pub enum ServerRealtimeMessage {
     SubscriberChangedFocus(SubscriberChangedFocusMessage),
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Clone, Debug, Deserialize, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
 pub struct AuthenticateMessage {
     /// Bearer token
@@ -83,7 +84,7 @@ pub struct AuthenticateMessage {
     pub op_id: Option<String>,
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Clone, Debug, Deserialize, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
 pub struct SubscribeMessage {
     /// ID of the notebook
@@ -100,7 +101,7 @@ pub struct SubscribeMessage {
     pub op_id: Option<String>,
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Clone, Debug, Deserialize, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
 pub struct UnsubscribeMessage {
     /// ID of the notebook
@@ -111,7 +112,7 @@ pub struct UnsubscribeMessage {
     pub op_id: Option<String>,
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Clone, Debug, Deserialize, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
 pub struct ApplyOperationMessage {
     /// ID of the notebook
@@ -145,7 +146,7 @@ impl ApplyOperationMessage {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Clone, Debug, Deserialize, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
 pub struct ApplyOperationBatchMessage {
     /// ID of the notebook
@@ -179,7 +180,7 @@ impl ApplyOperationBatchMessage {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Clone, Debug, Deserialize, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
 pub struct AckMessage {
     /// Operation ID.
@@ -192,7 +193,7 @@ impl AckMessage {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Clone, Debug, Deserialize, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
 pub struct ErrMessage {
     /// Error message.
@@ -203,7 +204,7 @@ pub struct ErrMessage {
     pub op_id: Option<String>,
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Clone, Debug, Deserialize, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
 pub struct DebugRequestMessage {
     /// Operation ID.
@@ -211,7 +212,7 @@ pub struct DebugRequestMessage {
     pub op_id: Option<String>,
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Clone, Debug, Deserialize, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
 pub struct DebugResponseMessage {
     /// Session ID.
@@ -225,7 +226,7 @@ pub struct DebugResponseMessage {
     pub op_id: Option<String>,
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Clone, Debug, Deserialize, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
 pub struct RejectMessage {
     /// The current revision of the notebook.
@@ -236,7 +237,7 @@ pub struct RejectMessage {
     pub op_id: Option<String>,
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Clone, Debug, Deserialize, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
 pub struct SubscriberAddedMessage {
     /// The ID of the notebook that the user subscribed to.
@@ -249,9 +250,11 @@ pub struct SubscriberAddedMessage {
     pub session_id: String,
 
     /// The moment the session was created.
+    #[ts(type = "string")]
     pub created_at: DateTime<Utc>,
 
     /// The last time the user was active in this session.
+    #[ts(type = "string")]
     pub updated_at: DateTime<Utc>,
 
     /// User details associated with the session.
@@ -262,7 +265,7 @@ pub struct SubscriberAddedMessage {
     pub focused_cell_id: Option<String>,
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Clone, Debug, Deserialize, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
 pub struct SubscriberRemovedMessage {
     /// The ID of the notebook that the user unsubscribed from.
@@ -272,7 +275,7 @@ pub struct SubscriberRemovedMessage {
     pub session_id: String,
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Clone, Debug, Deserialize, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
 pub struct User {
     /// The ID of the user. Will always be the same for the same user, so can be
@@ -283,7 +286,7 @@ pub struct User {
     pub name: String,
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Clone, Debug, Deserialize, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
 pub struct FocusInfoMessage {
     /// ID of the notebook.
@@ -298,7 +301,7 @@ pub struct FocusInfoMessage {
     pub op_id: Option<String>,
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Clone, Debug, Deserialize, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
 pub struct SubscriberChangedFocusMessage {
     /// ID of the session.

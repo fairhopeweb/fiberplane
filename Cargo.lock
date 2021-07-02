@@ -704,7 +704,7 @@ dependencies = [
 [[package]]
 name = "ts-rs"
 version = "3.0.0"
-source = "git+ssh://git@github.com/arendjr/ts-rs.git?branch=main#efe9cc501c5dfa0a31f64de372619e946686a16b"
+source = "git+ssh://git@github.com/arendjr/ts-rs.git?branch=main#384b65182e3cc85e2d6601c009548a8116de3705"
 dependencies = [
  "dprint-plugin-typescript",
  "ts-rs-macros",
@@ -713,7 +713,7 @@ dependencies = [
 [[package]]
 name = "ts-rs-macros"
 version = "3.0.0"
-source = "git+ssh://git@github.com/arendjr/ts-rs.git?branch=main#efe9cc501c5dfa0a31f64de372619e946686a16b"
+source = "git+ssh://git@github.com/arendjr/ts-rs.git?branch=main#384b65182e3cc85e2d6601c009548a8116de3705"
 dependencies = [
  "Inflector",
  "proc-macro2",
