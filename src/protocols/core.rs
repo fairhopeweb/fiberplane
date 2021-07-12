@@ -364,7 +364,7 @@ pub enum ListType {
 }
 
 /// A range in time from a given timestamp (inclusive) up to another timestamp (exclusive).
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, TS)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, TS)]
 pub struct TimeRange {
     pub from: Timestamp,
     pub to: Timestamp,
