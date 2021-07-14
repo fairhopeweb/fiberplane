@@ -22,6 +22,15 @@ dependencies = [
 ]
 
 [[package]]
+name = "ansi_term"
+version = "0.12.1"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "d52a9bb7ec0cf484c551830a7ce27bd20d67eac647e1befb56b0be4ee39a55d2"
+dependencies = [
+ "winapi",
+]
+
+[[package]]
 name = "ast_node"
 version = "0.7.3"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -80,6 +89,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "ctor"
+version = "0.1.20"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "5e98e2ad1a782e33928b96fc3948e7c355e5af34ba4de7670fe8bac2a3b2006d"
+dependencies = [
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "darling"
 version = "0.10.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -113,6 +132,12 @@ dependencies = [
  "quote",
  "syn",
 ]
+
+[[package]]
+name = "diff"
+version = "0.1.12"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "0e25ea47919b1560c4e3b7fe0aaab9becf5b84a10325ddf7db0f0ba5e1026499"
 
 [[package]]
 name = "dprint-core"
@@ -176,7 +201,10 @@ name = "fiberplane"
 version = "0.1.0"
 dependencies = [
  "chrono",
+ "once_cell",
+ "pretty_assertions",
  "serde",
+ "thiserror",
  "ts-rs",
 ]
 
@@ -308,6 +336,15 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "692fcb63b64b1758029e0a96ee63e049ce8c5948587f2f7208df04625e5f6b56"
 
 [[package]]
+name = "output_vt100"
+version = "0.1.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "53cdc5b785b7a58c5aad8216b3dfa114df64b0b06ae6e1501cef91df2fbdf8f9"
+dependencies = [
+ "winapi",
+]
+
+[[package]]
 name = "owning_ref"
 version = "0.4.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -357,6 +394,18 @@ name = "precomputed-hash"
 version = "0.1.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "925383efa346730478fb4838dbe9137d2a47675ad789c546d150a6e1dd4ab31c"
+
+[[package]]
+name = "pretty_assertions"
+version = "0.7.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "1cab0e7c02cf376875e9335e0ba1da535775beb5450d21e1dffca068818ed98b"
+dependencies = [
+ "ansi_term",
+ "ctor",
+ "diff",
+ "output_vt100",
+]
 
 [[package]]
 name = "proc-macro2"
@@ -691,6 +740,26 @@ dependencies = [
 ]
 
 [[package]]
+name = "thiserror"
+version = "1.0.26"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "93119e4feac1cbe6c798c34d3a53ea0026b0b1de6a120deef895137c0529bfe2"
+dependencies = [
+ "thiserror-impl",
+]
+
+[[package]]
+name = "thiserror-impl"
+version = "1.0.26"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "060d69a0afe7796bf42e9e2ff91f5ee691fb15c53d38b4b62a9a53eb23164745"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn",
+]
+
+[[package]]
 name = "time"
 version = "0.1.44"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -704,7 +773,7 @@ dependencies = [
 [[package]]
 name = "ts-rs"
 version = "3.0.0"
-source = "git+ssh://git@github.com/arendjr/ts-rs.git?branch=main#e7a87b1b49bfa0263460a63ab995fc133a4ba362"
+source = "git+ssh://git@github.com/arendjr/ts-rs.git?branch=main#3cf1e114006424796505974e0fa1a82e1ad35352"
 dependencies = [
  "dprint-plugin-typescript",
  "ts-rs-macros",
@@ -713,7 +782,7 @@ dependencies = [
 [[package]]
 name = "ts-rs-macros"
 version = "3.0.0"
-source = "git+ssh://git@github.com/arendjr/ts-rs.git?branch=main#e7a87b1b49bfa0263460a63ab995fc133a4ba362"
+source = "git+ssh://git@github.com/arendjr/ts-rs.git?branch=main#3cf1e114006424796505974e0fa1a82e1ad35352"
 dependencies = [
  "Inflector",
  "proc-macro2",
