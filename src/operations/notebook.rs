@@ -4,6 +4,13 @@ use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use ts_rs::TS;
 
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize, TS)]
+#[serde(rename_all = "snake_case")]
+pub enum NotebookVisibility {
+    PUBLIC,
+    PRIVATE,
+}
+
 /// A notebook with all (meta)data included.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, TS)]
 #[serde(rename_all = "camelCase")]
@@ -11,12 +18,11 @@ pub struct Notebook {
     pub id: String,
     pub cells: Vec<Cell>,
     pub data_sources: BTreeMap<String, NotebookDataSource>,
-    #[serde(rename = "_public")]
-    pub public: bool,
     pub read_only: bool,
     pub revision: u32,
     pub time_range: TimeRange,
     pub title: String,
+    pub visibility: NotebookVisibility,
 }
 
 impl ApplyOperationState for Notebook {
@@ -38,11 +44,11 @@ impl Default for Notebook {
             id: "".to_owned(),
             cells: vec![],
             data_sources: BTreeMap::default(),
-            public: false,
             read_only: false,
             revision: 0,
             time_range: TimeRange { from: 0.0, to: 0.0 },
             title: "".to_owned(),
+            visibility: NotebookVisibility::PRIVATE,
         }
     }
 }
