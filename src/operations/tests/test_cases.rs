@@ -490,6 +490,8 @@ fn create_update_notebook_time_range_test_cases(test_cases: &mut Vec<OperationTe
             Notebook {
                 id: TEST_NOTEBOOK.id.clone(),
                 cells: TEST_NOTEBOOK.cells.clone(),
+                public: false,
+                read_only: false,
                 revision: TEST_NOTEBOOK.revision,
                 title: TEST_NOTEBOOK.title.clone(),
                 time_range: new_time_range1,
@@ -513,6 +515,8 @@ fn create_update_notebook_time_range_test_cases(test_cases: &mut Vec<OperationTe
             Notebook {
                 id: TEST_NOTEBOOK.id.clone(),
                 cells: TEST_NOTEBOOK.cells.clone(),
+                public: false,
+                read_only: false,
                 revision: TEST_NOTEBOOK.revision,
                 title: TEST_NOTEBOOK.title.clone(),
                 time_range: new_time_range2,
