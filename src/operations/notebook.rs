@@ -7,13 +7,13 @@ use ts_rs::TS;
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize, TS)]
 #[serde(rename_all = "snake_case")]
 pub enum NotebookVisibility {
-    PRIVATE,
-    PUBLIC,
+    Private,
+    Public,
 }
 
 impl Default for NotebookVisibility {
     fn default() -> Self {
-        Self::PRIVATE
+        Self::Private
     }
 }
 
@@ -54,7 +54,7 @@ impl Default for Notebook {
             revision: 0,
             time_range: TimeRange { from: 0.0, to: 0.0 },
             title: "".to_owned(),
-            visibility: NotebookVisibility::PRIVATE,
+            visibility: NotebookVisibility::Private,
         }
     }
 }

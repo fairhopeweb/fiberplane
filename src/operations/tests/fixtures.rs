@@ -157,6 +157,6 @@ pub static TEST_NOTEBOOK: Lazy<Notebook> = Lazy::new(|| {
             to: 100.0,
         },
         title: DEFAULT_TITLE.clone(),
-        visibility: NotebookVisibility::PRIVATE,
+        visibility: NotebookVisibility::Private,
     }
 });

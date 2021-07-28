@@ -495,7 +495,7 @@ fn create_update_notebook_time_range_test_cases(test_cases: &mut Vec<OperationTe
                 title: TEST_NOTEBOOK.title.clone(),
                 time_range: new_time_range1,
                 data_sources: TEST_NOTEBOOK.data_sources.clone(),
-                visibility: NotebookVisibility::PRIVATE,
+                visibility: NotebookVisibility::Private,
             }
         },
     });
@@ -520,7 +520,7 @@ fn create_update_notebook_time_range_test_cases(test_cases: &mut Vec<OperationTe
                 title: TEST_NOTEBOOK.title.clone(),
                 time_range: new_time_range2,
                 data_sources: TEST_NOTEBOOK.data_sources.clone(),
-                visibility: NotebookVisibility::PRIVATE,
+                visibility: NotebookVisibility::Private,
             }
         },
     });
