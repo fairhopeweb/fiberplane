@@ -7,8 +7,14 @@ use ts_rs::TS;
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize, TS)]
 #[serde(rename_all = "snake_case")]
 pub enum NotebookVisibility {
-    PUBLIC,
     PRIVATE,
+    PUBLIC,
+}
+
+impl Default for NotebookVisibility {
+    fn default() -> Self {
+        Self::PRIVATE
+    }
 }
 
 /// A notebook with all (meta)data included.
