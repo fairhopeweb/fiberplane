@@ -1,5 +1,5 @@
 use super::fixtures::TEST_NOTEBOOK;
-use crate::operations::Notebook;
+use crate::operations::{Notebook, NotebookVisibility};
 use crate::protocols::{core::*, operations::*};
 use once_cell::sync::Lazy;
 
@@ -490,10 +490,12 @@ fn create_update_notebook_time_range_test_cases(test_cases: &mut Vec<OperationTe
             Notebook {
                 id: TEST_NOTEBOOK.id.clone(),
                 cells: TEST_NOTEBOOK.cells.clone(),
+                read_only: false,
                 revision: TEST_NOTEBOOK.revision,
                 title: TEST_NOTEBOOK.title.clone(),
                 time_range: new_time_range1,
                 data_sources: TEST_NOTEBOOK.data_sources.clone(),
+                visibility: NotebookVisibility::Private,
             }
         },
     });
@@ -513,10 +515,12 @@ fn create_update_notebook_time_range_test_cases(test_cases: &mut Vec<OperationTe
             Notebook {
                 id: TEST_NOTEBOOK.id.clone(),
                 cells: TEST_NOTEBOOK.cells.clone(),
+                read_only: false,
                 revision: TEST_NOTEBOOK.revision,
                 title: TEST_NOTEBOOK.title.clone(),
                 time_range: new_time_range2,
                 data_sources: TEST_NOTEBOOK.data_sources.clone(),
+                visibility: NotebookVisibility::Private,
             }
         },
     });

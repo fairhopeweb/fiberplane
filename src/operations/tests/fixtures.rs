@@ -1,4 +1,4 @@
-use crate::operations::Notebook;
+use crate::operations::{Notebook, NotebookVisibility};
 use crate::protocols::core::*;
 use once_cell::sync::Lazy;
 use std::collections::{BTreeMap, HashMap};
@@ -150,11 +150,13 @@ pub static TEST_NOTEBOOK: Lazy<Notebook> = Lazy::new(|| {
         id: "TEST_NOTEBOOK".to_owned(),
         cells,
         data_sources,
+        read_only: false,
         revision: 1,
         time_range: TimeRange {
             from: 0.0,
             to: 100.0,
         },
         title: DEFAULT_TITLE.clone(),
+        visibility: NotebookVisibility::Private,
     }
 });
