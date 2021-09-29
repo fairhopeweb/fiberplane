@@ -1,10 +1,10 @@
 use crate::operations::{ApplyOperationState, CellRefWithIndex};
 use crate::protocols::core::{Cell, NotebookDataSource, TimeRange};
+use fp_bindgen::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
-use ts_rs::TS;
 
-#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize, TS)]
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[serde(rename_all = "snake_case")]
 pub enum NotebookVisibility {
     Private,
@@ -18,7 +18,7 @@ impl Default for NotebookVisibility {
 }
 
 /// A notebook with all (meta)data included.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, TS)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[serde(rename_all = "camelCase")]
 pub struct Notebook {
     pub id: String,

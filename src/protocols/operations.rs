@@ -1,6 +1,6 @@
 use crate::protocols::core::{Cell, NotebookDataSource, TimeRange};
+use fp_bindgen::prelude::*;
 use serde::{Deserialize, Serialize};
-use ts_rs::TS;
 
 /// An operation is the representation for a mutation to be performed to a notebook.
 ///
@@ -9,7 +9,7 @@ use ts_rs::TS;
 ///
 /// For more information, please see RFC 8:
 ///   https://www.notion.so/fiberplane/RFC-8-Notebook-Operations-f9d18676d0d9437d81de30faa219deb4
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, TS)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Operation {
     AddCells(AddCellsOperation),
@@ -26,7 +26,7 @@ pub enum Operation {
 }
 
 /// Adds one or more cells at the given position.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, TS)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[serde(rename_all = "camelCase")]
 pub struct AddCellsOperation {
     /// The new cells, including their index after adding.
@@ -41,7 +41,7 @@ pub struct AddCellsOperation {
 }
 
 /// Merges the cell immediately after the target cell into it by appending its content.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, TS)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[serde(rename_all = "camelCase")]
 pub struct MergeCellsOperation {
     /// Optional text we want to "glue" between the content of the target cell and the source cell.
@@ -71,7 +71,7 @@ pub struct MergeCellsOperation {
 }
 
 /// Moves one or more cells.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, TS)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[serde(rename_all = "camelCase")]
 pub struct MoveCellsOperation {
     /// IDs of all the cells to be moved.
@@ -87,7 +87,7 @@ pub struct MoveCellsOperation {
 }
 
 /// Removes one or more cells.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, TS)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[serde(rename_all = "camelCase")]
 pub struct RemoveCellsOperation {
     /// The removed cells, including their index before the removal.
@@ -103,7 +103,7 @@ pub struct RemoveCellsOperation {
 }
 
 /// Splits a cell at the given position.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, TS)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[serde(rename_all = "camelCase")]
 pub struct SplitCellOperation {
     /// ID of the cell that will be split.
@@ -134,7 +134,7 @@ pub struct SplitCellOperation {
 ///
 /// **FIXME:** Because this operation is so coarse, it currently breaks assumptions about intent and
 ///            convergence.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, TS)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateCellOperation {
     /// The old cell with its content, so that we can revert the update if necessary.
@@ -148,7 +148,7 @@ pub struct UpdateCellOperation {
 }
 
 /// Updates the notebook time range.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, TS)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateNotebookTimeRangeOperation {
     pub old_time_range: TimeRange,
@@ -156,7 +156,7 @@ pub struct UpdateNotebookTimeRangeOperation {
 }
 
 /// Updates the notebook title.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, TS)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateNotebookTitleOperation {
     pub old_title: String,
@@ -164,7 +164,7 @@ pub struct UpdateNotebookTitleOperation {
 }
 
 /// Adds an data-source to an notebook.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, TS)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[serde(rename_all = "camelCase")]
 pub struct AddDataSourceOperation {
     /// The identifier of this data-source within the notebook
@@ -175,7 +175,7 @@ pub struct AddDataSourceOperation {
 }
 
 /// Updates an data-source in an notebook.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, TS)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateDataSourceOperation {
     /// The identifier of this data-source within the notebook
@@ -189,7 +189,7 @@ pub struct UpdateDataSourceOperation {
 }
 
 /// Remove an data-source to an notebook.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, TS)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[serde(rename_all = "camelCase")]
 pub struct RemoveDataSourceOperation {
     /// The identifier of this data-source within the notebook
@@ -199,7 +199,7 @@ pub struct RemoveDataSourceOperation {
     pub data_source: Box<NotebookDataSource>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, TS)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[serde(rename_all = "camelCase")]
 pub struct CellWithIndex {
     pub cell: Cell,

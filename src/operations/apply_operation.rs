@@ -187,8 +187,7 @@ fn apply_split_cells_operation(
     let mut changes = vec![
         Change::UpdateCell(UpdateCellChange {
             cell: cell.with_content(
-                &cell
-                    .content()
+                cell.content()
                     .and_then(|c| c.get(..operation.split_index as usize))
                     .unwrap_or(""),
             ),

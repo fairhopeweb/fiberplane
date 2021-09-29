@@ -1362,7 +1362,7 @@ fn get_source_cell_index(
     predecessor: &MergeCellsOperation,
 ) -> Result<u32, Error> {
     state
-        .cell_index(&predecessor.source_cell.id())
+        .cell_index(predecessor.source_cell.id())
         .ok_or_else(|| Error::CellNotFound(predecessor.source_cell.id().clone()))
 }
 
@@ -1427,7 +1427,7 @@ pub fn merge_and_update_converge(
 
 pub fn moves_converge(move1: &MoveCellsOperation, move2: &MoveCellsOperation) -> bool {
     // Moves (currently) don't converge when they try to move the same cells:
-    if move1.cell_ids.iter().any(|id| move2.cell_ids.contains(&id)) {
+    if move1.cell_ids.iter().any(|id| move2.cell_ids.contains(id)) {
         return false;
     }
 
