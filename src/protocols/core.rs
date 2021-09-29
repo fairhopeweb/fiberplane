@@ -389,6 +389,7 @@ where
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[deprecated(note = "see FP-676: https://linear.app/fiberplane/issue/FP-676/deprecate-point-type")]
 #[serde(rename_all = "snake_case")]
 pub enum PointType {
     F64,
@@ -423,16 +424,6 @@ impl Instant<f64> {
     }
 }
 
-impl Instant<String> {
-    pub fn new_string(metric: Metric, point: Point<String>) -> Self {
-        Self {
-            metric,
-            point,
-            point_type: PointType::String,
-        }
-    }
-}
-
 /// A series of data-points in time, with meta-data about the metric it was taken from.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[serde(rename_all = "camelCase")]
@@ -458,17 +449,6 @@ impl Series<f64> {
             metric,
             points,
             point_type: PointType::F64,
-            visible,
-        }
-    }
-}
-
-impl Series<String> {
-    pub fn new_string(metric: Metric, points: Vec<Point<String>>, visible: bool) -> Self {
-        Self {
-            metric,
-            points,
-            point_type: PointType::String,
             visible,
         }
     }
@@ -522,9 +502,9 @@ pub struct OrganizationDataSource {
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum DataSource {
     Prometheus(PrometheusDataSource),
+    Proxy(ProxyDataSource),
     // Elasticsearch
     // Kubernetes
-    // Proxy
 }
 
 /// A data-source for Prometheus. Currently only requires a url. This should be
@@ -534,4 +514,15 @@ pub enum DataSource {
 #[serde(rename_all = "camelCase")]
 pub struct PrometheusDataSource {
     pub url: String,
+}
+
+/// Relays requests for a data-source to a proxy server registered with the API.
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[serde(rename_all = "camelCase")]
+pub struct ProxyDataSource {
+    /// ID of the proxy as known by the API.
+    pub proxy_id: String,
+
+    /// Name of the data source exposed by the proxy.
+    pub data_source_name: String,
 }
