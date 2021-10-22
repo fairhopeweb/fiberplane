@@ -4,6 +4,7 @@ use fp_bindgen::prelude::*;
 use serde::{Deserialize, Serialize};
 
 #[derive(Clone, Debug, Deserialize, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum ClientRealtimeMessage {
     /// Authenticate this client
@@ -43,6 +44,7 @@ impl ClientRealtimeMessage {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum ServerRealtimeMessage {
     /// Apply an operation to a specific Notebook.
@@ -74,6 +76,7 @@ pub enum ServerRealtimeMessage {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(rename_all = "camelCase")]
 pub struct AuthenticateMessage {
     /// Bearer token
@@ -85,6 +88,7 @@ pub struct AuthenticateMessage {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(rename_all = "camelCase")]
 pub struct SubscribeMessage {
     /// ID of the notebook
@@ -102,6 +106,7 @@ pub struct SubscribeMessage {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(rename_all = "camelCase")]
 pub struct UnsubscribeMessage {
     /// ID of the notebook
@@ -113,6 +118,7 @@ pub struct UnsubscribeMessage {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(rename_all = "camelCase")]
 pub struct ApplyOperationMessage {
     /// ID of the notebook
@@ -147,6 +153,7 @@ impl ApplyOperationMessage {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(rename_all = "camelCase")]
 pub struct ApplyOperationBatchMessage {
     /// ID of the notebook
@@ -181,6 +188,7 @@ impl ApplyOperationBatchMessage {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(rename_all = "camelCase")]
 pub struct AckMessage {
     /// Operation ID.
@@ -194,6 +202,7 @@ impl AckMessage {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(rename_all = "camelCase")]
 pub struct ErrMessage {
     /// Error message.
@@ -205,6 +214,7 @@ pub struct ErrMessage {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(rename_all = "camelCase")]
 pub struct DebugRequestMessage {
     /// Operation ID.
@@ -213,6 +223,7 @@ pub struct DebugRequestMessage {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(rename_all = "camelCase")]
 pub struct DebugResponseMessage {
     /// Session ID.
@@ -227,6 +238,7 @@ pub struct DebugResponseMessage {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(rename_all = "camelCase")]
 pub struct RejectMessage {
     /// The current revision of the notebook.
@@ -238,6 +250,7 @@ pub struct RejectMessage {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(rename_all = "camelCase")]
 pub struct SubscriberAddedMessage {
     /// The ID of the notebook that the user subscribed to.
@@ -264,6 +277,7 @@ pub struct SubscriberAddedMessage {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(rename_all = "camelCase")]
 pub struct SubscriberRemovedMessage {
     /// The ID of the notebook that the user unsubscribed from.
@@ -274,6 +288,7 @@ pub struct SubscriberRemovedMessage {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(rename_all = "camelCase")]
 pub struct User {
     /// The ID of the user. Will always be the same for the same user, so can be
@@ -285,6 +300,7 @@ pub struct User {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(rename_all = "camelCase")]
 pub struct FocusInfoMessage {
     /// ID of the notebook.
@@ -300,6 +316,7 @@ pub struct FocusInfoMessage {
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(rename_all = "camelCase")]
 pub struct SubscriberChangedFocusMessage {
     /// ID of the session.

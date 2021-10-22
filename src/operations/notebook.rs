@@ -5,6 +5,7 @@ use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::operations")]
 #[serde(rename_all = "snake_case")]
 pub enum NotebookVisibility {
     Private,
@@ -19,6 +20,7 @@ impl Default for NotebookVisibility {
 
 /// A notebook with all (meta)data included.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::operations")]
 #[serde(rename_all = "camelCase")]
 pub struct Notebook {
     pub id: String,
