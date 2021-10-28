@@ -17,6 +17,7 @@ pub enum Cell {
     Table(TableCell),
     Text(TextCell),
     Image(ImageCell),
+    Divider(DividerCell),
 }
 
 impl Cell {
@@ -32,6 +33,7 @@ impl Cell {
             Cell::Table(_) => None,
             Cell::Text(cell) => Some(&cell.content),
             Cell::Image(_) => None,
+            Cell::Divider(_) => None,
         }
     }
 
@@ -47,6 +49,7 @@ impl Cell {
             Cell::Table(cell) => &cell.id,
             Cell::Text(cell) => &cell.id,
             Cell::Image(cell) => &cell.id,
+            Cell::Divider(cell) => &cell.id,
         }
     }
 
@@ -66,7 +69,8 @@ impl Cell {
             | Cell::ListItem(_)
             | Cell::Prometheus(_)
             | Cell::Text(_)
-            | Cell::Image(_) => vec![],
+            | Cell::Image(_)
+            | Cell::Divider(_) => vec![],
         }
     }
 
@@ -112,6 +116,7 @@ impl Cell {
                 ..*cell
             }),
             Cell::Image(cell) => Cell::Image(cell.clone()),
+            Cell::Divider(cell) => Cell::Divider(cell.clone()),
         }
     }
 
@@ -170,6 +175,10 @@ impl Cell {
                 preview: cell.preview.clone(),
                 ..*cell
             }),
+            Cell::Divider(cell) => Cell::Divider(DividerCell {
+                id: id.to_owned(),
+                ..*cell
+            }),
         }
     }
 
@@ -211,6 +220,7 @@ impl Cell {
             }),
             Cell::Text(cell) => Cell::Text(cell.clone()),
             Cell::Image(cell) => Cell::Image(cell.clone()),
+            Cell::Divider(cell) => Cell::Divider(cell.clone()),
         }
     }
 }
@@ -341,6 +351,15 @@ pub struct ImageCell {
     /// Will contain a hash to show as a preview for the image
     #[serde(skip_serializing_if = "Option::is_none")]
     pub preview: Option<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[serde(rename_all = "camelCase")]
+pub struct DividerCell {
+    pub id: String,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub read_only: Option<bool>,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize, Serializable)]
