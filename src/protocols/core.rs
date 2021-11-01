@@ -254,6 +254,16 @@ pub struct CodeCell {
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(rename_all = "camelCase")]
+pub struct DividerCell {
+    pub id: String,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub read_only: Option<bool>,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[serde(rename_all = "camelCase")]
 pub struct GraphCell {
     pub id: String,
     pub graph_type: GraphType,
@@ -351,15 +361,6 @@ pub struct ImageCell {
     /// Will contain a hash to show as a preview for the image
     #[serde(skip_serializing_if = "Option::is_none")]
     pub preview: Option<String>,
-}
-
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
-#[serde(rename_all = "camelCase")]
-pub struct DividerCell {
-    pub id: String,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub read_only: Option<bool>,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize, Serializable)]
