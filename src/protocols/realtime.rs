@@ -1,7 +1,7 @@
 use crate::protocols::operations::Operation;
-use chrono::prelude::*;
 use fp_bindgen::prelude::*;
 use serde::{Deserialize, Serialize};
+use time::OffsetDateTime;
 
 #[derive(Clone, Debug, Deserialize, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
@@ -263,10 +263,10 @@ pub struct SubscriberAddedMessage {
     pub session_id: String,
 
     /// The moment the session was created.
-    pub created_at: DateTime<Utc>,
+    pub created_at: OffsetDateTime,
 
     /// The last time the user was active in this session.
-    pub updated_at: DateTime<Utc>,
+    pub updated_at: OffsetDateTime,
 
     /// User details associated with the session.
     pub user: User,
