@@ -179,6 +179,11 @@ pub fn transform_merge_cells_operation(
                         source_cell: successor.source_cell.clone(),
                         target_cell_id: successor.target_cell_id.clone(),
                         target_content_length: predecessor.target_content_length
+                            + predecessor
+                                .glue_text
+                                .as_ref()
+                                .map(|text| text.len())
+                                .unwrap_or_default() as u32
                             + predecessor.source_cell.content().unwrap_or_default().len() as u32,
                         referencing_cells: match successor.referencing_cells.as_ref() {
                             Some(cells) => Some(with_adjusted_indices_for_merged_cells(
@@ -200,14 +205,15 @@ pub fn transform_merge_cells_operation(
                     .ok_or_else(|| Error::CellNotFound(predecessor.target_cell_id.clone()))?;
                 Some(Operation::MergeCells(MergeCellsOperation {
                     glue_text: successor.glue_text.clone(),
-                    source_cell: target_cell.with_appended_content(
+                    source_cell: target_cell.with_appended_content(&format!(
+                        "{}{}",
+                        predecessor.glue_text.clone().unwrap_or_default(),
                         predecessor.source_cell.content().ok_or_else(|| {
                             Error::NoContentCell(predecessor.source_cell.id().clone())
-                        })?,
-                    ),
+                        })?
+                    )),
                     target_cell_id: successor.target_cell_id.clone(),
-                    target_content_length: predecessor.target_content_length
-                        + predecessor.source_cell.content().unwrap_or_default().len() as u32,
+                    target_content_length: successor.target_content_length,
                     referencing_cells: match successor.referencing_cells.as_ref() {
                         Some(cells) => Some(with_adjusted_indices_for_merged_cells(
                             state,
@@ -224,6 +230,11 @@ pub fn transform_merge_cells_operation(
                     source_cell: successor.source_cell.clone(),
                     target_cell_id: predecessor.target_cell_id.clone(),
                     target_content_length: predecessor.target_content_length
+                        + predecessor
+                            .glue_text
+                            .as_ref()
+                            .map(|text| text.len())
+                            .unwrap_or_default() as u32
                         + predecessor.source_cell.content().unwrap_or_default().len() as u32,
                     referencing_cells: match successor.referencing_cells.as_ref() {
                         Some(cells) => Some(with_adjusted_indices_for_merged_cells(
@@ -813,7 +824,13 @@ pub fn transform_split_cell_operation(
                     cell_id: predecessor.target_cell_id.clone(),
                     new_cell: successor.new_cell.clone(),
                     removed_text: successor.removed_text.clone(),
-                    split_index: successor.split_index + predecessor.target_content_length,
+                    split_index: successor.split_index
+                        + predecessor
+                            .glue_text
+                            .as_ref()
+                            .map(|text| text.len())
+                            .unwrap_or_default() as u32
+                        + predecessor.target_content_length,
                     referencing_cells: match successor.referencing_cells.as_ref() {
                         Some(cells) => {
                             let mut cells =

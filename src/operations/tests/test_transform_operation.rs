@@ -10,20 +10,11 @@ use pretty_assertions::assert_eq;
 /// can, and we exclude non-converging operations from the test.
 fn converge(operation1: &Operation, operation2: &Operation) -> bool {
     match operation1 {
-        Operation::AddCells(operation1) => {
-            if let Operation::AddCells(operation2) = operation2 {
-                // If two operations are trying to add cells with the same IDs,
-                // they (currently) cannot converge:
-                let operation2_cell_ids: Vec<&String> =
-                    operation2.cells.iter().map(|c| c.cell.id()).collect();
-                !operation1
-                    .cells
-                    .iter()
-                    .any(|c| operation2_cell_ids.contains(&c.cell.id()))
-            } else {
-                true
-            }
-        }
+        Operation::AddCells(operation1) => match operation2 {
+            Operation::AddCells(operation2) => adds_converge(operation1, operation2),
+            Operation::RemoveCells(operation2) => add_and_remove_converge(operation1, operation2),
+            _ => true,
+        },
         Operation::MergeCells(operation1) => match operation2 {
             Operation::MergeCells(operation2) => merges_converge(operation1, operation2),
             Operation::RemoveCells(operation2) => merge_and_remove_converge(operation1, operation2),
@@ -35,6 +26,7 @@ fn converge(operation1: &Operation, operation2: &Operation) -> bool {
             _ => true,
         },
         Operation::RemoveCells(operation1) => match operation2 {
+            Operation::AddCells(operation2) => add_and_remove_converge(operation2, operation1),
             Operation::MergeCells(operation2) => merge_and_remove_converge(operation2, operation1),
             _ => true,
         },
@@ -77,6 +69,26 @@ fn converge(operation1: &Operation, operation2: &Operation) -> bool {
     }
 }
 
+// If two operations are trying to add cells with the same IDs, they (currently) cannot converge.
+fn adds_converge(add1: &AddCellsOperation, add2: &AddCellsOperation) -> bool {
+    let add2_cell_ids: Vec<&String> = add2.cells.iter().map(|c| c.cell.id()).collect();
+    !add1
+        .cells
+        .iter()
+        .any(|c| add2_cell_ids.contains(&c.cell.id()))
+}
+
+// A remove operation cannot converge with an add cells operation if it tries to remove the cells
+// added by that operation (which should be acceptable, because they would be considered to have a
+// causal relationship).
+fn add_and_remove_converge(add: &AddCellsOperation, remove: &RemoveCellsOperation) -> bool {
+    let add_cell_ids: Vec<&String> = add.cells.iter().map(|c| c.cell.id()).collect();
+    !remove
+        .removed_cells
+        .iter()
+        .any(|c| add_cell_ids.contains(&c.cell.id()))
+}
+
 // If the source xor target of a merge is removed (not both!), and there are
 // other cells to remove as well, we cannot converge because the transformation
 // would require multiple operations to represent the result.
@@ -105,8 +117,6 @@ fn merges_converge(merge1: &MergeCellsOperation, merge2: &MergeCellsOperation) -
     // Merges (currently) only converge if they don't involve the same cells:
     merge1.target_cell_id != merge2.target_cell_id
         && merge1.source_cell.id() != merge2.source_cell.id()
-        && &merge1.target_cell_id != merge2.source_cell.id()
-        && merge1.source_cell.id() != &merge2.target_cell_id
 }
 
 #[test]
@@ -129,7 +139,7 @@ pub fn test_transform_operation() -> Result<(), Error> {
         .collect();
 
     // Verify the amount of permutations, to make sure we don't accidentally skip any:
-    assert_eq!(testable_permutations.len(), 288);
+    assert_eq!(testable_permutations.len(), 330);
 
     for (operation1, operation2) in testable_permutations.iter() {
         match (
@@ -144,7 +154,16 @@ pub fn test_transform_operation() -> Result<(), Error> {
                         .apply_operation(&transformed_operation2),
                     TEST_NOTEBOOK
                         .apply_operation(operation2)?
-                        .apply_operation(&transformed_operation1)
+                        .apply_operation(&transformed_operation1),
+                    "Transformed operations diverged!\n\
+                    Operation 1: {:?}\n\
+                    Was transformed to: {:?}\n\
+                    Operation 2: {:?}\n\
+                    Was transformed to: {:?}",
+                    operation1,
+                    transformed_operation1,
+                    operation2,
+                    transformed_operation2,
                 );
             }
             (Some(transformed_operation1), None) => {
@@ -152,7 +171,14 @@ pub fn test_transform_operation() -> Result<(), Error> {
                     TEST_NOTEBOOK.apply_operation(operation1)?,
                     TEST_NOTEBOOK
                         .apply_operation(operation2)?
-                        .apply_operation(&transformed_operation1)?
+                        .apply_operation(&transformed_operation1)?,
+                    "Transformed operations diverged!\n\
+                        Operation 1: {:?}\n\
+                        Was transformed to: {:?}\n\
+                        Operation 2 (dropped after transform): {:?}",
+                    operation1,
+                    transformed_operation1,
+                    operation2,
                 );
             }
             (None, Some(transformed_operation2)) => {
@@ -160,7 +186,14 @@ pub fn test_transform_operation() -> Result<(), Error> {
                     TEST_NOTEBOOK
                         .apply_operation(operation1)?
                         .apply_operation(&transformed_operation2)?,
-                    TEST_NOTEBOOK.apply_operation(operation2)?
+                    TEST_NOTEBOOK.apply_operation(operation2)?,
+                    "Transformed operations diverged!\n\
+                    Operation 1 (dropped after transform): {:?}\n\
+                    Operation 2: {:?}\n\
+                    Was transformed to: {:?}",
+                    operation1,
+                    operation2,
+                    transformed_operation2,
                 );
             }
             (None, None) => {
@@ -168,7 +201,12 @@ pub fn test_transform_operation() -> Result<(), Error> {
                 // they'd both make the other obsolete:
                 assert_eq!(
                     TEST_NOTEBOOK.apply_operation(operation1)?,
-                    TEST_NOTEBOOK.apply_operation(operation2)?
+                    TEST_NOTEBOOK.apply_operation(operation2)?,
+                    "Transformed operations diverged!\n\
+                    Operation 1 (dropped after transform): {:?}\n\
+                    Operation 2 (dropped after transform): {:?}",
+                    operation1,
+                    operation2,
                 );
             }
         }

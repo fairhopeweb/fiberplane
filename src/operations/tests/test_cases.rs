@@ -195,6 +195,50 @@ fn create_merge_cells_test_cases(test_cases: &mut Vec<OperationTestCase>) {
             );
         }),
     });
+
+    // Test merging with "glue text", which typically results from inverting a split cell operation:
+    test_cases.push(OperationTestCase {
+        operation: Operation::MergeCells(MergeCellsOperation {
+            glue_text: Some("glue".to_owned()),
+            source_cell: TEST_NOTEBOOK.cells[3].clone(),
+            target_cell_id: "c3".to_owned(),
+            target_content_length: TEST_NOTEBOOK.cells[2].content().map(|c| c.len()).unwrap()
+                as u32,
+            referencing_cells: Some(vec![TEST_NOTEBOOK.clone_cell_with_index_by_id("c9")]),
+        }),
+        expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
+            cells[2] =
+                cells[2].with_appended_content(&format!("glue{}", cells[3].content().unwrap()));
+            cells.remove(3);
+
+            // Update the referencing cell:
+            cells[7] = cells[7].with_source_ids(
+                cells[7]
+                    .source_ids()
+                    .iter()
+                    .filter(|&&id| id != "c4")
+                    .map(|&id| id.to_owned())
+                    .collect(),
+            );
+        }),
+    });
+
+    // Another with glue text, that overlaps with the previous:
+    test_cases.push(OperationTestCase {
+        operation: Operation::MergeCells(MergeCellsOperation {
+            glue_text: Some("gluten".to_owned()),
+            source_cell: TEST_NOTEBOOK.cells[2].clone(),
+            target_cell_id: "c2".to_owned(),
+            target_content_length: TEST_NOTEBOOK.cells[1].content().map(|c| c.len()).unwrap()
+                as u32,
+            referencing_cells: None,
+        }),
+        expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
+            cells[1] =
+                cells[1].with_appended_content(&format!("gluten{}", cells[2].content().unwrap()));
+            cells.remove(2);
+        }),
+    });
 }
 
 fn create_move_cells_test_cases(test_cases: &mut Vec<OperationTestCase>) {
