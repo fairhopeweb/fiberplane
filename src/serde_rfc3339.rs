@@ -31,19 +31,29 @@ mod test {
     use serde::{Deserialize, Serialize};
     use time::OffsetDateTime;
 
-    #[test]
-    fn can_deserialize_rfc3339() {
-        #[derive(Deserialize, Serialize, Debug, PartialEq, Eq)]
-        struct Foobar {
-            #[serde(with = "crate::serde_rfc3339")]
-            date: OffsetDateTime,
-        }
+    #[derive(Deserialize, Serialize, Debug, PartialEq, Eq)]
+    struct Foobar {
+        #[serde(with = "crate::serde_rfc3339")]
+        date: OffsetDateTime,
+    }
 
+    #[test]
+    fn can_serialize_rfc3339() {
         let ts = Foobar {
             date: OffsetDateTime::from_unix_timestamp(1638280964).unwrap(),
         };
-        let json_string = serde_json::to_string(&ts).unwrap();
 
+        let json_string = serde_json::to_string(&ts).unwrap();
         assert_eq!(r#"{"date":"2021-11-30T14:02:44Z"}"#, &json_string);
+    }
+
+    #[test]
+    fn can_deserialize_rfc3339() {
+        assert_eq!(
+            serde_json::from_str::<Foobar>(r#"{"date":"2021-11-30T14:02:44Z"}"#).unwrap(),
+            Foobar {
+                date: OffsetDateTime::from_unix_timestamp(1638280964).unwrap(),
+            }
+        );
     }
 }
