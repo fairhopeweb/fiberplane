@@ -9,7 +9,7 @@ use time::format_description::well_known::Rfc3339;
 use time::OffsetDateTime;
 
 /// Serialize an [`OffsetDateTime`] using the well-known RFC3339 format.
-pub(crate) fn serialize<S: Serializer>(
+pub fn serialize<S: Serializer>(
     datetime: &OffsetDateTime,
     serializer: S,
 ) -> Result<S::Ok, S::Error> {
@@ -20,20 +20,19 @@ pub(crate) fn serialize<S: Serializer>(
 }
 
 /// Deserialize an [`OffsetDateTime`] from its RFC3339 representation.
-pub(crate) fn deserialize<'a, D: Deserializer<'a>>(
-    deserializer: D,
-) -> Result<OffsetDateTime, D::Error> {
+pub fn deserialize<'a, D: Deserializer<'a>>(deserializer: D) -> Result<OffsetDateTime, D::Error> {
     OffsetDateTime::parse(<_>::deserialize(deserializer)?, &Rfc3339).map_err(D::Error::custom)
 }
 
 #[cfg(test)]
 mod test {
+    use crate as time_util;
     use serde::{Deserialize, Serialize};
     use time::OffsetDateTime;
 
     #[derive(Deserialize, Serialize, Debug, PartialEq, Eq)]
     struct Foobar {
-        #[serde(with = "crate::serde_rfc3339")]
+        #[serde(with = "time_util::serde_rfc3339")]
         date: OffsetDateTime,
     }
 

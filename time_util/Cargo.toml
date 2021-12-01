@@ -1,0 +1,15 @@
+[package]
+name = "time_util"
+version = "0.1.0"
+authors = ["Benno van den Berg <benno@fiberplane.com>"]
+edition = "2018"
+
+[lib]
+crate-type = ["lib"]
+
+[dependencies]
+serde = { version = "1.0", features = ["derive"] }
+time = { version = "0.3", features = ["serde-human-readable"] }
+
+[dev-dependencies]
+serde_json = "1.0"
