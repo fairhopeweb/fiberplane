@@ -1,6 +1,7 @@
 use crate::protocols::operations::Operation;
 use fp_bindgen::prelude::*;
 use serde::{Deserialize, Serialize};
+use std::fmt::Debug;
 use time::OffsetDateTime;
 
 #[derive(Clone, Debug, Deserialize, Serialize, Serializable)]
@@ -75,7 +76,7 @@ pub enum ServerRealtimeMessage {
     SubscriberChangedFocus(SubscriberChangedFocusMessage),
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize, Serializable)]
+#[derive(Clone, Deserialize, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(rename_all = "camelCase")]
 pub struct AuthenticateMessage {
@@ -85,6 +86,15 @@ pub struct AuthenticateMessage {
     /// Operation ID
     #[serde(skip_serializing_if = "Option::is_none")]
     pub op_id: Option<String>,
+}
+
+impl Debug for AuthenticateMessage {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("AuthenticateMessage")
+            .field("token", &"[REDACTED]")
+            .field("op_id", &self.op_id)
+            .finish()
+    }
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, Serializable)]
