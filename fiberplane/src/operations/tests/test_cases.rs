@@ -431,6 +431,7 @@ fn create_split_cell_test_cases(test_cases: &mut Vec<OperationTestCase>) {
         level: None,
         list_type: ListType::Unordered,
         read_only: None,
+        start_number: None,
     });
 
     test_cases.push(OperationTestCase {

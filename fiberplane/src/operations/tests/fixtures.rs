@@ -76,6 +76,7 @@ pub static TEST_NOTEBOOK: Lazy<Notebook> = Lazy::new(|| {
             level: None,
             list_type: ListType::Unordered,
             read_only: Some(true),
+            start_number: None,
         }),
         Cell::Graph({
             let mut data = BTreeMap::new();

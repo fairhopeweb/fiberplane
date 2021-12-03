@@ -300,6 +300,8 @@ pub struct ListItemCell {
     pub level: Option<u8>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub read_only: Option<bool>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub start_number: Option<u16>,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
