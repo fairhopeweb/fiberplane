@@ -19,4 +19,7 @@ pub enum Error {
 
     #[error("unauthorized")]
     Unauthorized(String),
+
+    #[error("insert index not valid")]
+    InvalidInsertIndex(u32),
 }
