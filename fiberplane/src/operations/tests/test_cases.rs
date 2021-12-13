@@ -2,6 +2,7 @@ use super::fixtures::TEST_NOTEBOOK;
 use crate::operations::{Notebook, NotebookVisibility};
 use crate::protocols::{core::*, operations::*};
 use once_cell::sync::Lazy;
+use time::OffsetDateTime;
 
 pub struct OperationTestCase {
     pub operation: Operation,
@@ -541,6 +542,12 @@ fn create_update_notebook_time_range_test_cases(test_cases: &mut Vec<OperationTe
                 time_range: new_time_range1,
                 data_sources: TEST_NOTEBOOK.data_sources.clone(),
                 visibility: NotebookVisibility::Private,
+                created_at: OffsetDateTime::UNIX_EPOCH,
+                updated_at: OffsetDateTime::UNIX_EPOCH,
+                created_by: CreatedBy {
+                    user_type: UserType::Individual,
+                    name: "name".to_string(),
+                },
             }
         },
     });
@@ -566,6 +573,12 @@ fn create_update_notebook_time_range_test_cases(test_cases: &mut Vec<OperationTe
                 time_range: new_time_range2,
                 data_sources: TEST_NOTEBOOK.data_sources.clone(),
                 visibility: NotebookVisibility::Private,
+                created_at: OffsetDateTime::UNIX_EPOCH,
+                updated_at: OffsetDateTime::UNIX_EPOCH,
+                created_by: CreatedBy {
+                    user_type: UserType::Individual,
+                    name: "name".to_string(),
+                },
             }
         },
     });

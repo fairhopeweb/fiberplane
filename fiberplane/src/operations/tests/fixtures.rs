@@ -2,6 +2,7 @@ use crate::operations::{Notebook, NotebookVisibility};
 use crate::protocols::core::*;
 use once_cell::sync::Lazy;
 use std::collections::{BTreeMap, HashMap};
+use time::OffsetDateTime;
 
 pub static DEFAULT_TITLE: Lazy<String> = Lazy::new(|| "Test notebook".to_owned());
 pub static TEST_NOTEBOOK: Lazy<Notebook> = Lazy::new(|| {
@@ -159,5 +160,11 @@ pub static TEST_NOTEBOOK: Lazy<Notebook> = Lazy::new(|| {
         },
         title: DEFAULT_TITLE.clone(),
         visibility: NotebookVisibility::Private,
+        created_at: OffsetDateTime::UNIX_EPOCH,
+        updated_at: OffsetDateTime::UNIX_EPOCH,
+        created_by: CreatedBy {
+            user_type: UserType::Individual,
+            name: "name".to_string(),
+        },
     }
 });
