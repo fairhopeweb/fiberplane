@@ -1,9 +1,10 @@
-use crate::protocols::operations::Operation;
+use crate::protocols::{core::UserType, operations::Operation};
 use fp_bindgen::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::fmt::Debug;
 use time::OffsetDateTime;
 
+/// Real-time message sent by the client over a WebSocket connection.
 #[derive(Clone, Debug, Deserialize, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(tag = "type", rename_all = "snake_case")]
@@ -44,6 +45,7 @@ impl ClientRealtimeMessage {
     }
 }
 
+/// Real-time message sent by the server over a WebSocket connection.
 #[derive(Clone, Debug, Deserialize, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(tag = "type", rename_all = "snake_case")]
@@ -62,6 +64,10 @@ pub enum ServerRealtimeMessage {
     /// Response from a DebugRequest. Contains some useful data regarding the
     /// connection.
     DebugResponse(DebugResponseMessage),
+
+    /// Notifies a mentioned user of the fact they've been mentioned by someone
+    /// else.
+    Mention(MentionMessage),
 
     /// Reject an apply operation. This happens when a ApplyOperation is sent,
     /// but the notebook has already applied another operation.
@@ -245,6 +251,29 @@ pub struct DebugResponseMessage {
     /// Operation ID. Empty if the user has not provided a op_id.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub op_id: Option<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
+#[serde(rename_all = "camelCase")]
+pub struct MentionMessage {
+    /// ID of the notebook in which the user was mentioned.
+    pub notebook_id: String,
+
+    /// ID of the cell in which the user was mentioned.
+    pub cell_id: String,
+
+    /// Who mentioned the user?
+    pub mentioned_by: MentionedBy,
+}
+
+#[derive(Debug, Clone, Deserialize, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[serde(rename_all = "camelCase")]
+pub struct MentionedBy {
+    #[serde(rename = "type")]
+    pub user_type: UserType,
+    pub name: String,
 }
 
 #[derive(Clone, Debug, Deserialize, Serialize, Serializable)]
