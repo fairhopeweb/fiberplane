@@ -31,20 +31,30 @@ jobs:
           target
         key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.lock') }}
         restore-keys: ${{ runner.os }}-cargo-
+      
+    - name: Install latest nightly
+      uses: actions-rs/toolchain@v1
+      with:
+        toolchain: nightly
+        override: true
+        components: rustfmt
 
     - name: add rust components
-      run: |
-        rustup component add clippy
-        rustup component add rustfmt
+      run: rustup component add clippy
 
     - name: Check format
-      run: cargo fmt -- --check
+      # Run on nightly so we can use the unstable ignore feature
+      # and ignore the generated API client
+      run: cargo +nightly fmt -- --check
 
     - name: Lint code
       uses: actions-rs/clippy-check@v1
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
-        args: --all-features
+        args: >
+          --all-features 
+          -p fiberplane 
+          -p time_util
 
     - name: Run tests
       run: cargo test --verbose

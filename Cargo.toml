@@ -1,5 +1,6 @@
 [workspace]
 members = [
     "fiberplane",
+    "api_client",
     "time_util",
 ]
