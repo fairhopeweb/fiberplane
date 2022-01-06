@@ -548,7 +548,7 @@ This endpoint does not need any parameter.
 
 ### Authorization
 
-[userToken](../README.md#userToken)
+[serviceToken](../README.md#serviceToken), [userToken](../README.md#userToken)
 
 ### HTTP request headers
 

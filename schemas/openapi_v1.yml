@@ -17,6 +17,11 @@ components:
     userToken:
       type: http
       scheme: bearer
+    serviceToken:
+      type: apiKey
+      in: header
+      name: fp-service-auth-token
+      description: JWT used for authentication between services
   schemas:
     newNotebook:
       type: object
@@ -976,6 +981,9 @@ paths:
     get:
       operationId: proxy_data_sources_list
       description: Get all of the data sources for all proxies that belong to the same organization as the user
+      security:
+        - userToken: []
+        - serviceToken: []
       responses:
         "200":
           description: OK
@@ -1122,7 +1130,7 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/triggerWebHookRequest"
-      
+
       responses:
         "200":
           description: OK
