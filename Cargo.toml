@@ -1,6 +1,7 @@
 [workspace]
 members = [
-    "fiberplane",
     "api_client",
+    "base64uuid",
+    "fiberplane",
     "time_util",
 ]

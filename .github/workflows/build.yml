@@ -55,6 +55,7 @@ jobs:
           --all-features 
           -p fiberplane 
           -p time_util
+          -p base64uuid
 
     - name: Run tests
       run: cargo test --verbose
