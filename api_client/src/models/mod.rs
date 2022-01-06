@@ -32,6 +32,8 @@ pub mod instant;
 pub use self::instant::Instant;
 pub mod instant_query;
 pub use self::instant_query::InstantQuery;
+pub mod label;
+pub use self::label::Label;
 pub mod list_item_cell;
 pub use self::list_item_cell::ListItemCell;
 pub mod metric;

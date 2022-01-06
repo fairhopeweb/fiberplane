@@ -73,6 +73,7 @@ Class | Method | HTTP request | Description
  - [InlineDataSource](docs/InlineDataSource.md)
  - [Instant](docs/Instant.md)
  - [InstantQuery](docs/InstantQuery.md)
+ - [Label](docs/Label.md)
  - [ListItemCell](docs/ListItemCell.md)
  - [Metric](docs/Metric.md)
  - [NewNotebook](docs/NewNotebook.md)

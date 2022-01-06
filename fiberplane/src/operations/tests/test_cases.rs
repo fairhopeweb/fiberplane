@@ -548,6 +548,7 @@ fn create_update_notebook_time_range_test_cases(test_cases: &mut Vec<OperationTe
                     user_type: UserType::Individual,
                     name: "name".to_string(),
                 },
+                labels: Vec::new(),
             }
         },
     });
@@ -579,6 +580,7 @@ fn create_update_notebook_time_range_test_cases(test_cases: &mut Vec<OperationTe
                     user_type: UserType::Individual,
                     name: "name".to_string(),
                 },
+                labels: Vec::new(),
             }
         },
     });

@@ -20,6 +20,7 @@ docs/ImageCell.md
 docs/InlineDataSource.md
 docs/Instant.md
 docs/InstantQuery.md
+docs/Label.md
 docs/ListItemCell.md
 docs/Metric.md
 docs/NewNotebook.md
@@ -73,6 +74,7 @@ src/models/image_cell.rs
 src/models/inline_data_source.rs
 src/models/instant.rs
 src/models/instant_query.rs
+src/models/label.rs
 src/models/list_item_cell.rs
 src/models/metric.rs
 src/models/mod.rs

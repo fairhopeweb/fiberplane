@@ -21,6 +21,8 @@ pub struct NewNotebook {
     pub cells: Vec<crate::models::Cell>,
     #[serde(rename = "dataSources", skip_serializing_if = "Option::is_none")]
     pub data_sources: Option<::std::collections::HashMap<String, crate::models::NotebookDataSource>>,
+    #[serde(rename = "labels", skip_serializing_if = "Option::is_none")]
+    pub labels: Option<Vec<crate::models::Label>>,
 }
 
 impl NewNotebook {
@@ -30,6 +32,7 @@ impl NewNotebook {
             time_range: Box::new(time_range),
             cells,
             data_sources: None,
+            labels: None,
         }
     }
 }

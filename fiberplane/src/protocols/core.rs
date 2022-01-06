@@ -14,6 +14,9 @@ pub struct NewNotebook {
 
     #[serde(default)]
     pub data_sources: BTreeMap<String, NotebookDataSource>,
+
+    #[serde(default)]
+    pub labels: Vec<Label>,
 }
 
 impl From<Notebook> for NewNotebook {
@@ -23,6 +26,7 @@ impl From<Notebook> for NewNotebook {
             cells: notebook.cells,
             time_range: notebook.time_range,
             data_sources: notebook.data_sources,
+            labels: notebook.labels,
         }
     }
 }
@@ -78,6 +82,9 @@ pub struct Notebook {
 
     #[serde(default)]
     pub data_sources: BTreeMap<String, NotebookDataSource>,
+
+    #[serde(default)]
+    pub labels: Vec<Label>,
 }
 
 /// Representation of a single notebook cell.
@@ -152,11 +159,13 @@ impl Cell {
     }
 
     /// Returns a copy of the cell with the given content appended.
+    #[must_use]
     pub fn with_appended_content(&self, content: &str) -> Self {
         self.with_content(&format!("{}{}", self.content().unwrap_or(""), content))
     }
 
     /// Returns a copy of the cell with its content replaced by the given content.
+    #[must_use]
     pub fn with_content(&self, content: &str) -> Self {
         match self {
             Cell::Checkbox(cell) => Cell::Checkbox(CheckboxCell {
@@ -198,6 +207,7 @@ impl Cell {
     }
 
     /// Returns a copy of the cell with a new ID.
+    #[must_use]
     pub fn with_id(&self, id: &str) -> Self {
         match self {
             Cell::Checkbox(cell) => Cell::Checkbox(CheckboxCell {
@@ -263,6 +273,7 @@ impl Cell {
     ///
     /// If the cell contains any data, only data that belongs to any of the new
     /// source IDs is retained.
+    #[must_use]
     pub fn with_source_ids(&self, source_ids: Vec<String>) -> Self {
         match self {
             Cell::Checkbox(cell) => Cell::Checkbox(cell.clone()),
@@ -647,4 +658,25 @@ pub struct ProxyDataSource {
 
     /// Name of the data source exposed by the proxy.
     pub data_source_name: String,
+}
+
+/// Labels that are associated with a Notebook.
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[serde(rename_all = "camelCase")]
+pub struct Label {
+    /// The key of the label. Should be unique for a single Notebook.
+    pub key: String,
+
+    /// The value of the label. Can be left empty.
+    pub value: String,
+}
+
+impl Label {
+    pub fn new(key: impl Into<String>, value: impl Into<String>) -> Self {
+        Self {
+            key: key.into(),
+            value: value.into(),
+        }
+    }
 }

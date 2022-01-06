@@ -42,6 +42,10 @@ components:
           type: object
           additionalProperties:
             $ref: "#/components/schemas/notebookDataSource"
+        labels:
+          type: array
+          items:
+            $ref: "#/components/schemas/label"
     cell:
       oneOf:
         - $ref: "#/components/schemas/checkboxCell"
@@ -338,6 +342,10 @@ components:
           format: date-time
         visibility:
           $ref: "#/components/schemas/notebookVisibility"
+        labels:
+          type: array
+          items:
+            $ref: "#/components/schemas/label"
     notebookPatch:
       type: object
       properties:
@@ -730,6 +738,16 @@ components:
       enum:
         - organization
         - individual
+    label:
+      type: object
+      required:
+        - "key"
+        - "value"
+      properties:
+        key:
+          type: string
+        value:
+          type: string
 # Most routes require authentication. The ones
 # that do not will specify "security: []"
 security:
