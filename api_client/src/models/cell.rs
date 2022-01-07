@@ -76,6 +76,8 @@ pub enum Cell {
     },
     #[serde(rename="image")]
     ImageCell {
+        #[serde(rename = "url", skip_serializing_if = "Option::is_none")]
+        url: Option<String>,
         #[serde(rename = "id")]
         id: String,
         #[serde(rename = "fileId", skip_serializing_if = "Option::is_none")]

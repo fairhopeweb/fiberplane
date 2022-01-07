@@ -15,6 +15,8 @@
 pub struct ImageCell {
     #[serde(rename = "type")]
     pub _type: crate::models::CellType,
+    #[serde(rename = "url", skip_serializing_if = "Option::is_none")]
+    pub url: Option<String>,
     #[serde(rename = "id")]
     pub id: String,
     #[serde(rename = "fileId", skip_serializing_if = "Option::is_none")]
@@ -35,6 +37,7 @@ impl ImageCell {
     pub fn new(_type: crate::models::CellType, id: String) -> ImageCell {
         ImageCell {
             _type,
+            url: None,
             id,
             file_id: None,
             progress: None,

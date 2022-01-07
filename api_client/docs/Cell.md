@@ -20,6 +20,7 @@ Name | Type | Description | Notes
 **heading_type** | **String** |  | 
 **list_type** | **String** |  | 
 **start_number** | Option<**i32**> |  | [optional]
+**url** | Option<**String**> |  | [optional]
 **file_id** | Option<**String**> |  | [optional]
 **progress** | Option<**f32**> |  | [optional]
 **width** | Option<**i32**> |  | [optional]

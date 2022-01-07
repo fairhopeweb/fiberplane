@@ -5,6 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **_type** | [**crate::models::CellType**](cellType.md) |  | 
+**url** | Option<**String**> |  | [optional]
 **id** | **String** |  | 
 **file_id** | Option<**String**> |  | [optional]
 **progress** | Option<**f32**> |  | [optional]

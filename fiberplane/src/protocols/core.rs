@@ -260,6 +260,7 @@ impl Cell {
                 id: id.to_owned(),
                 file_id: cell.file_id.clone(),
                 preview: cell.preview.clone(),
+                url: cell.url.clone(),
                 ..*cell
             }),
             Cell::Divider(cell) => Cell::Divider(DividerCell {
@@ -451,6 +452,12 @@ pub struct ImageCell {
     /// Will contain a hash to show as a preview for the image
     #[serde(skip_serializing_if = "Option::is_none")]
     pub preview: Option<String>,
+
+    /// URL of the image if it was originally hosted on a remote server.
+    /// This will not be set if the image was uploaded through the
+    /// Fiberplane Studio.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub url: Option<String>,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize, Serializable)]
