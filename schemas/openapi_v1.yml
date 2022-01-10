@@ -711,9 +711,10 @@ components:
           type: string
       minProperties: 1
       maxProperties: 1
-      oneOf:
-        - required: [templateUrl]
-        - required: [templateBody]
+      # Disabled because it breaks the TypeScript client generator:
+      #oneOf:
+      #  - required: [templateUrl]
+      #  - required: [templateBody]
     triggerWebHookRequest:
       type: object
     triggerWebHookResponse:
