@@ -1160,3 +1160,16 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/triggerWebHookResponse"
+
+  /api/organizations/current/users:
+    get:
+      operationId: org_user_list_current
+      description: "Fetch the users of the current organization"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/user"
+          description: OK
+          
