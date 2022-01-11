@@ -36,6 +36,7 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**notebook_list**](docs/DefaultApi.md#notebook_list) | **GET** /api/notebooks | 
 *DefaultApi* | [**oidc_authorize_google**](docs/DefaultApi.md#oidc_authorize_google) | **GET** /api/oidc/authorize/google | 
 *DefaultApi* | [**org_data_source_create**](docs/DefaultApi.md#org_data_source_create) | **POST** /api/datasources | 
+*DefaultApi* | [**org_user_list_current**](docs/DefaultApi.md#org_user_list_current) | **GET** /api/organizations/current/users | 
 *DefaultApi* | [**patch_notebook**](docs/DefaultApi.md#patch_notebook) | **PATCH** /api/notebooks/{id} | 
 *DefaultApi* | [**pinned_notebook_create**](docs/DefaultApi.md#pinned_notebook_create) | **POST** /api/pinnednotebooks | 
 *DefaultApi* | [**pinned_notebook_delete**](docs/DefaultApi.md#pinned_notebook_delete) | **DELETE** /api/pinnednotebooks/{notebookId} | 

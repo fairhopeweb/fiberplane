@@ -16,6 +16,7 @@ Method | HTTP request | Description
 [**notebook_list**](DefaultApi.md#notebook_list) | **GET** /api/notebooks | 
 [**oidc_authorize_google**](DefaultApi.md#oidc_authorize_google) | **GET** /api/oidc/authorize/google | 
 [**org_data_source_create**](DefaultApi.md#org_data_source_create) | **POST** /api/datasources | 
+[**org_user_list_current**](DefaultApi.md#org_user_list_current) | **GET** /api/organizations/current/users | 
 [**patch_notebook**](DefaultApi.md#patch_notebook) | **PATCH** /api/notebooks/{id} | 
 [**pinned_notebook_create**](DefaultApi.md#pinned_notebook_create) | **POST** /api/pinnednotebooks | 
 [**pinned_notebook_delete**](DefaultApi.md#pinned_notebook_delete) | **DELETE** /api/pinnednotebooks/{notebookId} | 
@@ -380,6 +381,33 @@ Name | Type | Description  | Required | Notes
 ### HTTP request headers
 
 - **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## org_user_list_current
+
+> Vec<crate::models::User> org_user_list_current()
+
+
+Fetch the users of the current organization
+
+### Parameters
+
+This endpoint does not need any parameter.
+
+### Return type
+
+[**Vec<crate::models::User>**](user.md)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
 - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
