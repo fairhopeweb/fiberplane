@@ -1,6 +1,10 @@
-use crate::operations::error::*;
-use crate::protocols::{core::*, operations::*};
+use crate::{
+    operations::{error::*, replace_text},
+    protocols::{core::*, operations::*},
+};
 use std::cmp::Ordering;
+
+use super::apply_operation::char_count;
 
 /// Allows `transform_operation()` to query for the state of the notebook as it was at the revision
 /// immediately *before* predecessor gets applied.
@@ -34,6 +38,7 @@ pub fn transform_operation(
         MergeCells(o) => transform_merge_cells_operation(state, o, predecessor),
         MoveCells(o) => transform_move_cells_operation(state, o, predecessor),
         RemoveCells(o) => transform_remove_cells_operation(state, o, predecessor),
+        ReplaceText(o) => transform_replace_text_operation(state, o, predecessor),
         SplitCell(o) => transform_split_cell_operation(state, o, predecessor),
         UpdateCell(o) => transform_update_cell_operation(state, o, predecessor),
         UpdateNotebookTimeRange(o) => Ok(transform_update_notebook_time_range_operation(
@@ -143,7 +148,8 @@ pub fn transform_add_cells_operation(
                 None => None,
             },
         })),
-        Operation::UpdateNotebookTimeRange(_)
+        Operation::ReplaceText(_)
+        | Operation::UpdateNotebookTimeRange(_)
         | Operation::UpdateNotebookTitle(_)
         | Operation::AddDataSource(_)
         | Operation::UpdateDataSource(_)
@@ -182,9 +188,9 @@ pub fn transform_merge_cells_operation(
                             + predecessor
                                 .glue_text
                                 .as_ref()
-                                .map(|text| text.len())
-                                .unwrap_or_default() as u32
-                            + predecessor.source_cell.content().unwrap_or_default().len() as u32,
+                                .map(char_count)
+                                .unwrap_or_default()
+                            + char_count(&predecessor.source_cell.content().unwrap_or_default()),
                         referencing_cells: match successor.referencing_cells.as_ref() {
                             Some(cells) => Some(with_adjusted_indices_for_merged_cells(
                                 state,
@@ -233,9 +239,9 @@ pub fn transform_merge_cells_operation(
                         + predecessor
                             .glue_text
                             .as_ref()
-                            .map(|text| text.len())
-                            .unwrap_or_default() as u32
-                        + predecessor.source_cell.content().unwrap_or_default().len() as u32,
+                            .map(char_count)
+                            .unwrap_or_default()
+                        + char_count(&predecessor.source_cell.content().unwrap_or_default()),
                     referencing_cells: match successor.referencing_cells.as_ref() {
                         Some(cells) => Some(with_adjusted_indices_for_merged_cells(
                             state,
@@ -301,6 +307,34 @@ pub fn transform_merge_cells_operation(
                 }))
             }
         }
+        Operation::ReplaceText(predecessor) => {
+            if &predecessor.cell_id == successor.source_cell.id() {
+                // Need to update the source cell:
+                Some(Operation::MergeCells(MergeCellsOperation {
+                    glue_text: successor.glue_text.clone(),
+                    source_cell: successor.source_cell.with_text(&replace_text(
+                        successor.source_cell.text().unwrap_or_default(),
+                        predecessor,
+                    )),
+                    target_cell_id: successor.target_cell_id.clone(),
+                    target_content_length: successor.target_content_length,
+                    referencing_cells: successor.referencing_cells.clone(),
+                }))
+            } else if predecessor.cell_id == successor.target_cell_id {
+                // Need to update the target content length:
+                Some(Operation::MergeCells(MergeCellsOperation {
+                    glue_text: successor.glue_text.clone(),
+                    source_cell: successor.source_cell.clone(),
+                    target_cell_id: successor.target_cell_id.clone(),
+                    target_content_length: successor.target_content_length
+                        - char_count(&predecessor.old_text)
+                        + char_count(&predecessor.new_text),
+                    referencing_cells: successor.referencing_cells.clone(),
+                }))
+            } else {
+                Some(Operation::MergeCells(successor.clone()))
+            }
+        }
         Operation::SplitCell(predecessor) => {
             let referencing_cells = match successor.referencing_cells.as_ref() {
                 Some(cells) => {
@@ -342,11 +376,11 @@ pub fn transform_merge_cells_operation(
                     glue_text: successor.glue_text.clone(),
                     source_cell: successor.source_cell.clone(),
                     target_cell_id: predecessor.new_cell.id().clone(),
-                    target_content_length: predecessor
-                        .new_cell
-                        .content()
-                        .ok_or_else(|| Error::NoContentCell(predecessor.new_cell.id().clone()))?
-                        .len() as u32,
+                    target_content_length: char_count(
+                        &predecessor.new_cell.content().ok_or_else(|| {
+                            Error::NoContentCell(predecessor.new_cell.id().clone())
+                        })?,
+                    ),
                     referencing_cells,
                 }))
             } else {
@@ -560,7 +594,8 @@ pub fn transform_move_cells_operation(
                 }))
             }
         }
-        Operation::UpdateNotebookTimeRange(_)
+        Operation::ReplaceText(_)
+        | Operation::UpdateNotebookTimeRange(_)
         | Operation::UpdateNotebookTitle(_)
         | Operation::AddDataSource(_)
         | Operation::UpdateDataSource(_)
@@ -737,6 +772,29 @@ pub fn transform_remove_cells_operation(
                 }))
             }
         }
+        Operation::ReplaceText(predecessor) => {
+            let update_cell_with_index = |c: &CellWithIndex| CellWithIndex {
+                cell: if c.cell.id() == &predecessor.cell_id {
+                    replace_cell_text(&c.cell, predecessor)
+                } else {
+                    c.cell.clone()
+                },
+                index: c.index,
+            };
+
+            // Update the removed cell, if necessary:
+            Some(Operation::RemoveCells(RemoveCellsOperation {
+                referencing_cells: successor
+                    .referencing_cells
+                    .as_ref()
+                    .map(|cells| cells.iter().map(update_cell_with_index).collect()),
+                removed_cells: successor
+                    .removed_cells
+                    .iter()
+                    .map(update_cell_with_index)
+                    .collect(),
+            }))
+        }
         Operation::SplitCell(predecessor) => {
             let removed_cell_ids = get_all_removed_cell_ids(successor);
             let referencing_cells = match successor.referencing_cells.as_ref() {
@@ -803,6 +861,112 @@ pub fn transform_remove_cells_operation(
     Ok(operation)
 }
 
+pub fn transform_replace_text_operation(
+    _: &dyn TransformOperationState,
+    successor: &ReplaceTextOperation,
+    predecessor: &Operation,
+) -> Result<Option<Operation>, Error> {
+    let operation = match predecessor {
+        Operation::MergeCells(predecessor) => {
+            if predecessor.source_cell.id() == &successor.cell_id {
+                // The replacement should take place inside the target instead:
+                Some(Operation::ReplaceText(ReplaceTextOperation {
+                    cell_id: predecessor.target_cell_id.clone(),
+                    offset: predecessor.target_content_length
+                        + predecessor
+                            .glue_text
+                            .as_ref()
+                            .map(char_count)
+                            .unwrap_or_default()
+                        + successor.offset,
+                    new_text: successor.new_text.clone(),
+                    old_text: successor.old_text.clone(),
+                }))
+            } else {
+                Some(Operation::ReplaceText(successor.clone()))
+            }
+        }
+        Operation::RemoveCells(predecessor) => {
+            if predecessor
+                .removed_cells
+                .iter()
+                .any(|c| c.cell.id() == &successor.cell_id)
+            {
+                None
+            } else {
+                Some(Operation::ReplaceText(successor.clone()))
+            }
+        }
+        Operation::ReplaceText(predecessor) => {
+            if predecessor.cell_id == successor.cell_id {
+                if predecessor.offset + char_count(&predecessor.old_text) < successor.offset {
+                    // Adjust the offset to account for the previous replacement:
+                    Some(Operation::ReplaceText(ReplaceTextOperation {
+                        cell_id: successor.cell_id.clone(),
+                        offset: successor.offset + char_count(&predecessor.new_text)
+                            - char_count(&predecessor.old_text),
+                        new_text: successor.new_text.clone(),
+                        old_text: successor.old_text.clone(),
+                    }))
+                } else if predecessor.offset > successor.offset + char_count(&successor.old_text) {
+                    // Previous replacement didn't affect ours:
+                    Some(Operation::ReplaceText(successor.clone()))
+                } else {
+                    // Overlapping regions:
+                    None
+                }
+            } else {
+                Some(Operation::ReplaceText(successor.clone()))
+            }
+        }
+        Operation::SplitCell(predecessor) => {
+            if predecessor.cell_id == successor.cell_id {
+                if predecessor.split_index <= successor.offset {
+                    // Replacement should take place inside the new cell:
+                    Some(Operation::ReplaceText(ReplaceTextOperation {
+                        cell_id: predecessor.new_cell.id().clone(),
+                        offset: successor.offset
+                            - predecessor.split_index
+                            - predecessor
+                                .removed_text
+                                .as_ref()
+                                .map(char_count)
+                                .unwrap_or_default(),
+                        new_text: successor.new_text.clone(),
+                        old_text: successor.old_text.clone(),
+                    }))
+                } else if predecessor.split_index
+                    >= successor.offset + char_count(&successor.old_text)
+                {
+                    // Split happened after our region:
+                    Some(Operation::ReplaceText(successor.clone()))
+                } else {
+                    // Split occurred in our region:
+                    None
+                }
+            } else {
+                Some(Operation::ReplaceText(successor.clone()))
+            }
+        }
+        Operation::UpdateCell(predecessor) => {
+            if replace_text_and_update_cell_converge(successor, predecessor) {
+                Some(Operation::ReplaceText(successor.clone()))
+            } else {
+                None
+            }
+        }
+        Operation::AddCells(_)
+        | Operation::MoveCells(_)
+        | Operation::UpdateNotebookTimeRange(_)
+        | Operation::UpdateNotebookTitle(_)
+        | Operation::AddDataSource(_)
+        | Operation::UpdateDataSource(_)
+        | Operation::RemoveDataSource(_) => Some(Operation::ReplaceText(successor.clone())),
+    };
+
+    Ok(operation)
+}
+
 pub fn transform_split_cell_operation(
     state: &dyn TransformOperationState,
     successor: &SplitCellOperation,
@@ -828,8 +992,8 @@ pub fn transform_split_cell_operation(
                         + predecessor
                             .glue_text
                             .as_ref()
-                            .map(|text| text.len())
-                            .unwrap_or_default() as u32
+                            .map(char_count)
+                            .unwrap_or_default()
                         + predecessor.target_content_length,
                     referencing_cells: match successor.referencing_cells.as_ref() {
                         Some(cells) => {
@@ -899,6 +1063,55 @@ pub fn transform_split_cell_operation(
                 Some(Operation::SplitCell(transformed))
             }
         }
+        Operation::ReplaceText(predecessor) => {
+            if predecessor.cell_id == successor.cell_id {
+                let removed_text_len = successor
+                    .removed_text
+                    .as_ref()
+                    .map(char_count)
+                    .unwrap_or_default();
+                if predecessor.offset >= successor.split_index + removed_text_len {
+                    // Need to update the new cell:
+                    Some(Operation::SplitCell(SplitCellOperation {
+                        new_cell: replace_cell_text(
+                            &successor.new_cell,
+                            &ReplaceTextOperation {
+                                offset: predecessor.offset
+                                    - successor.split_index
+                                    - removed_text_len,
+                                ..predecessor.clone()
+                            },
+                        ),
+                        ..successor.clone()
+                    }))
+                } else if predecessor.offset >= successor.split_index {
+                    // The region in which we tried to split has been replaced.
+                    // Instead of dropping our split, we transform it into an
+                    // AddCell operation, or we'd risk invalidating any future
+                    // operation to the cell we created as well:
+                    Some(Operation::AddCells(AddCellsOperation {
+                        cells: vec![CellWithIndex {
+                            cell: successor.new_cell.clone(),
+                            index: state
+                                .cell_index(&successor.cell_id)
+                                .map(|index| index + 1)
+                                .unwrap_or_default(),
+                        }],
+                        referencing_cells: successor.referencing_cells.clone(),
+                    }))
+                } else {
+                    // Only need to update the split index:
+                    Some(Operation::SplitCell(SplitCellOperation {
+                        split_index: successor.split_index + char_count(&predecessor.new_text)
+                            - char_count(&predecessor.old_text),
+                        ..successor.clone()
+                    }))
+                }
+            } else {
+                // No conflict:
+                Some(Operation::SplitCell(successor.clone()))
+            }
+        }
         Operation::SplitCell(predecessor) => {
             if !splits_converge(successor, predecessor) {
                 // Splits cannot converge. Drop successor:
@@ -937,7 +1150,7 @@ pub fn transform_split_cell_operation(
                             - predecessor
                                 .removed_text
                                 .as_ref()
-                                .map(|text| text.len() as u32)
+                                .map(char_count)
                                 .unwrap_or_default(),
                         referencing_cells,
                     })),
@@ -1010,6 +1223,26 @@ pub fn transform_update_cell_operation(
                     old_cell: get_updated_old_cell(successor, &predecessor.referencing_cells),
                     updated_cell: successor.updated_cell.clone(),
                 }))
+            }
+        }
+        Operation::ReplaceText(predecessor) => {
+            if &predecessor.cell_id == successor.old_cell.id() {
+                if successor.old_cell.text() == successor.updated_cell.text() {
+                    // If we don't try to update the text, we'll merely update the cell:
+                    Some(Operation::UpdateCell(UpdateCellOperation {
+                        old_cell: Box::new(replace_cell_text(&successor.old_cell, predecessor)),
+                        updated_cell: Box::new(replace_cell_text(
+                            &successor.updated_cell,
+                            predecessor,
+                        )),
+                    }))
+                } else {
+                    // Otherwise, we'll drop the update:
+                    None
+                }
+            } else {
+                // No conflict:
+                Some(Operation::UpdateCell(successor.clone()))
             }
         }
         Operation::SplitCell(predecessor) => {
@@ -1088,6 +1321,7 @@ pub fn transform_add_data_source_operation(
         | Operation::MergeCells(_)
         | Operation::MoveCells(_)
         | Operation::RemoveCells(_)
+        | Operation::ReplaceText(_)
         | Operation::SplitCell(_)
         | Operation::UpdateCell(_)
         | Operation::UpdateNotebookTimeRange(_)
@@ -1122,6 +1356,7 @@ pub fn transform_update_data_source_operation(
         | Operation::MergeCells(_)
         | Operation::MoveCells(_)
         | Operation::RemoveCells(_)
+        | Operation::ReplaceText(_)
         | Operation::SplitCell(_)
         | Operation::UpdateCell(_)
         | Operation::UpdateNotebookTimeRange(_)
@@ -1149,6 +1384,7 @@ pub fn transform_remove_data_source_operation(
         | Operation::MergeCells(_)
         | Operation::MoveCells(_)
         | Operation::RemoveCells(_)
+        | Operation::ReplaceText(_)
         | Operation::SplitCell(_)
         | Operation::UpdateCell(_)
         | Operation::UpdateNotebookTimeRange(_)
@@ -1337,8 +1573,8 @@ fn get_new_cell_split_by_predecessor(
     let removed_text_len = successor
         .removed_text
         .as_ref()
-        .map(|text| text.len())
-        .unwrap_or_default() as u32;
+        .map(char_count)
+        .unwrap_or_default();
     let split_index = predecessor.split_index - successor.split_index - removed_text_len;
 
     Ok(successor.new_cell.with_content(
@@ -1453,6 +1689,23 @@ pub fn moves_converge(move1: &MoveCellsOperation, move2: &MoveCellsOperation) ->
         || get_move_min_index(move1) > get_move_max_index(move2)
 }
 
+fn replace_cell_text(cell: &Cell, operation: &ReplaceTextOperation) -> Cell {
+    cell.with_text(&replace_text(cell.text().unwrap_or_default(), operation))
+}
+
+pub fn replace_text_and_update_cell_converge(
+    replace: &ReplaceTextOperation,
+    update: &UpdateCellOperation,
+) -> bool {
+    // Replacements and updates in different cells always converge:
+    if &replace.cell_id != update.updated_cell.id() {
+        return true;
+    }
+
+    // Convergence is broken as soon as the update touched the cell's text:
+    update.updated_cell.text() == update.old_cell.text()
+}
+
 pub fn splits_converge(split1: &SplitCellOperation, split2: &SplitCellOperation) -> bool {
     // Splits on different cells have no trouble converging:
     if split1.cell_id != split2.cell_id {
@@ -1468,7 +1721,7 @@ pub fn splits_converge(split1: &SplitCellOperation, split2: &SplitCellOperation)
             split1
                 .removed_text
                 .as_ref()
-                .map(|text| text.len() as u32)
+                .map(char_count)
                 .unwrap_or_default()
                 < index2 - index1
         }
@@ -1477,7 +1730,7 @@ pub fn splits_converge(split1: &SplitCellOperation, split2: &SplitCellOperation)
             split2
                 .removed_text
                 .as_ref()
-                .map(|text| text.len() as u32)
+                .map(char_count)
                 .unwrap_or_default()
                 < index1 - index2
         }

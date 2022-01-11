@@ -268,7 +268,7 @@ pub struct MentionMessage {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(rename_all = "camelCase")]
 pub struct MentionedBy {
     #[serde(rename = "type")]

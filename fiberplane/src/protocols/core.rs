@@ -158,6 +158,14 @@ impl Cell {
         }
     }
 
+    /// Returns the cell's text, if any.
+    pub fn text(&self) -> Option<&str> {
+        match self {
+            Cell::Graph(cell) => Some(&cell.title),
+            cell => cell.content(),
+        }
+    }
+
     /// Returns a copy of the cell with the given content appended.
     #[must_use]
     pub fn with_appended_content(&self, content: &str) -> Self {
@@ -310,6 +318,21 @@ impl Cell {
             Cell::Text(cell) => Cell::Text(cell.clone()),
             Cell::Image(cell) => Cell::Image(cell.clone()),
             Cell::Divider(cell) => Cell::Divider(cell.clone()),
+        }
+    }
+
+    /// Returns a copy of the cell with its text replaced by the given text.
+    pub fn with_text(&self, text: &str) -> Self {
+        match self {
+            Cell::Graph(cell) => Cell::Graph(GraphCell {
+                id: cell.id.clone(),
+                data: cell.data.clone(),
+                source_ids: cell.source_ids.clone(),
+                time_range: cell.time_range.clone(),
+                title: text.to_owned(),
+                ..*cell
+            }),
+            cell => cell.with_content(text),
         }
     }
 }

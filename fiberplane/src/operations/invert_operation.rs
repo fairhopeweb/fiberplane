@@ -16,6 +16,7 @@ pub fn invert_operation(operation: &Operation) -> Operation {
         MoveCells(operation) => invert_move_cells_operation(operation),
         RemoveCells(operation) => invert_remove_cells_operation(operation),
         SplitCell(operation) => invert_split_cells_operation(operation),
+        ReplaceText(operation) => invert_replace_text_operation(operation),
         UpdateCell(operation) => invert_update_cell_operation(operation),
         UpdateNotebookTimeRange(operation) => invert_update_notebook_time_range(operation),
         UpdateNotebookTitle(operation) => invert_update_notebook_title(operation),
@@ -80,6 +81,15 @@ fn invert_remove_cells_operation(operation: &RemoveCellsOperation) -> Operation 
         } else {
             Some(newly_referencing_cells)
         },
+    })
+}
+
+fn invert_replace_text_operation(operation: &ReplaceTextOperation) -> Operation {
+    Operation::ReplaceText(ReplaceTextOperation {
+        cell_id: operation.cell_id.clone(),
+        offset: operation.offset,
+        old_text: operation.new_text.clone(),
+        new_text: operation.old_text.clone(),
     })
 }
 

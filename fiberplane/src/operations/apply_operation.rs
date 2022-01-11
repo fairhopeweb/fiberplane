@@ -1,3 +1,5 @@
+use std::borrow::Borrow;
+
 use crate::operations::{change::*, error::*};
 use crate::protocols::{core::*, operations::*};
 
@@ -53,6 +55,7 @@ pub fn apply_operation(
         MergeCells(operation) => apply_merge_cells_operation(state, operation),
         MoveCells(operation) => Ok(apply_move_cells_operation(state, operation)),
         RemoveCells(operation) => Ok(apply_remove_cells_operation(state, operation)),
+        ReplaceText(operation) => apply_replace_text_operation(state, operation),
         SplitCell(operation) => apply_split_cells_operation(state, operation),
         UpdateCell(operation) => apply_update_cell_operation(state, operation),
         UpdateNotebookTimeRange(operation) => {
@@ -106,17 +109,20 @@ fn apply_merge_cells_operation(
     let target_cell = state
         .cell(target_cell_id)
         .ok_or_else(|| Error::CellNotFound(target_cell_id.clone()))?;
-    if target_cell.content().unwrap_or_default().len() != *target_content_length as usize {
+    if target_cell.content().unwrap_or_default().chars().count() != *target_content_length as usize
+    {
         return Err(Error::ContentLengthMismatch(*target_content_length));
     }
 
     let mut changes = vec![
-        Change::UpdateCell(UpdateCellChange {
-            cell: target_cell.with_appended_content(&format!(
-                "{}{}",
+        Change::UpdateCellText(UpdateCellTextChange {
+            cell_id: target_cell_id.clone(),
+            text: format!(
+                "{}{}{}",
+                target_cell.content().unwrap_or(""),
                 glue_text.clone().unwrap_or_default(),
                 source_cell.content().unwrap_or("")
-            )),
+            ),
         }),
         Change::DeleteCell(DeleteCellChange {
             cell_id: source_cell.id().clone(),
@@ -175,6 +181,25 @@ fn apply_remove_cells_operation(
     changes
 }
 
+fn apply_replace_text_operation(
+    state: &dyn ApplyOperationState,
+    operation: &ReplaceTextOperation,
+) -> Result<Vec<Change>, Error> {
+    match state.cell(&operation.cell_id) {
+        Some(cell) => {
+            if let Some(text) = cell.text() {
+                Ok(vec![Change::UpdateCellText(UpdateCellTextChange {
+                    cell_id: operation.cell_id.clone(),
+                    text: replace_text(text, operation),
+                })])
+            } else {
+                Err(Error::NoContentCell(operation.cell_id.clone()))
+            }
+        }
+        None => Err(Error::CellNotFound(operation.cell_id.clone())),
+    }
+}
+
 fn apply_split_cells_operation(
     state: &dyn ApplyOperationState,
     operation: &SplitCellOperation,
@@ -185,12 +210,12 @@ fn apply_split_cells_operation(
     let cell = &cell_with_index.cell;
 
     let mut changes = vec![
-        Change::UpdateCell(UpdateCellChange {
-            cell: cell.with_content(
-                cell.content()
-                    .and_then(|c| c.get(..operation.split_index as usize))
-                    .unwrap_or(""),
-            ),
+        Change::UpdateCellText(UpdateCellTextChange {
+            cell_id: cell.id().clone(),
+            text: cell
+                .content()
+                .map(|c| c.chars().take(operation.split_index as usize).collect())
+                .unwrap_or_default(),
         }),
         Change::InsertCell(InsertCellChange {
             cell: operation.new_cell.clone(),
@@ -305,6 +330,13 @@ fn apply_remove_data_source_operation(
     })]
 }
 
+pub fn char_count<T>(text: &T) -> u32
+where
+    T: Borrow<str> + ?Sized,
+{
+    text.borrow().chars().count() as u32
+}
+
 fn get_change_for_dropped_reference(
     referencing_cell: &CellWithIndex,
     source_ids: Vec<&str>,
@@ -320,4 +352,15 @@ fn get_change_for_dropped_reference(
                 .with_source_ids(source_ids.into_iter().map(String::from).collect()),
         })
     }
+}
+
+pub fn replace_text(text: &str, operation: &ReplaceTextOperation) -> String {
+    text.chars()
+        .take(operation.offset as usize)
+        .chain(operation.new_text.chars())
+        .chain(
+            text.chars()
+                .skip((operation.offset + char_count(&operation.old_text)) as usize),
+        )
+        .collect()
 }

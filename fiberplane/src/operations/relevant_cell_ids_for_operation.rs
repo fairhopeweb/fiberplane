@@ -30,6 +30,7 @@ pub fn relevant_cell_ids_for_operation(operation: &Operation) -> Vec<String> {
             }
             relevant_cell_ids
         }
+        Operation::ReplaceText(ReplaceTextOperation { cell_id, .. }) => vec![cell_id.clone()],
         Operation::SplitCell(SplitCellOperation {
             cell_id,
             referencing_cells,

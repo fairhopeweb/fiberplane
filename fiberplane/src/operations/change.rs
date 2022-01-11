@@ -10,6 +10,7 @@ pub enum Change {
     DeleteCell(DeleteCellChange),
     MoveCells(MoveCellsChange),
     UpdateCell(UpdateCellChange),
+    UpdateCellText(UpdateCellTextChange),
     UpdateNotebookTimeRange(UpdateNotebookTimeRangeChange),
     UpdateNotebookTitle(UpdateNotebookTitleChange),
     AddDataSource(AddDataSourceChange),
@@ -55,6 +56,19 @@ pub struct MoveCellsChange {
 #[serde(rename_all = "camelCase")]
 pub struct UpdateCellChange {
     pub cell: Cell,
+}
+
+/// Specifies the text field of the given cell (`content` or `title`, depending on the cell type)
+/// must be updated.
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::operations")]
+#[serde(rename_all = "camelCase")]
+pub struct UpdateCellTextChange {
+    /// ID of the cell we're updating.
+    pub cell_id: String,
+
+    /// The new text string to store.
+    pub text: String,
 }
 
 #[deprecated(note = "Please use UpdateNotebookTimeRangeChange instead")]

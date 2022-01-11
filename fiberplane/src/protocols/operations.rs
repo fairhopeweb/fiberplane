@@ -17,6 +17,7 @@ pub enum Operation {
     MergeCells(MergeCellsOperation),
     MoveCells(MoveCellsOperation),
     RemoveCells(RemoveCellsOperation),
+    ReplaceText(ReplaceTextOperation),
     SplitCell(SplitCellOperation),
     UpdateCell(UpdateCellOperation),
     UpdateNotebookTimeRange(UpdateNotebookTimeRangeOperation),
@@ -52,13 +53,15 @@ pub struct MergeCellsOperation {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub glue_text: Option<String>,
 
-    /// ID of the source cell that will be merged into the target cell. This must be the cell
-    /// immediately after the target cell. This ID is explicitly specified to be able to reuse
-    /// the same ID if the merge operation is reverted.
+    /// Source cell that will be merged into the target cell. This should be the cell immediately
+    /// after the target cell.
     pub source_cell: Cell,
 
     /// The length of the text content of the target cell right before the merge. This is the index
     /// at which we will want to split the cell if we need to revert the merge.
+    ///
+    /// Please be aware this length refers to the number of Unicode Scalar Values (non-surrogate
+    /// codepoints) in the cell content, which may require additional effort to determine correctly.
     pub target_content_length: u32,
 
     /// ID of the target cell into which the merge will be performed.
@@ -107,6 +110,27 @@ pub struct RemoveCellsOperation {
     pub referencing_cells: Option<Vec<CellWithIndex>>,
 }
 
+/// Replaces the part of the content in any content type cell or the title of a graph cell.
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::operations")]
+#[serde(rename_all = "camelCase")]
+pub struct ReplaceTextOperation {
+    /// ID of the cell whose text we're modifying.
+    pub cell_id: String,
+
+    /// Starting offset where we will be replacing the text.
+    ///
+    /// Please be aware this offset refers to the position of a Unicode Scalar Value (non-surrogate
+    /// codepoint) in the cell text, which may require additional effort to determine correctly.
+    pub offset: u32,
+
+    /// The new text value we're inserting.
+    pub new_text: String,
+
+    /// The old text that we're replacing.
+    pub old_text: String,
+}
+
 /// Splits a cell at the given position.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::operations")]
@@ -116,6 +140,9 @@ pub struct SplitCellOperation {
     pub cell_id: String,
 
     /// The character index inside the cell to split at.
+    ///
+    /// Please be aware this index refers to the position of a Unicode Scalar Value (non-surrogate
+    /// codepoint) in the cell content, which may require additional effort to determine correctly.
     pub split_index: u32,
 
     /// If any text was selected at the moment of splitting, that selection is removed; only the

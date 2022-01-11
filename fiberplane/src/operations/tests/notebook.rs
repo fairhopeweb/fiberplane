@@ -48,6 +48,13 @@ impl Notebook {
                     cells[index] = cell;
                 }
             }),
+            UpdateCellText(UpdateCellTextChange { cell_id, text }) => {
+                self.with_updated_cells(|cells| {
+                    if let Some(index) = cells.iter().position(|c| c.id() == &cell_id) {
+                        cells[index] = cells[index].with_text(&text);
+                    }
+                })
+            }
             UpdateNotebookTimeRange(UpdateNotebookTimeRangeChange { time_range }) => {
                 Self { time_range, ..self }
             }

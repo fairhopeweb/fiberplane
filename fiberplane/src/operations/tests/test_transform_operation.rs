@@ -1,13 +1,18 @@
-use super::fixtures::TEST_NOTEBOOK;
-use super::test_cases::TEST_CASES;
-use crate::operations::{error::*, transform_operation::*};
-use crate::protocols::operations::*;
+use super::{fixtures::TEST_NOTEBOOK, test_cases::TEST_CASES};
+use crate::{
+    operations::{char_count, error::*, transform_operation::*},
+    protocols::operations::*,
+};
 use pretty_assertions::assert_eq;
 
-/// Returns whether two operations should converge to the same notebook (after transformation).
+/// Returns whether two operations can converge (after transformation). This means they will result
+/// in the same notebook regardless of which operation gets applied first.
 ///
-/// In theory, we prefer any two operations to converge. In practice, not all operations currently
-/// can, and we exclude non-converging operations from the test.
+/// Note that operations with causal relationships cannot and don't need to converge, because they
+/// will get executed in a fixed order by definition.
+///
+/// In theory, we prefer all non-causally related operations to converge. But in practice, not all
+/// operations can, and we exclude non-converging operations from the test.
 fn converge(operation1: &Operation, operation2: &Operation) -> bool {
     match operation1 {
         Operation::AddCells(operation1) => match operation2 {
@@ -30,13 +35,29 @@ fn converge(operation1: &Operation, operation2: &Operation) -> bool {
             Operation::MergeCells(operation2) => merge_and_remove_converge(operation2, operation1),
             _ => true,
         },
+        Operation::ReplaceText(operation1) => match operation2 {
+            Operation::ReplaceText(operation2) => replace_texts_converge(operation1, operation2),
+            Operation::SplitCell(operation2) => {
+                replace_text_and_split_converge(operation1, operation2)
+            }
+            Operation::UpdateCell(operation2) => {
+                replace_text_and_update_cell_converge(operation1, operation2)
+            }
+            _ => true,
+        },
         Operation::SplitCell(operation1) => match operation2 {
+            Operation::ReplaceText(operation2) => {
+                replace_text_and_split_converge(operation2, operation1)
+            }
             Operation::SplitCell(operation2) => splits_converge(operation1, operation2),
             Operation::UpdateCell(operation2) => &operation1.cell_id != operation2.old_cell.id(),
             _ => true,
         },
         Operation::UpdateCell(operation1) => match operation2 {
             Operation::MergeCells(operation2) => merge_and_update_converge(operation2, operation1),
+            Operation::ReplaceText(operation2) => {
+                replace_text_and_update_cell_converge(operation2, operation1)
+            }
             Operation::SplitCell(operation2) => operation1.old_cell.id() != &operation2.cell_id,
             Operation::UpdateCell(operation2) => {
                 operation1.old_cell.id() != operation2.old_cell.id()
@@ -119,6 +140,44 @@ fn merges_converge(merge1: &MergeCellsOperation, merge2: &MergeCellsOperation) -
         && merge1.source_cell.id() != merge2.source_cell.id()
 }
 
+fn replace_text_and_split_converge(
+    replace: &ReplaceTextOperation,
+    split: &SplitCellOperation,
+) -> bool {
+    if replace.cell_id != split.cell_id {
+        return true;
+    }
+
+    // Converge works as long as the split doesn't overlap with the replaced region:
+    replace.offset + char_count(&replace.old_text) <= split.split_index
+        || split.split_index
+            + split
+                .removed_text
+                .as_ref()
+                .map(char_count)
+                .unwrap_or_default()
+            >= replace.offset
+}
+
+fn replace_texts_converge(
+    replace1: &ReplaceTextOperation,
+    replace2: &ReplaceTextOperation,
+) -> bool {
+    // Two identical replacements make each other obsolete, which converges by definition:
+    if replace1 == replace2 {
+        return true;
+    }
+
+    // Replacements in different cells always converge:
+    if replace1.cell_id != replace2.cell_id {
+        return true;
+    }
+
+    // Convergence works as long as there's no overlap in the regions being replaced:
+    replace1.offset + char_count(&replace1.old_text) < replace2.offset
+        || replace1.offset > replace2.offset + char_count(&replace2.old_text)
+}
+
 #[test]
 pub fn test_transform_operation() -> Result<(), Error> {
     let testable_operations: Vec<&Operation> = TEST_CASES
@@ -139,7 +198,7 @@ pub fn test_transform_operation() -> Result<(), Error> {
         .collect();
 
     // Verify the amount of permutations, to make sure we don't accidentally skip any:
-    assert_eq!(testable_permutations.len(), 330);
+    assert_eq!(testable_permutations.len(), 572);
 
     for (operation1, operation2) in testable_permutations.iter() {
         match (

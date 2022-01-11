@@ -1,6 +1,8 @@
 use super::fixtures::TEST_NOTEBOOK;
-use crate::operations::{Notebook, NotebookVisibility};
-use crate::protocols::{core::*, operations::*};
+use crate::{
+    operations::{char_count, Notebook, NotebookVisibility},
+    protocols::{core::*, operations::*},
+};
 use once_cell::sync::Lazy;
 use time::OffsetDateTime;
 
@@ -18,6 +20,7 @@ pub static TEST_CASES: Lazy<Vec<OperationTestCase>> = Lazy::new(|| {
     create_merge_cells_test_cases(&mut test_cases);
     create_move_cells_test_cases(&mut test_cases);
     create_remove_cells_test_cases(&mut test_cases);
+    create_replace_text_test_cases(&mut test_cases);
     create_split_cell_test_cases(&mut test_cases);
     create_update_cell_test_cases(&mut test_cases);
     create_update_notebook_time_range_test_cases(&mut test_cases);
@@ -160,8 +163,7 @@ fn create_merge_cells_test_cases(test_cases: &mut Vec<OperationTestCase>) {
             glue_text: None,
             source_cell: TEST_NOTEBOOK.cells[2].clone(),
             target_cell_id: "c2".to_owned(),
-            target_content_length: TEST_NOTEBOOK.cells[1].content().map(|c| c.len()).unwrap()
-                as u32,
+            target_content_length: TEST_NOTEBOOK.cells[1].content().map(char_count).unwrap(),
             referencing_cells: None,
         }),
         expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
@@ -177,8 +179,7 @@ fn create_merge_cells_test_cases(test_cases: &mut Vec<OperationTestCase>) {
             glue_text: None,
             source_cell: TEST_NOTEBOOK.cells[3].clone(),
             target_cell_id: "c3".to_owned(),
-            target_content_length: TEST_NOTEBOOK.cells[2].content().map(|c| c.len()).unwrap()
-                as u32,
+            target_content_length: TEST_NOTEBOOK.cells[2].content().map(char_count).unwrap(),
             referencing_cells: Some(vec![TEST_NOTEBOOK.clone_cell_with_index_by_id("c9")]),
         }),
         expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
@@ -203,8 +204,7 @@ fn create_merge_cells_test_cases(test_cases: &mut Vec<OperationTestCase>) {
             glue_text: Some("glue".to_owned()),
             source_cell: TEST_NOTEBOOK.cells[3].clone(),
             target_cell_id: "c3".to_owned(),
-            target_content_length: TEST_NOTEBOOK.cells[2].content().map(|c| c.len()).unwrap()
-                as u32,
+            target_content_length: TEST_NOTEBOOK.cells[2].content().map(char_count).unwrap(),
             referencing_cells: Some(vec![TEST_NOTEBOOK.clone_cell_with_index_by_id("c9")]),
         }),
         expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
@@ -230,8 +230,7 @@ fn create_merge_cells_test_cases(test_cases: &mut Vec<OperationTestCase>) {
             glue_text: Some("gluten".to_owned()),
             source_cell: TEST_NOTEBOOK.cells[2].clone(),
             target_cell_id: "c2".to_owned(),
-            target_content_length: TEST_NOTEBOOK.cells[1].content().map(|c| c.len()).unwrap()
-                as u32,
+            target_content_length: TEST_NOTEBOOK.cells[1].content().map(char_count).unwrap(),
             referencing_cells: None,
         }),
         expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
@@ -341,6 +340,99 @@ fn create_remove_cells_test_cases(test_cases: &mut Vec<OperationTestCase>) {
             cells.remove(3);
             cells.remove(4);
         }),
+    });
+}
+
+fn create_replace_text_test_cases(test_cases: &mut Vec<OperationTestCase>) {
+    test_cases.push(OperationTestCase {
+        operation: Operation::ReplaceText(ReplaceTextOperation {
+            cell_id: "c3".to_owned(),
+            offset: 5,
+            new_text: "replaced".to_owned(),
+            old_text: "introductory".to_owned(),
+        }),
+        expected_apply_operation_result: TEST_NOTEBOOK
+            .with_updated_cells(|cells| cells[2] = cells[2].with_content("Some replaced text")),
+    });
+
+    test_cases.push(OperationTestCase {
+        operation: Operation::ReplaceText(ReplaceTextOperation {
+            cell_id: "c3".to_owned(),
+            offset: 18,
+            new_text: "nonsense".to_owned(),
+            old_text: "text".to_owned(),
+        }),
+        expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
+            cells[2] = cells[2].with_content("Some introductory nonsense")
+        }),
+    });
+
+    test_cases.push(OperationTestCase {
+        operation: Operation::ReplaceText(ReplaceTextOperation {
+            cell_id: "c3".to_owned(),
+            offset: 17,
+            new_text: "_".to_owned(),
+            old_text: " ".to_owned(),
+        }),
+        expected_apply_operation_result: TEST_NOTEBOOK
+            .with_updated_cells(|cells| cells[2] = cells[2].with_content("Some introductory_text")),
+    });
+
+    test_cases.push(OperationTestCase {
+        operation: Operation::ReplaceText(ReplaceTextOperation {
+            cell_id: "c3".to_owned(),
+            offset: 5,
+            new_text: "replacement".to_owned(),
+            old_text: "introductory".to_owned(),
+        }),
+        expected_apply_operation_result: TEST_NOTEBOOK
+            .with_updated_cells(|cells| cells[2] = cells[2].with_content("Some replacement text")),
+    });
+
+    test_cases.push(OperationTestCase {
+        operation: Operation::ReplaceText(ReplaceTextOperation {
+            cell_id: "c2".to_owned(),
+            offset: 0,
+            new_text: "Unl".to_owned(),
+            old_text: "L".to_owned(),
+        }),
+        expected_apply_operation_result: TEST_NOTEBOOK
+            .with_updated_cells(|cells| cells[1] = cells[1].with_content("Unlocked subtitle")),
+    });
+
+    // Test cases that overlap with split cell cases:
+    test_cases.push(OperationTestCase {
+        operation: Operation::ReplaceText(ReplaceTextOperation {
+            cell_id: "c4".to_owned(),
+            offset: 4,
+            new_text: "".to_owned(),
+            old_text: "emstats_".to_owned(),
+        }),
+        expected_apply_operation_result: TEST_NOTEBOOK
+            .with_updated_cells(|cells| cells[3] = cells[3].with_content("go_malloc_bytes")),
+    });
+
+    test_cases.push(OperationTestCase {
+        operation: Operation::ReplaceText(ReplaceTextOperation {
+            cell_id: "c4".to_owned(),
+            offset: 18,
+            new_text: "count".to_owned(),
+            old_text: "bytes".to_owned(),
+        }),
+        expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
+            cells[3] = cells[3].with_content("go_memstats_alloc_count")
+        }),
+    });
+
+    test_cases.push(OperationTestCase {
+        operation: Operation::ReplaceText(ReplaceTextOperation {
+            cell_id: "c4".to_owned(),
+            offset: 0,
+            new_text: "".to_owned(),
+            old_text: "go_".to_owned(),
+        }),
+        expected_apply_operation_result: TEST_NOTEBOOK
+            .with_updated_cells(|cells| cells[3] = cells[3].with_content("memstats_alloc_bytes")),
     });
 }
 
