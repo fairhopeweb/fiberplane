@@ -46,7 +46,7 @@ impl ClientRealtimeMessage {
 }
 
 /// Real-time message sent by the server over a WebSocket connection.
-#[derive(Clone, Debug, Deserialize, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum ServerRealtimeMessage {
@@ -82,7 +82,7 @@ pub enum ServerRealtimeMessage {
     SubscriberChangedFocus(SubscriberChangedFocusMessage),
 }
 
-#[derive(Clone, Deserialize, Serialize, Serializable)]
+#[derive(Clone, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(rename_all = "camelCase")]
 pub struct AuthenticateMessage {
@@ -103,7 +103,7 @@ impl Debug for AuthenticateMessage {
     }
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(rename_all = "camelCase")]
 pub struct SubscribeMessage {
@@ -121,7 +121,7 @@ pub struct SubscribeMessage {
     pub op_id: Option<String>,
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(rename_all = "camelCase")]
 pub struct UnsubscribeMessage {
@@ -133,7 +133,7 @@ pub struct UnsubscribeMessage {
     pub op_id: Option<String>,
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(rename_all = "camelCase")]
 pub struct ApplyOperationMessage {
@@ -168,7 +168,7 @@ impl ApplyOperationMessage {
     }
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(rename_all = "camelCase")]
 pub struct ApplyOperationBatchMessage {
@@ -203,7 +203,7 @@ impl ApplyOperationBatchMessage {
     }
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(rename_all = "camelCase")]
 pub struct AckMessage {
@@ -217,7 +217,7 @@ impl AckMessage {
     }
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(rename_all = "camelCase")]
 pub struct ErrMessage {
@@ -229,7 +229,7 @@ pub struct ErrMessage {
     pub op_id: Option<String>,
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(rename_all = "camelCase")]
 pub struct DebugRequestMessage {
@@ -238,7 +238,7 @@ pub struct DebugRequestMessage {
     pub op_id: Option<String>,
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(rename_all = "camelCase")]
 pub struct DebugResponseMessage {
@@ -253,7 +253,7 @@ pub struct DebugResponseMessage {
     pub op_id: Option<String>,
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(rename_all = "camelCase")]
 pub struct MentionMessage {
@@ -267,7 +267,7 @@ pub struct MentionMessage {
     pub mentioned_by: MentionedBy,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, Serializable)]
+#[derive(Debug, Clone, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(rename_all = "camelCase")]
 pub struct MentionedBy {
@@ -276,7 +276,7 @@ pub struct MentionedBy {
     pub name: String,
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(rename_all = "camelCase")]
 pub struct RejectMessage {
@@ -288,7 +288,7 @@ pub struct RejectMessage {
     pub op_id: Option<String>,
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(rename_all = "camelCase")]
 pub struct SubscriberAddedMessage {
@@ -317,7 +317,7 @@ pub struct SubscriberAddedMessage {
     pub focused_cell_id: Option<String>,
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(rename_all = "camelCase")]
 pub struct SubscriberRemovedMessage {
@@ -328,7 +328,7 @@ pub struct SubscriberRemovedMessage {
     pub session_id: String,
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(rename_all = "camelCase")]
 pub struct User {
@@ -340,7 +340,7 @@ pub struct User {
     pub name: String,
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(rename_all = "camelCase")]
 pub struct FocusInfoMessage {
@@ -356,7 +356,7 @@ pub struct FocusInfoMessage {
     pub op_id: Option<String>,
 }
 
-#[derive(Clone, Debug, Deserialize, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(rename_all = "camelCase")]
 pub struct SubscriberChangedFocusMessage {
