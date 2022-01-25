@@ -71,7 +71,12 @@ pub enum ServerRealtimeMessage {
 
     /// Reject an apply operation. This happens when a ApplyOperation is sent,
     /// but the notebook has already applied another operation.
+    #[deprecated(note = "Migrate to Rejected")]
     Reject(RejectMessage),
+
+    /// An apply operation got rejected by the server, see message for the
+    /// reason.
+    Rejected(RejectedMessage),
 
     /// A user has joined as a subscriber to a notebook.
     SubscriberAdded(SubscriberAddedMessage),
@@ -276,6 +281,7 @@ pub struct MentionedBy {
     pub name: String,
 }
 
+#[deprecated(note = "Migrate to RejectedMessage and RejectReason")]
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(rename_all = "camelCase")]
@@ -286,6 +292,29 @@ pub struct RejectMessage {
     /// Operation ID. Empty if the user has not provided a op_id.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub op_id: Option<String>,
+}
+
+/// Message sent when an apply operation was rejected by the server.
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
+#[serde(rename_all = "camelCase")]
+pub struct RejectedMessage {
+    /// The reason why the apply operation was rejected.
+    pub reason: Box<RejectReason>,
+
+    /// Operation ID. Empty if the user has not provided a op_id.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub op_id: Option<String>,
+}
+
+/// Reason why the apply operation was rejected.
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
+#[serde(tag = "type", rename_all = "snake_case")]
+pub enum RejectReason {
+    /// The requested apply operation was for an old version. The u32 contains
+    /// the current revision.
+    Outdated(u32),
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
