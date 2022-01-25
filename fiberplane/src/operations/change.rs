@@ -1,4 +1,4 @@
-use crate::protocols::core::{Cell, NotebookDataSource, TimeRange};
+use crate::protocols::core::{Cell, Label, NotebookDataSource, TimeRange};
 use fp_bindgen::prelude::Serializable;
 use serde::{Deserialize, Serialize};
 
@@ -16,6 +16,9 @@ pub enum Change {
     AddDataSource(AddDataSourceChange),
     DeleteDataSource(DeleteDataSourceChange),
     UpdateDataSource(UpdateDataSourceChange),
+    AddLabel(AddLabelChange),
+    ReplaceLabel(ReplaceLabelChange),
+    RemoveLabel(RemoveLabelChange),
 }
 
 /// Specifies the given cell must be inserted at the given index.
@@ -114,4 +117,34 @@ pub struct DeleteDataSourceChange {
 pub struct UpdateDataSourceChange {
     pub name: String,
     pub data_source: Box<NotebookDataSource>,
+}
+
+/// Specifies the given label must be added.
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::operations")]
+#[serde(rename_all = "camelCase")]
+pub struct AddLabelChange {
+    /// The label that was added.
+    pub label: Label,
+}
+
+/// Specifies the given label must be updated.
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::operations")]
+#[serde(rename_all = "camelCase")]
+pub struct ReplaceLabelChange {
+    /// The key of the existing label that will be replaced.
+    pub key: String,
+
+    /// The new values of the label (Note: it is possible that the key changes).
+    pub label: Label,
+}
+
+/// Specifies the given label must be removed.
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::operations")]
+#[serde(rename_all = "camelCase")]
+pub struct RemoveLabelChange {
+    /// The label that was removed.
+    pub label: Label,
 }

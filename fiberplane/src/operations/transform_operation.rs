@@ -62,6 +62,9 @@ pub fn transform_operation(
             o,
             predecessor,
         )),
+        AddLabel(o) => Ok(transform_add_label_operation(state, o, predecessor)),
+        ReplaceLabel(o) => Ok(transform_replace_label_operation(state, o, predecessor)),
+        RemoveLabel(o) => Ok(transform_remove_label_operation(state, o, predecessor)),
     }
 }
 
@@ -153,7 +156,10 @@ pub fn transform_add_cells_operation(
         | Operation::UpdateNotebookTitle(_)
         | Operation::AddDataSource(_)
         | Operation::UpdateDataSource(_)
-        | Operation::RemoveDataSource(_) => Some(Operation::AddCells(successor.clone())),
+        | Operation::RemoveDataSource(_)
+        | Operation::AddLabel(_)
+        | Operation::ReplaceLabel(_)
+        | Operation::RemoveLabel(_) => Some(Operation::AddCells(successor.clone())),
     };
 
     Ok(operation)
@@ -414,7 +420,10 @@ pub fn transform_merge_cells_operation(
         | Operation::UpdateNotebookTitle(_)
         | Operation::AddDataSource(_)
         | Operation::UpdateDataSource(_)
-        | Operation::RemoveDataSource(_) => Some(Operation::MergeCells(successor.clone())),
+        | Operation::RemoveDataSource(_)
+        | Operation::AddLabel(_)
+        | Operation::ReplaceLabel(_)
+        | Operation::RemoveLabel(_) => Some(Operation::MergeCells(successor.clone())),
     };
 
     Ok(operation)
@@ -599,7 +608,10 @@ pub fn transform_move_cells_operation(
         | Operation::UpdateNotebookTitle(_)
         | Operation::AddDataSource(_)
         | Operation::UpdateDataSource(_)
-        | Operation::RemoveDataSource(_) => Some(Operation::MoveCells(successor.clone())),
+        | Operation::RemoveDataSource(_)
+        | Operation::AddLabel(_)
+        | Operation::ReplaceLabel(_)
+        | Operation::RemoveLabel(_) => Some(Operation::MoveCells(successor.clone())),
     };
 
     Ok(operation)
@@ -855,7 +867,10 @@ pub fn transform_remove_cells_operation(
         | Operation::UpdateNotebookTitle(_)
         | Operation::AddDataSource(_)
         | Operation::UpdateDataSource(_)
-        | Operation::RemoveDataSource(_) => Some(Operation::RemoveCells(successor.clone())),
+        | Operation::RemoveDataSource(_)
+        | Operation::AddLabel(_)
+        | Operation::ReplaceLabel(_)
+        | Operation::RemoveLabel(_) => Some(Operation::RemoveCells(successor.clone())),
     };
 
     Ok(operation)
@@ -961,7 +976,10 @@ pub fn transform_replace_text_operation(
         | Operation::UpdateNotebookTitle(_)
         | Operation::AddDataSource(_)
         | Operation::UpdateDataSource(_)
-        | Operation::RemoveDataSource(_) => Some(Operation::ReplaceText(successor.clone())),
+        | Operation::RemoveDataSource(_)
+        | Operation::AddLabel(_)
+        | Operation::ReplaceLabel(_)
+        | Operation::RemoveLabel(_) => Some(Operation::ReplaceText(successor.clone())),
     };
 
     Ok(operation)
@@ -1185,7 +1203,10 @@ pub fn transform_split_cell_operation(
         | Operation::UpdateNotebookTitle(_)
         | Operation::AddDataSource(_)
         | Operation::UpdateDataSource(_)
-        | Operation::RemoveDataSource(_) => Some(Operation::SplitCell(successor.clone())),
+        | Operation::RemoveDataSource(_)
+        | Operation::AddLabel(_)
+        | Operation::ReplaceLabel(_)
+        | Operation::RemoveLabel(_) => Some(Operation::SplitCell(successor.clone())),
     };
 
     Ok(operation)
@@ -1269,7 +1290,10 @@ pub fn transform_update_cell_operation(
         | Operation::UpdateNotebookTitle(_)
         | Operation::AddDataSource(_)
         | Operation::UpdateDataSource(_)
-        | Operation::RemoveDataSource(_) => Some(Operation::UpdateCell(successor.clone())),
+        | Operation::RemoveDataSource(_)
+        | Operation::AddLabel(_)
+        | Operation::ReplaceLabel(_)
+        | Operation::RemoveLabel(_) => Some(Operation::UpdateCell(successor.clone())),
     };
 
     Ok(operation)
@@ -1317,17 +1341,7 @@ pub fn transform_add_data_source_operation(
                 Some(Operation::AddDataSource(successor.clone()))
             }
         }
-        Operation::AddCells(_)
-        | Operation::MergeCells(_)
-        | Operation::MoveCells(_)
-        | Operation::RemoveCells(_)
-        | Operation::ReplaceText(_)
-        | Operation::SplitCell(_)
-        | Operation::UpdateCell(_)
-        | Operation::UpdateNotebookTimeRange(_)
-        | Operation::UpdateNotebookTitle(_)
-        | Operation::UpdateDataSource(_)
-        | Operation::RemoveDataSource(_) => Some(Operation::AddDataSource(successor.clone())),
+        _ => Some(Operation::AddDataSource(successor.clone())),
     }
 }
 
@@ -1352,16 +1366,7 @@ pub fn transform_update_data_source_operation(
                 Some(Operation::UpdateDataSource(successor.clone()))
             }
         }
-        Operation::AddCells(_)
-        | Operation::MergeCells(_)
-        | Operation::MoveCells(_)
-        | Operation::RemoveCells(_)
-        | Operation::ReplaceText(_)
-        | Operation::SplitCell(_)
-        | Operation::UpdateCell(_)
-        | Operation::UpdateNotebookTimeRange(_)
-        | Operation::UpdateNotebookTitle(_)
-        | Operation::AddDataSource(_) => Some(Operation::UpdateDataSource(successor.clone())),
+        _ => Some(Operation::UpdateDataSource(successor.clone())),
     }
 }
 
@@ -1379,17 +1384,75 @@ pub fn transform_remove_data_source_operation(
                 Some(Operation::RemoveDataSource(successor.clone()))
             }
         }
-        Operation::UpdateDataSource(_)
-        | Operation::AddCells(_)
-        | Operation::MergeCells(_)
-        | Operation::MoveCells(_)
-        | Operation::RemoveCells(_)
-        | Operation::ReplaceText(_)
-        | Operation::SplitCell(_)
-        | Operation::UpdateCell(_)
-        | Operation::UpdateNotebookTimeRange(_)
-        | Operation::UpdateNotebookTitle(_)
-        | Operation::AddDataSource(_) => Some(Operation::RemoveDataSource(successor.clone())),
+        _ => Some(Operation::RemoveDataSource(successor.clone())),
+    }
+}
+
+pub fn transform_add_label_operation(
+    _: &dyn TransformOperationState,
+    successor: &AddLabelOperation,
+    predecessor: &Operation,
+) -> Option<Operation> {
+    // Only allow it:
+    // - if the predecessor was not adding a label with the same key.
+    // - if the predecessor was not updating another label to the same key.
+    match predecessor {
+        Operation::AddLabel(predecessor) if predecessor.label.key == successor.label.key => None,
+        Operation::ReplaceLabel(predecessor)
+            if predecessor.new_label.key == successor.label.key =>
+        {
+            None
+        }
+        _ => Some(Operation::AddLabel(successor.clone())),
+    }
+}
+
+pub fn transform_replace_label_operation(
+    _: &dyn TransformOperationState,
+    successor: &ReplaceLabelOperation,
+    predecessor: &Operation,
+) -> Option<Operation> {
+    match predecessor {
+        // Only allow it:
+        // - if the predecessor was not adding an label with the same key.
+        // - if the predecessor was not updating the same label.
+        // - if the predecessor was not updating an existing label to the same key.
+        // - if the predecessor was not removing an label with the same key.
+        Operation::AddLabel(predecessor) if predecessor.label.key == successor.new_label.key => {
+            None
+        }
+        Operation::ReplaceLabel(predecessor) => {
+            let changed_same_label_key = predecessor.old_label.key == successor.old_label.key;
+            let changed_to_same_label_key = predecessor.new_label.key == successor.new_label.key;
+            if changed_same_label_key || changed_to_same_label_key {
+                None
+            } else {
+                Some(Operation::ReplaceLabel(successor.clone()))
+            }
+        }
+        Operation::RemoveLabel(predecessor) if predecessor.label.key == successor.old_label.key => {
+            None
+        }
+        _ => Some(Operation::ReplaceLabel(successor.clone())),
+    }
+}
+
+pub fn transform_remove_label_operation(
+    _: &dyn TransformOperationState,
+    successor: &RemoveLabelOperation,
+    predecessor: &Operation,
+) -> Option<Operation> {
+    // Only allow it:
+    // - if the predecessor has not updated the same label.
+    // - if the predecessor has not removed the same label.
+    match predecessor {
+        Operation::ReplaceLabel(predecessor)
+            if predecessor.old_label.key == successor.label.key =>
+        {
+            None
+        }
+        Operation::RemoveLabel(predecessor) if predecessor.label.key == successor.label.key => None,
+        _ => Some(Operation::RemoveLabel(successor.clone())),
     }
 }
 

@@ -1,10 +1,9 @@
 use super::fixtures::TEST_NOTEBOOK;
 use crate::{
-    operations::{char_count, Notebook, NotebookVisibility},
+    operations::{char_count, Notebook},
     protocols::{core::*, operations::*},
 };
 use once_cell::sync::Lazy;
-use time::OffsetDateTime;
 
 pub struct OperationTestCase {
     pub operation: Operation,
@@ -28,6 +27,10 @@ pub static TEST_CASES: Lazy<Vec<OperationTestCase>> = Lazy::new(|| {
     create_add_data_source_test_cases(&mut test_cases);
     create_update_data_source_test_cases(&mut test_cases);
     create_remove_data_source_test_cases(&mut test_cases);
+
+    create_add_label_test_case(&mut test_cases);
+    create_replace_label_test_case(&mut test_cases);
+    create_remove_label_test_case(&mut test_cases);
 
     test_cases
 });
@@ -626,21 +629,8 @@ fn create_update_notebook_time_range_test_cases(test_cases: &mut Vec<OperationTe
         }),
         expected_apply_operation_result: {
             Notebook {
-                id: TEST_NOTEBOOK.id.clone(),
-                cells: TEST_NOTEBOOK.cells.clone(),
-                read_only: false,
-                revision: TEST_NOTEBOOK.revision,
-                title: TEST_NOTEBOOK.title.clone(),
                 time_range: new_time_range1,
-                data_sources: TEST_NOTEBOOK.data_sources.clone(),
-                visibility: NotebookVisibility::Private,
-                created_at: OffsetDateTime::UNIX_EPOCH,
-                updated_at: OffsetDateTime::UNIX_EPOCH,
-                created_by: CreatedBy {
-                    user_type: UserType::Individual,
-                    name: "name".to_string(),
-                },
-                labels: Vec::new(),
+                ..TEST_NOTEBOOK.clone()
             }
         },
     });
@@ -658,21 +648,8 @@ fn create_update_notebook_time_range_test_cases(test_cases: &mut Vec<OperationTe
         }),
         expected_apply_operation_result: {
             Notebook {
-                id: TEST_NOTEBOOK.id.clone(),
-                cells: TEST_NOTEBOOK.cells.clone(),
-                read_only: false,
-                revision: TEST_NOTEBOOK.revision,
-                title: TEST_NOTEBOOK.title.clone(),
                 time_range: new_time_range2,
-                data_sources: TEST_NOTEBOOK.data_sources.clone(),
-                visibility: NotebookVisibility::Private,
-                created_at: OffsetDateTime::UNIX_EPOCH,
-                updated_at: OffsetDateTime::UNIX_EPOCH,
-                created_by: CreatedBy {
-                    user_type: UserType::Individual,
-                    name: "name".to_string(),
-                },
-                labels: Vec::new(),
+                ..TEST_NOTEBOOK.clone()
             }
         },
     });
@@ -732,6 +709,62 @@ fn create_remove_data_source_test_cases(test_cases: &mut Vec<OperationTestCase>)
         }),
         expected_apply_operation_result: TEST_NOTEBOOK.with_updated_data_sources(|data_sources| {
             data_sources.remove(&data_source_name);
+        }),
+    });
+}
+
+fn create_add_label_test_case(test_cases: &mut Vec<OperationTestCase>) {
+    test_cases.push(OperationTestCase {
+        operation: Operation::AddLabel(AddLabelOperation {
+            label: Label::new("label-a", "label-a-value"),
+        }),
+        expected_apply_operation_result: TEST_NOTEBOOK.with_updated_labels(|labels| {
+            let label = Label::new("label-a", "label-a-value");
+            labels.push(label);
+        }),
+    });
+}
+
+fn create_replace_label_test_case(test_cases: &mut Vec<OperationTestCase>) {
+    // Test updating the value
+    test_cases.push(OperationTestCase {
+        operation: Operation::ReplaceLabel(ReplaceLabelOperation {
+            old_label: Label::new("existing-key", "existing-value"),
+            new_label: Label::new("existing-key", "new-value"),
+        }),
+        expected_apply_operation_result: TEST_NOTEBOOK.with_updated_labels(|labels| {
+            if let Some(label) = labels.iter_mut().find(|label| label.key == "existing-key") {
+                *label = Label::new("existing-key", "new-value")
+            } else {
+                panic!("label not found");
+            };
+        }),
+    });
+
+    // Test updating the key
+    test_cases.push(OperationTestCase {
+        operation: Operation::ReplaceLabel(ReplaceLabelOperation {
+            old_label: Label::new("existing-key", "existing-value"),
+            new_label: Label::new("new-key", "existing-value"),
+        }),
+        expected_apply_operation_result: TEST_NOTEBOOK.with_updated_labels(|labels| {
+            if let Some(label) = labels.iter_mut().find(|label| label.key == "existing-key") {
+                *label = Label::new("new-key", "existing-value")
+            } else {
+                panic!("label not found");
+            };
+        }),
+    });
+}
+
+fn create_remove_label_test_case(test_cases: &mut Vec<OperationTestCase>) {
+    test_cases.push(OperationTestCase {
+        operation: Operation::RemoveLabel(RemoveLabelOperation {
+            label: Label::new("existing-key", "existing-value"),
+        }),
+        expected_apply_operation_result: TEST_NOTEBOOK.with_updated_labels(|labels| {
+            let target_key = String::from("existing-key");
+            labels.retain(|label| label.key != target_key);
         }),
     });
 }

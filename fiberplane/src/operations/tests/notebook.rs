@@ -4,7 +4,7 @@ use crate::operations::{
     apply_operation, notebook::Notebook, relevant_cell_ids_for_operation, ApplyOperationState,
     CellRefWithIndex, TransformOperationState,
 };
-use crate::protocols::core::{Cell, NotebookDataSource};
+use crate::protocols::core::{Cell, Label, NotebookDataSource};
 use crate::protocols::operations::*;
 use std::collections::BTreeMap;
 
@@ -71,6 +71,20 @@ impl Notebook {
                 self.data_sources.remove(&change.name);
                 self
             }
+            AddLabel(change) => {
+                self.labels.push(change.label);
+                self
+            }
+            ReplaceLabel(change) => {
+                if let Some(label) = self.labels.iter_mut().find(|label| label.key == change.key) {
+                    *label = change.label
+                };
+                self
+            }
+            RemoveLabel(change) => {
+                self.labels.retain(|label| *label.key != change.label.key);
+                self
+            }
         }
     }
 
@@ -121,6 +135,16 @@ impl Notebook {
     {
         let mut clone = self.clone();
         updater(&mut clone.data_sources);
+        clone
+    }
+
+    /// Returns a copy of the notebook with updated labels.
+    pub fn with_updated_labels<F>(&self, updater: F) -> Self
+    where
+        F: FnOnce(&mut Vec<Label>),
+    {
+        let mut clone = self.clone();
+        updater(&mut clone.labels);
         clone
     }
 }

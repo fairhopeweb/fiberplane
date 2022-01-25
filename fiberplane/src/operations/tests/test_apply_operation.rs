@@ -9,9 +9,12 @@ pub fn test_apply_operation() -> Result<(), Error> {
     // operation from the test case is applied, and we verify the resulting notebook matches
     // the expected result.
     for test_case in TEST_CASES.iter() {
+        let op = format!("{:?}", &test_case.operation);
         assert_eq!(
             TEST_NOTEBOOK.apply_operation(&test_case.operation)?,
-            test_case.expected_apply_operation_result
+            test_case.expected_apply_operation_result,
+            "Operation being tested: {}",
+            op
         );
     }
 

@@ -2,6 +2,8 @@ use crate::protocols::core::{Cell, NotebookDataSource, TimeRange};
 use fp_bindgen::prelude::*;
 use serde::{Deserialize, Serialize};
 
+use super::core::Label;
+
 /// An operation is the representation for a mutation to be performed to a notebook.
 ///
 /// Operations are intended to be atomic (they should either be performed in their entirety or not
@@ -25,6 +27,9 @@ pub enum Operation {
     AddDataSource(AddDataSourceOperation),
     UpdateDataSource(UpdateDataSourceOperation),
     RemoveDataSource(RemoveDataSourceOperation),
+    AddLabel(AddLabelOperation),
+    ReplaceLabel(ReplaceLabelOperation),
+    RemoveLabel(RemoveLabelOperation),
 }
 
 /// Adds one or more cells at the given position.
@@ -244,4 +249,33 @@ pub struct RemoveDataSourceOperation {
 pub struct CellWithIndex {
     pub cell: Cell,
     pub index: u32,
+}
+
+/// Add an label to an notebook.
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::operations")]
+#[serde(rename_all = "camelCase")]
+pub struct AddLabelOperation {
+    /// The new label
+    pub label: Label,
+}
+
+/// Replace an label in an notebook.
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::operations")]
+#[serde(rename_all = "camelCase")]
+pub struct ReplaceLabelOperation {
+    // The previous label
+    pub old_label: Label,
+
+    // The new label
+    pub new_label: Label,
+}
+
+/// Remove an label in an notebook.
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::operations")]
+#[serde(rename_all = "camelCase")]
+pub struct RemoveLabelOperation {
+    pub label: Label,
 }

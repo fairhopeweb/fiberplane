@@ -51,6 +51,9 @@ pub fn relevant_cell_ids_for_operation(operation: &Operation) -> Vec<String> {
         | Operation::UpdateNotebookTitle(_)
         | Operation::AddDataSource(_)
         | Operation::UpdateDataSource(_)
-        | Operation::RemoveDataSource(_) => vec![],
+        | Operation::RemoveDataSource(_)
+        | Operation::AddLabel(_)
+        | Operation::ReplaceLabel(_)
+        | Operation::RemoveLabel(_) => vec![],
     }
 }

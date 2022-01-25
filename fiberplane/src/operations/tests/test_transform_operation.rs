@@ -87,6 +87,30 @@ fn converge(operation1: &Operation, operation2: &Operation) -> bool {
             Operation::RemoveDataSource(operation2) => operation1.name != operation2.name,
             _ => true,
         },
+        Operation::AddLabel(operation1) => match operation2 {
+            // It cannot converge with a AddLabel that has the same key.
+            Operation::AddLabel(operation2) => operation1.label.key != operation2.label.key,
+            // It cannot converge with a ReplaceLabel that is trying to change its key to the same key.
+            Operation::ReplaceLabel(operation2) => operation1.label.key != operation2.new_label.key,
+            _ => true,
+        },
+        Operation::ReplaceLabel(operation1) => match operation2 {
+            // It cannot converge with a AddLabel that is trying to add the same key
+            Operation::AddLabel(operation2) => operation1.new_label.key != operation2.label.key,
+            // It cannot converge with an ReplaceLabel that is replacing the same label, or has the same new key.
+            Operation::ReplaceLabel(operation2) => {
+                let changed_same_label_key = operation1.old_label.key == operation2.old_label.key;
+                let changed_to_same_label_key =
+                    operation1.new_label.key == operation2.new_label.key;
+                !changed_same_label_key && !changed_to_same_label_key
+            }
+            // It cannot converge with an RemoveLabel that is trying to remove the same label.
+            Operation::RemoveLabel(operation2) => operation1.old_label.key != operation2.label.key,
+            _ => true,
+        },
+        Operation::RemoveLabel(_operation1) => match operation2 {
+            _ => true,
+        },
     }
 }
 
@@ -198,7 +222,7 @@ pub fn test_transform_operation() -> Result<(), Error> {
         .collect();
 
     // Verify the amount of permutations, to make sure we don't accidentally skip any:
-    assert_eq!(testable_permutations.len(), 572);
+    assert_eq!(testable_permutations.len(), 716);
 
     for (operation1, operation2) in testable_permutations.iter() {
         match (

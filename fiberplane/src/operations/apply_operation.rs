@@ -65,6 +65,9 @@ pub fn apply_operation(
         AddDataSource(operation) => Ok(apply_add_data_source_operation(state, operation)),
         UpdateDataSource(operation) => Ok(apply_update_data_source_operation(state, operation)),
         RemoveDataSource(operation) => Ok(apply_remove_data_source_operation(state, operation)),
+        AddLabel(operation) => Ok(apply_add_label_operation(state, operation)),
+        ReplaceLabel(operation) => Ok(apply_replace_label_operation(state, operation)),
+        RemoveLabel(operation) => Ok(apply_remove_label_operation(state, operation)),
     }
 }
 
@@ -327,6 +330,34 @@ fn apply_remove_data_source_operation(
 ) -> Vec<Change> {
     vec![Change::DeleteDataSource(DeleteDataSourceChange {
         name: operation.name.clone(),
+    })]
+}
+
+fn apply_add_label_operation(
+    _: &dyn ApplyOperationState,
+    operation: &AddLabelOperation,
+) -> Vec<Change> {
+    vec![Change::AddLabel(AddLabelChange {
+        label: operation.label.clone(),
+    })]
+}
+
+fn apply_replace_label_operation(
+    _: &dyn ApplyOperationState,
+    operation: &ReplaceLabelOperation,
+) -> Vec<Change> {
+    vec![Change::ReplaceLabel(ReplaceLabelChange {
+        key: operation.old_label.key.clone(),
+        label: operation.new_label.clone(),
+    })]
+}
+
+fn apply_remove_label_operation(
+    _: &dyn ApplyOperationState,
+    operation: &RemoveLabelOperation,
+) -> Vec<Change> {
+    vec![Change::RemoveLabel(RemoveLabelChange {
+        label: operation.label.clone(),
     })]
 }
 

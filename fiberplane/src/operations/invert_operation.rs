@@ -23,6 +23,9 @@ pub fn invert_operation(operation: &Operation) -> Operation {
         AddDataSource(operation) => invert_add_data_source_operation(operation),
         UpdateDataSource(operation) => invert_update_data_source_operation(operation),
         RemoveDataSource(operation) => invert_remove_data_source_operation(operation),
+        AddLabel(operation) => invert_add_label_operation(operation),
+        ReplaceLabel(operation) => invert_replace_label_operation(operation),
+        RemoveLabel(operation) => invert_remove_label_operation(operation),
     }
 }
 
@@ -143,5 +146,24 @@ fn invert_remove_data_source_operation(operation: &RemoveDataSourceOperation) ->
     Operation::AddDataSource(AddDataSourceOperation {
         name: operation.name.clone(),
         data_source: operation.data_source.clone(),
+    })
+}
+
+fn invert_add_label_operation(operation: &AddLabelOperation) -> Operation {
+    Operation::RemoveLabel(RemoveLabelOperation {
+        label: operation.label.clone(),
+    })
+}
+
+fn invert_replace_label_operation(operation: &ReplaceLabelOperation) -> Operation {
+    Operation::ReplaceLabel(ReplaceLabelOperation {
+        old_label: operation.new_label.clone(),
+        new_label: operation.old_label.clone(),
+    })
+}
+
+fn invert_remove_label_operation(operation: &RemoveLabelOperation) -> Operation {
+    Operation::AddLabel(AddLabelOperation {
+        label: operation.label.clone(),
     })
 }

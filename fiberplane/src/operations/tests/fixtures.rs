@@ -166,6 +166,6 @@ pub static TEST_NOTEBOOK: Lazy<Notebook> = Lazy::new(|| {
             user_type: UserType::Individual,
             name: "name".to_string(),
         },
-        labels: Vec::new(),
+        labels: vec![Label::new("existing-key", "existing-value")],
     }
 });
