@@ -13,6 +13,8 @@ docs/DataSourceSummary.md
 docs/DataSourceType.md
 docs/DefaultApi.md
 docs/DividerCell.md
+docs/ElasticsearchCell.md
+docs/ElasticsearchDataSource.md
 docs/FileSummary.md
 docs/GraphCell.md
 docs/HeadingCell.md
@@ -22,6 +24,8 @@ docs/Instant.md
 docs/InstantQuery.md
 docs/Label.md
 docs/ListItemCell.md
+docs/LogCell.md
+docs/LogRecord.md
 docs/Metric.md
 docs/NewNotebook.md
 docs/NewOrgDataSource.md
@@ -67,6 +71,8 @@ src/models/data_source_and_proxy_summary.rs
 src/models/data_source_summary.rs
 src/models/data_source_type.rs
 src/models/divider_cell.rs
+src/models/elasticsearch_cell.rs
+src/models/elasticsearch_data_source.rs
 src/models/file_summary.rs
 src/models/graph_cell.rs
 src/models/heading_cell.rs
@@ -76,6 +82,8 @@ src/models/instant.rs
 src/models/instant_query.rs
 src/models/label.rs
 src/models/list_item_cell.rs
+src/models/log_cell.rs
+src/models/log_record.rs
 src/models/metric.rs
 src/models/mod.rs
 src/models/new_notebook.rs

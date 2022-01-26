@@ -35,12 +35,12 @@ pub struct Notebook {
     pub updated_at: String,
     #[serde(rename = "visibility", skip_serializing_if = "Option::is_none")]
     pub visibility: Option<crate::models::NotebookVisibility>,
-    #[serde(rename = "labels", skip_serializing_if = "Option::is_none")]
-    pub labels: Option<Vec<crate::models::Label>>,
+    #[serde(rename = "labels")]
+    pub labels: Vec<crate::models::Label>,
 }
 
 impl Notebook {
-    pub fn new(id: String, revision: i32, title: String, cells: Vec<crate::models::Cell>, created_at: String, created_by: crate::models::CreatedBy, time_range: crate::models::TimeRange, updated_at: String) -> Notebook {
+    pub fn new(id: String, revision: i32, title: String, cells: Vec<crate::models::Cell>, created_at: String, created_by: crate::models::CreatedBy, time_range: crate::models::TimeRange, updated_at: String, labels: Vec<crate::models::Label>) -> Notebook {
         Notebook {
             id,
             revision,
@@ -53,7 +53,7 @@ impl Notebook {
             time_range: Box::new(time_range),
             updated_at,
             visibility: None,
-            labels: None,
+            labels,
         }
     }
 }

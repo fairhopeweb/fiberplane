@@ -13,6 +13,11 @@
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 #[serde(tag = "type")]
 pub enum DataSource {
+    #[serde(rename="elasticsearch")]
+    ElasticsearchDataSource {
+        #[serde(rename = "url")]
+        url: String,
+    },
     #[serde(rename="prometheus")]
     PrometheusDataSource {
         #[serde(rename = "url")]

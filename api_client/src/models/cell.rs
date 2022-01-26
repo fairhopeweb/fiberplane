@@ -44,6 +44,15 @@ pub enum Cell {
         #[serde(rename = "readOnly", skip_serializing_if = "Option::is_none")]
         read_only: Option<bool>,
     },
+    #[serde(rename="elasticsearch")]
+    ElasticsearchCell {
+        #[serde(rename = "id")]
+        id: String,
+        #[serde(rename = "content")]
+        content: String,
+        #[serde(rename = "readOnly", skip_serializing_if = "Option::is_none")]
+        read_only: Option<bool>,
+    },
     #[serde(rename="graph")]
     GraphCell {
         #[serde(rename = "id")]
@@ -107,6 +116,19 @@ pub enum Cell {
         read_only: Option<bool>,
         #[serde(rename = "startNumber", skip_serializing_if = "Option::is_none")]
         start_number: Option<i32>,
+    },
+    #[serde(rename="log")]
+    LogCell {
+        #[serde(rename = "id")]
+        id: String,
+        #[serde(rename = "readOnly", skip_serializing_if = "Option::is_none")]
+        read_only: Option<bool>,
+        #[serde(rename = "sourceIds")]
+        source_ids: Vec<String>,
+        #[serde(rename = "timeRange", skip_serializing_if = "Option::is_none")]
+        time_range: Option<Box<crate::models::TimeRange>>,
+        #[serde(rename = "data", skip_serializing_if = "Option::is_none")]
+        data: Option<::std::collections::HashMap<String, Vec<crate::models::LogRecord>>>,
     },
     #[serde(rename="prometheus")]
     PrometheusCell {

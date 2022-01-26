@@ -54,7 +54,9 @@ components:
         - $ref: "#/components/schemas/graphCell"
         - $ref: "#/components/schemas/headingCell"
         - $ref: "#/components/schemas/listItemCell"
+        - $ref: "#/components/schemas/logCell"
         - $ref: "#/components/schemas/prometheusCell"
+        - $ref: "#/components/schemas/elasticsearchCell"
         - $ref: "#/components/schemas/tableCell"
         - $ref: "#/components/schemas/textCell"
         - $ref: "#/components/schemas/imageCell"
@@ -67,7 +69,9 @@ components:
           graph: "#/components/schemas/graphCell"
           heading: "#/components/schemas/headingCell"
           list_item: "#/components/schemas/listItemCell"
+          log: "#/components/schemas/logCell"
           prometheus: "#/components/schemas/prometheusCell"
+          elasticsearch: "#/components/schemas/elasticsearchCell"
           table: "#/components/schemas/tableCell"
           text: "#/components/schemas/textCell"
           image: "#/components/schemas/imageCell"
@@ -80,7 +84,9 @@ components:
         - graph
         - heading
         - list_item
+        - log
         - prometheus
+        - elasticsearch
         - table
         - text
         - image
@@ -239,6 +245,21 @@ components:
           type: string
         readOnly:
           type: boolean
+    elasticsearchCell:
+      type: object
+      required:
+        - type
+        - id
+        - content
+      properties:
+        type:
+          $ref: "#/components/schemas/cellType"
+        id:
+          type: string
+        content:
+          type: string
+        readOnly:
+          type: boolean
     tableCell:
       type: object
       required:
@@ -262,6 +283,31 @@ components:
             type: array
             items:
               $ref: "#/components/schemas/instant"
+    LogCell:
+      type: object
+      required:
+        - type
+        - id
+        - sourceIds
+      properties:
+        type:
+          $ref: "#/components/schemas/cellType"
+        id:
+          type: string
+        readOnly:
+          type: boolean
+        sourceIds:
+          type: array
+          items:
+            type: string
+        timeRange:
+          $ref: "#/components/schemas/timeRange"
+        data:
+          type: object
+          additionalProperties:
+            type: array
+            items:
+              $ref: "#/components/schemas/logRecord"
     textCell:
       type: object
       required:
@@ -316,6 +362,7 @@ components:
         - createdBy
         - timeRange
         - updatedAt
+        - labels
       properties:
         id:
           type: string
@@ -503,18 +550,31 @@ components:
     dataSource:
       oneOf:
         - $ref: "#/components/schemas/prometheusDataSource"
+        - $ref: "#/components/schemas/elasticsearchDataSource"
         - $ref: "#/components/schemas/proxyDataSource"
       discriminator:
         propertyName: type
         mapping:
           prometheus: "#/components/schemas/prometheusDataSource"
+          elasticsearch: "#/components/schemas/elasticsearchDataSource"
           proxy: "#/components/schemas/proxyDataSource"
     dataSourceType:
       type: string
       enum:
         - prometheus
+        - elasticsearch
         - proxy
     prometheusDataSource:
+      type: object
+      required:
+        - "type"
+        - "url"
+      properties:
+        type:
+          $ref: "#/components/schemas/dataSourceType"
+        url:
+          type: string
+    elasticsearchDataSource:
       type: object
       required:
         - "type"
@@ -737,6 +797,31 @@ components:
           $ref: "#/components/schemas/userType"
         proxy:
           $ref: "#/components/schemas/proxySummary"
+    logRecord:
+      type: object
+      required:
+        - timestamp
+        - body
+        - attributes
+        - resource
+      properties:
+        timestamp:
+          type: number
+          format: float
+        body:
+          type: string
+        attributes:
+          type: object
+          additionalProperties:
+            type: string
+        resource:
+          type: object
+          additionalProperties:
+            type: string
+        traceId:
+          type: string
+        spanId:
+          type: string
     userType:
       type: string
       enum:

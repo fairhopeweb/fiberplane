@@ -98,7 +98,9 @@ pub enum Cell {
     Heading(HeadingCell),
     ListItem(ListItemCell),
     Prometheus(PrometheusCell),
+    Elasticsearch(ElasticsearchCell),
     Table(TableCell),
+    Log(LogCell),
     Text(TextCell),
     Image(ImageCell),
     Divider(DividerCell),
@@ -113,7 +115,9 @@ impl Cell {
             Cell::Graph(_) => None,
             Cell::Heading(cell) => Some(&cell.content),
             Cell::ListItem(cell) => Some(&cell.content),
+            Cell::Log(_) => None,
             Cell::Prometheus(cell) => Some(&cell.content),
+            Cell::Elasticsearch(cell) => Some(&cell.content),
             Cell::Table(_) => None,
             Cell::Text(cell) => Some(&cell.content),
             Cell::Image(_) => None,
@@ -129,7 +133,9 @@ impl Cell {
             Cell::Graph(cell) => &cell.id,
             Cell::Heading(cell) => &cell.id,
             Cell::ListItem(cell) => &cell.id,
+            Cell::Log(cell) => &cell.id,
             Cell::Prometheus(cell) => &cell.id,
+            Cell::Elasticsearch(cell) => &cell.id,
             Cell::Table(cell) => &cell.id,
             Cell::Text(cell) => &cell.id,
             Cell::Image(cell) => &cell.id,
@@ -146,12 +152,14 @@ impl Cell {
     pub fn source_ids(&self) -> Vec<&str> {
         match self {
             Cell::Graph(cell) => cell.source_ids.iter().map(String::as_str).collect(),
+            Cell::Log(cell) => cell.source_ids.iter().map(String::as_str).collect(),
             Cell::Table(cell) => cell.source_ids.iter().map(String::as_str).collect(),
             Cell::Checkbox(_)
             | Cell::Code(_)
             | Cell::Heading(_)
             | Cell::ListItem(_)
             | Cell::Prometheus(_)
+            | Cell::Elasticsearch(_)
             | Cell::Text(_)
             | Cell::Image(_)
             | Cell::Divider(_) => vec![],
@@ -198,7 +206,13 @@ impl Cell {
                 content: content.to_owned(),
                 ..*cell
             }),
+            Cell::Log(cell) => Cell::Log(cell.clone()),
             Cell::Prometheus(cell) => Cell::Prometheus(PrometheusCell {
+                id: cell.id.clone(),
+                content: content.to_owned(),
+                ..*cell
+            }),
+            Cell::Elasticsearch(cell) => Cell::Elasticsearch(ElasticsearchCell {
                 id: cell.id.clone(),
                 content: content.to_owned(),
                 ..*cell
@@ -248,7 +262,19 @@ impl Cell {
                 content: cell.content.clone(),
                 ..*cell
             }),
+            Cell::Log(cell) => Cell::Log(LogCell {
+                id: id.to_owned(),
+                data: cell.data.clone(),
+                source_ids: cell.source_ids.clone(),
+                time_range: cell.time_range.clone(),
+                ..*cell
+            }),
             Cell::Prometheus(cell) => Cell::Prometheus(PrometheusCell {
+                id: id.to_owned(),
+                content: cell.content.clone(),
+                ..*cell
+            }),
+            Cell::Elasticsearch(cell) => Cell::Elasticsearch(ElasticsearchCell {
                 id: id.to_owned(),
                 content: cell.content.clone(),
                 ..*cell
@@ -303,7 +329,20 @@ impl Cell {
             }),
             Cell::Heading(cell) => Cell::Heading(cell.clone()),
             Cell::ListItem(cell) => Cell::ListItem(cell.clone()),
+            Cell::Log(cell) => Cell::Log(LogCell {
+                id: cell.id.clone(),
+                data: cell.data.as_ref().map(|data| {
+                    data.iter()
+                        .filter(|(k, _)| source_ids.contains(k))
+                        .map(|(k, v)| (k.clone(), v.clone()))
+                        .collect()
+                }),
+                time_range: cell.time_range.clone(),
+                source_ids,
+                ..*cell
+            }),
             Cell::Prometheus(cell) => Cell::Prometheus(cell.clone()),
+            Cell::Elasticsearch(cell) => Cell::Elasticsearch(cell.clone()),
             Cell::Table(cell) => Cell::Table(TableCell {
                 id: cell.id.clone(),
                 data: cell.data.as_ref().map(|data| {
@@ -404,6 +443,20 @@ pub struct HeadingCell {
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(rename_all = "camelCase")]
+pub struct LogCell {
+    pub id: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub read_only: Option<bool>,
+    pub source_ids: Vec<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub data: Option<BTreeMap<String, Vec<LogRecord>>>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub time_range: Option<TimeRange>,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[serde(rename_all = "camelCase")]
 pub struct ListItemCell {
     pub id: String,
     pub content: String,
@@ -420,6 +473,16 @@ pub struct ListItemCell {
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(rename_all = "camelCase")]
 pub struct PrometheusCell {
+    pub id: String,
+    pub content: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub read_only: Option<bool>,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[serde(rename_all = "camelCase")]
+pub struct ElasticsearchCell {
     pub id: String,
     pub content: String,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -580,6 +643,18 @@ impl Instant<f64> {
     }
 }
 
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[serde(rename_all = "camelCase")]
+pub struct LogRecord {
+    pub timestamp: Timestamp,
+    pub body: String,
+    pub attributes: HashMap<String, String>,
+    pub resource: HashMap<String, String>,
+    pub trace_id: Option<String>,
+    pub span_id: Option<String>,
+}
+
 /// A series of data-points in time, with meta-data about the metric it was taken from.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
@@ -664,7 +739,7 @@ pub struct OrganizationDataSource {
 pub enum DataSource {
     Prometheus(PrometheusDataSource),
     Proxy(ProxyDataSource),
-    // Elasticsearch
+    Elasticsearch(ElasticsearchDataSource),
     // Kubernetes
 }
 
@@ -675,6 +750,16 @@ pub enum DataSource {
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(rename_all = "camelCase")]
 pub struct PrometheusDataSource {
+    pub url: String,
+}
+
+/// A data-source for Elasticsearch. Currently only requires a url. This should be
+/// a full URL starting with http:// or https:// the domain, and optionally a
+/// port and a path.
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[serde(rename_all = "camelCase")]
+pub struct ElasticsearchDataSource {
     pub url: String,
 }
 

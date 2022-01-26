@@ -15,7 +15,7 @@ Name | Type | Description | Notes
 **time_range** | [**crate::models::TimeRange**](timeRange.md) |  | 
 **updated_at** | **String** |  | 
 **visibility** | Option<[**crate::models::NotebookVisibility**](notebookVisibility.md)> |  | [optional]
-**labels** | Option<[**Vec<crate::models::Label>**](label.md)> |  | [optional]
+**labels** | [**Vec<crate::models::Label>**](label.md) |  | 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

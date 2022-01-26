@@ -24,8 +24,12 @@ pub enum CellType {
     Heading,
     #[serde(rename = "list_item")]
     ListItem,
+    #[serde(rename = "log")]
+    Log,
     #[serde(rename = "prometheus")]
     Prometheus,
+    #[serde(rename = "elasticsearch")]
+    Elasticsearch,
     #[serde(rename = "table")]
     Table,
     #[serde(rename = "text")]
@@ -44,7 +48,9 @@ impl ToString for CellType {
             Self::Graph => String::from("graph"),
             Self::Heading => String::from("heading"),
             Self::ListItem => String::from("list_item"),
+            Self::Log => String::from("log"),
             Self::Prometheus => String::from("prometheus"),
+            Self::Elasticsearch => String::from("elasticsearch"),
             Self::Table => String::from("table"),
             Self::Text => String::from("text"),
             Self::Image => String::from("image"),

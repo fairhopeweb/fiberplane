@@ -14,6 +14,8 @@
 pub enum DataSourceType {
     #[serde(rename = "prometheus")]
     Prometheus,
+    #[serde(rename = "elasticsearch")]
+    Elasticsearch,
     #[serde(rename = "proxy")]
     Proxy,
 
@@ -23,6 +25,7 @@ impl ToString for DataSourceType {
     fn to_string(&self) -> String {
         match self {
             Self::Prometheus => String::from("prometheus"),
+            Self::Elasticsearch => String::from("elasticsearch"),
             Self::Proxy => String::from("proxy"),
         }
     }
