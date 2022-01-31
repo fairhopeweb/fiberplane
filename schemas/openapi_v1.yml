@@ -283,7 +283,7 @@ components:
             type: array
             items:
               $ref: "#/components/schemas/instant"
-    LogCell:
+    logCell:
       type: object
       required:
         - type
