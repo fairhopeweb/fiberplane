@@ -314,7 +314,7 @@ pub struct RejectedMessage {
 pub enum RejectReason {
     /// The requested apply operation was for an old version. The u32 contains
     /// the current revision.
-    Outdated(u32),
+    Outdated { current_revision: u32 },
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
@@ -398,4 +398,21 @@ pub struct SubscriberChangedFocusMessage {
     /// ID of the focused cell. Empty if no cell is focused.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub cell_id: Option<String>,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn serialize_reject_reason() {
+        let reason = RejectReason::Outdated {
+            current_revision: 1,
+        };
+        let result = serde_json::to_string(&reason);
+        match result {
+            Err(err) => panic!("Unexpected error occurred: {:?}", err),
+            _ => (),
+        }
+    }
 }
