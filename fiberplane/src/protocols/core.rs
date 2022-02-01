@@ -1,8 +1,23 @@
 use fp_bindgen::prelude::Serializable;
+use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::collections::HashMap;
 use time::OffsetDateTime;
+
+/// Validator for the prefix portion of a Label.
+pub static LABEL_PREFIX_RE: Lazy<regex::Regex> = Lazy::new(|| {
+    regex::Regex::new(r#"^[a-z0-9]([-a-z0-9]*[a-z0-9])?(\.[a-z0-9]([-a-z0-9]*[a-z0-9])?)*$"#)
+        .unwrap()
+});
+
+/// Validator for the name and value portion of a Label.
+pub static LABEL_NAME_VALUE_RE: Lazy<regex::Regex> =
+    Lazy::new(|| regex::Regex::new(r#"^[a-z\dA-Z]([\w\-\.]*[a-z\dA-Z])?$"#).unwrap());
+
+const MAX_LABEL_VALUE_LENGTH: usize = 63;
+const MAX_LABEL_NAME_LENGTH: usize = 63;
+const MAX_LABEL_PREFIX_LENGTH: usize = 253;
 
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
@@ -792,6 +807,196 @@ impl Label {
         Self {
             key: key.into(),
             value: value.into(),
+        }
+    }
+
+    /// Validates the key and value.
+    pub fn validate(&self) -> Result<(), LabelValidationError> {
+        Label::validate_key(&self.key)?;
+        Label::validate_value(&self.value)?;
+
+        Ok(())
+    }
+
+    /// A key is considered valid if it adheres to the following criteria:
+    /// It can contain two segments, a prefix and a name, the name segment has
+    /// the following criteria:
+    /// - must be 63 characters or less (cannot be empty)
+    /// - must begin and end with an alphanumeric character ([a-z0-9A-Z])
+    /// - could contain dashes (-), underscores (_), dots (.), and alphanumerics between
+    /// The prefix is optional, if specified must follow the following criteria:
+    /// - must be 253 characters or less
+    /// - must be a valid DNS subdomain
+    pub fn validate_key(key: &str) -> Result<(), LabelValidationError> {
+        if key.is_empty() {
+            return Err(LabelValidationError::EmptyKey);
+        }
+
+        let (prefix, name) = match key.split_once('/') {
+            Some((prefix, name)) => (Some(prefix), name),
+            None => (None, key),
+        };
+
+        // Validation of the name portion
+        if name.is_empty() {
+            return Err(LabelValidationError::EmptyName);
+        }
+
+        if name.len() > MAX_LABEL_NAME_LENGTH {
+            return Err(LabelValidationError::NameTooLong);
+        }
+
+        if !LABEL_NAME_VALUE_RE.is_match(name) {
+            return Err(LabelValidationError::NameInvalidCharacters);
+        }
+
+        // Validation of the prefix portion
+        if let Some(prefix) = prefix {
+            if prefix.is_empty() {
+                return Err(LabelValidationError::EmptyPrefix);
+            }
+
+            if prefix.len() > MAX_LABEL_PREFIX_LENGTH {
+                return Err(LabelValidationError::PrefixTooLong);
+            }
+
+            if !LABEL_PREFIX_RE.is_match(prefix) {
+                return Err(LabelValidationError::PrefixInvalidCharacters);
+            }
+        }
+
+        Ok(())
+    }
+
+    /// A value is considered valid if it adheres to the following criteria:
+    /// - must be 63 characters or less (can be empty)
+    /// - unless empty, must begin and end with an alphanumeric character ([a-z0-9A-Z])
+    /// - could contain dashes (-), underscores (_), dots (.), and alphanumerics between
+    pub fn validate_value(value: &str) -> Result<(), LabelValidationError> {
+        // Validation of the value (only if it contains something)
+        if !value.is_empty() {
+            if value.len() > MAX_LABEL_VALUE_LENGTH {
+                return Err(LabelValidationError::ValueTooLong);
+            }
+
+            if !LABEL_NAME_VALUE_RE.is_match(value) {
+                return Err(LabelValidationError::ValueInvalidCharacters);
+            }
+        }
+        Ok(())
+    }
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[serde(rename_all = "snake_case")]
+pub enum LabelValidationError {
+    /// The key in the label was empty
+    EmptyKey,
+
+    /// The name portion of the key was empty
+    EmptyName,
+
+    /// The name portion of the key was too long
+    NameTooLong,
+
+    /// The name portion of the key contains invalid characters
+    NameInvalidCharacters,
+
+    /// The prefix portion of the key was empty
+    EmptyPrefix,
+
+    /// The prefix portion of the key was too long
+    PrefixTooLong,
+
+    /// The prefix portion of the key contains invalid characters
+    PrefixInvalidCharacters,
+
+    /// The value is too long
+    ValueTooLong,
+
+    /// The value contains invalid characters
+    ValueInvalidCharacters,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn label_key_valid() {
+        let keys = vec![
+            "key",
+            "key.with.dot",
+            "key_with_underscore",
+            "key-with-dash",
+            "key..with..double..dot",
+            "fiberplane.io/key",
+            "fiberplane.io/key.with.dot",
+            "fiberplane.io/key_with_underscore",
+            "fiberplane.io/key-with-dash",
+        ];
+        for key in keys.into_iter() {
+            assert!(
+                Label::validate_key(key).is_ok(),
+                "Key \"{}\" should have passed validation",
+                key
+            );
+        }
+    }
+
+    #[test]
+    fn label_key_invalid() {
+        let keys = vec![
+            "",
+            "too_long_name_too_long_name_too_long_name_too_long_name_too_long_name_",
+            "fiberplane.fiberplane.fiberplane.fiberplane.fiberplane.fiberplane.fiberplane.fiberplane.fiberplane.fiberplane.fiberplane.fiberplane.fiberplane.fiberplane.fiberplane.fiberplane.fiberplane.fiberplane.fiberplane.fiberplane.fiberplane.fiberplane.fiberplane.fiberplane.com/name",
+            "-name_start_with_non_alpha_numeric",
+            "name_end_with_non_alpha_numeric-",
+            "fiberplane..com/name",
+            "fiberplane.com/invalid/name",
+            "/name",
+        ];
+        for key in keys.into_iter() {
+            assert!(
+                Label::validate_key(key).is_err(),
+                "Key \"{}\" should have failed validation",
+                key
+            );
+        }
+    }
+
+    #[test]
+    fn label_value_valid() {
+        let values = vec![
+            "",
+            "value",
+            "value.with.dot",
+            "value_with_underscore",
+            "value-with-dash",
+        ];
+        for value in values.into_iter() {
+            assert!(
+                Label::validate_value(value).is_ok(),
+                "Value \"{}\" should have passed validation",
+                value
+            );
+        }
+    }
+
+    #[test]
+    fn label_value_invalid() {
+        let values = vec![
+            "too_long_name_too_long_name_too_long_name_too_long_name_too_long_name_",
+            "-value_starting_with_a_dash",
+            "value_ending_with_a_dash-",
+        ];
+        for value in values.into_iter() {
+            assert!(
+                Label::validate_key(value).is_err(),
+                "Value \"{}\" should have failed validation",
+                value
+            );
         }
     }
 }

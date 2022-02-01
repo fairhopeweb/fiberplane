@@ -1,4 +1,5 @@
-use crate::protocols::{core::UserType, operations::Operation};
+use crate::protocols::core::{LabelValidationError, UserType};
+use crate::protocols::operations::Operation;
 use fp_bindgen::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::fmt::Debug;
@@ -68,11 +69,6 @@ pub enum ServerRealtimeMessage {
     /// Notifies a mentioned user of the fact they've been mentioned by someone
     /// else.
     Mention(MentionMessage),
-
-    /// Reject an apply operation. This happens when a ApplyOperation is sent,
-    /// but the notebook has already applied another operation.
-    #[deprecated(note = "Migrate to Rejected")]
-    Reject(RejectMessage),
 
     /// An apply operation got rejected by the server, see message for the
     /// reason.
@@ -281,19 +277,6 @@ pub struct MentionedBy {
     pub name: String,
 }
 
-#[deprecated(note = "Migrate to RejectedMessage and RejectReason")]
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
-#[serde(rename_all = "camelCase")]
-pub struct RejectMessage {
-    /// The current revision of the notebook.
-    pub current_revision: u32,
-
-    /// Operation ID. Empty if the user has not provided a op_id.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub op_id: Option<String>,
-}
-
 /// Message sent when an apply operation was rejected by the server.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
@@ -307,6 +290,15 @@ pub struct RejectedMessage {
     pub op_id: Option<String>,
 }
 
+impl RejectedMessage {
+    pub fn new(reason: RejectReason, op_id: Option<String>) -> Self {
+        Self {
+            reason: Box::new(reason),
+            op_id,
+        }
+    }
+}
+
 /// Reason why the apply operation was rejected.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
@@ -314,7 +306,40 @@ pub struct RejectedMessage {
 pub enum RejectReason {
     /// The requested apply operation was for an old version. The u32 contains
     /// the current revision.
-    Outdated { current_revision: u32 },
+    Outdated(OutdatedRejectReason),
+
+    /// A label was submitted that was invalid.
+    InvalidLabel(InvalidLabelRejectReason),
+
+    /// A label was submitted for already exists for the notebook.
+    DuplicateLabel(DuplicateLabelRejectReason),
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
+#[serde(rename_all = "camelCase")]
+pub struct OutdatedRejectReason {
+    /// The current revision for the notebook.
+    pub current_revision: u32,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
+#[serde(rename_all = "camelCase")]
+pub struct InvalidLabelRejectReason {
+    /// The key of the label that was invalid.
+    pub key: String,
+
+    /// The specific reason why the label was invalid.
+    pub validation_error: LabelValidationError,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
+#[serde(rename_all = "camelCase")]
+pub struct DuplicateLabelRejectReason {
+    /// The key of the label that was already present.
+    pub key: String,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
@@ -406,9 +431,10 @@ mod tests {
 
     #[test]
     fn serialize_reject_reason() {
-        let reason = RejectReason::Outdated {
+        let reason = OutdatedRejectReason {
             current_revision: 1,
         };
+        let reason = RejectReason::Outdated(reason);
         let result = serde_json::to_string(&reason);
         match result {
             Err(err) => panic!("Unexpected error occurred: {:?}", err),

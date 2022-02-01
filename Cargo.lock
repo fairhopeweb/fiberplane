@@ -167,6 +167,7 @@ dependencies = [
  "fp-bindgen",
  "once_cell",
  "pretty_assertions 0.7.2",
+ "regex",
  "serde",
  "serde_json",
  "thiserror",
