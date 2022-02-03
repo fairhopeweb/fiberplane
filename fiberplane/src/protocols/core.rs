@@ -3,6 +3,7 @@ use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 use std::collections::HashMap;
+use thiserror::Error;
 use time::OffsetDateTime;
 
 /// Validator for the prefix portion of a Label.
@@ -887,35 +888,35 @@ impl Label {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Serializable)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Serializable, Error)]
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(rename_all = "snake_case")]
 pub enum LabelValidationError {
-    /// The key in the label was empty
+    #[error("The key in the label was empty")]
     EmptyKey,
 
-    /// The name portion of the key was empty
+    #[error("The name portion of the key was empty")]
     EmptyName,
 
-    /// The name portion of the key was too long
+    #[error("The name portion of the key was too long")]
     NameTooLong,
 
-    /// The name portion of the key contains invalid characters
+    #[error("The name portion of the key contains invalid characters")]
     NameInvalidCharacters,
 
-    /// The prefix portion of the key was empty
+    #[error("The prefix portion of the key was empty")]
     EmptyPrefix,
 
-    /// The prefix portion of the key was too long
+    #[error("The prefix portion of the key was too long")]
     PrefixTooLong,
 
-    /// The prefix portion of the key contains invalid characters
+    #[error("The prefix portion of the key contains invalid characters")]
     PrefixInvalidCharacters,
 
-    /// The value is too long
+    #[error("The value is too long")]
     ValueTooLong,
 
-    /// The value contains invalid characters
+    #[error("The value contains invalid characters")]
     ValueInvalidCharacters,
 }
 
