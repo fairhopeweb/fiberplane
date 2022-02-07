@@ -30,6 +30,8 @@ pub enum CellType {
     Prometheus,
     #[serde(rename = "elasticsearch")]
     Elasticsearch,
+    #[serde(rename = "loki")]
+    Loki,
     #[serde(rename = "table")]
     Table,
     #[serde(rename = "text")]
@@ -51,6 +53,7 @@ impl ToString for CellType {
             Self::Log => String::from("log"),
             Self::Prometheus => String::from("prometheus"),
             Self::Elasticsearch => String::from("elasticsearch"),
+            Self::Loki => String::from("loki"),
             Self::Table => String::from("table"),
             Self::Text => String::from("text"),
             Self::Image => String::from("image"),

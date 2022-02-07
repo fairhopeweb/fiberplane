@@ -115,6 +115,7 @@ pub enum Cell {
     ListItem(ListItemCell),
     Prometheus(PrometheusCell),
     Elasticsearch(ElasticsearchCell),
+    Loki(LokiCell),
     Table(TableCell),
     Log(LogCell),
     Text(TextCell),
@@ -134,6 +135,7 @@ impl Cell {
             Cell::Log(_) => None,
             Cell::Prometheus(cell) => Some(&cell.content),
             Cell::Elasticsearch(cell) => Some(&cell.content),
+            Cell::Loki(cell) => Some(&cell.content),
             Cell::Table(_) => None,
             Cell::Text(cell) => Some(&cell.content),
             Cell::Image(_) => None,
@@ -152,6 +154,7 @@ impl Cell {
             Cell::Log(cell) => &cell.id,
             Cell::Prometheus(cell) => &cell.id,
             Cell::Elasticsearch(cell) => &cell.id,
+            Cell::Loki(cell) => &cell.id,
             Cell::Table(cell) => &cell.id,
             Cell::Text(cell) => &cell.id,
             Cell::Image(cell) => &cell.id,
@@ -176,6 +179,7 @@ impl Cell {
             | Cell::ListItem(_)
             | Cell::Prometheus(_)
             | Cell::Elasticsearch(_)
+            | Cell::Loki(_)
             | Cell::Text(_)
             | Cell::Image(_)
             | Cell::Divider(_) => vec![],
@@ -229,6 +233,11 @@ impl Cell {
                 ..*cell
             }),
             Cell::Elasticsearch(cell) => Cell::Elasticsearch(ElasticsearchCell {
+                id: cell.id.clone(),
+                content: content.to_owned(),
+                ..*cell
+            }),
+            Cell::Loki(cell) => Cell::Loki(LokiCell {
                 id: cell.id.clone(),
                 content: content.to_owned(),
                 ..*cell
@@ -291,6 +300,11 @@ impl Cell {
                 ..*cell
             }),
             Cell::Elasticsearch(cell) => Cell::Elasticsearch(ElasticsearchCell {
+                id: id.to_owned(),
+                content: cell.content.clone(),
+                ..*cell
+            }),
+            Cell::Loki(cell) => Cell::Loki(LokiCell {
                 id: id.to_owned(),
                 content: cell.content.clone(),
                 ..*cell
@@ -359,6 +373,7 @@ impl Cell {
             }),
             Cell::Prometheus(cell) => Cell::Prometheus(cell.clone()),
             Cell::Elasticsearch(cell) => Cell::Elasticsearch(cell.clone()),
+            Cell::Loki(cell) => Cell::Loki(cell.clone()),
             Cell::Table(cell) => Cell::Table(TableCell {
                 id: cell.id.clone(),
                 data: cell.data.as_ref().map(|data| {
@@ -499,6 +514,16 @@ pub struct PrometheusCell {
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(rename_all = "camelCase")]
 pub struct ElasticsearchCell {
+    pub id: String,
+    pub content: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub read_only: Option<bool>,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[serde(rename_all = "camelCase")]
+pub struct LokiCell {
     pub id: String,
     pub content: String,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -756,6 +781,7 @@ pub enum DataSource {
     Prometheus(PrometheusDataSource),
     Proxy(ProxyDataSource),
     Elasticsearch(ElasticsearchDataSource),
+    Loki(LokiDataSource),
     // Kubernetes
 }
 
@@ -776,6 +802,16 @@ pub struct PrometheusDataSource {
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(rename_all = "camelCase")]
 pub struct ElasticsearchDataSource {
+    pub url: String,
+}
+
+/// A data-source for Loki. Currently only requires a url. This should be
+/// a full URL starting with http:// or https:// the domain, and optionally a
+/// port and a path.
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[serde(rename_all = "camelCase")]
+pub struct LokiDataSource {
     pub url: String,
 }
 

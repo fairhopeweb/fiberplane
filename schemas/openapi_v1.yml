@@ -57,6 +57,7 @@ components:
         - $ref: "#/components/schemas/logCell"
         - $ref: "#/components/schemas/prometheusCell"
         - $ref: "#/components/schemas/elasticsearchCell"
+        - $ref: "#/components/schemas/lokiCell"
         - $ref: "#/components/schemas/tableCell"
         - $ref: "#/components/schemas/textCell"
         - $ref: "#/components/schemas/imageCell"
@@ -72,6 +73,7 @@ components:
           log: "#/components/schemas/logCell"
           prometheus: "#/components/schemas/prometheusCell"
           elasticsearch: "#/components/schemas/elasticsearchCell"
+          loki: "#/components/schemas/lokiCell"
           table: "#/components/schemas/tableCell"
           text: "#/components/schemas/textCell"
           image: "#/components/schemas/imageCell"
@@ -87,6 +89,7 @@ components:
         - log
         - prometheus
         - elasticsearch
+        - loki
         - table
         - text
         - image
@@ -246,6 +249,21 @@ components:
         readOnly:
           type: boolean
     elasticsearchCell:
+      type: object
+      required:
+        - type
+        - id
+        - content
+      properties:
+        type:
+          $ref: "#/components/schemas/cellType"
+        id:
+          type: string
+        content:
+          type: string
+        readOnly:
+          type: boolean
+    lokiCell:
       type: object
       required:
         - type
@@ -551,18 +569,21 @@ components:
       oneOf:
         - $ref: "#/components/schemas/prometheusDataSource"
         - $ref: "#/components/schemas/elasticsearchDataSource"
+        - $ref: "#/components/schemas/lokiDataSource"
         - $ref: "#/components/schemas/proxyDataSource"
       discriminator:
         propertyName: type
         mapping:
           prometheus: "#/components/schemas/prometheusDataSource"
           elasticsearch: "#/components/schemas/elasticsearchDataSource"
+          loki: "#/components/schemas/lokiDataSource"
           proxy: "#/components/schemas/proxyDataSource"
     dataSourceType:
       type: string
       enum:
         - prometheus
         - elasticsearch
+        - loki
         - proxy
     prometheusDataSource:
       type: object
@@ -575,6 +596,16 @@ components:
         url:
           type: string
     elasticsearchDataSource:
+      type: object
+      required:
+        - "type"
+        - "url"
+      properties:
+        type:
+          $ref: "#/components/schemas/dataSourceType"
+        url:
+          type: string
+    lokiDataSource:
       type: object
       required:
         - "type"

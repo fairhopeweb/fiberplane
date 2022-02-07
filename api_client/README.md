@@ -80,6 +80,8 @@ Class | Method | HTTP request | Description
  - [ListItemCell](docs/ListItemCell.md)
  - [LogCell](docs/LogCell.md)
  - [LogRecord](docs/LogRecord.md)
+ - [LokiCell](docs/LokiCell.md)
+ - [LokiDataSource](docs/LokiDataSource.md)
  - [Metric](docs/Metric.md)
  - [NewNotebook](docs/NewNotebook.md)
  - [NewOrgDataSource](docs/NewOrgDataSource.md)

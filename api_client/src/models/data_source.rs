@@ -18,6 +18,11 @@ pub enum DataSource {
         #[serde(rename = "url")]
         url: String,
     },
+    #[serde(rename="loki")]
+    LokiDataSource {
+        #[serde(rename = "url")]
+        url: String,
+    },
     #[serde(rename="prometheus")]
     PrometheusDataSource {
         #[serde(rename = "url")]

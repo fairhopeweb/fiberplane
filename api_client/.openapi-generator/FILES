@@ -26,6 +26,8 @@ docs/Label.md
 docs/ListItemCell.md
 docs/LogCell.md
 docs/LogRecord.md
+docs/LokiCell.md
+docs/LokiDataSource.md
 docs/Metric.md
 docs/NewNotebook.md
 docs/NewOrgDataSource.md
@@ -84,6 +86,8 @@ src/models/label.rs
 src/models/list_item_cell.rs
 src/models/log_cell.rs
 src/models/log_record.rs
+src/models/loki_cell.rs
+src/models/loki_data_source.rs
 src/models/metric.rs
 src/models/mod.rs
 src/models/new_notebook.rs

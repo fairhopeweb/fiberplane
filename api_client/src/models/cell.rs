@@ -130,6 +130,15 @@ pub enum Cell {
         #[serde(rename = "data", skip_serializing_if = "Option::is_none")]
         data: Option<::std::collections::HashMap<String, Vec<crate::models::LogRecord>>>,
     },
+    #[serde(rename="loki")]
+    LokiCell {
+        #[serde(rename = "id")]
+        id: String,
+        #[serde(rename = "content")]
+        content: String,
+        #[serde(rename = "readOnly", skip_serializing_if = "Option::is_none")]
+        read_only: Option<bool>,
+    },
     #[serde(rename="prometheus")]
     PrometheusCell {
         #[serde(rename = "id")]
