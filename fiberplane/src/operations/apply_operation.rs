@@ -1,6 +1,6 @@
 use std::borrow::Borrow;
 
-use crate::operations::{change::*, error::*};
+use crate::operations::{changes::*, error::*};
 use crate::protocols::{core::*, operations::*};
 
 #[derive(Clone, Debug, PartialEq)]

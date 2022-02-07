@@ -436,9 +436,8 @@ mod tests {
         };
         let reason = RejectReason::Outdated(reason);
         let result = serde_json::to_string(&reason);
-        match result {
-            Err(err) => panic!("Unexpected error occurred: {:?}", err),
-            _ => (),
+        if let Err(err) = result {
+            panic!("Unexpected error occurred: {:?}", err);
         }
     }
 }

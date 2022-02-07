@@ -108,9 +108,7 @@ fn converge(operation1: &Operation, operation2: &Operation) -> bool {
             Operation::RemoveLabel(operation2) => operation1.old_label.key != operation2.label.key,
             _ => true,
         },
-        Operation::RemoveLabel(_operation1) => match operation2 {
-            _ => true,
-        },
+        Operation::RemoveLabel(_operation1) => true,
     }
 }
 

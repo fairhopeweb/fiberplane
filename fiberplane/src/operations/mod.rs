@@ -1,5 +1,5 @@
 mod apply_operation;
-mod change;
+mod changes;
 mod error;
 mod invert_operation;
 mod notebook;
@@ -12,7 +12,7 @@ mod tests;
 pub use apply_operation::{
     apply_operation, char_count, replace_text, ApplyOperationState, CellRefWithIndex,
 };
-pub use change::*;
+pub use changes::*;
 pub use error::*;
 pub use invert_operation::invert_operation;
 pub use notebook::*;

@@ -1,11 +1,13 @@
-use crate::operations::change::*;
-use crate::operations::error::*;
-use crate::operations::{
-    apply_operation, notebook::Notebook, relevant_cell_ids_for_operation, ApplyOperationState,
-    CellRefWithIndex, TransformOperationState,
+use crate::{
+    operations::{
+        apply_operation, changes::*, error::*, notebook::Notebook, relevant_cell_ids_for_operation,
+        ApplyOperationState, CellRefWithIndex, TransformOperationState,
+    },
+    protocols::{
+        core::{Cell, Label, NotebookDataSource},
+        operations::*,
+    },
 };
-use crate::protocols::core::{Cell, Label, NotebookDataSource};
-use crate::protocols::operations::*;
 use std::collections::BTreeMap;
 
 impl Notebook {
