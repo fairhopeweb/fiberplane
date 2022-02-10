@@ -25,10 +25,12 @@ pub struct NotebookSummary {
     pub updated_at: String,
     #[serde(rename = "visibility", skip_serializing_if = "Option::is_none")]
     pub visibility: Option<crate::models::NotebookVisibility>,
+    #[serde(rename = "labels")]
+    pub labels: Vec<crate::models::Label>,
 }
 
 impl NotebookSummary {
-    pub fn new(id: String, title: String, created_at: String, created_by: crate::models::CreatedBy, updated_at: String) -> NotebookSummary {
+    pub fn new(id: String, title: String, created_at: String, created_by: crate::models::CreatedBy, updated_at: String, labels: Vec<crate::models::Label>) -> NotebookSummary {
         NotebookSummary {
             id,
             title,
@@ -36,6 +38,7 @@ impl NotebookSummary {
             created_by: Box::new(created_by),
             updated_at,
             visibility: None,
+            labels,
         }
     }
 }

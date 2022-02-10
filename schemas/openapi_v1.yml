@@ -427,6 +427,7 @@ components:
         - createdAt
         - createdBy
         - updatedAt
+        - labels
       properties:
         id:
           type: string
@@ -442,6 +443,10 @@ components:
           format: date-time
         visibility:
           $ref: "#/components/schemas/notebookVisibility"
+        labels:
+          type: array
+          items:
+            $ref: "#/components/schemas/label"
     notebookVisibility:
       type: string
       enum:
