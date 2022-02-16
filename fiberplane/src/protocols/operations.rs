@@ -1,4 +1,7 @@
-use crate::protocols::core::{Cell, NotebookDataSource, TimeRange};
+use crate::protocols::{
+    core::{Cell, NotebookDataSource, TimeRange},
+    formatting::Formatting,
+};
 use fp_bindgen::prelude::*;
 use serde::{Deserialize, Serialize};
 
@@ -57,6 +60,12 @@ pub struct MergeCellsOperation {
     /// This is useful if we want to revert a `SplitCellOperation` that contained selected text.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub glue_text: Option<String>,
+
+    /// Optional formatting to apply to the glue text.
+    ///
+    /// Offsets in the formatting are relative to the start of the glue text.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub glue_formatting: Option<Formatting>,
 
     /// Source cell that will be merged into the target cell. This should be the cell immediately
     /// after the target cell.
@@ -132,8 +141,23 @@ pub struct ReplaceTextOperation {
     /// The new text value we're inserting.
     pub new_text: String,
 
+    /// Optional formatting that we wish to apply to the new text.
+    ///
+    /// Offsets in the formatting are relative to the start of the new text.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub new_formatting: Option<Formatting>,
+
     /// The old text that we're replacing.
     pub old_text: String,
+
+    /// Optional formatting that was applied to the old text. This should be **all** the formatting
+    /// annotations that were *inside* the `old_text` before this operation was applied. However,
+    /// it is at the operation's discretion whether or not to include annotations that are at the
+    /// old text's boundaries.
+    ///
+    /// Offsets in the formatting are relative to the start of the old text.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub old_formatting: Option<Formatting>,
 }
 
 /// Splits a cell at the given position.
@@ -156,6 +180,12 @@ pub struct SplitCellOperation {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub removed_text: Option<String>,
 
+    /// Optional formatting that was applied to the removed text.
+    ///
+    /// Offsets in the formatting are relative to the start of the removed text.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub removed_formatting: Option<Formatting>,
+
     /// Newly created cell after the split.
     pub new_cell: Cell,
 
@@ -170,8 +200,9 @@ pub struct SplitCellOperation {
 
 /// Updates arbitrary properties of a cell.
 ///
-/// **FIXME:** Because this operation is so coarse, it currently breaks assumptions about intent and
-///            convergence.
+/// **Warning:** Because this operation is so coarse, it breaks assumptions about intent and
+///              convergence. Please use `ReplaceText` when possible. In the future we may wish
+///              to introduce other more fine-grained operations as well.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::operations")]
 #[serde(rename_all = "camelCase")]

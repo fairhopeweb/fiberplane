@@ -1,8 +1,10 @@
+use crate::operations::char_count;
+
+use super::formatting::{translate, AnnotationWithOffset, Formatting};
 use fp_bindgen::prelude::Serializable;
 use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
-use std::collections::BTreeMap;
-use std::collections::HashMap;
+use std::collections::{BTreeMap, HashMap};
 use thiserror::Error;
 use time::OffsetDateTime;
 
@@ -143,6 +145,27 @@ impl Cell {
         }
     }
 
+    /// Returns the cell's formatting, if any.
+    pub fn formatting(&self) -> Option<&Formatting> {
+        // TODO FP-1287: If a cell that supports formatting doesn't have it,
+        //               we should interpret Markdown on the fly.
+        match self {
+            Cell::Checkbox(cell) => cell.formatting.as_ref(),
+            Cell::Code(_) => None,
+            Cell::Divider(_) => None,
+            Cell::Elasticsearch(_) => None,
+            Cell::Graph(cell) => cell.formatting.as_ref(),
+            Cell::Heading(cell) => cell.formatting.as_ref(),
+            Cell::Image(_) => None,
+            Cell::ListItem(cell) => cell.formatting.as_ref(),
+            Cell::Log(_) => None,
+            Cell::Loki(_) => None,
+            Cell::Prometheus(_) => None,
+            Cell::Table(_) => None,
+            Cell::Text(cell) => cell.formatting.as_ref(),
+        }
+    }
+
     /// Returns the cell's ID.
     pub fn id(&self) -> &String {
         match self {
@@ -200,13 +223,33 @@ impl Cell {
         self.with_content(&format!("{}{}", self.content().unwrap_or(""), content))
     }
 
-    /// Returns a copy of the cell with its content replaced by the given content.
+    /// Returns a copy of the cell with the given rich-text appended.
+    #[must_use]
+    pub fn with_appended_rich_text(&self, text: &str, formatting: &[AnnotationWithOffset]) -> Self {
+        let existing_text_len = self.text().map(char_count).unwrap_or_default();
+        self.with_rich_text(
+            &format!("{}{}", self.text().unwrap_or(""), text),
+            [
+                self.formatting().cloned().unwrap_or_default(),
+                translate(formatting, existing_text_len as i64),
+            ]
+            .concat(),
+        )
+    }
+
+    /// Returns a copy of the cell with its content replaced by the given
+    /// content (without any formatting).
+    ///
+    /// TODO FP-1287: Once we support initializing the `formatting` field from
+    ///               Markdown, this function should reset the formatting to an
+    ///               empty vector.
     #[must_use]
     pub fn with_content(&self, content: &str) -> Self {
         match self {
             Cell::Checkbox(cell) => Cell::Checkbox(CheckboxCell {
                 id: cell.id.clone(),
                 content: content.to_owned(),
+                formatting: None,
                 ..*cell
             }),
             Cell::Code(cell) => Cell::Code(CodeCell {
@@ -219,11 +262,13 @@ impl Cell {
             Cell::Heading(cell) => Cell::Heading(HeadingCell {
                 id: cell.id.clone(),
                 content: content.to_owned(),
+                formatting: None,
                 ..*cell
             }),
             Cell::ListItem(cell) => Cell::ListItem(ListItemCell {
                 id: cell.id.clone(),
                 content: content.to_owned(),
+                formatting: None,
                 ..*cell
             }),
             Cell::Log(cell) => Cell::Log(cell.clone()),
@@ -246,6 +291,7 @@ impl Cell {
             Cell::Text(cell) => Cell::Text(TextCell {
                 id: cell.id.clone(),
                 content: content.to_owned(),
+                formatting: None,
                 ..*cell
             }),
             Cell::Image(cell) => Cell::Image(cell.clone()),
@@ -259,77 +305,55 @@ impl Cell {
         match self {
             Cell::Checkbox(cell) => Cell::Checkbox(CheckboxCell {
                 id: id.to_owned(),
-                content: cell.content.clone(),
-                ..*cell
+                ..cell.clone()
             }),
             Cell::Code(cell) => Cell::Code(CodeCell {
                 id: id.to_owned(),
-                content: cell.content.clone(),
-                syntax: cell.syntax.clone(),
-                ..*cell
+                ..cell.clone()
             }),
             Cell::Graph(cell) => Cell::Graph(GraphCell {
                 id: id.to_owned(),
-                stacking_type: cell.stacking_type,
-                data: cell.data.clone(),
-                source_ids: cell.source_ids.clone(),
-                time_range: cell.time_range.clone(),
-                title: cell.title.clone(),
-                ..*cell
+                ..cell.clone()
             }),
             Cell::Heading(cell) => Cell::Heading(HeadingCell {
                 id: id.to_owned(),
-                content: cell.content.clone(),
-                ..*cell
+                ..cell.clone()
             }),
             Cell::ListItem(cell) => Cell::ListItem(ListItemCell {
                 id: id.to_owned(),
-                content: cell.content.clone(),
-                ..*cell
+                ..cell.clone()
             }),
             Cell::Log(cell) => Cell::Log(LogCell {
                 id: id.to_owned(),
-                data: cell.data.clone(),
-                source_ids: cell.source_ids.clone(),
-                time_range: cell.time_range.clone(),
-                ..*cell
+                ..cell.clone()
             }),
             Cell::Prometheus(cell) => Cell::Prometheus(PrometheusCell {
                 id: id.to_owned(),
-                content: cell.content.clone(),
-                ..*cell
+                ..cell.clone()
             }),
             Cell::Elasticsearch(cell) => Cell::Elasticsearch(ElasticsearchCell {
                 id: id.to_owned(),
-                content: cell.content.clone(),
-                ..*cell
+                ..cell.clone()
             }),
             Cell::Loki(cell) => Cell::Loki(LokiCell {
                 id: id.to_owned(),
-                content: cell.content.clone(),
-                ..*cell
+                ..cell.clone()
             }),
             Cell::Table(cell) => Cell::Table(TableCell {
                 id: id.to_owned(),
-                data: cell.data.clone(),
-                source_ids: cell.source_ids.clone(),
-                ..*cell
+                ..cell.clone()
             }),
             Cell::Text(cell) => Cell::Text(TextCell {
                 id: id.to_owned(),
-                content: cell.content.clone(),
-                ..*cell
+                ..cell.clone()
             }),
             Cell::Image(cell) => Cell::Image(ImageCell {
                 id: id.to_owned(),
-                file_id: cell.file_id.clone(),
-                preview: cell.preview.clone(),
-                url: cell.url.clone(),
-                ..*cell
+                ..cell.clone()
             }),
             Cell::Divider(cell) => Cell::Divider(DividerCell {
                 id: id.to_owned(),
-                ..*cell
+                ..cell.clone()
             }),
         }
     }
@@ -344,18 +368,14 @@ impl Cell {
             Cell::Checkbox(cell) => Cell::Checkbox(cell.clone()),
             Cell::Code(cell) => Cell::Code(cell.clone()),
             Cell::Graph(cell) => Cell::Graph(GraphCell {
-                id: cell.id.clone(),
                 data: cell.data.as_ref().map(|data| {
                     data.iter()
                         .filter(|&(k, _)| source_ids.contains(k))
                         .map(|(k, v)| (k.clone(), v.clone()))
                         .collect()
                 }),
-                stacking_type: cell.stacking_type,
                 source_ids,
-                time_range: cell.time_range.clone(),
-                title: cell.title.clone(),
-                ..*cell
+                ..cell.clone()
             }),
             Cell::Heading(cell) => Cell::Heading(cell.clone()),
             Cell::ListItem(cell) => Cell::ListItem(cell.clone()),
@@ -392,11 +412,17 @@ impl Cell {
     }
 
     /// Returns a copy of the cell with its text replaced by the given text.
+    ///
+    /// TODO FP-1287: Once we support initializing the `formatting` field from
+    ///               Markdown, this function should reset the formatting to an
+    ///               empty vector.
+    #[must_use]
     pub fn with_text(&self, text: &str) -> Self {
         match self {
             Cell::Graph(cell) => Cell::Graph(GraphCell {
                 id: cell.id.clone(),
                 data: cell.data.clone(),
+                formatting: None,
                 source_ids: cell.source_ids.clone(),
                 time_range: cell.time_range.clone(),
                 title: text.to_owned(),
@@ -405,22 +431,77 @@ impl Cell {
             cell => cell.with_content(text),
         }
     }
+
+    /// Returns a copy of the cell with its text replaced by the given text and
+    /// formatting.
+    ///
+    /// **Warning:** For cell types that have text, but which do not support
+    ///              rich-text, the formatting will be dropped silently.
+    #[must_use]
+    pub fn with_rich_text(&self, text: &str, formatting: Formatting) -> Self {
+        match self {
+            Cell::Checkbox(cell) => Cell::Checkbox(CheckboxCell {
+                id: cell.id.clone(),
+                content: text.to_owned(),
+                formatting: Some(formatting),
+                ..*cell
+            }),
+            Cell::Graph(cell) => Cell::Graph(GraphCell {
+                id: cell.id.clone(),
+                data: cell.data.clone(),
+                formatting: Some(formatting),
+                source_ids: cell.source_ids.clone(),
+                time_range: cell.time_range.clone(),
+                title: text.to_owned(),
+                ..*cell
+            }),
+            Cell::Heading(cell) => Cell::Heading(HeadingCell {
+                id: cell.id.clone(),
+                content: text.to_owned(),
+                formatting: Some(formatting),
+                ..*cell
+            }),
+            Cell::ListItem(cell) => Cell::ListItem(ListItemCell {
+                id: cell.id.clone(),
+                content: text.to_owned(),
+                formatting: Some(formatting),
+                ..*cell
+            }),
+            Cell::Text(cell) => Cell::Text(TextCell {
+                id: cell.id.clone(),
+                content: text.to_owned(),
+                formatting: Some(formatting),
+                ..*cell
+            }),
+            Cell::Code(_)
+            | Cell::Divider(_)
+            | Cell::Elasticsearch(_)
+            | Cell::Image(_)
+            | Cell::Log(_)
+            | Cell::Loki(_)
+            | Cell::Prometheus(_)
+            | Cell::Table(_) => self.with_text(text),
+        }
+    }
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(rename_all = "camelCase")]
 pub struct CheckboxCell {
     pub id: String,
     pub checked: bool,
     pub content: String,
+    /// Optional formatting to be applied to the cell's content.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub formatting: Option<Formatting>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub level: Option<u8>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub read_only: Option<bool>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(rename_all = "camelCase")]
 pub struct CodeCell {
@@ -433,7 +514,7 @@ pub struct CodeCell {
     pub syntax: Option<String>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(rename_all = "camelCase")]
 pub struct DividerCell {
@@ -448,6 +529,9 @@ pub struct DividerCell {
 #[serde(rename_all = "camelCase")]
 pub struct GraphCell {
     pub id: String,
+    /// Optional formatting to be applied to the cell's title.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub formatting: Option<Formatting>,
     pub graph_type: GraphType,
     pub stacking_type: StackingType,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -467,6 +551,9 @@ pub struct HeadingCell {
     pub id: String,
     pub heading_type: HeadingType,
     pub content: String,
+    /// Optional formatting to be applied to the cell's content.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub formatting: Option<Formatting>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub read_only: Option<bool>,
 }
@@ -491,6 +578,9 @@ pub struct LogCell {
 pub struct ListItemCell {
     pub id: String,
     pub content: String,
+    /// Optional formatting to be applied to the cell's content.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub formatting: Option<Formatting>,
     pub list_type: ListType,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub level: Option<u8>,
@@ -500,7 +590,7 @@ pub struct ListItemCell {
     pub start_number: Option<u16>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(rename_all = "camelCase")]
 pub struct PrometheusCell {
@@ -510,7 +600,7 @@ pub struct PrometheusCell {
     pub read_only: Option<bool>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(rename_all = "camelCase")]
 pub struct ElasticsearchCell {
@@ -520,7 +610,7 @@ pub struct ElasticsearchCell {
     pub read_only: Option<bool>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(rename_all = "camelCase")]
 pub struct LokiCell {
@@ -542,17 +632,20 @@ pub struct TableCell {
     pub data: Option<BTreeMap<String, Vec<Instant<f64>>>>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(rename_all = "camelCase")]
 pub struct TextCell {
     pub id: String,
     pub content: String,
+    /// Optional formatting to be applied to the cell's content.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub formatting: Option<Formatting>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub read_only: Option<bool>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(rename_all = "camelCase")]
 pub struct ImageCell {

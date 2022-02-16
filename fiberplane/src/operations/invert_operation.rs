@@ -42,6 +42,7 @@ fn invert_merge_cells_operation(operation: &MergeCellsOperation) -> Operation {
         new_cell: operation.source_cell.clone(),
         referencing_cells: operation.referencing_cells.clone(),
         removed_text: operation.glue_text.clone(),
+        removed_formatting: operation.glue_formatting.clone(),
         split_index: operation.target_content_length,
     })
 }
@@ -92,13 +93,16 @@ fn invert_replace_text_operation(operation: &ReplaceTextOperation) -> Operation 
         cell_id: operation.cell_id.clone(),
         offset: operation.offset,
         old_text: operation.new_text.clone(),
+        old_formatting: operation.new_formatting.clone(),
         new_text: operation.old_text.clone(),
+        new_formatting: operation.old_formatting.clone(),
     })
 }
 
 fn invert_split_cells_operation(operation: &SplitCellOperation) -> Operation {
     Operation::MergeCells(MergeCellsOperation {
         glue_text: operation.removed_text.clone(),
+        glue_formatting: operation.removed_formatting.clone(),
         referencing_cells: operation.referencing_cells.clone(),
         source_cell: operation.new_cell.clone(),
         target_cell_id: operation.cell_id.clone(),

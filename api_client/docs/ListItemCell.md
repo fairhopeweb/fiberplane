@@ -8,6 +8,7 @@ Name | Type | Description | Notes
 **id** | **String** |  | 
 **list_type** | **String** |  | 
 **content** | **String** |  | 
+**formatting** | Option<[**Vec<crate::models::Annotation>**](annotation.md)> |  | [optional]
 **level** | Option<**i32**> |  | [optional]
 **read_only** | Option<**bool**> |  | [optional]
 **start_number** | Option<**i32**> |  | [optional]

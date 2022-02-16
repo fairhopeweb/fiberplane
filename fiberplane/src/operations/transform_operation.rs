@@ -1,10 +1,10 @@
 use crate::{
     operations::{error::*, replace_text},
-    protocols::{core::*, operations::*},
+    protocols::{core::*, formatting::translate, operations::*},
 };
 use std::cmp::Ordering;
 
-use super::apply_operation::char_count;
+use super::apply_operation::{char_count, replace_formatting};
 
 /// Allows `transform_operation()` to query for the state of the notebook as it was at the revision
 /// immediately *before* predecessor gets applied.
@@ -188,6 +188,7 @@ pub fn transform_merge_cells_operation(
                     // successor to the result of predecessor:
                     Some(Operation::MergeCells(MergeCellsOperation {
                         glue_text: successor.glue_text.clone(),
+                        glue_formatting: successor.glue_formatting.clone(),
                         source_cell: successor.source_cell.clone(),
                         target_cell_id: successor.target_cell_id.clone(),
                         target_content_length: predecessor.target_content_length
@@ -217,13 +218,8 @@ pub fn transform_merge_cells_operation(
                     .ok_or_else(|| Error::CellNotFound(predecessor.target_cell_id.clone()))?;
                 Some(Operation::MergeCells(MergeCellsOperation {
                     glue_text: successor.glue_text.clone(),
-                    source_cell: target_cell.with_appended_content(&format!(
-                        "{}{}",
-                        predecessor.glue_text.clone().unwrap_or_default(),
-                        predecessor.source_cell.content().ok_or_else(|| {
-                            Error::NoContentCell(predecessor.source_cell.id().clone())
-                        })?
-                    )),
+                    glue_formatting: successor.glue_formatting.clone(),
+                    source_cell: with_merged_cell(target_cell, predecessor)?,
                     target_cell_id: successor.target_cell_id.clone(),
                     target_content_length: successor.target_content_length,
                     referencing_cells: match successor.referencing_cells.as_ref() {
@@ -239,6 +235,7 @@ pub fn transform_merge_cells_operation(
                 // Successor tried to merge into the source of predecessor. Update its target:
                 Some(Operation::MergeCells(MergeCellsOperation {
                     glue_text: successor.glue_text.clone(),
+                    glue_formatting: successor.glue_formatting.clone(),
                     source_cell: successor.source_cell.clone(),
                     target_cell_id: predecessor.target_cell_id.clone(),
                     target_content_length: predecessor.target_content_length
@@ -261,6 +258,7 @@ pub fn transform_merge_cells_operation(
                 // Target and source differ, no conflict:
                 Some(Operation::MergeCells(MergeCellsOperation {
                     glue_text: successor.glue_text.clone(),
+                    glue_formatting: successor.glue_formatting.clone(),
                     source_cell: successor.source_cell.clone(),
                     target_cell_id: successor.target_cell_id.clone(),
                     target_content_length: successor.target_content_length,
@@ -277,6 +275,7 @@ pub fn transform_merge_cells_operation(
         }
         Operation::MoveCells(predecessor) => Some(Operation::MergeCells(MergeCellsOperation {
             glue_text: successor.glue_text.clone(),
+            glue_formatting: successor.glue_formatting.clone(),
             source_cell: successor.source_cell.clone(),
             target_cell_id: successor.target_cell_id.clone(),
             target_content_length: successor.target_content_length,
@@ -303,6 +302,7 @@ pub fn transform_merge_cells_operation(
                 // No conflict:
                 Some(Operation::MergeCells(MergeCellsOperation {
                     glue_text: successor.glue_text.clone(),
+                    glue_formatting: successor.glue_formatting.clone(),
                     source_cell: successor.source_cell.clone(),
                     target_cell_id: successor.target_cell_id.clone(),
                     target_content_length: successor.target_content_length,
@@ -318,10 +318,8 @@ pub fn transform_merge_cells_operation(
                 // Need to update the source cell:
                 Some(Operation::MergeCells(MergeCellsOperation {
                     glue_text: successor.glue_text.clone(),
-                    source_cell: successor.source_cell.with_text(&replace_text(
-                        successor.source_cell.text().unwrap_or_default(),
-                        predecessor,
-                    )),
+                    glue_formatting: successor.glue_formatting.clone(),
+                    source_cell: replace_cell_text(&successor.source_cell, predecessor),
                     target_cell_id: successor.target_cell_id.clone(),
                     target_content_length: successor.target_content_length,
                     referencing_cells: successor.referencing_cells.clone(),
@@ -330,6 +328,7 @@ pub fn transform_merge_cells_operation(
                 // Need to update the target content length:
                 Some(Operation::MergeCells(MergeCellsOperation {
                     glue_text: successor.glue_text.clone(),
+                    glue_formatting: successor.glue_formatting.clone(),
                     source_cell: successor.source_cell.clone(),
                     target_cell_id: successor.target_cell_id.clone(),
                     target_content_length: successor.target_content_length
@@ -360,6 +359,7 @@ pub fn transform_merge_cells_operation(
                 let source_cell = &successor.source_cell;
                 Some(Operation::MergeCells(MergeCellsOperation {
                     glue_text: successor.glue_text.clone(),
+                    glue_formatting: successor.glue_formatting.clone(),
                     source_cell: source_cell.with_content(
                         source_cell
                             .content()
@@ -380,6 +380,7 @@ pub fn transform_merge_cells_operation(
                 // The target we're trying to merge into has been split, update it:
                 Some(Operation::MergeCells(MergeCellsOperation {
                     glue_text: successor.glue_text.clone(),
+                    glue_formatting: successor.glue_formatting.clone(),
                     source_cell: successor.source_cell.clone(),
                     target_cell_id: predecessor.new_cell.id().clone(),
                     target_content_length: char_count(
@@ -393,6 +394,7 @@ pub fn transform_merge_cells_operation(
                 // No conflict:
                 Some(Operation::MergeCells(MergeCellsOperation {
                     glue_text: successor.glue_text.clone(),
+                    glue_formatting: successor.glue_formatting.clone(),
                     source_cell: successor.source_cell.clone(),
                     target_cell_id: successor.target_cell_id.clone(),
                     target_content_length: successor.target_content_length,
@@ -404,6 +406,7 @@ pub fn transform_merge_cells_operation(
             if merge_and_update_converge(successor, predecessor) {
                 Some(Operation::MergeCells(MergeCellsOperation {
                     glue_text: successor.glue_text.clone(),
+                    glue_formatting: successor.glue_formatting.clone(),
                     source_cell: successor.source_cell.clone(),
                     target_cell_id: successor.target_cell_id.clone(),
                     target_content_length: successor.target_content_length,
@@ -646,11 +649,7 @@ pub fn transform_remove_cells_operation(
                         .cell(&predecessor.target_cell_id)
                         .ok_or_else(|| Error::CellNotFound(predecessor.target_cell_id.clone()))?;
                     Some(Operation::UpdateCell(UpdateCellOperation {
-                        old_cell: Box::new(target_cell.with_appended_content(
-                            predecessor.source_cell.content().ok_or_else(|| {
-                                Error::NoContentCell(predecessor.source_cell.id().clone())
-                            })?,
-                        )),
+                        old_cell: Box::new(with_merged_cell(target_cell, predecessor)?),
                         updated_cell: Box::new(target_cell.clone()),
                     }))
                 } else if successor
@@ -692,12 +691,8 @@ pub fn transform_remove_cells_operation(
                     let target_cell = state
                         .cell(&predecessor.target_cell_id)
                         .ok_or_else(|| Error::CellNotFound(predecessor.target_cell_id.clone()))?;
-                    let source_cell_content =
-                        predecessor.source_cell.content().ok_or_else(|| {
-                            Error::NoContentCell(predecessor.source_cell.id().clone())
-                        })?;
                     Some(Operation::UpdateCell(UpdateCellOperation {
-                        old_cell: Box::new(target_cell.with_appended_content(source_cell_content)),
+                        old_cell: Box::new(with_merged_cell(target_cell, predecessor)?),
                         updated_cell: Box::new(
                             predecessor.source_cell.with_id(&predecessor.target_cell_id),
                         ),
@@ -895,7 +890,9 @@ pub fn transform_replace_text_operation(
                             .unwrap_or_default()
                         + successor.offset,
                     new_text: successor.new_text.clone(),
+                    new_formatting: successor.new_formatting.clone(),
                     old_text: successor.old_text.clone(),
+                    old_formatting: successor.old_formatting.clone(),
                 }))
             } else {
                 Some(Operation::ReplaceText(successor.clone()))
@@ -921,7 +918,9 @@ pub fn transform_replace_text_operation(
                         offset: successor.offset + char_count(&predecessor.new_text)
                             - char_count(&predecessor.old_text),
                         new_text: successor.new_text.clone(),
+                        new_formatting: successor.new_formatting.clone(),
                         old_text: successor.old_text.clone(),
+                        old_formatting: successor.old_formatting.clone(),
                     }))
                 } else if predecessor.offset > successor.offset + char_count(&successor.old_text) {
                     // Previous replacement didn't affect ours:
@@ -948,7 +947,9 @@ pub fn transform_replace_text_operation(
                                 .map(char_count)
                                 .unwrap_or_default(),
                         new_text: successor.new_text.clone(),
+                        new_formatting: successor.new_formatting.clone(),
                         old_text: successor.old_text.clone(),
+                        old_formatting: successor.old_formatting.clone(),
                     }))
                 } else if predecessor.split_index
                     >= successor.offset + char_count(&successor.old_text)
@@ -1006,6 +1007,7 @@ pub fn transform_split_cell_operation(
                     cell_id: predecessor.target_cell_id.clone(),
                     new_cell: successor.new_cell.clone(),
                     removed_text: successor.removed_text.clone(),
+                    removed_formatting: successor.removed_formatting.clone(),
                     split_index: successor.split_index
                         + predecessor
                             .glue_text
@@ -1027,18 +1029,9 @@ pub fn transform_split_cell_operation(
                 // The cell we're trying to split has had another cell merged into it. Update it:
                 Some(Operation::SplitCell(SplitCellOperation {
                     cell_id: successor.cell_id.clone(),
-                    new_cell: successor.new_cell.with_appended_content(&format!(
-                        "{}{}",
-                        predecessor
-                            .glue_text
-                            .as_ref()
-                            .map(|text| text.as_ref())
-                            .unwrap_or(""),
-                        predecessor.source_cell.content().ok_or_else(|| {
-                            Error::NoContentCell(predecessor.source_cell.id().clone())
-                        })?,
-                    )),
+                    new_cell: with_merged_cell(&successor.new_cell, predecessor)?,
                     removed_text: successor.removed_text.clone(),
+                    removed_formatting: successor.removed_formatting.clone(),
                     split_index: successor.split_index,
                     referencing_cells: match successor.referencing_cells.as_ref() {
                         Some(cells) => {
@@ -1155,6 +1148,7 @@ pub fn transform_split_cell_operation(
                         cell_id: successor.cell_id.clone(),
                         new_cell: get_new_cell_split_by_predecessor(successor, predecessor)?,
                         removed_text: successor.removed_text.clone(),
+                        removed_formatting: successor.removed_formatting.clone(),
                         split_index: successor.split_index,
                         referencing_cells,
                     })),
@@ -1163,6 +1157,7 @@ pub fn transform_split_cell_operation(
                         cell_id: predecessor.new_cell.id().clone(),
                         new_cell: successor.new_cell.clone(),
                         removed_text: successor.removed_text.clone(),
+                        removed_formatting: successor.removed_formatting.clone(),
                         split_index: successor.split_index
                             - predecessor.split_index
                             - predecessor
@@ -1191,6 +1186,7 @@ pub fn transform_split_cell_operation(
                     cell_id: successor.cell_id.clone(),
                     new_cell: successor.new_cell.clone(),
                     removed_text: successor.removed_text.clone(),
+                    removed_formatting: successor.removed_formatting.clone(),
                     split_index: successor.split_index,
                     referencing_cells: match successor.referencing_cells.as_ref() {
                         Some(cells) => Some(with_merged_source_ids(state, cells, predecessor)?),
@@ -1753,7 +1749,16 @@ pub fn moves_converge(move1: &MoveCellsOperation, move2: &MoveCellsOperation) ->
 }
 
 fn replace_cell_text(cell: &Cell, operation: &ReplaceTextOperation) -> Cell {
-    cell.with_text(&replace_text(cell.text().unwrap_or_default(), operation))
+    let new_text = replace_text(cell.text().unwrap_or_default(), operation);
+
+    // TODO FP-1287: Once we support initializing the `formatting` field from
+    //               Markdown, we can get rid of the match.
+    match (cell.formatting(), &operation.new_formatting) {
+        (None, None) => cell.with_text(&new_text),
+        (formatting, _) => {
+            cell.with_rich_text(&new_text, replace_formatting(formatting, operation))
+        }
+    }
 }
 
 pub fn replace_text_and_update_cell_converge(
@@ -1870,6 +1875,46 @@ fn with_adjusted_indices_for_split_cell(
     let mut cells = cells.to_vec();
     adjust_indices_for_split_cell(state, &mut cells, predecessor)?;
     Ok(cells)
+}
+
+fn with_merged_cell(target_cell: &Cell, predecessor: &MergeCellsOperation) -> Result<Cell, Error> {
+    let appended_content = format!(
+        "{}{}",
+        predecessor.glue_text.clone().unwrap_or_default(),
+        predecessor
+            .source_cell
+            .content()
+            .ok_or_else(|| { Error::NoContentCell(predecessor.source_cell.id().clone()) })?
+    );
+
+    // TODO FP-1287: Once we support initializing the `formatting` field from
+    //               Markdown, we can get rid of the match.
+    let cell = match (
+        target_cell.formatting(),
+        predecessor.source_cell.formatting(),
+        &predecessor.glue_formatting,
+    ) {
+        (None, None, None) => target_cell.with_appended_content(&appended_content),
+        (_, source_formatting, glue_formatting) => {
+            let glue_len = predecessor
+                .glue_text
+                .as_ref()
+                .map(char_count)
+                .unwrap_or_default() as i64;
+            target_cell.with_appended_rich_text(
+                &appended_content,
+                &[
+                    glue_formatting.as_ref().cloned().unwrap_or_default(),
+                    source_formatting
+                        .map(|formatting| translate(formatting, glue_len))
+                        .unwrap_or_default(),
+                ]
+                .concat(),
+            )
+        }
+    };
+
+    Ok(cell)
 }
 
 fn with_merged_source_ids(

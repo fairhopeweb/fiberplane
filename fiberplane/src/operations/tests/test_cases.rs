@@ -1,7 +1,11 @@
 use super::fixtures::TEST_NOTEBOOK;
 use crate::{
     operations::{char_count, Notebook},
-    protocols::{core::*, operations::*},
+    protocols::{
+        core::*,
+        formatting::{Annotation, AnnotationWithOffset, Formatting},
+        operations::*,
+    },
 };
 use once_cell::sync::Lazy;
 
@@ -39,11 +43,13 @@ fn create_add_cells_test_cases(test_cases: &mut Vec<OperationTestCase>) {
     let new_cell_1 = Cell::Text(TextCell {
         id: "n1".to_owned(),
         content: "New cell 1".to_owned(),
+        formatting: None,
         read_only: None,
     });
     let new_cell_2 = Cell::Text(TextCell {
         id: "n2".to_owned(),
         content: "New cell 2".to_owned(),
+        formatting: Some(Formatting::default()),
         read_only: Some(true),
     });
 
@@ -93,6 +99,7 @@ fn create_add_cells_test_cases(test_cases: &mut Vec<OperationTestCase>) {
         id: "n4".to_owned(),
         heading_type: HeadingType::H3,
         content: "New heading 4".to_owned(),
+        formatting: Some(Formatting::default()),
         read_only: None,
     });
 
@@ -113,6 +120,7 @@ fn create_add_cells_test_cases(test_cases: &mut Vec<OperationTestCase>) {
     let new_cell_5 = Cell::Text(TextCell {
         id: "n5".to_owned(),
         content: "New cell 5".to_owned(),
+        formatting: Some(Formatting::default()),
         read_only: None,
     });
 
@@ -164,13 +172,17 @@ fn create_merge_cells_test_cases(test_cases: &mut Vec<OperationTestCase>) {
     test_cases.push(OperationTestCase {
         operation: Operation::MergeCells(MergeCellsOperation {
             glue_text: None,
+            glue_formatting: None,
             source_cell: TEST_NOTEBOOK.cells[2].clone(),
             target_cell_id: "c2".to_owned(),
             target_content_length: TEST_NOTEBOOK.cells[1].content().map(char_count).unwrap(),
             referencing_cells: None,
         }),
         expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
-            cells[1] = cells[1].with_appended_content(cells[2].content().unwrap());
+            cells[1] = cells[1].with_appended_rich_text(
+                cells[2].content().unwrap(),
+                cells[2].formatting().unwrap(),
+            );
             cells.remove(2);
         }),
     });
@@ -180,13 +192,17 @@ fn create_merge_cells_test_cases(test_cases: &mut Vec<OperationTestCase>) {
     test_cases.push(OperationTestCase {
         operation: Operation::MergeCells(MergeCellsOperation {
             glue_text: None,
+            glue_formatting: None,
             source_cell: TEST_NOTEBOOK.cells[3].clone(),
             target_cell_id: "c3".to_owned(),
             target_content_length: TEST_NOTEBOOK.cells[2].content().map(char_count).unwrap(),
             referencing_cells: Some(vec![TEST_NOTEBOOK.clone_cell_with_index_by_id("c9")]),
         }),
         expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
-            cells[2] = cells[2].with_appended_content(cells[3].content().unwrap());
+            cells[2] = cells[2].with_appended_rich_text(
+                cells[3].content().unwrap(),
+                &cells[3].formatting().cloned().unwrap_or_default(),
+            );
             cells.remove(3);
 
             // Update the referencing cell:
@@ -205,14 +221,23 @@ fn create_merge_cells_test_cases(test_cases: &mut Vec<OperationTestCase>) {
     test_cases.push(OperationTestCase {
         operation: Operation::MergeCells(MergeCellsOperation {
             glue_text: Some("glue".to_owned()),
+            glue_formatting: Some(vec![
+                AnnotationWithOffset::new(0, Annotation::StartBold),
+                AnnotationWithOffset::new(4, Annotation::EndBold),
+            ]),
             source_cell: TEST_NOTEBOOK.cells[3].clone(),
             target_cell_id: "c3".to_owned(),
             target_content_length: TEST_NOTEBOOK.cells[2].content().map(char_count).unwrap(),
             referencing_cells: Some(vec![TEST_NOTEBOOK.clone_cell_with_index_by_id("c9")]),
         }),
         expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
-            cells[2] =
-                cells[2].with_appended_content(&format!("glue{}", cells[3].content().unwrap()));
+            cells[2] = cells[2].with_appended_rich_text(
+                &format!("glue{}", cells[3].content().unwrap()),
+                &[
+                    AnnotationWithOffset::new(0, Annotation::StartBold),
+                    AnnotationWithOffset::new(4, Annotation::EndBold),
+                ],
+            );
             cells.remove(3);
 
             // Update the referencing cell:
@@ -231,14 +256,33 @@ fn create_merge_cells_test_cases(test_cases: &mut Vec<OperationTestCase>) {
     test_cases.push(OperationTestCase {
         operation: Operation::MergeCells(MergeCellsOperation {
             glue_text: Some("gluten".to_owned()),
+            glue_formatting: Some(vec![
+                AnnotationWithOffset::new(
+                    0,
+                    Annotation::StartLink {
+                        url: "https://en.wikipedia.org/wiki/Gluten".to_owned(),
+                    },
+                ),
+                AnnotationWithOffset::new(6, Annotation::EndLink),
+            ]),
             source_cell: TEST_NOTEBOOK.cells[2].clone(),
             target_cell_id: "c2".to_owned(),
             target_content_length: TEST_NOTEBOOK.cells[1].content().map(char_count).unwrap(),
             referencing_cells: None,
         }),
         expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
-            cells[1] =
-                cells[1].with_appended_content(&format!("gluten{}", cells[2].content().unwrap()));
+            cells[1] = cells[1].with_appended_rich_text(
+                &format!("gluten{}", cells[2].content().unwrap()),
+                &[
+                    AnnotationWithOffset::new(
+                        0,
+                        Annotation::StartLink {
+                            url: "https://en.wikipedia.org/wiki/Gluten".to_owned(),
+                        },
+                    ),
+                    AnnotationWithOffset::new(6, Annotation::EndLink),
+                ],
+            );
             cells.remove(2);
         }),
     });
@@ -352,10 +396,22 @@ fn create_replace_text_test_cases(test_cases: &mut Vec<OperationTestCase>) {
             cell_id: "c3".to_owned(),
             offset: 5,
             new_text: "replaced".to_owned(),
+            new_formatting: Some(vec![
+                AnnotationWithOffset::new(0, Annotation::StartItalics),
+                AnnotationWithOffset::new(8, Annotation::EndItalics),
+            ]),
             old_text: "introductory".to_owned(),
+            old_formatting: None,
         }),
-        expected_apply_operation_result: TEST_NOTEBOOK
-            .with_updated_cells(|cells| cells[2] = cells[2].with_content("Some replaced text")),
+        expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
+            cells[2] = cells[2].with_rich_text(
+                "Some replaced text",
+                vec![
+                    AnnotationWithOffset::new(5, Annotation::StartItalics),
+                    AnnotationWithOffset::new(13, Annotation::EndItalics),
+                ],
+            )
+        }),
     });
 
     test_cases.push(OperationTestCase {
@@ -363,10 +419,21 @@ fn create_replace_text_test_cases(test_cases: &mut Vec<OperationTestCase>) {
             cell_id: "c3".to_owned(),
             offset: 18,
             new_text: "nonsense".to_owned(),
+            new_formatting: Some(vec![
+                AnnotationWithOffset::new(0, Annotation::StartStrikethrough),
+                AnnotationWithOffset::new(8, Annotation::EndStrikethrough),
+            ]),
             old_text: "text".to_owned(),
+            old_formatting: Some(Formatting::default()),
         }),
         expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
-            cells[2] = cells[2].with_content("Some introductory nonsense")
+            cells[2] = cells[2].with_rich_text(
+                "Some introductory nonsense",
+                vec![
+                    AnnotationWithOffset::new(18, Annotation::StartStrikethrough),
+                    AnnotationWithOffset::new(26, Annotation::EndStrikethrough),
+                ],
+            )
         }),
     });
 
@@ -375,10 +442,13 @@ fn create_replace_text_test_cases(test_cases: &mut Vec<OperationTestCase>) {
             cell_id: "c3".to_owned(),
             offset: 17,
             new_text: "_".to_owned(),
+            new_formatting: None,
             old_text: " ".to_owned(),
+            old_formatting: None,
         }),
-        expected_apply_operation_result: TEST_NOTEBOOK
-            .with_updated_cells(|cells| cells[2] = cells[2].with_content("Some introductory_text")),
+        expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
+            cells[2] = cells[2].with_rich_text("Some introductory_text", Formatting::default())
+        }),
     });
 
     test_cases.push(OperationTestCase {
@@ -386,10 +456,22 @@ fn create_replace_text_test_cases(test_cases: &mut Vec<OperationTestCase>) {
             cell_id: "c3".to_owned(),
             offset: 5,
             new_text: "replacement".to_owned(),
+            new_formatting: Some(vec![
+                AnnotationWithOffset::new(0, Annotation::StartBold),
+                AnnotationWithOffset::new(11, Annotation::EndBold),
+            ]),
             old_text: "introductory".to_owned(),
+            old_formatting: None,
         }),
-        expected_apply_operation_result: TEST_NOTEBOOK
-            .with_updated_cells(|cells| cells[2] = cells[2].with_content("Some replacement text")),
+        expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
+            cells[2] = cells[2].with_rich_text(
+                "Some replacement text",
+                vec![
+                    AnnotationWithOffset::new(5, Annotation::StartBold),
+                    AnnotationWithOffset::new(16, Annotation::EndBold),
+                ],
+            )
+        }),
     });
 
     test_cases.push(OperationTestCase {
@@ -397,10 +479,13 @@ fn create_replace_text_test_cases(test_cases: &mut Vec<OperationTestCase>) {
             cell_id: "c2".to_owned(),
             offset: 0,
             new_text: "Unl".to_owned(),
+            new_formatting: None,
             old_text: "L".to_owned(),
+            old_formatting: None,
         }),
-        expected_apply_operation_result: TEST_NOTEBOOK
-            .with_updated_cells(|cells| cells[1] = cells[1].with_content("Unlocked subtitle")),
+        expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
+            cells[1] = cells[1].with_rich_text("Unlocked subtitle", Formatting::default())
+        }),
     });
 
     // Test cases that overlap with split cell cases:
@@ -409,7 +494,9 @@ fn create_replace_text_test_cases(test_cases: &mut Vec<OperationTestCase>) {
             cell_id: "c4".to_owned(),
             offset: 4,
             new_text: "".to_owned(),
+            new_formatting: None,
             old_text: "emstats_".to_owned(),
+            old_formatting: None,
         }),
         expected_apply_operation_result: TEST_NOTEBOOK
             .with_updated_cells(|cells| cells[3] = cells[3].with_content("go_malloc_bytes")),
@@ -420,7 +507,9 @@ fn create_replace_text_test_cases(test_cases: &mut Vec<OperationTestCase>) {
             cell_id: "c4".to_owned(),
             offset: 18,
             new_text: "count".to_owned(),
+            new_formatting: None,
             old_text: "bytes".to_owned(),
+            old_formatting: None,
         }),
         expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
             cells[3] = cells[3].with_content("go_memstats_alloc_count")
@@ -432,10 +521,72 @@ fn create_replace_text_test_cases(test_cases: &mut Vec<OperationTestCase>) {
             cell_id: "c4".to_owned(),
             offset: 0,
             new_text: "".to_owned(),
+            new_formatting: None,
             old_text: "go_".to_owned(),
+            old_formatting: None,
         }),
         expected_apply_operation_result: TEST_NOTEBOOK
             .with_updated_cells(|cells| cells[3] = cells[3].with_content("memstats_alloc_bytes")),
+    });
+
+    // Test cases that apply to a cell with existing formatting:
+    test_cases.push(OperationTestCase {
+        operation: Operation::ReplaceText(ReplaceTextOperation {
+            cell_id: "c8".to_owned(),
+            offset: 17,
+            new_text: "s".to_owned(),
+            new_formatting: None,
+            old_text: "".to_owned(),
+            old_formatting: None,
+        }),
+        expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
+            cells[7] = cells[7].with_rich_text(
+                "No test *notebooks* would be complete without some **Markdown**.\n\
+            \n\
+            Right before our crown jewel: ***a locked, multi-sourced bar graph with a custom \
+            time range***!",
+                vec![
+                    AnnotationWithOffset::new(8, Annotation::StartItalics),
+                    AnnotationWithOffset::new(19, Annotation::EndItalics),
+                    AnnotationWithOffset::new(51, Annotation::StartBold),
+                    AnnotationWithOffset::new(63, Annotation::EndBold),
+                    AnnotationWithOffset::new(96, Annotation::StartBold),
+                    AnnotationWithOffset::new(96, Annotation::StartItalics),
+                    AnnotationWithOffset::new(160, Annotation::EndBold),
+                    AnnotationWithOffset::new(160, Annotation::EndItalics),
+                ],
+            )
+        }),
+    });
+
+    test_cases.push(OperationTestCase {
+        operation: Operation::ReplaceText(ReplaceTextOperation {
+            cell_id: "c8".to_owned(),
+            offset: 7,
+            new_text: "".to_owned(),
+            new_formatting: None,
+            old_text: " *notebook*".to_owned(),
+            old_formatting: Some(vec![
+                AnnotationWithOffset::new(1, Annotation::StartItalics),
+                AnnotationWithOffset::new(11, Annotation::EndItalics),
+            ]),
+        }),
+        expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
+            cells[7] = cells[7].with_rich_text(
+                "No test would be complete without some **Markdown**.\n\
+            \n\
+            Right before our crown jewel: ***a locked, multi-sourced bar graph with a custom \
+            time range***!",
+                vec![
+                    AnnotationWithOffset::new(39, Annotation::StartBold),
+                    AnnotationWithOffset::new(51, Annotation::EndBold),
+                    AnnotationWithOffset::new(84, Annotation::StartBold),
+                    AnnotationWithOffset::new(84, Annotation::StartItalics),
+                    AnnotationWithOffset::new(148, Annotation::EndBold),
+                    AnnotationWithOffset::new(148, Annotation::EndItalics),
+                ],
+            )
+        }),
     });
 }
 
@@ -450,6 +601,7 @@ fn create_split_cell_test_cases(test_cases: &mut Vec<OperationTestCase>) {
         operation: Operation::SplitCell(SplitCellOperation {
             cell_id: "c4".to_owned(),
             removed_text: None,
+            removed_formatting: None,
             split_index: 3,
             new_cell: split_cell1.clone(),
             referencing_cells: None,
@@ -470,6 +622,7 @@ fn create_split_cell_test_cases(test_cases: &mut Vec<OperationTestCase>) {
         operation: Operation::SplitCell(SplitCellOperation {
             cell_id: "c4".to_owned(),
             removed_text: Some("alloc_".to_owned()),
+            removed_formatting: None,
             split_index: 12,
             new_cell: split_cell2.clone(),
             referencing_cells: None,
@@ -491,6 +644,7 @@ fn create_split_cell_test_cases(test_cases: &mut Vec<OperationTestCase>) {
         operation: Operation::SplitCell(SplitCellOperation {
             cell_id: "c4".to_owned(),
             removed_text: None,
+            removed_formatting: None,
             split_index: 18,
             new_cell: split_cell3.clone(),
             referencing_cells: Some(vec![CellWithIndex {
@@ -524,6 +678,12 @@ fn create_split_cell_test_cases(test_cases: &mut Vec<OperationTestCase>) {
         content:
             "Right before our crown jewel: ***a locked, multi-sourced bar graph with a custom time range***!"
                 .to_owned(),
+        formatting: Some(vec![
+            AnnotationWithOffset::new(30, Annotation::StartBold),
+            AnnotationWithOffset::new(30, Annotation::StartItalics),
+            AnnotationWithOffset::new(94, Annotation::EndBold),
+            AnnotationWithOffset::new(94, Annotation::EndItalics)
+        ]),
         level: None,
         list_type: ListType::Unordered,
         read_only: None,
@@ -534,13 +694,21 @@ fn create_split_cell_test_cases(test_cases: &mut Vec<OperationTestCase>) {
         operation: Operation::SplitCell(SplitCellOperation {
             cell_id: "c8".to_owned(),
             removed_text: Some("\n\n".to_owned()),
+            removed_formatting: Some(Formatting::default()),
             split_index: 63,
             new_cell: split_cell4.clone(),
             referencing_cells: None,
         }),
         expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
-            cells[7] = cells[7]
-                .with_content("No test *notebook* would be complete without some **Markdown**.");
+            cells[7] = cells[7].with_rich_text(
+                "No test *notebook* would be complete without some **Markdown**.",
+                vec![
+                    AnnotationWithOffset::new(8, Annotation::StartItalics),
+                    AnnotationWithOffset::new(18, Annotation::EndItalics),
+                    AnnotationWithOffset::new(50, Annotation::StartBold),
+                    AnnotationWithOffset::new(62, Annotation::EndBold),
+                ],
+            );
             cells.insert(8, split_cell4);
         }),
     });
@@ -550,6 +718,10 @@ fn create_update_cell_test_cases(test_cases: &mut Vec<OperationTestCase>) {
     let updated_cell1 = Cell::Text(TextCell {
         id: "c3".to_owned(),
         content: "Some updated text".to_owned(),
+        formatting: Some(vec![
+            AnnotationWithOffset::new(5, Annotation::StartItalics),
+            AnnotationWithOffset::new(12, Annotation::EndItalics),
+        ]),
         read_only: None,
     });
 
@@ -569,6 +741,7 @@ fn create_update_cell_test_cases(test_cases: &mut Vec<OperationTestCase>) {
         id: "c3".to_owned(),
         heading_type: HeadingType::H2,
         content: TEST_NOTEBOOK.cells[2].content().unwrap().to_owned(),
+        formatting: Some(Formatting::default()),
         read_only: None,
     });
 
@@ -586,6 +759,7 @@ fn create_update_cell_test_cases(test_cases: &mut Vec<OperationTestCase>) {
         id: "c3".to_owned(),
         heading_type: HeadingType::H3,
         content: TEST_NOTEBOOK.cells[2].content().unwrap().to_owned(),
+        formatting: Some(Formatting::default()),
         read_only: None,
     });
 
@@ -602,6 +776,7 @@ fn create_update_cell_test_cases(test_cases: &mut Vec<OperationTestCase>) {
     let updated_cell4 = Cell::Text(TextCell {
         id: "c3".to_owned(),
         content: TEST_NOTEBOOK.cells[2].content().unwrap().to_owned(),
+        formatting: Some(Formatting::default()),
         read_only: Some(true),
     });
 

@@ -21,6 +21,8 @@ pub struct HeadingCell {
     pub heading_type: HeadingType,
     #[serde(rename = "content")]
     pub content: String,
+    #[serde(rename = "formatting", skip_serializing_if = "Option::is_none")]
+    pub formatting: Option<Vec<crate::models::Annotation>>,
     #[serde(rename = "readOnly", skip_serializing_if = "Option::is_none")]
     pub read_only: Option<bool>,
 }
@@ -32,6 +34,7 @@ impl HeadingCell {
             id,
             heading_type,
             content,
+            formatting: None,
             read_only: None,
         }
     }

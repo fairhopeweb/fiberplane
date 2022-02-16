@@ -1,5 +1,8 @@
-use crate::operations::{Notebook, NotebookVisibility};
-use crate::protocols::core::*;
+use crate::{
+    operations::{Notebook, NotebookVisibility},
+    protocols::core::*,
+    protocols::formatting::{Annotation, AnnotationWithOffset, Formatting},
+};
 use once_cell::sync::Lazy;
 use std::collections::{BTreeMap, HashMap};
 use time::OffsetDateTime;
@@ -11,17 +14,20 @@ pub static TEST_NOTEBOOK: Lazy<Notebook> = Lazy::new(|| {
             id: "c1".to_owned(),
             heading_type: HeadingType::H1,
             content: DEFAULT_TITLE.clone(),
+            formatting: Some(Formatting::default()),
             read_only: None,
         }),
         Cell::Heading(HeadingCell {
             id: "c2".to_owned(),
             heading_type: HeadingType::H2,
             content: "Locked subtitle".to_owned(),
+            formatting: Some(Formatting::default()),
             read_only: Some(true),
         }),
         Cell::Text(TextCell {
             id: "c3".to_owned(),
             content: "Some introductory text".to_owned(),
+            formatting: Some(Formatting::default()),
             read_only: None,
         }),
         Cell::Prometheus(PrometheusCell {
@@ -31,6 +37,7 @@ pub static TEST_NOTEBOOK: Lazy<Notebook> = Lazy::new(|| {
         }),
         Cell::Graph(GraphCell {
             id: "c5".to_owned(),
+            formatting: Some(Formatting::default()),
             graph_type: GraphType::Line,
             stacking_type: StackingType::None,
             title: "Still unconnected graph".to_owned(),
@@ -74,6 +81,16 @@ pub static TEST_NOTEBOOK: Lazy<Notebook> = Lazy::new(|| {
                 Right before our crown jewel: ***a locked, multi-sourced bar graph with a custom \
                 time range***!"
                 .to_owned(),
+            formatting: Some(vec![
+                AnnotationWithOffset::new(8, Annotation::StartItalics),
+                AnnotationWithOffset::new(18, Annotation::EndItalics),
+                AnnotationWithOffset::new(50, Annotation::StartBold),
+                AnnotationWithOffset::new(62, Annotation::EndBold),
+                AnnotationWithOffset::new(95, Annotation::StartBold),
+                AnnotationWithOffset::new(95, Annotation::StartItalics),
+                AnnotationWithOffset::new(159, Annotation::EndBold),
+                AnnotationWithOffset::new(159, Annotation::EndItalics),
+            ]),
             level: None,
             list_type: ListType::Unordered,
             read_only: Some(true),
@@ -124,6 +141,7 @@ pub static TEST_NOTEBOOK: Lazy<Notebook> = Lazy::new(|| {
 
             GraphCell {
                 id: "c9".to_owned(),
+                formatting: None,
                 graph_type: GraphType::Bar,
                 stacking_type: StackingType::None,
                 title: "They call me the crown jewel".to_owned(),

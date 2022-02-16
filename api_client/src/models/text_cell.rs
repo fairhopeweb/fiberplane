@@ -19,6 +19,8 @@ pub struct TextCell {
     pub id: String,
     #[serde(rename = "content")]
     pub content: String,
+    #[serde(rename = "formatting", skip_serializing_if = "Option::is_none")]
+    pub formatting: Option<Vec<crate::models::Annotation>>,
     #[serde(rename = "readOnly", skip_serializing_if = "Option::is_none")]
     pub read_only: Option<bool>,
 }
@@ -29,6 +31,7 @@ impl TextCell {
             _type,
             id,
             content,
+            formatting: None,
             read_only: None,
         }
     }

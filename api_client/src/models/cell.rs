@@ -21,6 +21,8 @@ pub enum Cell {
         checked: bool,
         #[serde(rename = "content")]
         content: String,
+        #[serde(rename = "formatting", skip_serializing_if = "Option::is_none")]
+        formatting: Option<Vec<crate::models::Annotation>>,
         #[serde(rename = "level", skip_serializing_if = "Option::is_none")]
         level: Option<i32>,
         #[serde(rename = "readOnly", skip_serializing_if = "Option::is_none")]
@@ -69,6 +71,8 @@ pub enum Cell {
         time_range: Option<Box<crate::models::TimeRange>>,
         #[serde(rename = "title")]
         title: String,
+        #[serde(rename = "formatting", skip_serializing_if = "Option::is_none")]
+        formatting: Option<Vec<crate::models::Annotation>>,
         #[serde(rename = "data", skip_serializing_if = "Option::is_none")]
         data: Option<::std::collections::HashMap<String, Vec<crate::models::Series>>>,
     },
@@ -80,6 +84,8 @@ pub enum Cell {
         heading_type: HeadingType,
         #[serde(rename = "content")]
         content: String,
+        #[serde(rename = "formatting", skip_serializing_if = "Option::is_none")]
+        formatting: Option<Vec<crate::models::Annotation>>,
         #[serde(rename = "readOnly", skip_serializing_if = "Option::is_none")]
         read_only: Option<bool>,
     },
@@ -110,6 +116,8 @@ pub enum Cell {
         list_type: ListType,
         #[serde(rename = "content")]
         content: String,
+        #[serde(rename = "formatting", skip_serializing_if = "Option::is_none")]
+        formatting: Option<Vec<crate::models::Annotation>>,
         #[serde(rename = "level", skip_serializing_if = "Option::is_none")]
         level: Option<i32>,
         #[serde(rename = "readOnly", skip_serializing_if = "Option::is_none")]
@@ -165,6 +173,8 @@ pub enum Cell {
         id: String,
         #[serde(rename = "content")]
         content: String,
+        #[serde(rename = "formatting", skip_serializing_if = "Option::is_none")]
+        formatting: Option<Vec<crate::models::Annotation>>,
         #[serde(rename = "readOnly", skip_serializing_if = "Option::is_none")]
         read_only: Option<bool>,
     },

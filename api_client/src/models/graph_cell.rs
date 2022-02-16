@@ -29,6 +29,8 @@ pub struct GraphCell {
     pub time_range: Option<Box<crate::models::TimeRange>>,
     #[serde(rename = "title")]
     pub title: String,
+    #[serde(rename = "formatting", skip_serializing_if = "Option::is_none")]
+    pub formatting: Option<Vec<crate::models::Annotation>>,
     #[serde(rename = "data", skip_serializing_if = "Option::is_none")]
     pub data: Option<::std::collections::HashMap<String, Vec<crate::models::Series>>>,
 }
@@ -44,6 +46,7 @@ impl GraphCell {
             source_ids,
             time_range: None,
             title,
+            formatting: None,
             data: None,
         }
     }

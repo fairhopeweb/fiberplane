@@ -13,7 +13,12 @@ pub fn test_invert_operation() -> Result<(), Error> {
             TEST_NOTEBOOK
                 .apply_operation(&test_case.operation)?
                 .apply_operation(&invert_operation(&test_case.operation))?,
-            *TEST_NOTEBOOK
+            *TEST_NOTEBOOK,
+            "Operation could not be cleanly reverted!\n\
+                Operation: {:?}\n\
+                Inverted: {:?}",
+            &test_case.operation,
+            invert_operation(&test_case.operation),
         );
     }
 

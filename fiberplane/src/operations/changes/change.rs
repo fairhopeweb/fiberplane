@@ -1,4 +1,7 @@
-use crate::protocols::core::{Cell, Label, NotebookDataSource, TimeRange};
+use crate::protocols::{
+    core::{Cell, Label, NotebookDataSource, TimeRange},
+    formatting::Formatting,
+};
 use fp_bindgen::prelude::Serializable;
 use serde::{Deserialize, Serialize};
 
@@ -63,6 +66,8 @@ pub struct UpdateCellChange {
 
 /// Specifies the text field of the given cell (`content` or `title`, depending on the cell type)
 /// must be updated.
+///
+/// Optionally updates the formatting as well.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::operations")]
 #[serde(rename_all = "camelCase")]
@@ -72,6 +77,14 @@ pub struct UpdateCellTextChange {
 
     /// The new text string to store.
     pub text: String,
+
+    /// Optional formatting to store.
+    ///
+    /// If the formatting is omitted, it means the cell had no formatting and
+    /// will continue to not have it. In any other case, formatting will be
+    /// provided, even if unchanged.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub formatting: Option<Formatting>,
 }
 
 #[deprecated(note = "Please use UpdateNotebookTimeRangeChange instead")]

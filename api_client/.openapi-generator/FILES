@@ -2,6 +2,8 @@
 .travis.yml
 Cargo.toml
 README.md
+docs/Annotation.md
+docs/AnnotationType.md
 docs/Cell.md
 docs/CellType.md
 docs/CheckboxCell.md
@@ -15,6 +17,12 @@ docs/DefaultApi.md
 docs/DividerCell.md
 docs/ElasticsearchCell.md
 docs/ElasticsearchDataSource.md
+docs/EndBoldAnnotation.md
+docs/EndHighlightAnnotation.md
+docs/EndItalicsAnnotation.md
+docs/EndLinkAnnotation.md
+docs/EndStrikethroughAnnotation.md
+docs/EndUnderlineAnnotation.md
 docs/FileSummary.md
 docs/GraphCell.md
 docs/HeadingCell.md
@@ -28,6 +36,7 @@ docs/LogCell.md
 docs/LogRecord.md
 docs/LokiCell.md
 docs/LokiDataSource.md
+docs/MentionAnnotation.md
 docs/Metric.md
 docs/NewNotebook.md
 docs/NewOrgDataSource.md
@@ -51,6 +60,12 @@ docs/ProxySummary.md
 docs/QueryType.md
 docs/Series.md
 docs/SeriesQuery.md
+docs/StartBoldAnnotation.md
+docs/StartHighlightAnnotation.md
+docs/StartItalicsAnnotation.md
+docs/StartLinkAnnotation.md
+docs/StartStrikethroughAnnotation.md
+docs/StartUnderlineAnnotation.md
 docs/TableCell.md
 docs/TextCell.md
 docs/TimeRange.md
@@ -63,6 +78,8 @@ src/apis/configuration.rs
 src/apis/default_api.rs
 src/apis/mod.rs
 src/lib.rs
+src/models/annotation.rs
+src/models/annotation_type.rs
 src/models/cell.rs
 src/models/cell_type.rs
 src/models/checkbox_cell.rs
@@ -75,6 +92,12 @@ src/models/data_source_type.rs
 src/models/divider_cell.rs
 src/models/elasticsearch_cell.rs
 src/models/elasticsearch_data_source.rs
+src/models/end_bold_annotation.rs
+src/models/end_highlight_annotation.rs
+src/models/end_italics_annotation.rs
+src/models/end_link_annotation.rs
+src/models/end_strikethrough_annotation.rs
+src/models/end_underline_annotation.rs
 src/models/file_summary.rs
 src/models/graph_cell.rs
 src/models/heading_cell.rs
@@ -88,6 +111,7 @@ src/models/log_cell.rs
 src/models/log_record.rs
 src/models/loki_cell.rs
 src/models/loki_data_source.rs
+src/models/mention_annotation.rs
 src/models/metric.rs
 src/models/mod.rs
 src/models/new_notebook.rs
@@ -112,6 +136,12 @@ src/models/proxy_summary.rs
 src/models/query_type.rs
 src/models/series.rs
 src/models/series_query.rs
+src/models/start_bold_annotation.rs
+src/models/start_highlight_annotation.rs
+src/models/start_italics_annotation.rs
+src/models/start_link_annotation.rs
+src/models/start_strikethrough_annotation.rs
+src/models/start_underline_annotation.rs
 src/models/table_cell.rs
 src/models/text_cell.rs
 src/models/time_range.rs

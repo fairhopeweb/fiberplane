@@ -12,6 +12,7 @@ Name | Type | Description | Notes
 **source_ids** | **Vec<String>** |  | 
 **time_range** | Option<[**crate::models::TimeRange**](timeRange.md)> |  | [optional]
 **title** | **String** |  | 
+**formatting** | Option<[**Vec<crate::models::Annotation>**](annotation.md)> |  | [optional]
 **data** | Option<[**::std::collections::HashMap<String, Vec<crate::models::Series>>**](array.md)> |  | [optional]
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

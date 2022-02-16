@@ -21,6 +21,8 @@ pub struct CheckboxCell {
     pub checked: bool,
     #[serde(rename = "content")]
     pub content: String,
+    #[serde(rename = "formatting", skip_serializing_if = "Option::is_none")]
+    pub formatting: Option<Vec<crate::models::Annotation>>,
     #[serde(rename = "level", skip_serializing_if = "Option::is_none")]
     pub level: Option<i32>,
     #[serde(rename = "readOnly", skip_serializing_if = "Option::is_none")]
@@ -34,6 +36,7 @@ impl CheckboxCell {
             id,
             checked,
             content,
+            formatting: None,
             level: None,
             read_only: None,
         }

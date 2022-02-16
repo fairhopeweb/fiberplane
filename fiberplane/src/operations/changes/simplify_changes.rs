@@ -1,13 +1,25 @@
 use super::*;
-use crate::protocols::core::Cell;
+use crate::protocols::{core::Cell, formatting::Formatting};
 
 /// Represents the changes we've seen to a single cell.
 enum CellChangeState {
     None,
-    Inserted { cell: Cell, index: u32 },
-    Updated { cell: Cell },
-    Moved { cell_id: String, index: u32 },
-    TextUpdated { cell_id: String, text: String },
+    Inserted {
+        cell: Cell,
+        index: u32,
+    },
+    Updated {
+        cell: Cell,
+    },
+    Moved {
+        cell_id: String,
+        index: u32,
+    },
+    TextUpdated {
+        cell_id: String,
+        text: String,
+        formatting: Option<Formatting>,
+    },
 }
 
 impl CellChangeState {
@@ -32,12 +44,15 @@ impl CellChangeState {
                 cell_ids: vec![cell_id],
                 index,
             })),
-            Self::TextUpdated { cell_id, text } => {
-                Some(Change::UpdateCellText(UpdateCellTextChange {
-                    cell_id,
-                    text,
-                }))
-            }
+            Self::TextUpdated {
+                cell_id,
+                text,
+                formatting,
+            } => Some(Change::UpdateCellText(UpdateCellTextChange {
+                cell_id,
+                text,
+                formatting,
+            })),
         }
     }
 }
@@ -119,11 +134,16 @@ pub fn simplify_changes(changes: Vec<Change>) -> Vec<Change> {
                                 }
                             }
                             Moved { cell_id, index: _ } => Moved { cell_id, index },
-                            TextUpdated { cell_id, text } => {
+                            TextUpdated {
+                                cell_id,
+                                text,
+                                formatting,
+                            } => {
                                 simplified_changes.push(Change::UpdateCellText(
                                     UpdateCellTextChange {
                                         cell_id: cell_id.clone(),
                                         text,
+                                        formatting,
                                     },
                                 ));
                                 Moved {
@@ -175,10 +195,18 @@ pub fn simplify_changes(changes: Vec<Change>) -> Vec<Change> {
                     current_cell_state = Updated { cell };
                 }
             }
-            Change::UpdateCellText(UpdateCellTextChange { cell_id, text }) => {
+            Change::UpdateCellText(UpdateCellTextChange {
+                cell_id,
+                text,
+                formatting,
+            }) => {
                 if current_cell_state.cell_id() == Some(&cell_id) {
                     current_cell_state = match current_cell_state {
-                        None => TextUpdated { cell_id, text },
+                        None => TextUpdated {
+                            cell_id,
+                            text,
+                            formatting,
+                        },
                         Inserted { cell, index } => Inserted {
                             cell: cell.with_text(&text),
                             index,
@@ -191,16 +219,28 @@ pub fn simplify_changes(changes: Vec<Change>) -> Vec<Change> {
                                 cell_ids: vec![cell_id.clone()],
                                 index,
                             }));
-                            TextUpdated { cell_id, text }
+                            TextUpdated {
+                                cell_id,
+                                text,
+                                formatting,
+                            }
                         }
-                        TextUpdated { .. } => TextUpdated { cell_id, text },
+                        TextUpdated { .. } => TextUpdated {
+                            cell_id,
+                            text,
+                            formatting,
+                        },
                     };
                 } else {
                     if let Some(change) = current_cell_state.into_change() {
                         simplified_changes.push(change);
                     }
 
-                    current_cell_state = TextUpdated { cell_id, text };
+                    current_cell_state = TextUpdated {
+                        cell_id,
+                        text,
+                        formatting,
+                    };
                 }
             }
             other => simplified_changes.push(other),

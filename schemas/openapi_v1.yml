@@ -1,5 +1,5 @@
 ---
-openapi: "3.0.2"
+openapi: "3.0.3"
 info:
   title: Fiberplane API
   version: "1.0"
@@ -109,6 +109,8 @@ components:
           type: boolean
         content:
           type: string
+        formatting:
+          $ref: "#/components/schemas/formatting"
         level:
           type: integer
           format: int32
@@ -178,6 +180,8 @@ components:
           $ref: "#/components/schemas/timeRange"
         title:
           type: string
+        formatting:
+          $ref: "#/components/schemas/formatting"
         data:
           type: object
           additionalProperties:
@@ -204,6 +208,8 @@ components:
             - h3
         content:
           type: string
+        formatting:
+          $ref: "#/components/schemas/formatting"
         readOnly:
           type: boolean
     listItemCell:
@@ -225,6 +231,8 @@ components:
             - unordered
         content:
           type: string
+        formatting:
+          $ref: "#/components/schemas/formatting"
         level:
           type: integer
           format: int32
@@ -339,6 +347,8 @@ components:
           type: string
         content:
           type: string
+        formatting:
+          $ref: "#/components/schemas/formatting"
         readOnly:
           type: boolean
     imageCell:
@@ -464,6 +474,209 @@ components:
         to:
           type: number
           format: float
+    formatting:
+      type: array
+      items:
+        $ref: "#/components/schemas/annotation"
+    annotation:
+      oneOf:
+        - $ref: "#/components/schemas/startBoldAnnotation"
+        - $ref: "#/components/schemas/endBoldAnnotation"
+        - $ref: "#/components/schemas/startHighlightAnnotation"
+        - $ref: "#/components/schemas/endHighlightAnnotation"
+        - $ref: "#/components/schemas/startItalicsAnnotation"
+        - $ref: "#/components/schemas/endItalicsAnnotation"
+        - $ref: "#/components/schemas/startLinkAnnotation"
+        - $ref: "#/components/schemas/endLinkAnnotation"
+        - $ref: "#/components/schemas/mentionAnnotation"
+        - $ref: "#/components/schemas/startStrikethroughAnnotation"
+        - $ref: "#/components/schemas/endStrikethroughAnnotation"
+        - $ref: "#/components/schemas/startUnderlineAnnotation"
+        - $ref: "#/components/schemas/endUnderlineAnnotation"
+      discriminator:
+        propertyName: type
+        mapping:
+          start_bold: "#/components/schemas/startBoldAnnotation"
+          end_bold: "#/components/schemas/endBoldAnnotation"
+          start_highlight: "#/components/schemas/startHighlightAnnotation"
+          end_highlight: "#/components/schemas/endHighlightAnnotation"
+          start_italics: "#/components/schemas/startItalicsAnnotation"
+          end_italics: "#/components/schemas/endItalicsAnnotation"
+          start_link: "#/components/schemas/startLinkAnnotation"
+          end_link: "#/components/schemas/endLinkAnnotation"
+          mention: "#/components/schemas/mentionAnnotation"
+          start_strikethrough: "#/components/schemas/startStrikethroughAnnotation"
+          end_strikethrough: "#/components/schemas/endStrikethroughAnnotation"
+          start_underline: "#/components/schemas/startUnderlineAnnotation"
+          end_underline: "#/components/schemas/endUnderlineAnnotation"
+    annotationType:
+      type: string
+      enum:
+        - start_bold
+        - end_bold
+        - start_highlight
+        - end_highlight
+        - start_italics
+        - end_italics
+        - start_link
+        - end_link
+        - mention
+        - start_strikethrough
+        - end_strikethrough
+        - start_underline
+        - end_underline
+    startBoldAnnotation:
+      type: object
+      required:
+        - type
+        - offset
+      properties:
+        type:
+          $ref: "#/components/schemas/annotationType"
+        offset:
+          type: integer
+          format: int32
+    endBoldAnnotation:
+      type: object
+      required:
+        - type
+        - offset
+      properties:
+        type:
+          $ref: "#/components/schemas/annotationType"
+        offset:
+          type: integer
+          format: int32
+    startHighlightAnnotation:
+      type: object
+      required:
+        - type
+        - offset
+      properties:
+        type:
+          $ref: "#/components/schemas/annotationType"
+        offset:
+          type: integer
+          format: int32
+    endHighlightAnnotation:
+      type: object
+      required:
+        - type
+        - offset
+      properties:
+        type:
+          $ref: "#/components/schemas/annotationType"
+        offset:
+          type: integer
+          format: int32
+    startItalicsAnnotation:
+      type: object
+      required:
+        - type
+        - offset
+      properties:
+        type:
+          $ref: "#/components/schemas/annotationType"
+        offset:
+          type: integer
+          format: int32
+    endItalicsAnnotation:
+      type: object
+      required:
+        - type
+        - offset
+      properties:
+        type:
+          $ref: "#/components/schemas/annotationType"
+        offset:
+          type: integer
+          format: int32
+    startLinkAnnotation:
+      type: object
+      required:
+        - type
+        - offset
+        - url
+      properties:
+        type:
+          $ref: "#/components/schemas/annotationType"
+        offset:
+          type: integer
+          format: int32
+        url:
+          type: "string"
+    endLinkAnnotation:
+      type: object
+      required:
+        - type
+        - offset
+      properties:
+        type:
+          $ref: "#/components/schemas/annotationType"
+        offset:
+          type: integer
+          format: int32
+    mentionAnnotation:
+      type: object
+      required:
+        - type
+        - offset
+        - name
+        - userId
+      properties:
+        type:
+          $ref: "#/components/schemas/annotationType"
+        offset:
+          type: integer
+          format: int32
+        name:
+          type: "string"
+        userId:
+          type: "string"
+    startStrikethroughAnnotation:
+      type: object
+      required:
+        - type
+        - offset
+      properties:
+        type:
+          $ref: "#/components/schemas/annotationType"
+        offset:
+          type: integer
+          format: int32
+    endStrikethroughAnnotation:
+      type: object
+      required:
+        - type
+        - offset
+      properties:
+        type:
+          $ref: "#/components/schemas/annotationType"
+        offset:
+          type: integer
+          format: int32
+    startUnderlineAnnotation:
+      type: object
+      required:
+        - type
+        - offset
+      properties:
+        type:
+          $ref: "#/components/schemas/annotationType"
+        offset:
+          type: integer
+          format: int32
+    endUnderlineAnnotation:
+      type: object
+      required:
+        - type
+        - offset
+      properties:
+        type:
+          $ref: "#/components/schemas/annotationType"
+        offset:
+          type: integer
+          format: int32
     instant:
       type: object
       required:

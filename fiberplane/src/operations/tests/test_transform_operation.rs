@@ -220,7 +220,7 @@ pub fn test_transform_operation() -> Result<(), Error> {
         .collect();
 
     // Verify the amount of permutations, to make sure we don't accidentally skip any:
-    assert_eq!(testable_permutations.len(), 716);
+    assert_eq!(testable_permutations.len(), 796);
 
     for (operation1, operation2) in testable_permutations.iter() {
         match (

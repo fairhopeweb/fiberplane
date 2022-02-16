@@ -1,6 +1,9 @@
 use std::borrow::Borrow;
 
 use crate::operations::{changes::*, error::*};
+use crate::protocols::formatting::{
+    first_annotation_index_beyond_offset, first_annotation_index_for_offset, translate, Formatting,
+};
 use crate::protocols::{core::*, operations::*};
 
 #[derive(Clone, Debug, PartialEq)]
@@ -106,6 +109,7 @@ fn apply_merge_cells_operation(
         target_cell_id,
         target_content_length,
         glue_text,
+        glue_formatting,
         referencing_cells,
     } = operation;
 
@@ -126,6 +130,36 @@ fn apply_merge_cells_operation(
                 glue_text.clone().unwrap_or_default(),
                 source_cell.content().unwrap_or("")
             ),
+            formatting: match (
+                source_cell.formatting(),
+                target_cell.formatting(),
+                glue_formatting,
+            ) {
+                (None, None, None) => None,
+                (source_formatting, target_formatting, glue_formatting) => {
+                    let glue_length = glue_text.as_ref().map(char_count).unwrap_or_default();
+                    Some(
+                        [
+                            target_formatting.cloned().unwrap_or_default(),
+                            glue_formatting
+                                .as_ref()
+                                .map(|formatting| {
+                                    translate(formatting, *target_content_length as i64)
+                                })
+                                .unwrap_or_default(),
+                            source_formatting
+                                .map(|formatting| {
+                                    translate(
+                                        formatting,
+                                        (*target_content_length + glue_length) as i64,
+                                    )
+                                })
+                                .unwrap_or_default(),
+                        ]
+                        .concat(),
+                    )
+                }
+            },
         }),
         Change::DeleteCell(DeleteCellChange {
             cell_id: source_cell.id().clone(),
@@ -194,6 +228,10 @@ fn apply_replace_text_operation(
                 Ok(vec![Change::UpdateCellText(UpdateCellTextChange {
                     cell_id: operation.cell_id.clone(),
                     text: replace_text(text, operation),
+                    formatting: match (cell.formatting(), &operation.new_formatting) {
+                        (None, None) => None,
+                        (formatting, _) => Some(replace_formatting(formatting, operation)),
+                    },
                 })])
             } else {
                 Err(Error::NoContentCell(operation.cell_id.clone()))
@@ -219,6 +257,16 @@ fn apply_split_cells_operation(
                 .content()
                 .map(|c| c.chars().take(operation.split_index as usize).collect())
                 .unwrap_or_default(),
+            formatting: cell.formatting().map(|formatting| {
+                formatting
+                    .iter()
+                    .take(first_annotation_index_for_offset(
+                        formatting,
+                        operation.split_index,
+                    ))
+                    .cloned()
+                    .collect()
+            }),
         }),
         Change::InsertCell(InsertCellChange {
             cell: operation.new_cell.clone(),
@@ -383,6 +431,59 @@ fn get_change_for_dropped_reference(
                 .with_source_ids(source_ids.into_iter().map(String::from).collect()),
         })
     }
+}
+
+pub fn replace_formatting(
+    formatting: Option<&Formatting>,
+    operation: &ReplaceTextOperation,
+) -> Formatting {
+    let offset = operation.offset as i64;
+    let mut formatting = match formatting {
+        Some(formatting) => formatting.clone(),
+        None => {
+            return operation
+                .new_formatting
+                .as_ref()
+                .map(|formatting| translate(formatting, offset))
+                .unwrap_or_default()
+        }
+    };
+
+    if let Some(old_formatting) = &operation.old_formatting {
+        formatting.retain(|annotation| !old_formatting.contains(&annotation.translate(-offset)));
+    }
+
+    // We split the formatting at the index *beyond* the offset, so that no
+    // formatting is lost unless explicitly included in the `old_formatting`.
+    let split_index = first_annotation_index_beyond_offset(&formatting, operation.offset);
+    let continue_index = if operation.old_text.is_empty() {
+        // We continue from the split index, or annotations that are *at* the
+        // index would get duplicated.
+        split_index
+    } else {
+        // If we removed text, we continue *before* the offset from where the
+        // text continues, to avoid losing formatting again.
+        first_annotation_index_for_offset(
+            &formatting,
+            operation.offset + char_count(&operation.old_text),
+        )
+    };
+
+    let delta = char_count(&operation.new_text) as i64 - char_count(&operation.old_text) as i64;
+    [
+        &formatting[0..split_index],
+        &operation
+            .new_formatting
+            .as_ref()
+            .map(|formatting| translate(formatting, offset))
+            .unwrap_or_default(),
+        &formatting
+            .iter()
+            .skip(continue_index)
+            .map(|annotation| annotation.translate(delta))
+            .collect::<Vec<_>>(),
+    ]
+    .concat()
 }
 
 pub fn replace_text(text: &str, operation: &ReplaceTextOperation) -> String {

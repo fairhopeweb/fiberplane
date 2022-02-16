@@ -21,6 +21,8 @@ pub struct ListItemCell {
     pub list_type: ListType,
     #[serde(rename = "content")]
     pub content: String,
+    #[serde(rename = "formatting", skip_serializing_if = "Option::is_none")]
+    pub formatting: Option<Vec<crate::models::Annotation>>,
     #[serde(rename = "level", skip_serializing_if = "Option::is_none")]
     pub level: Option<i32>,
     #[serde(rename = "readOnly", skip_serializing_if = "Option::is_none")]
@@ -36,6 +38,7 @@ impl ListItemCell {
             id,
             list_type,
             content,
+            formatting: None,
             level: None,
             read_only: None,
             start_number: None,
