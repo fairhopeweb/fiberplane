@@ -43,6 +43,8 @@ impl AnnotationWithOffset {
 pub enum Annotation {
     StartBold,
     EndBold,
+    StartCode,
+    EndCode,
     StartHighlight,
     EndHighlight,
     StartItalics,

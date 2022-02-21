@@ -18,6 +18,11 @@ pub enum Annotation {
         #[serde(rename = "offset")]
         offset: i32,
     },
+    #[serde(rename="end_code")]
+    EndCodeAnnotation {
+        #[serde(rename = "offset")]
+        offset: i32,
+    },
     #[serde(rename="end_highlight")]
     EndHighlightAnnotation {
         #[serde(rename = "offset")]
@@ -54,6 +59,11 @@ pub enum Annotation {
     },
     #[serde(rename="start_bold")]
     StartBoldAnnotation {
+        #[serde(rename = "offset")]
+        offset: i32,
+    },
+    #[serde(rename="start_code")]
+    StartCodeAnnotation {
         #[serde(rename = "offset")]
         offset: i32,
     },

@@ -18,6 +18,7 @@ docs/DividerCell.md
 docs/ElasticsearchCell.md
 docs/ElasticsearchDataSource.md
 docs/EndBoldAnnotation.md
+docs/EndCodeAnnotation.md
 docs/EndHighlightAnnotation.md
 docs/EndItalicsAnnotation.md
 docs/EndLinkAnnotation.md
@@ -61,6 +62,7 @@ docs/QueryType.md
 docs/Series.md
 docs/SeriesQuery.md
 docs/StartBoldAnnotation.md
+docs/StartCodeAnnotation.md
 docs/StartHighlightAnnotation.md
 docs/StartItalicsAnnotation.md
 docs/StartLinkAnnotation.md
@@ -93,6 +95,7 @@ src/models/divider_cell.rs
 src/models/elasticsearch_cell.rs
 src/models/elasticsearch_data_source.rs
 src/models/end_bold_annotation.rs
+src/models/end_code_annotation.rs
 src/models/end_highlight_annotation.rs
 src/models/end_italics_annotation.rs
 src/models/end_link_annotation.rs
@@ -137,6 +140,7 @@ src/models/query_type.rs
 src/models/series.rs
 src/models/series_query.rs
 src/models/start_bold_annotation.rs
+src/models/start_code_annotation.rs
 src/models/start_highlight_annotation.rs
 src/models/start_italics_annotation.rs
 src/models/start_link_annotation.rs

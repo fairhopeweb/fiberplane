@@ -16,6 +16,10 @@ pub enum AnnotationType {
     StartBold,
     #[serde(rename = "end_bold")]
     EndBold,
+    #[serde(rename = "start_code")]
+    StartCode,
+    #[serde(rename = "end_code")]
+    EndCode,
     #[serde(rename = "start_highlight")]
     StartHighlight,
     #[serde(rename = "end_highlight")]
@@ -46,6 +50,8 @@ impl ToString for AnnotationType {
         match self {
             Self::StartBold => String::from("start_bold"),
             Self::EndBold => String::from("end_bold"),
+            Self::StartCode => String::from("start_code"),
+            Self::EndCode => String::from("end_code"),
             Self::StartHighlight => String::from("start_highlight"),
             Self::EndHighlight => String::from("end_highlight"),
             Self::StartItalics => String::from("start_italics"),

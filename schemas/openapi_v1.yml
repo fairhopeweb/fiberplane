@@ -482,6 +482,8 @@ components:
       oneOf:
         - $ref: "#/components/schemas/startBoldAnnotation"
         - $ref: "#/components/schemas/endBoldAnnotation"
+        - $ref: "#/components/schemas/startCodeAnnotation"
+        - $ref: "#/components/schemas/endCodeAnnotation"
         - $ref: "#/components/schemas/startHighlightAnnotation"
         - $ref: "#/components/schemas/endHighlightAnnotation"
         - $ref: "#/components/schemas/startItalicsAnnotation"
@@ -498,6 +500,8 @@ components:
         mapping:
           start_bold: "#/components/schemas/startBoldAnnotation"
           end_bold: "#/components/schemas/endBoldAnnotation"
+          start_code: "#/components/schemas/startCodeAnnotation"
+          end_code: "#/components/schemas/endCodeAnnotation"
           start_highlight: "#/components/schemas/startHighlightAnnotation"
           end_highlight: "#/components/schemas/endHighlightAnnotation"
           start_italics: "#/components/schemas/startItalicsAnnotation"
@@ -514,6 +518,8 @@ components:
       enum:
         - start_bold
         - end_bold
+        - start_code
+        - end_code
         - start_highlight
         - end_highlight
         - start_italics
@@ -537,6 +543,28 @@ components:
           type: integer
           format: int32
     endBoldAnnotation:
+      type: object
+      required:
+        - type
+        - offset
+      properties:
+        type:
+          $ref: "#/components/schemas/annotationType"
+        offset:
+          type: integer
+          format: int32
+    startCodeAnnotation:
+      type: object
+      required:
+        - type
+        - offset
+      properties:
+        type:
+          $ref: "#/components/schemas/annotationType"
+        offset:
+          type: integer
+          format: int32
+    endCodeAnnotation:
       type: object
       required:
         - type
