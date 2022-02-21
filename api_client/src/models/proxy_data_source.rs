@@ -19,14 +19,17 @@ pub struct ProxyDataSource {
     pub proxy_id: String,
     #[serde(rename = "dataSourceName")]
     pub data_source_name: String,
+    #[serde(rename = "dataSourceType")]
+    pub data_source_type: crate::models::DataSourceType,
 }
 
 impl ProxyDataSource {
-    pub fn new(_type: crate::models::DataSourceType, proxy_id: String, data_source_name: String) -> ProxyDataSource {
+    pub fn new(_type: crate::models::DataSourceType, proxy_id: String, data_source_name: String, data_source_type: crate::models::DataSourceType) -> ProxyDataSource {
         ProxyDataSource {
             _type,
             proxy_id,
             data_source_name,
+            data_source_type,
         }
     }
 }

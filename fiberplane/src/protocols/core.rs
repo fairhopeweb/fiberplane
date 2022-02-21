@@ -5,6 +5,8 @@ use fp_bindgen::prelude::Serializable;
 use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, HashMap};
+use std::fmt::{self, Display};
+use std::str::FromStr;
 use thiserror::Error;
 use time::OffsetDateTime;
 
@@ -875,7 +877,69 @@ pub enum DataSource {
     Proxy(ProxyDataSource),
     Elasticsearch(ElasticsearchDataSource),
     Loki(LokiDataSource),
-    // Kubernetes
+}
+
+impl DataSource {
+    pub fn data_source_type(&self) -> DataSourceType {
+        match self {
+            DataSource::Prometheus(_) => DataSourceType::Prometheus,
+            DataSource::Proxy(_) => DataSourceType::Proxy,
+            DataSource::Elasticsearch(_) => DataSourceType::Elasticsearch,
+            DataSource::Loki(_) => DataSourceType::Loki,
+        }
+    }
+}
+
+impl From<&DataSource> for DataSourceType {
+    fn from(data_source: &DataSource) -> Self {
+        data_source.data_source_type()
+    }
+}
+
+#[derive(
+    Clone, Debug, PartialEq, Serialize, Deserialize, Serializable, Hash, PartialOrd, Eq, Ord,
+)]
+#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[serde(rename_all = "camelCase")]
+pub enum DataSourceType {
+    Prometheus,
+    Proxy,
+    Elasticsearch,
+    Loki,
+}
+
+impl From<&DataSourceType> for &'static str {
+    fn from(data_source_type: &DataSourceType) -> Self {
+        match data_source_type {
+            DataSourceType::Prometheus => "prometheus",
+            DataSourceType::Proxy => "proxy",
+            DataSourceType::Elasticsearch => "elasticsearch",
+            DataSourceType::Loki => "loki",
+        }
+    }
+}
+
+#[derive(thiserror::Error, Debug, PartialEq)]
+#[error("Unexpected data source type: {0}")]
+pub struct UnexpectedDataSourceType(String);
+
+impl FromStr for DataSourceType {
+    type Err = UnexpectedDataSourceType;
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        match s {
+            "prometheus" => Ok(DataSourceType::Prometheus),
+            "elasticsearch" => Ok(DataSourceType::Elasticsearch),
+            "loki" => Ok(DataSourceType::Loki),
+            "proxy" => Ok(DataSourceType::Proxy),
+            _ => Err(UnexpectedDataSourceType(s.to_string())),
+        }
+    }
+}
+
+impl Display for DataSourceType {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        f.write_str(self.into())
+    }
 }
 
 /// A data-source for Prometheus. Currently only requires a url. This should be
@@ -918,6 +982,9 @@ pub struct ProxyDataSource {
 
     /// Name of the data source exposed by the proxy.
     pub data_source_name: String,
+
+    /// Provider type
+    pub data_source_type: DataSourceType,
 }
 
 /// Labels that are associated with a Notebook.

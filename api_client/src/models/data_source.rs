@@ -34,6 +34,8 @@ pub enum DataSource {
         proxy_id: String,
         #[serde(rename = "dataSourceName")]
         data_source_name: String,
+        #[serde(rename = "dataSourceType")]
+        data_source_type: crate::models::DataSourceType,
     },
 }
 

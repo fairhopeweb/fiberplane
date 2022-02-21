@@ -865,6 +865,7 @@ components:
       type: object
       required:
         - "type"
+        - "dataSourceType"
         - "proxyId"
         - "dataSourceName"
       properties:
@@ -874,6 +875,8 @@ components:
           type: string
         dataSourceName:
           type: string
+        dataSourceType:
+          $ref: "#/components/schemas/dataSourceType"
     fileSummary:
       type: object
       required:
@@ -1004,7 +1007,7 @@ components:
         name:
           type: string
         type:
-          type: string
+          $ref: "#/components/schemas/dataSourceType"
     dataSourceAndProxySummary:
       type: object
       required:
@@ -1015,7 +1018,7 @@ components:
         name:
           type: string
         type:
-          type: string
+          $ref: "#/components/schemas/dataSourceType"
         proxy:
           $ref: "#/components/schemas/proxySummary"
     trigger:

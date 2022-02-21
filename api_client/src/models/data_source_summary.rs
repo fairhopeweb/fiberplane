@@ -16,11 +16,11 @@ pub struct DataSourceSummary {
     #[serde(rename = "name")]
     pub name: String,
     #[serde(rename = "type")]
-    pub _type: String,
+    pub _type: crate::models::DataSourceType,
 }
 
 impl DataSourceSummary {
-    pub fn new(name: String, _type: String) -> DataSourceSummary {
+    pub fn new(name: String, _type: crate::models::DataSourceType) -> DataSourceSummary {
         DataSourceSummary {
             name,
             _type,
