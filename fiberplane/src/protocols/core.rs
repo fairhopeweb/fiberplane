@@ -960,6 +960,12 @@ pub struct PrometheusDataSource {
 #[serde(rename_all = "camelCase")]
 pub struct ElasticsearchDataSource {
     pub url: String,
+    /// Parse the timestamp out of fields with the given names
+    #[serde(default)]
+    pub timestamp_field_names: Vec<String>,
+    /// Parse the body out of fields with the given names
+    #[serde(default)]
+    pub body_field_names: Vec<String>,
 }
 
 /// A data-source for Loki. Currently only requires a url. This should be

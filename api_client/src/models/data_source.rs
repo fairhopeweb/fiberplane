@@ -17,6 +17,10 @@ pub enum DataSource {
     ElasticsearchDataSource {
         #[serde(rename = "url")]
         url: String,
+        #[serde(rename = "timestampFieldNames")]
+        timestamp_field_names: Vec<String>,
+        #[serde(rename = "bodyFieldNames")]
+        body_field_names: Vec<String>,
     },
     #[serde(rename="loki")]
     LokiDataSource {

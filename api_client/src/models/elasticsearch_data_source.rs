@@ -17,13 +17,19 @@ pub struct ElasticsearchDataSource {
     pub _type: crate::models::DataSourceType,
     #[serde(rename = "url")]
     pub url: String,
+    #[serde(rename = "timestampFieldNames")]
+    pub timestamp_field_names: Vec<String>,
+    #[serde(rename = "bodyFieldNames")]
+    pub body_field_names: Vec<String>,
 }
 
 impl ElasticsearchDataSource {
-    pub fn new(_type: crate::models::DataSourceType, url: String) -> ElasticsearchDataSource {
+    pub fn new(_type: crate::models::DataSourceType, url: String, timestamp_field_names: Vec<String>, body_field_names: Vec<String>) -> ElasticsearchDataSource {
         ElasticsearchDataSource {
             _type,
             url,
+            timestamp_field_names,
+            body_field_names,
         }
     }
 }

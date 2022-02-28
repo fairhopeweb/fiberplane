@@ -846,11 +846,23 @@ components:
       required:
         - "type"
         - "url"
+        - "timestampFieldNames"
+        - "bodyFieldNames"
       properties:
         type:
           $ref: "#/components/schemas/dataSourceType"
         url:
           type: string
+        timestampFieldNames:
+          type: array
+          default: []
+          items:
+            type: string
+        bodyFieldNames:
+          type: array
+          default: []
+          items:
+            type: string
     lokiDataSource:
       type: object
       required:
