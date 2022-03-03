@@ -1049,7 +1049,7 @@ pub async fn template_delete(configuration: &configuration::Configuration, templ
     }
 }
 
-pub async fn template_get(configuration: &configuration::Configuration, template_id: &str) -> Result<Vec<crate::models::Template>, Error<TemplateGetError>> {
+pub async fn template_get(configuration: &configuration::Configuration, template_id: &str) -> Result<crate::models::Template, Error<TemplateGetError>> {
 
     let local_var_client = &configuration.client;
 

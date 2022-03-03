@@ -1530,9 +1530,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/template"
+                $ref: "#/components/schemas/template"
     put:
       operationId: template_update
       requestBody:

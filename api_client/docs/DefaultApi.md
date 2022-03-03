@@ -798,7 +798,7 @@ Name | Type | Description  | Required | Notes
 
 ## template_get
 
-> Vec<crate::models::Template> template_get(template_id)
+> crate::models::Template template_get(template_id)
 
 
 ### Parameters
@@ -810,7 +810,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**Vec<crate::models::Template>**](template.md)
+[**crate::models::Template**](template.md)
 
 ### Authorization
 
