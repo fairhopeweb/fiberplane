@@ -1567,6 +1567,7 @@ paths:
         schema:
           type: string
     post:
+      operationId: template_expand
       description: Expand the template into a notebook
       requestBody:
         description: Parameters to pass to the template

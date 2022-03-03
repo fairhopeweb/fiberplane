@@ -4,7 +4,6 @@ All URIs are relative to *https://fiberplane.com*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
-[**api_templates_template_id_expand_post**](DefaultApi.md#api_templates_template_id_expand_post) | **POST** /api/templates/{templateId}/expand | 
 [**delete_file**](DefaultApi.md#delete_file) | **DELETE** /api/files/{notebookId}/{fileId} | 
 [**delete_notebook**](DefaultApi.md#delete_notebook) | **DELETE** /api/notebooks/{id} | 
 [**file_upload**](DefaultApi.md#file_upload) | **POST** /api/files/{notebookId} | 
@@ -30,6 +29,7 @@ Method | HTTP request | Description
 [**proxy_relay**](DefaultApi.md#proxy_relay) | **POST** /api/proxies/{proxyId}/relay | 
 [**template_create**](DefaultApi.md#template_create) | **POST** /api/templates | 
 [**template_delete**](DefaultApi.md#template_delete) | **DELETE** /api/templates/{templateId} | 
+[**template_expand**](DefaultApi.md#template_expand) | **POST** /api/templates/{templateId}/expand | 
 [**template_get**](DefaultApi.md#template_get) | **GET** /api/templates/{templateId} | 
 [**template_update**](DefaultApi.md#template_update) | **PUT** /api/templates/{templateId} | 
 [**trigger_create**](DefaultApi.md#trigger_create) | **POST** /api/triggers | 
@@ -39,37 +39,6 @@ Method | HTTP request | Description
 [**trigger_list**](DefaultApi.md#trigger_list) | **GET** /api/triggers | 
 [**update_profile_picture**](DefaultApi.md#update_profile_picture) | **POST** /api/profile/picture | 
 
-
-
-## api_templates_template_id_expand_post
-
-> crate::models::Notebook api_templates_template_id_expand_post(template_id, body)
-
-
-Expand the template into a notebook
-
-### Parameters
-
-
-Name | Type | Description  | Required | Notes
-------------- | ------------- | ------------- | ------------- | -------------
-**template_id** | **String** | ID of the template | [required] |
-**body** | Option<**serde_json::Value**> | Parameters to pass to the template |  |
-
-### Return type
-
-[**crate::models::Notebook**](notebook.md)
-
-### Authorization
-
-[userToken](../README.md#userToken)
-
-### HTTP request headers
-
-- **Content-Type**: application/json
-- **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 
 ## delete_file
@@ -791,6 +760,37 @@ Name | Type | Description  | Required | Notes
 ### HTTP request headers
 
 - **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## template_expand
+
+> crate::models::Notebook template_expand(template_id, body)
+
+
+Expand the template into a notebook
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**template_id** | **String** | ID of the template | [required] |
+**body** | Option<**serde_json::Value**> | Parameters to pass to the template |  |
+
+### Return type
+
+[**crate::models::Notebook**](notebook.md)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
 - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)

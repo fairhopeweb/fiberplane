@@ -15,13 +15,6 @@ use crate::apis::ResponseContent;
 use super::{Error, configuration};
 
 
-/// struct for typed errors of method `api_templates_template_id_expand_post`
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum ApiTemplatesTemplateIdExpandPostError {
-    UnknownValue(serde_json::Value),
-}
-
 /// struct for typed errors of method `delete_file`
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -197,6 +190,13 @@ pub enum TemplateDeleteError {
     UnknownValue(serde_json::Value),
 }
 
+/// struct for typed errors of method `template_expand`
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum TemplateExpandError {
+    UnknownValue(serde_json::Value),
+}
+
 /// struct for typed errors of method `template_get`
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -253,37 +253,6 @@ pub enum UpdateProfilePictureError {
     UnknownValue(serde_json::Value),
 }
 
-
-/// Expand the template into a notebook
-pub async fn api_templates_template_id_expand_post(configuration: &configuration::Configuration, template_id: &str, body: Option<serde_json::Value>) -> Result<crate::models::Notebook, Error<ApiTemplatesTemplateIdExpandPostError>> {
-
-    let local_var_client = &configuration.client;
-
-    let local_var_uri_str = format!("{}/api/templates/{templateId}/expand", configuration.base_path, templateId=crate::apis::urlencode(template_id));
-    let mut local_var_req_builder = local_var_client.request(reqwest::Method::POST, local_var_uri_str.as_str());
-
-    if let Some(ref local_var_user_agent) = configuration.user_agent {
-        local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
-    }
-    if let Some(ref local_var_token) = configuration.bearer_access_token {
-        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
-    };
-    local_var_req_builder = local_var_req_builder.json(&body);
-
-    let local_var_req = local_var_req_builder.build()?;
-    let local_var_resp = local_var_client.execute(local_var_req).await?;
-
-    let local_var_status = local_var_resp.status();
-    let local_var_content = local_var_resp.text().await?;
-
-    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-        serde_json::from_str(&local_var_content).map_err(Error::from)
-    } else {
-        let local_var_entity: Option<ApiTemplatesTemplateIdExpandPostError> = serde_json::from_str(&local_var_content).ok();
-        let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
-        Err(Error::ResponseError(local_var_error))
-    }
-}
 
 /// Delete a file
 pub async fn delete_file(configuration: &configuration::Configuration, notebook_id: &str, file_id: &str) -> Result<(), Error<DeleteFileError>> {
@@ -1044,6 +1013,37 @@ pub async fn template_delete(configuration: &configuration::Configuration, templ
         serde_json::from_str(&local_var_content).map_err(Error::from)
     } else {
         let local_var_entity: Option<TemplateDeleteError> = serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
+
+/// Expand the template into a notebook
+pub async fn template_expand(configuration: &configuration::Configuration, template_id: &str, body: Option<serde_json::Value>) -> Result<crate::models::Notebook, Error<TemplateExpandError>> {
+
+    let local_var_client = &configuration.client;
+
+    let local_var_uri_str = format!("{}/api/templates/{templateId}/expand", configuration.base_path, templateId=crate::apis::urlencode(template_id));
+    let mut local_var_req_builder = local_var_client.request(reqwest::Method::POST, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_user_agent) = configuration.user_agent {
+        local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+    if let Some(ref local_var_token) = configuration.bearer_access_token {
+        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
+    };
+    local_var_req_builder = local_var_req_builder.json(&body);
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        serde_json::from_str(&local_var_content).map_err(Error::from)
+    } else {
+        let local_var_entity: Option<TemplateExpandError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
         Err(Error::ResponseError(local_var_error))
     }

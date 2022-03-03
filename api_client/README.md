@@ -24,7 +24,6 @@ All URIs are relative to *https://fiberplane.com*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
-*DefaultApi* | [**api_templates_template_id_expand_post**](docs/DefaultApi.md#api_templates_template_id_expand_post) | **POST** /api/templates/{templateId}/expand | 
 *DefaultApi* | [**delete_file**](docs/DefaultApi.md#delete_file) | **DELETE** /api/files/{notebookId}/{fileId} | 
 *DefaultApi* | [**delete_notebook**](docs/DefaultApi.md#delete_notebook) | **DELETE** /api/notebooks/{id} | 
 *DefaultApi* | [**file_upload**](docs/DefaultApi.md#file_upload) | **POST** /api/files/{notebookId} | 
@@ -50,6 +49,7 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**proxy_relay**](docs/DefaultApi.md#proxy_relay) | **POST** /api/proxies/{proxyId}/relay | 
 *DefaultApi* | [**template_create**](docs/DefaultApi.md#template_create) | **POST** /api/templates | 
 *DefaultApi* | [**template_delete**](docs/DefaultApi.md#template_delete) | **DELETE** /api/templates/{templateId} | 
+*DefaultApi* | [**template_expand**](docs/DefaultApi.md#template_expand) | **POST** /api/templates/{templateId}/expand | 
 *DefaultApi* | [**template_get**](docs/DefaultApi.md#template_get) | **GET** /api/templates/{templateId} | 
 *DefaultApi* | [**template_update**](docs/DefaultApi.md#template_update) | **PUT** /api/templates/{templateId} | 
 *DefaultApi* | [**trigger_create**](docs/DefaultApi.md#trigger_create) | **POST** /api/triggers | 
