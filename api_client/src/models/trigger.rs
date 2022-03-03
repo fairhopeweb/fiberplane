@@ -15,10 +15,13 @@
 pub struct Trigger {
     #[serde(rename = "id")]
     pub id: String,
-    #[serde(rename = "templateBody")]
-    pub template_body: String,
-    #[serde(rename = "templateUrl", skip_serializing_if = "Option::is_none")]
-    pub template_url: Option<String>,
+    #[serde(rename = "templateId")]
+    pub template_id: String,
+    /// This key must be passed in the URL to invoke the trigger
+    #[serde(rename = "secretKey", skip_serializing_if = "Option::is_none")]
+    pub secret_key: Option<String>,
+    #[serde(rename = "defaultArguments", skip_serializing_if = "Option::is_none")]
+    pub default_arguments: Option<serde_json::Value>,
     #[serde(rename = "createdAt")]
     pub created_at: String,
     #[serde(rename = "updatedAt")]
@@ -26,11 +29,12 @@ pub struct Trigger {
 }
 
 impl Trigger {
-    pub fn new(id: String, template_body: String, created_at: String, updated_at: String) -> Trigger {
+    pub fn new(id: String, template_id: String, created_at: String, updated_at: String) -> Trigger {
         Trigger {
             id,
-            template_body,
-            template_url: None,
+            template_id,
+            secret_key: None,
+            default_arguments: None,
             created_at,
             updated_at,
         }

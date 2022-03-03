@@ -13,17 +13,20 @@
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct NewTrigger {
-    #[serde(rename = "templateUrl", skip_serializing_if = "Option::is_none")]
-    pub template_url: Option<String>,
-    #[serde(rename = "templateBody", skip_serializing_if = "Option::is_none")]
-    pub template_body: Option<String>,
+    #[serde(rename = "title")]
+    pub title: String,
+    #[serde(rename = "templateId")]
+    pub template_id: String,
+    #[serde(rename = "defaultArguments", skip_serializing_if = "Option::is_none")]
+    pub default_arguments: Option<serde_json::Value>,
 }
 
 impl NewTrigger {
-    pub fn new() -> NewTrigger {
+    pub fn new(title: String, template_id: String) -> NewTrigger {
         NewTrigger {
-            template_url: None,
-            template_body: None,
+            title,
+            template_id,
+            default_arguments: None,
         }
     }
 }

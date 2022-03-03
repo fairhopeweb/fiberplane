@@ -1,12 +1,13 @@
-# NewTrigger
+# NewTemplate
 
 ## Properties
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **title** | **String** |  | 
-**template_id** | **String** |  | 
-**default_arguments** | Option<[**serde_json::Value**](.md)> |  | [optional]
+**description** | **String** |  | 
+**body** | **String** |  | 
+**public** | **bool** |  | 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

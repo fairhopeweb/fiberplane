@@ -15,6 +15,13 @@ use crate::apis::ResponseContent;
 use super::{Error, configuration};
 
 
+/// struct for typed errors of method `api_templates_template_id_expand_post`
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum ApiTemplatesTemplateIdExpandPostError {
+    UnknownValue(serde_json::Value),
+}
+
 /// struct for typed errors of method `delete_file`
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -176,6 +183,34 @@ pub enum ProxyRelayError {
     UnknownValue(serde_json::Value),
 }
 
+/// struct for typed errors of method `template_create`
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum TemplateCreateError {
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method `template_delete`
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum TemplateDeleteError {
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method `template_get`
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum TemplateGetError {
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method `template_update`
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum TemplateUpdateError {
+    UnknownValue(serde_json::Value),
+}
+
 /// struct for typed errors of method `trigger_create`
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -218,6 +253,37 @@ pub enum UpdateProfilePictureError {
     UnknownValue(serde_json::Value),
 }
 
+
+/// Expand the template into a notebook
+pub async fn api_templates_template_id_expand_post(configuration: &configuration::Configuration, template_id: &str, body: Option<serde_json::Value>) -> Result<crate::models::Notebook, Error<ApiTemplatesTemplateIdExpandPostError>> {
+
+    let local_var_client = &configuration.client;
+
+    let local_var_uri_str = format!("{}/api/templates/{templateId}/expand", configuration.base_path, templateId=crate::apis::urlencode(template_id));
+    let mut local_var_req_builder = local_var_client.request(reqwest::Method::POST, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_user_agent) = configuration.user_agent {
+        local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+    if let Some(ref local_var_token) = configuration.bearer_access_token {
+        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
+    };
+    local_var_req_builder = local_var_req_builder.json(&body);
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        serde_json::from_str(&local_var_content).map_err(Error::from)
+    } else {
+        let local_var_entity: Option<ApiTemplatesTemplateIdExpandPostError> = serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
 
 /// Delete a file
 pub async fn delete_file(configuration: &configuration::Configuration, notebook_id: &str, file_id: &str) -> Result<(), Error<DeleteFileError>> {
@@ -923,6 +989,125 @@ pub async fn proxy_relay(configuration: &configuration::Configuration, proxy_id:
     }
 }
 
+/// Create a new template
+pub async fn template_create(configuration: &configuration::Configuration, new_template: Option<crate::models::NewTemplate>) -> Result<crate::models::Template, Error<TemplateCreateError>> {
+
+    let local_var_client = &configuration.client;
+
+    let local_var_uri_str = format!("{}/api/templates", configuration.base_path);
+    let mut local_var_req_builder = local_var_client.request(reqwest::Method::POST, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_user_agent) = configuration.user_agent {
+        local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+    if let Some(ref local_var_token) = configuration.bearer_access_token {
+        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
+    };
+    local_var_req_builder = local_var_req_builder.json(&new_template);
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        serde_json::from_str(&local_var_content).map_err(Error::from)
+    } else {
+        let local_var_entity: Option<TemplateCreateError> = serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
+
+pub async fn template_delete(configuration: &configuration::Configuration, template_id: &str) -> Result<Vec<crate::models::Template>, Error<TemplateDeleteError>> {
+
+    let local_var_client = &configuration.client;
+
+    let local_var_uri_str = format!("{}/api/templates/{templateId}", configuration.base_path, templateId=crate::apis::urlencode(template_id));
+    let mut local_var_req_builder = local_var_client.request(reqwest::Method::DELETE, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_user_agent) = configuration.user_agent {
+        local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+    if let Some(ref local_var_token) = configuration.bearer_access_token {
+        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
+    };
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        serde_json::from_str(&local_var_content).map_err(Error::from)
+    } else {
+        let local_var_entity: Option<TemplateDeleteError> = serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
+
+pub async fn template_get(configuration: &configuration::Configuration, template_id: &str) -> Result<Vec<crate::models::Template>, Error<TemplateGetError>> {
+
+    let local_var_client = &configuration.client;
+
+    let local_var_uri_str = format!("{}/api/templates/{templateId}", configuration.base_path, templateId=crate::apis::urlencode(template_id));
+    let mut local_var_req_builder = local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_user_agent) = configuration.user_agent {
+        local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+    if let Some(ref local_var_token) = configuration.bearer_access_token {
+        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
+    };
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        serde_json::from_str(&local_var_content).map_err(Error::from)
+    } else {
+        let local_var_entity: Option<TemplateGetError> = serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
+
+pub async fn template_update(configuration: &configuration::Configuration, template_id: &str, new_template: Option<crate::models::NewTemplate>) -> Result<Vec<crate::models::Template>, Error<TemplateUpdateError>> {
+
+    let local_var_client = &configuration.client;
+
+    let local_var_uri_str = format!("{}/api/templates/{templateId}", configuration.base_path, templateId=crate::apis::urlencode(template_id));
+    let mut local_var_req_builder = local_var_client.request(reqwest::Method::PUT, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_user_agent) = configuration.user_agent {
+        local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+    if let Some(ref local_var_token) = configuration.bearer_access_token {
+        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
+    };
+    local_var_req_builder = local_var_req_builder.json(&new_template);
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        serde_json::from_str(&local_var_content).map_err(Error::from)
+    } else {
+        let local_var_entity: Option<TemplateUpdateError> = serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
+
 /// Create a new trigger
 pub async fn trigger_create(configuration: &configuration::Configuration, new_trigger: Option<crate::models::NewTrigger>) -> Result<crate::models::Trigger, Error<TriggerCreateError>> {
 
@@ -1013,19 +1198,16 @@ pub async fn trigger_get(configuration: &configuration::Configuration, trigger_i
 }
 
 /// Invoke a trigger to create a notebook from the associated template
-pub async fn trigger_invoke(configuration: &configuration::Configuration, trigger_id: &str, body: Option<serde_json::Value>) -> Result<crate::models::TriggerWebHookResponse, Error<TriggerInvokeError>> {
+pub async fn trigger_invoke(configuration: &configuration::Configuration, trigger_id: &str, secret_key: &str, body: Option<serde_json::Value>) -> Result<crate::models::Notebook, Error<TriggerInvokeError>> {
 
     let local_var_client = &configuration.client;
 
-    let local_var_uri_str = format!("{}/api/triggers/{triggerId}/webhook", configuration.base_path, triggerId=crate::apis::urlencode(trigger_id));
+    let local_var_uri_str = format!("{}/api/triggers/{triggerId}/{secretKey}", configuration.base_path, triggerId=crate::apis::urlencode(trigger_id), secretKey=crate::apis::urlencode(secret_key));
     let mut local_var_req_builder = local_var_client.request(reqwest::Method::POST, local_var_uri_str.as_str());
 
     if let Some(ref local_var_user_agent) = configuration.user_agent {
         local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
     }
-    if let Some(ref local_var_token) = configuration.bearer_access_token {
-        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
-    };
     local_var_req_builder = local_var_req_builder.json(&body);
 
     let local_var_req = local_var_req_builder.build()?;

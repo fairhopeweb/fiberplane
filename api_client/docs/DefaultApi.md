@@ -4,6 +4,7 @@ All URIs are relative to *https://fiberplane.com*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
+[**api_templates_template_id_expand_post**](DefaultApi.md#api_templates_template_id_expand_post) | **POST** /api/templates/{templateId}/expand | 
 [**delete_file**](DefaultApi.md#delete_file) | **DELETE** /api/files/{notebookId}/{fileId} | 
 [**delete_notebook**](DefaultApi.md#delete_notebook) | **DELETE** /api/notebooks/{id} | 
 [**file_upload**](DefaultApi.md#file_upload) | **POST** /api/files/{notebookId} | 
@@ -27,13 +28,48 @@ Method | HTTP request | Description
 [**proxy_get**](DefaultApi.md#proxy_get) | **GET** /api/proxies/{proxyId} | 
 [**proxy_list**](DefaultApi.md#proxy_list) | **GET** /api/proxies | 
 [**proxy_relay**](DefaultApi.md#proxy_relay) | **POST** /api/proxies/{proxyId}/relay | 
+[**template_create**](DefaultApi.md#template_create) | **POST** /api/templates | 
+[**template_delete**](DefaultApi.md#template_delete) | **DELETE** /api/templates/{templateId} | 
+[**template_get**](DefaultApi.md#template_get) | **GET** /api/templates/{templateId} | 
+[**template_update**](DefaultApi.md#template_update) | **PUT** /api/templates/{templateId} | 
 [**trigger_create**](DefaultApi.md#trigger_create) | **POST** /api/triggers | 
 [**trigger_delete**](DefaultApi.md#trigger_delete) | **DELETE** /api/triggers/{triggerId} | 
 [**trigger_get**](DefaultApi.md#trigger_get) | **GET** /api/triggers/{triggerId} | 
-[**trigger_invoke**](DefaultApi.md#trigger_invoke) | **POST** /api/triggers/{triggerId}/webhook | 
+[**trigger_invoke**](DefaultApi.md#trigger_invoke) | **POST** /api/triggers/{triggerId}/{secretKey} | 
 [**trigger_list**](DefaultApi.md#trigger_list) | **GET** /api/triggers | 
 [**update_profile_picture**](DefaultApi.md#update_profile_picture) | **POST** /api/profile/picture | 
 
+
+
+## api_templates_template_id_expand_post
+
+> crate::models::Notebook api_templates_template_id_expand_post(template_id, body)
+
+
+Expand the template into a notebook
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**template_id** | **String** | ID of the template | [required] |
+**body** | Option<**serde_json::Value**> | Parameters to pass to the template |  |
+
+### Return type
+
+[**crate::models::Notebook**](notebook.md)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 
 ## delete_file
@@ -702,6 +738,121 @@ Name | Type | Description  | Required | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 
+## template_create
+
+> crate::models::Template template_create(new_template)
+
+
+Create a new template
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**new_template** | Option<[**NewTemplate**](NewTemplate.md)> |  |  |
+
+### Return type
+
+[**crate::models::Template**](template.md)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## template_delete
+
+> Vec<crate::models::Template> template_delete(template_id)
+
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**template_id** | **String** | ID of the template | [required] |
+
+### Return type
+
+[**Vec<crate::models::Template>**](template.md)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## template_get
+
+> Vec<crate::models::Template> template_get(template_id)
+
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**template_id** | **String** | ID of the template | [required] |
+
+### Return type
+
+[**Vec<crate::models::Template>**](template.md)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## template_update
+
+> Vec<crate::models::Template> template_update(template_id, new_template)
+
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**template_id** | **String** | ID of the template | [required] |
+**new_template** | Option<[**NewTemplate**](NewTemplate.md)> |  |  |
+
+### Return type
+
+[**Vec<crate::models::Template>**](template.md)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
 ## trigger_create
 
 > crate::models::Trigger trigger_create(new_trigger)
@@ -790,7 +941,7 @@ Name | Type | Description  | Required | Notes
 
 ## trigger_invoke
 
-> crate::models::TriggerWebHookResponse trigger_invoke(trigger_id, body)
+> crate::models::Notebook trigger_invoke(trigger_id, secret_key, body)
 
 
 Invoke a trigger to create a notebook from the associated template
@@ -801,15 +952,16 @@ Invoke a trigger to create a notebook from the associated template
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
 **trigger_id** | **String** | ID of the trigger | [required] |
+**secret_key** | **String** | Secret key of the trigger (included in the response when the trigger is first created) | [required] |
 **body** | Option<**serde_json::Value**> | Parameters to pass to the template |  |
 
 ### Return type
 
-[**crate::models::TriggerWebHookResponse**](triggerWebHookResponse.md)
+[**crate::models::Notebook**](notebook.md)
 
 ### Authorization
 
-[userToken](../README.md#userToken)
+No authorization required
 
 ### HTTP request headers
 

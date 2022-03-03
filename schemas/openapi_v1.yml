@@ -1033,20 +1033,66 @@ components:
           $ref: "#/components/schemas/dataSourceType"
         proxy:
           $ref: "#/components/schemas/proxySummary"
-    trigger:
+    template:
       type: object
       required:
         - id
-        - templateBody
+        - title
+        - description
+        - body
+        - public
         - createdAt
         - updatedAt
       properties:
         id:
           type: string
-        templateBody:
+        title:
           type: string
-        templateUrl:
+        description:
           type: string
+        body:
+          type: string
+        public:
+          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    newTemplate:
+      type: object
+      required:
+        - title
+        - description
+        - body
+        - public
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        body:
+          type: string
+        public:
+          type: boolean
+    trigger:
+      type: object
+      required:
+        - id
+        - templateId
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+        templateId:
+          type: string
+        secretKey:
+          type: string
+          description: This key must be passed in the URL to invoke the trigger
+        defaultArguments:
+          type: object
         createdAt:
           type: string
           format: date-time
@@ -1055,28 +1101,18 @@ components:
           format: date-time
     newTrigger:
       type: object
-      properties:
-        templateUrl:
-          type: string
-          format: uri
-        templateBody:
-          type: string
-      minProperties: 1
-      maxProperties: 1
-      # Disabled because it breaks the TypeScript client generator:
-      #oneOf:
-      #  - required: [templateUrl]
-      #  - required: [templateBody]
-    triggerWebHookRequest:
-      type: object
-    triggerWebHookResponse:
-      type: object
       required:
-        - notebookUrl
+        - title
+        - templateId
       properties:
-        notebookUrl:
+        title:
           type: string
-          format: uri
+        templateId:
+          type: string
+        defaultArguments:
+          type: object
+    templateExpandPayload:
+      type: object
     createdBy:
       type: object
       required:
@@ -1462,6 +1498,91 @@ paths:
       responses:
         "200":
           description: OK
+  /api/templates:
+    post:
+      operationId: template_create
+      description: Create a new template
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/newTemplate"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/template"
+  /api/templates/{templateId}:
+    parameters:
+      - name: templateId
+        in: path
+        description: ID of the template
+        required: true
+        schema:
+          type: string
+    get:
+      operationId: template_get
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/template"
+    put:
+      operationId: template_update
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/newTemplate"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/template"
+    delete:
+      operationId: template_delete
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/template"
+  /api/templates/{templateId}/expand:
+    parameters:
+      - name: templateId
+        in: path
+        description: ID of the template
+        required: true
+        schema:
+          type: string
+    post:
+      description: Expand the template into a notebook
+      requestBody:
+        description: Parameters to pass to the template
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/templateExpandPayload"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/notebook"
   /api/triggers:
     get:
       operationId: trigger_list
@@ -1476,7 +1597,7 @@ paths:
                   $ref: "#/components/schemas/trigger"
     post:
       operationId: trigger_create
-      description: "Create a new trigger"
+      description: Create a new trigger
       requestBody:
         description: Template URL or body
         content:
@@ -1512,7 +1633,7 @@ paths:
       responses:
         "200":
           description: OK
-  /api/triggers/{triggerId}/webhook:
+  /api/triggers/{triggerId}/{secretKey}:
     parameters:
       - name: triggerId
         in: path
@@ -1520,7 +1641,15 @@ paths:
         required: true
         schema:
           type: string
+      - name: secretKey
+        in: path
+        description: Secret key of the trigger (included in the response when the trigger is first created)
+        required: true
+        schema:
+          type: string
     post:
+      # This does not require normal authentication but uses the secretKey URL parameter
+      security: []
       operationId: trigger_invoke
       description: "Invoke a trigger to create a notebook from the associated template"
       requestBody:
@@ -1528,15 +1657,14 @@ paths:
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/triggerWebHookRequest"
-
+              $ref: "#/components/schemas/templateExpandPayload"
       responses:
         "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/triggerWebHookResponse"
+                $ref: "#/components/schemas/notebook"
   /api/organizations/current/users:
     get:
       operationId: org_user_list_current

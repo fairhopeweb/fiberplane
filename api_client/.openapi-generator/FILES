@@ -43,6 +43,7 @@ docs/NewNotebook.md
 docs/NewOrgDataSource.md
 docs/NewPinnedNotebook.md
 docs/NewProxy.md
+docs/NewTemplate.md
 docs/NewTrigger.md
 docs/Notebook.md
 docs/NotebookDataSource.md
@@ -69,10 +70,10 @@ docs/StartLinkAnnotation.md
 docs/StartStrikethroughAnnotation.md
 docs/StartUnderlineAnnotation.md
 docs/TableCell.md
+docs/Template.md
 docs/TextCell.md
 docs/TimeRange.md
 docs/Trigger.md
-docs/TriggerWebHookResponse.md
 docs/User.md
 docs/UserType.md
 git_push.sh
@@ -121,6 +122,7 @@ src/models/new_notebook.rs
 src/models/new_org_data_source.rs
 src/models/new_pinned_notebook.rs
 src/models/new_proxy.rs
+src/models/new_template.rs
 src/models/new_trigger.rs
 src/models/notebook.rs
 src/models/notebook_data_source.rs
@@ -147,9 +149,9 @@ src/models/start_link_annotation.rs
 src/models/start_strikethrough_annotation.rs
 src/models/start_underline_annotation.rs
 src/models/table_cell.rs
+src/models/template.rs
 src/models/text_cell.rs
 src/models/time_range.rs
 src/models/trigger.rs
-src/models/trigger_web_hook_response.rs
 src/models/user.rs
 src/models/user_type.rs

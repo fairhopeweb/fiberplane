@@ -24,6 +24,7 @@ All URIs are relative to *https://fiberplane.com*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
+*DefaultApi* | [**api_templates_template_id_expand_post**](docs/DefaultApi.md#api_templates_template_id_expand_post) | **POST** /api/templates/{templateId}/expand | 
 *DefaultApi* | [**delete_file**](docs/DefaultApi.md#delete_file) | **DELETE** /api/files/{notebookId}/{fileId} | 
 *DefaultApi* | [**delete_notebook**](docs/DefaultApi.md#delete_notebook) | **DELETE** /api/notebooks/{id} | 
 *DefaultApi* | [**file_upload**](docs/DefaultApi.md#file_upload) | **POST** /api/files/{notebookId} | 
@@ -47,10 +48,14 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**proxy_get**](docs/DefaultApi.md#proxy_get) | **GET** /api/proxies/{proxyId} | 
 *DefaultApi* | [**proxy_list**](docs/DefaultApi.md#proxy_list) | **GET** /api/proxies | 
 *DefaultApi* | [**proxy_relay**](docs/DefaultApi.md#proxy_relay) | **POST** /api/proxies/{proxyId}/relay | 
+*DefaultApi* | [**template_create**](docs/DefaultApi.md#template_create) | **POST** /api/templates | 
+*DefaultApi* | [**template_delete**](docs/DefaultApi.md#template_delete) | **DELETE** /api/templates/{templateId} | 
+*DefaultApi* | [**template_get**](docs/DefaultApi.md#template_get) | **GET** /api/templates/{templateId} | 
+*DefaultApi* | [**template_update**](docs/DefaultApi.md#template_update) | **PUT** /api/templates/{templateId} | 
 *DefaultApi* | [**trigger_create**](docs/DefaultApi.md#trigger_create) | **POST** /api/triggers | 
 *DefaultApi* | [**trigger_delete**](docs/DefaultApi.md#trigger_delete) | **DELETE** /api/triggers/{triggerId} | 
 *DefaultApi* | [**trigger_get**](docs/DefaultApi.md#trigger_get) | **GET** /api/triggers/{triggerId} | 
-*DefaultApi* | [**trigger_invoke**](docs/DefaultApi.md#trigger_invoke) | **POST** /api/triggers/{triggerId}/webhook | 
+*DefaultApi* | [**trigger_invoke**](docs/DefaultApi.md#trigger_invoke) | **POST** /api/triggers/{triggerId}/{secretKey} | 
 *DefaultApi* | [**trigger_list**](docs/DefaultApi.md#trigger_list) | **GET** /api/triggers | 
 *DefaultApi* | [**update_profile_picture**](docs/DefaultApi.md#update_profile_picture) | **POST** /api/profile/picture | 
 
@@ -97,6 +102,7 @@ Class | Method | HTTP request | Description
  - [NewOrgDataSource](docs/NewOrgDataSource.md)
  - [NewPinnedNotebook](docs/NewPinnedNotebook.md)
  - [NewProxy](docs/NewProxy.md)
+ - [NewTemplate](docs/NewTemplate.md)
  - [NewTrigger](docs/NewTrigger.md)
  - [Notebook](docs/Notebook.md)
  - [NotebookDataSource](docs/NotebookDataSource.md)
@@ -123,10 +129,10 @@ Class | Method | HTTP request | Description
  - [StartStrikethroughAnnotation](docs/StartStrikethroughAnnotation.md)
  - [StartUnderlineAnnotation](docs/StartUnderlineAnnotation.md)
  - [TableCell](docs/TableCell.md)
+ - [Template](docs/Template.md)
  - [TextCell](docs/TextCell.md)
  - [TimeRange](docs/TimeRange.md)
  - [Trigger](docs/Trigger.md)
- - [TriggerWebHookResponse](docs/TriggerWebHookResponse.md)
  - [User](docs/User.md)
  - [UserType](docs/UserType.md)
 
