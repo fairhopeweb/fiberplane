@@ -719,7 +719,7 @@ Create a new template
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**new_template** | Option<[**NewTemplate**](NewTemplate.md)> |  |  |
+**new_template** | [**NewTemplate**](NewTemplate.md) |  | [required] |
 
 ### Return type
 
@@ -835,7 +835,7 @@ Name | Type | Description  | Required | Notes
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
 **template_id** | **String** | ID of the template | [required] |
-**new_template** | Option<[**NewTemplate**](NewTemplate.md)> |  |  |
+**new_template** | [**NewTemplate**](NewTemplate.md) |  | [required] |
 
 ### Return type
 
@@ -865,7 +865,7 @@ Create a new trigger
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**new_trigger** | Option<[**NewTrigger**](NewTrigger.md)> | Template URL or body |  |
+**new_trigger** | [**NewTrigger**](NewTrigger.md) | Template URL or body | [required] |
 
 ### Return type
 

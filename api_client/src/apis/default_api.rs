@@ -959,7 +959,7 @@ pub async fn proxy_relay(configuration: &configuration::Configuration, proxy_id:
 }
 
 /// Create a new template
-pub async fn template_create(configuration: &configuration::Configuration, new_template: Option<crate::models::NewTemplate>) -> Result<crate::models::Template, Error<TemplateCreateError>> {
+pub async fn template_create(configuration: &configuration::Configuration, new_template: crate::models::NewTemplate) -> Result<crate::models::Template, Error<TemplateCreateError>> {
 
     let local_var_client = &configuration.client;
 
@@ -1078,7 +1078,7 @@ pub async fn template_get(configuration: &configuration::Configuration, template
     }
 }
 
-pub async fn template_update(configuration: &configuration::Configuration, template_id: &str, new_template: Option<crate::models::NewTemplate>) -> Result<Vec<crate::models::Template>, Error<TemplateUpdateError>> {
+pub async fn template_update(configuration: &configuration::Configuration, template_id: &str, new_template: crate::models::NewTemplate) -> Result<Vec<crate::models::Template>, Error<TemplateUpdateError>> {
 
     let local_var_client = &configuration.client;
 
@@ -1109,7 +1109,7 @@ pub async fn template_update(configuration: &configuration::Configuration, templ
 }
 
 /// Create a new trigger
-pub async fn trigger_create(configuration: &configuration::Configuration, new_trigger: Option<crate::models::NewTrigger>) -> Result<crate::models::Trigger, Error<TriggerCreateError>> {
+pub async fn trigger_create(configuration: &configuration::Configuration, new_trigger: crate::models::NewTrigger) -> Result<crate::models::Trigger, Error<TriggerCreateError>> {
 
     let local_var_client = &configuration.client;
 

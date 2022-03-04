@@ -1080,11 +1080,14 @@ components:
       type: object
       required:
         - id
+        - title
         - templateId
         - createdAt
         - updatedAt
       properties:
         id:
+          type: string
+        title:
           type: string
         templateId:
           type: string
@@ -1503,6 +1506,7 @@ paths:
       operationId: template_create
       description: Create a new template
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -1534,6 +1538,7 @@ paths:
     put:
       operationId: template_update
       requestBody:
+        required: true
         content:
           application/json:
             schema:
@@ -1598,6 +1603,7 @@ paths:
       operationId: trigger_create
       description: Create a new trigger
       requestBody:
+        required: true
         description: Template URL or body
         content:
           application/json:

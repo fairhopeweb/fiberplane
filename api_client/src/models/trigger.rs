@@ -15,6 +15,8 @@
 pub struct Trigger {
     #[serde(rename = "id")]
     pub id: String,
+    #[serde(rename = "title")]
+    pub title: String,
     #[serde(rename = "templateId")]
     pub template_id: String,
     /// This key must be passed in the URL to invoke the trigger
@@ -29,9 +31,10 @@ pub struct Trigger {
 }
 
 impl Trigger {
-    pub fn new(id: String, template_id: String, created_at: String, updated_at: String) -> Trigger {
+    pub fn new(id: String, title: String, template_id: String, created_at: String, updated_at: String) -> Trigger {
         Trigger {
             id,
+            title,
             template_id,
             secret_key: None,
             default_arguments: None,
