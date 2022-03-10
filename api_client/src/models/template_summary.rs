@@ -12,28 +12,25 @@
 
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct Template {
+pub struct TemplateSummary {
     #[serde(rename = "id")]
     pub id: String,
     #[serde(rename = "title")]
     pub title: String,
     #[serde(rename = "description")]
     pub description: String,
-    #[serde(rename = "body")]
-    pub body: String,
     #[serde(rename = "createdAt")]
     pub created_at: String,
     #[serde(rename = "updatedAt")]
     pub updated_at: String,
 }
 
-impl Template {
-    pub fn new(id: String, title: String, description: String, body: String, created_at: String, updated_at: String) -> Template {
-        Template {
+impl TemplateSummary {
+    pub fn new(id: String, title: String, description: String, created_at: String, updated_at: String) -> TemplateSummary {
+        TemplateSummary {
             id,
             title,
             description,
-            body,
             created_at,
             updated_at,
         }

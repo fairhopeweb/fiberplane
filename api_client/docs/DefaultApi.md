@@ -31,6 +31,7 @@ Method | HTTP request | Description
 [**template_delete**](DefaultApi.md#template_delete) | **DELETE** /api/templates/{templateId} | 
 [**template_expand**](DefaultApi.md#template_expand) | **POST** /api/templates/{templateId}/expand | 
 [**template_get**](DefaultApi.md#template_get) | **GET** /api/templates/{templateId} | 
+[**template_list**](DefaultApi.md#template_list) | **GET** /api/templates | 
 [**template_update**](DefaultApi.md#template_update) | **PUT** /api/templates/{templateId} | 
 [**trigger_create**](DefaultApi.md#trigger_create) | **POST** /api/triggers | 
 [**trigger_delete**](DefaultApi.md#trigger_delete) | **DELETE** /api/triggers/{triggerId} | 
@@ -824,9 +825,36 @@ Name | Type | Description  | Required | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 
+## template_list
+
+> Vec<crate::models::TemplateSummary> template_list()
+
+
+List the templates that have been uploaded
+
+### Parameters
+
+This endpoint does not need any parameter.
+
+### Return type
+
+[**Vec<crate::models::TemplateSummary>**](templateSummary.md)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
 ## template_update
 
-> Vec<crate::models::Template> template_update(template_id, new_template)
+> crate::models::Template template_update(template_id, new_template)
 
 
 ### Parameters
@@ -839,7 +867,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**Vec<crate::models::Template>**](template.md)
+[**crate::models::Template**](template.md)
 
 ### Authorization
 

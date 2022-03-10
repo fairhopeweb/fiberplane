@@ -51,6 +51,7 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**template_delete**](docs/DefaultApi.md#template_delete) | **DELETE** /api/templates/{templateId} | 
 *DefaultApi* | [**template_expand**](docs/DefaultApi.md#template_expand) | **POST** /api/templates/{templateId}/expand | 
 *DefaultApi* | [**template_get**](docs/DefaultApi.md#template_get) | **GET** /api/templates/{templateId} | 
+*DefaultApi* | [**template_list**](docs/DefaultApi.md#template_list) | **GET** /api/templates | 
 *DefaultApi* | [**template_update**](docs/DefaultApi.md#template_update) | **PUT** /api/templates/{templateId} | 
 *DefaultApi* | [**trigger_create**](docs/DefaultApi.md#trigger_create) | **POST** /api/triggers | 
 *DefaultApi* | [**trigger_delete**](docs/DefaultApi.md#trigger_delete) | **DELETE** /api/triggers/{triggerId} | 
@@ -130,6 +131,7 @@ Class | Method | HTTP request | Description
  - [StartUnderlineAnnotation](docs/StartUnderlineAnnotation.md)
  - [TableCell](docs/TableCell.md)
  - [Template](docs/Template.md)
+ - [TemplateSummary](docs/TemplateSummary.md)
  - [TextCell](docs/TextCell.md)
  - [TimeRange](docs/TimeRange.md)
  - [Trigger](docs/Trigger.md)

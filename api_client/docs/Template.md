@@ -8,7 +8,6 @@ Name | Type | Description | Notes
 **title** | **String** |  | 
 **description** | **String** |  | 
 **body** | **String** |  | 
-**public** | **bool** |  | 
 **created_at** | **String** |  | 
 **updated_at** | **String** |  | 
 

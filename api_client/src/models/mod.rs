@@ -134,6 +134,8 @@ pub mod table_cell;
 pub use self::table_cell::TableCell;
 pub mod template;
 pub use self::template::Template;
+pub mod template_summary;
+pub use self::template_summary::TemplateSummary;
 pub mod text_cell;
 pub use self::text_cell::TextCell;
 pub mod time_range;

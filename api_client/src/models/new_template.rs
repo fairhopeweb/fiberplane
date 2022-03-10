@@ -19,17 +19,14 @@ pub struct NewTemplate {
     pub description: String,
     #[serde(rename = "body")]
     pub body: String,
-    #[serde(rename = "public")]
-    pub public: bool,
 }
 
 impl NewTemplate {
-    pub fn new(title: String, description: String, body: String, public: bool) -> NewTemplate {
+    pub fn new(title: String, description: String, body: String) -> NewTemplate {
         NewTemplate {
             title,
             description,
             body,
-            public,
         }
     }
 }

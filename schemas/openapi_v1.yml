@@ -1040,7 +1040,6 @@ components:
         - title
         - description
         - body
-        - public
         - createdAt
         - updatedAt
       properties:
@@ -1052,8 +1051,27 @@ components:
           type: string
         body:
           type: string
-        public:
-          type: boolean
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    templateSummary:
+      type: object
+      required:
+        - id
+        - title
+        - description
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        description:
+          type: string
         createdAt:
           type: string
           format: date-time
@@ -1066,7 +1084,6 @@ components:
         - title
         - description
         - body
-        - public
       properties:
         title:
           type: string
@@ -1074,8 +1091,6 @@ components:
           type: string
         body:
           type: string
-        public:
-          type: boolean
     trigger:
       type: object
       required:
@@ -1518,6 +1533,18 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/template"
+    get:
+      operationId: template_list
+      description: List the templates that have been uploaded
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/templateSummary"
   /api/templates/{templateId}:
     parameters:
       - name: templateId
@@ -1549,9 +1576,7 @@ paths:
           content:
             application/json:
               schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/template"
+                $ref: "#/components/schemas/template"
     delete:
       operationId: template_delete
       responses:

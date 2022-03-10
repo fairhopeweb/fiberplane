@@ -71,6 +71,7 @@ docs/StartStrikethroughAnnotation.md
 docs/StartUnderlineAnnotation.md
 docs/TableCell.md
 docs/Template.md
+docs/TemplateSummary.md
 docs/TextCell.md
 docs/TimeRange.md
 docs/Trigger.md
@@ -150,6 +151,7 @@ src/models/start_strikethrough_annotation.rs
 src/models/start_underline_annotation.rs
 src/models/table_cell.rs
 src/models/template.rs
+src/models/template_summary.rs
 src/models/text_cell.rs
 src/models/time_range.rs
 src/models/trigger.rs
