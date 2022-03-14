@@ -8,6 +8,7 @@ Name | Type | Description | Notes
 **title** | **String** |  | 
 **description** | **String** |  | 
 **body** | **String** |  | 
+**parameters** | [**Vec<crate::models::TemplateParameter>**](templateParameter.md) |  | 
 **created_at** | **String** |  | 
 **updated_at** | **String** |  | 
 

@@ -21,6 +21,8 @@ pub struct Template {
     pub description: String,
     #[serde(rename = "body")]
     pub body: String,
+    #[serde(rename = "parameters")]
+    pub parameters: Vec<crate::models::TemplateParameter>,
     #[serde(rename = "createdAt")]
     pub created_at: String,
     #[serde(rename = "updatedAt")]
@@ -28,12 +30,13 @@ pub struct Template {
 }
 
 impl Template {
-    pub fn new(id: String, title: String, description: String, body: String, created_at: String, updated_at: String) -> Template {
+    pub fn new(id: String, title: String, description: String, body: String, parameters: Vec<crate::models::TemplateParameter>, created_at: String, updated_at: String) -> Template {
         Template {
             id,
             title,
             description,
             body,
+            parameters,
             created_at,
             updated_at,
         }

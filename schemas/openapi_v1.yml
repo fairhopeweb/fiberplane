@@ -1040,6 +1040,7 @@ components:
         - title
         - description
         - body
+        - parameters
         - createdAt
         - updatedAt
       properties:
@@ -1051,12 +1052,113 @@ components:
           type: string
         body:
           type: string
+        parameters:
+          type: array
+          items:
+            $ref: "#/components/schemas/templateParameter"
         createdAt:
           type: string
           format: date-time
         updatedAt:
           type: string
           format: date-time
+    templateParameter:
+      oneOf:
+        - $ref: "#/components/schemas/stringTemplateParameter"
+        - $ref: "#/components/schemas/numberTemplateParameter"
+        - $ref: "#/components/schemas/booleanTemplateParameter"
+        - $ref: "#/components/schemas/objectTemplateParameter"
+        - $ref: "#/components/schemas/arrayTemplateParameter"
+        - $ref: "#/components/schemas/unknownTemplateParameter"
+      discriminator:
+        propertyName: type
+        mapping:
+          string: "#/components/schemas/stringTemplateParameter"
+          number: "#/components/schemas/numberTemplateParameter"
+          boolean: "#/components/schemas/booleanTemplateParameter"
+          object: "#/components/schemas/objectTemplateParameter"
+          array: "#/components/schemas/arrayTemplateParameter"
+          unknown: "#/components/schemas/unknownTemplateParameter"
+    stringTemplateParameter:
+      type: object
+      required:
+        - name
+        - type
+      properties:
+        name:
+          type: string
+        type:
+          $ref: "#/components/schemas/templateParameterType"
+        defaultValue:
+          type: string
+    numberTemplateParameter:
+      type: object
+      required:
+        - name
+        - type
+      properties:
+        name:
+          type: string
+        type:
+          $ref: "#/components/schemas/templateParameterType"
+        defaultValue:
+          type: number
+    booleanTemplateParameter:
+      type: object
+      required:
+        - name
+        - type
+      properties:
+        name:
+          type: string
+        type:
+          $ref: "#/components/schemas/templateParameterType"
+        defaultValue:
+          type: boolean
+    objectTemplateParameter:
+      type: object
+      required:
+        - name
+        - type
+      properties:
+        name:
+          type: string
+        type:
+          $ref: "#/components/schemas/templateParameterType"
+        defaultValue:
+          type: object
+    arrayTemplateParameter:
+      type: object
+      required:
+        - name
+        - type
+      properties:
+        name:
+          type: string
+        type:
+          $ref: "#/components/schemas/templateParameterType"
+        defaultValue:
+          type: array
+          items: {}
+    unknownTemplateParameter:
+      type: object
+      required:
+        - name
+        - type
+      properties:
+        name:
+          type: string
+        type:
+          $ref: "#/components/schemas/templateParameterType"
+    templateParameterType:
+      type: string
+      enum:
+        - string
+        - number
+        - boolean
+        - object
+        - array
+        - unknown
     templateSummary:
       type: object
       required:
