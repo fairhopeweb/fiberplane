@@ -49,6 +49,8 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**proxy_relay**](docs/DefaultApi.md#proxy_relay) | **POST** /api/proxies/{proxyId}/relay | 
 *DefaultApi* | [**template_create**](docs/DefaultApi.md#template_create) | **POST** /api/templates | 
 *DefaultApi* | [**template_delete**](docs/DefaultApi.md#template_delete) | **DELETE** /api/templates/{templateId} | 
+*DefaultApi* | [**template_example_expand**](docs/DefaultApi.md#template_example_expand) | **POST** /api/templates/examples/{templateId}/expand | 
+*DefaultApi* | [**template_example_list**](docs/DefaultApi.md#template_example_list) | **GET** /api/templates/examples | 
 *DefaultApi* | [**template_expand**](docs/DefaultApi.md#template_expand) | **POST** /api/templates/{templateId}/expand | 
 *DefaultApi* | [**template_get**](docs/DefaultApi.md#template_get) | **GET** /api/templates/{templateId} | 
 *DefaultApi* | [**template_list**](docs/DefaultApi.md#template_list) | **GET** /api/templates | 

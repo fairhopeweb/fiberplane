@@ -1714,6 +1714,41 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/notebook"
+  /api/templates/examples:
+    get:
+      operationId: template_example_list
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/template"
+  /api/templates/examples/{templateId}/expand:
+    parameters:
+      - name: templateId
+        in: path
+        description: ID of the template
+        required: true
+        schema:
+          type: string
+    post:
+      operationId: template_example_expand
+      requestBody:
+        description: Parameters to pass to the template
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/templateExpandPayload"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/notebook"
   /api/triggers:
     get:
       operationId: trigger_list

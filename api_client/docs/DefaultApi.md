@@ -29,6 +29,8 @@ Method | HTTP request | Description
 [**proxy_relay**](DefaultApi.md#proxy_relay) | **POST** /api/proxies/{proxyId}/relay | 
 [**template_create**](DefaultApi.md#template_create) | **POST** /api/templates | 
 [**template_delete**](DefaultApi.md#template_delete) | **DELETE** /api/templates/{templateId} | 
+[**template_example_expand**](DefaultApi.md#template_example_expand) | **POST** /api/templates/examples/{templateId}/expand | 
+[**template_example_list**](DefaultApi.md#template_example_list) | **GET** /api/templates/examples | 
 [**template_expand**](DefaultApi.md#template_expand) | **POST** /api/templates/{templateId}/expand | 
 [**template_get**](DefaultApi.md#template_get) | **GET** /api/templates/{templateId} | 
 [**template_list**](DefaultApi.md#template_list) | **GET** /api/templates | 
@@ -749,6 +751,60 @@ Name | Type | Description  | Required | Notes
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
 **template_id** | **String** | ID of the template | [required] |
+
+### Return type
+
+[**Vec<crate::models::Template>**](template.md)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## template_example_expand
+
+> crate::models::Notebook template_example_expand(template_id, body)
+
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**template_id** | **String** | ID of the template | [required] |
+**body** | Option<**serde_json::Value**> | Parameters to pass to the template |  |
+
+### Return type
+
+[**crate::models::Notebook**](notebook.md)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## template_example_list
+
+> Vec<crate::models::Template> template_example_list()
+
+
+### Parameters
+
+This endpoint does not need any parameter.
 
 ### Return type
 
