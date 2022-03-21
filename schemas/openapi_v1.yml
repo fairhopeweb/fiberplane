@@ -980,6 +980,11 @@ components:
       enum:
         - connected
         - disconnected
+    dataSourceConnectionStatus:
+      type: string
+      enum:
+        - connected
+        - disconnected
     queryType:
       oneOf:
         - $ref: "#/components/schemas/seriesQuery"
@@ -1015,22 +1020,32 @@ components:
       required:
         - name
         - type
+        - status
       properties:
         name:
           type: string
         type:
           $ref: "#/components/schemas/dataSourceType"
+        status:
+          $ref: "#/components/schemas/dataSourceConnectionStatus"
+        errorMessage:
+          type: string
     dataSourceAndProxySummary:
       type: object
       required:
         - name
         - type
+        - status
         - proxy
       properties:
         name:
           type: string
         type:
           $ref: "#/components/schemas/dataSourceType"
+        status:
+          $ref: "#/components/schemas/dataSourceConnectionStatus"
+        errorMessage:
+          type: string
         proxy:
           $ref: "#/components/schemas/proxySummary"
     template:

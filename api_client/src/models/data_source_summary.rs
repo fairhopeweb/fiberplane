@@ -17,13 +17,19 @@ pub struct DataSourceSummary {
     pub name: String,
     #[serde(rename = "type")]
     pub _type: crate::models::DataSourceType,
+    #[serde(rename = "status")]
+    pub status: crate::models::DataSourceConnectionStatus,
+    #[serde(rename = "errorMessage", skip_serializing_if = "Option::is_none")]
+    pub error_message: Option<String>,
 }
 
 impl DataSourceSummary {
-    pub fn new(name: String, _type: crate::models::DataSourceType) -> DataSourceSummary {
+    pub fn new(name: String, _type: crate::models::DataSourceType, status: crate::models::DataSourceConnectionStatus) -> DataSourceSummary {
         DataSourceSummary {
             name,
             _type,
+            status,
+            error_message: None,
         }
     }
 }

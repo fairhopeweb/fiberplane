@@ -76,6 +76,7 @@ Class | Method | HTTP request | Description
  - [CreatedBy](docs/CreatedBy.md)
  - [DataSource](docs/DataSource.md)
  - [DataSourceAndProxySummary](docs/DataSourceAndProxySummary.md)
+ - [DataSourceConnectionStatus](docs/DataSourceConnectionStatus.md)
  - [DataSourceSummary](docs/DataSourceSummary.md)
  - [DataSourceType](docs/DataSourceType.md)
  - [DividerCell](docs/DividerCell.md)

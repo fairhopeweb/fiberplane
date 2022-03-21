@@ -20,6 +20,8 @@ pub mod data_source;
 pub use self::data_source::DataSource;
 pub mod data_source_and_proxy_summary;
 pub use self::data_source_and_proxy_summary::DataSourceAndProxySummary;
+pub mod data_source_connection_status;
+pub use self::data_source_connection_status::DataSourceConnectionStatus;
 pub mod data_source_summary;
 pub use self::data_source_summary::DataSourceSummary;
 pub mod data_source_type;
