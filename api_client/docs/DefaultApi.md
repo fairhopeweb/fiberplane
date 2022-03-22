@@ -742,7 +742,7 @@ Name | Type | Description  | Required | Notes
 
 ## template_delete
 
-> Vec<crate::models::Template> template_delete(template_id)
+> template_delete(template_id)
 
 
 ### Parameters
@@ -754,7 +754,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**Vec<crate::models::Template>**](template.md)
+ (empty response body)
 
 ### Authorization
 
@@ -763,7 +763,7 @@ Name | Type | Description  | Required | Notes
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: application/json
+- **Accept**: Not defined
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 

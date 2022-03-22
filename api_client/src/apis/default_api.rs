@@ -1010,7 +1010,7 @@ pub async fn template_create(configuration: &configuration::Configuration, new_t
     }
 }
 
-pub async fn template_delete(configuration: &configuration::Configuration, template_id: &str) -> Result<Vec<crate::models::Template>, Error<TemplateDeleteError>> {
+pub async fn template_delete(configuration: &configuration::Configuration, template_id: &str) -> Result<(), Error<TemplateDeleteError>> {
 
     let local_var_client = &configuration.client;
 
@@ -1031,7 +1031,7 @@ pub async fn template_delete(configuration: &configuration::Configuration, templ
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-        serde_json::from_str(&local_var_content).map_err(Error::from)
+        Ok(())
     } else {
         let local_var_entity: Option<TemplateDeleteError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
