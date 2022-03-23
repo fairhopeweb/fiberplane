@@ -1,10 +1,9 @@
-use std::borrow::Borrow;
-
-use crate::operations::{changes::*, error::*};
-use crate::protocols::formatting::{
-    first_annotation_index_beyond_offset, first_annotation_index_for_offset, translate, Formatting,
+use crate::{
+    markdown::formatting_from_markdown,
+    operations::{changes::*, error::*},
+    protocols::{core::*, formatting::*, operations::*},
+    text_util::char_count,
 };
-use crate::protocols::{core::*, operations::*};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct CellRefWithIndex<'a> {
@@ -121,45 +120,36 @@ fn apply_merge_cells_operation(
         return Err(Error::ContentLengthMismatch(*target_content_length));
     }
 
+    let target_content = target_cell.content().unwrap_or_default();
+    let source_content = source_cell.content().unwrap_or_default();
+    let glue: &str = glue_text.as_ref().map(String::as_ref).unwrap_or_default();
+
     let mut changes = vec![
         Change::UpdateCellText(UpdateCellTextChange {
             cell_id: target_cell_id.clone(),
-            text: format!(
-                "{}{}{}",
-                target_cell.content().unwrap_or(""),
-                glue_text.clone().unwrap_or_default(),
-                source_cell.content().unwrap_or("")
+            text: format!("{}{}{}", target_content, glue, source_content),
+            formatting: Some(
+                [
+                    target_cell
+                        .formatting()
+                        .cloned()
+                        .unwrap_or_else(|| formatting_from_markdown(target_content)),
+                    glue_formatting
+                        .as_ref()
+                        .map(|formatting| translate(formatting, *target_content_length as i64))
+                        .unwrap_or_default(),
+                    source_cell
+                        .formatting()
+                        .map(|formatting| {
+                            translate(
+                                formatting,
+                                (*target_content_length + char_count(glue)) as i64,
+                            )
+                        })
+                        .unwrap_or_else(|| formatting_from_markdown(source_content)),
+                ]
+                .concat(),
             ),
-            formatting: match (
-                source_cell.formatting(),
-                target_cell.formatting(),
-                glue_formatting,
-            ) {
-                (None, None, None) => None,
-                (source_formatting, target_formatting, glue_formatting) => {
-                    let glue_length = glue_text.as_ref().map(char_count).unwrap_or_default();
-                    Some(
-                        [
-                            target_formatting.cloned().unwrap_or_default(),
-                            glue_formatting
-                                .as_ref()
-                                .map(|formatting| {
-                                    translate(formatting, *target_content_length as i64)
-                                })
-                                .unwrap_or_default(),
-                            source_formatting
-                                .map(|formatting| {
-                                    translate(
-                                        formatting,
-                                        (*target_content_length + glue_length) as i64,
-                                    )
-                                })
-                                .unwrap_or_default(),
-                        ]
-                        .concat(),
-                    )
-                }
-            },
         }),
         Change::DeleteCell(DeleteCellChange {
             cell_id: source_cell.id().clone(),
@@ -228,10 +218,12 @@ fn apply_replace_text_operation(
                 Ok(vec![Change::UpdateCellText(UpdateCellTextChange {
                     cell_id: operation.cell_id.clone(),
                     text: replace_text(text, operation),
-                    formatting: match (cell.formatting(), &operation.new_formatting) {
-                        (None, None) => None,
-                        (formatting, _) => Some(replace_formatting(formatting, operation)),
-                    },
+                    formatting: Some(replace_formatting(
+                        cell.formatting()
+                            .cloned()
+                            .unwrap_or_else(|| formatting_from_markdown(text)),
+                        operation,
+                    )),
                 })])
             } else {
                 Err(Error::NoContentCell(operation.cell_id.clone()))
@@ -409,13 +401,6 @@ fn apply_remove_label_operation(
     })]
 }
 
-pub fn char_count<T>(text: &T) -> u32
-where
-    T: Borrow<str> + ?Sized,
-{
-    text.borrow().chars().count() as u32
-}
-
 fn get_change_for_dropped_reference(
     referencing_cell: &CellWithIndex,
     source_ids: Vec<&str>,
@@ -434,20 +419,10 @@ fn get_change_for_dropped_reference(
 }
 
 pub fn replace_formatting(
-    formatting: Option<&Formatting>,
+    mut formatting: Formatting,
     operation: &ReplaceTextOperation,
 ) -> Formatting {
     let offset = operation.offset as i64;
-    let mut formatting = match formatting {
-        Some(formatting) => formatting.clone(),
-        None => {
-            return operation
-                .new_formatting
-                .as_ref()
-                .map(|formatting| translate(formatting, offset))
-                .unwrap_or_default()
-        }
-    };
 
     if let Some(old_formatting) = &operation.old_formatting {
         formatting.retain(|annotation| !old_formatting.contains(&annotation.translate(-offset)));

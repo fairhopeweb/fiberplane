@@ -1,10 +1,11 @@
+use super::apply_operation::replace_formatting;
 use crate::{
+    markdown::formatting_from_markdown,
     operations::{error::*, replace_text},
     protocols::{core::*, formatting::translate, operations::*},
+    text_util::char_count,
 };
 use std::cmp::Ordering;
-
-use super::apply_operation::{char_count, replace_formatting};
 
 /// Allows `transform_operation()` to query for the state of the notebook as it was at the revision
 /// immediately *before* predecessor gets applied.
@@ -1749,16 +1750,18 @@ pub fn moves_converge(move1: &MoveCellsOperation, move2: &MoveCellsOperation) ->
 }
 
 fn replace_cell_text(cell: &Cell, operation: &ReplaceTextOperation) -> Cell {
-    let new_text = replace_text(cell.text().unwrap_or_default(), operation);
+    let old_text = cell.text().unwrap_or_default();
+    let new_text = replace_text(old_text, operation);
 
-    // TODO FP-1287: Once we support initializing the `formatting` field from
-    //               Markdown, we can get rid of the match.
-    match (cell.formatting(), &operation.new_formatting) {
-        (None, None) => cell.with_text(&new_text),
-        (formatting, _) => {
-            cell.with_rich_text(&new_text, replace_formatting(formatting, operation))
-        }
-    }
+    cell.with_rich_text(
+        &new_text,
+        replace_formatting(
+            cell.formatting()
+                .cloned()
+                .unwrap_or_else(|| formatting_from_markdown(old_text)),
+            operation,
+        ),
+    )
 }
 
 pub fn replace_text_and_update_cell_converge(
@@ -1887,34 +1890,27 @@ fn with_merged_cell(target_cell: &Cell, predecessor: &MergeCellsOperation) -> Re
             .ok_or_else(|| { Error::NoContentCell(predecessor.source_cell.id().clone()) })?
     );
 
-    // TODO FP-1287: Once we support initializing the `formatting` field from
-    //               Markdown, we can get rid of the match.
-    let cell = match (
-        target_cell.formatting(),
-        predecessor.source_cell.formatting(),
-        &predecessor.glue_formatting,
-    ) {
-        (None, None, None) => target_cell.with_appended_content(&appended_content),
-        (_, source_formatting, glue_formatting) => {
-            let glue_len = predecessor
-                .glue_text
+    let glue_len = predecessor
+        .glue_text
+        .as_ref()
+        .map(char_count)
+        .unwrap_or_default() as i64;
+    Ok(target_cell.with_appended_rich_text(
+        &appended_content,
+        &[
+            predecessor
+                .glue_formatting
                 .as_ref()
-                .map(char_count)
-                .unwrap_or_default() as i64;
-            target_cell.with_appended_rich_text(
-                &appended_content,
-                &[
-                    glue_formatting.as_ref().cloned().unwrap_or_default(),
-                    source_formatting
-                        .map(|formatting| translate(formatting, glue_len))
-                        .unwrap_or_default(),
-                ]
-                .concat(),
-            )
-        }
-    };
-
-    Ok(cell)
+                .cloned()
+                .unwrap_or_default(),
+            predecessor
+                .source_cell
+                .formatting()
+                .map(|formatting| translate(formatting, glue_len))
+                .unwrap_or_default(),
+        ]
+        .concat(),
+    ))
 }
 
 fn with_merged_source_ids(

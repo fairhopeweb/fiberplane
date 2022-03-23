@@ -9,9 +9,7 @@ mod transform_operation;
 #[cfg(test)]
 mod tests;
 
-pub use apply_operation::{
-    apply_operation, char_count, replace_text, ApplyOperationState, CellRefWithIndex,
-};
+pub use apply_operation::{apply_operation, replace_text, ApplyOperationState, CellRefWithIndex};
 pub use changes::*;
 pub use error::*;
 pub use invert_operation::invert_operation;

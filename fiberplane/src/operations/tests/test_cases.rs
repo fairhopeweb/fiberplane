@@ -1,11 +1,12 @@
 use super::fixtures::TEST_NOTEBOOK;
 use crate::{
-    operations::{char_count, Notebook},
+    operations::Notebook,
     protocols::{
         core::*,
         formatting::{Annotation, AnnotationWithOffset, Formatting},
         operations::*,
     },
+    text_util::char_count,
 };
 use once_cell::sync::Lazy;
 

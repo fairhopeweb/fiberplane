@@ -1,7 +1,8 @@
 use super::{fixtures::TEST_NOTEBOOK, test_cases::TEST_CASES};
 use crate::{
-    operations::{char_count, error::*, transform_operation::*},
+    operations::{error::*, transform_operation::*},
     protocols::operations::*,
+    text_util::char_count,
 };
 use pretty_assertions::assert_eq;
 

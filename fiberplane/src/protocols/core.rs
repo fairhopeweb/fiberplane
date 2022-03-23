@@ -1,6 +1,5 @@
-use crate::operations::char_count;
-
 use super::formatting::{translate, AnnotationWithOffset, Formatting};
+use crate::{markdown::formatting_from_markdown, text_util::char_count};
 use fp_bindgen::prelude::Serializable;
 use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
@@ -149,8 +148,6 @@ impl Cell {
 
     /// Returns the cell's formatting, if any.
     pub fn formatting(&self) -> Option<&Formatting> {
-        // TODO FP-1287: If a cell that supports formatting doesn't have it,
-        //               we should interpret Markdown on the fly.
         match self {
             Cell::Checkbox(cell) => cell.formatting.as_ref(),
             Cell::Code(_) => None,
@@ -228,11 +225,14 @@ impl Cell {
     /// Returns a copy of the cell with the given rich-text appended.
     #[must_use]
     pub fn with_appended_rich_text(&self, text: &str, formatting: &[AnnotationWithOffset]) -> Self {
-        let existing_text_len = self.text().map(char_count).unwrap_or_default();
+        let existing_text = self.text().unwrap_or_default();
+        let existing_text_len = char_count(existing_text);
         self.with_rich_text(
-            &format!("{}{}", self.text().unwrap_or(""), text),
+            &format!("{}{}", existing_text, text),
             [
-                self.formatting().cloned().unwrap_or_default(),
+                self.formatting()
+                    .cloned()
+                    .unwrap_or_else(|| formatting_from_markdown(existing_text)),
                 translate(formatting, existing_text_len as i64),
             ]
             .concat(),
@@ -241,17 +241,13 @@ impl Cell {
 
     /// Returns a copy of the cell with its content replaced by the given
     /// content (without any formatting).
-    ///
-    /// TODO FP-1287: Once we support initializing the `formatting` field from
-    ///               Markdown, this function should reset the formatting to an
-    ///               empty vector.
     #[must_use]
     pub fn with_content(&self, content: &str) -> Self {
         match self {
             Cell::Checkbox(cell) => Cell::Checkbox(CheckboxCell {
                 id: cell.id.clone(),
                 content: content.to_owned(),
-                formatting: None,
+                formatting: Some(vec![]),
                 ..*cell
             }),
             Cell::Code(cell) => Cell::Code(CodeCell {
@@ -264,13 +260,13 @@ impl Cell {
             Cell::Heading(cell) => Cell::Heading(HeadingCell {
                 id: cell.id.clone(),
                 content: content.to_owned(),
-                formatting: None,
+                formatting: Some(vec![]),
                 ..*cell
             }),
             Cell::ListItem(cell) => Cell::ListItem(ListItemCell {
                 id: cell.id.clone(),
                 content: content.to_owned(),
-                formatting: None,
+                formatting: Some(vec![]),
                 ..*cell
             }),
             Cell::Log(cell) => Cell::Log(cell.clone()),
@@ -293,7 +289,7 @@ impl Cell {
             Cell::Text(cell) => Cell::Text(TextCell {
                 id: cell.id.clone(),
                 content: content.to_owned(),
-                formatting: None,
+                formatting: Some(vec![]),
                 ..*cell
             }),
             Cell::Image(cell) => Cell::Image(cell.clone()),
@@ -414,17 +410,13 @@ impl Cell {
     }
 
     /// Returns a copy of the cell with its text replaced by the given text.
-    ///
-    /// TODO FP-1287: Once we support initializing the `formatting` field from
-    ///               Markdown, this function should reset the formatting to an
-    ///               empty vector.
     #[must_use]
     pub fn with_text(&self, text: &str) -> Self {
         match self {
             Cell::Graph(cell) => Cell::Graph(GraphCell {
                 id: cell.id.clone(),
                 data: cell.data.clone(),
-                formatting: None,
+                formatting: Some(vec![]),
                 source_ids: cell.source_ids.clone(),
                 time_range: cell.time_range.clone(),
                 title: text.to_owned(),

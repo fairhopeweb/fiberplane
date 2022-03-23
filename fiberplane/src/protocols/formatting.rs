@@ -61,18 +61,131 @@ pub enum Annotation {
     EndUnderline,
 }
 
+impl Annotation {
+    /// Returns the opposite of an annotation for the purpose of toggling the
+    /// formatting.
+    ///
+    /// Returns `None` if the annotation is not part of a pair, or if the
+    /// formatting cannot be toggled without more information.
+    pub fn toggle_opposite(&self) -> Option<Annotation> {
+        match self {
+            Annotation::StartBold => Some(Annotation::EndBold),
+            Annotation::EndBold => Some(Annotation::StartBold),
+            Annotation::StartCode => Some(Annotation::EndCode),
+            Annotation::EndCode => Some(Annotation::StartCode),
+            Annotation::StartHighlight => Some(Annotation::EndHighlight),
+            Annotation::EndHighlight => Some(Annotation::StartHighlight),
+            Annotation::StartItalics => Some(Annotation::EndItalics),
+            Annotation::EndItalics => Some(Annotation::StartItalics),
+            Annotation::StartLink { .. } => Some(Annotation::EndLink),
+            Annotation::EndLink => None,
+            Annotation::Mention(_) => None,
+            Annotation::StartStrikethrough => Some(Annotation::EndStrikethrough),
+            Annotation::EndStrikethrough => Some(Annotation::StartStrikethrough),
+            Annotation::StartUnderline => Some(Annotation::EndUnderline),
+            Annotation::EndUnderline => Some(Annotation::StartUnderline),
+        }
+    }
+}
+
 /// A struct that represents all the formatting that is active at any given
 /// character offset.
-#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Serializable)]
+#[derive(Debug, Default, Deserialize, Serialize, Clone, PartialEq, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::formatting")]
 #[serde(rename_all = "camelCase")]
 pub struct ActiveFormatting {
     pub bold: bool,
+    pub code: bool,
+    pub highlight: bool,
     pub italics: bool,
     pub link: Option<String>,
     pub mention: Option<Mention>,
     pub strikethrough: bool,
     pub underline: bool,
+}
+
+impl ActiveFormatting {
+    /// Returns a list of annotations that should be inserted to activate
+    /// this formatting compared to a reference formatting.
+    pub fn annotations_for_toggled_formatting(&self, reference: &Self) -> Vec<Annotation> {
+        let mut annotations = Vec::new();
+        if self.bold != reference.bold {
+            annotations.push(if self.bold {
+                Annotation::StartBold
+            } else {
+                Annotation::EndBold
+            });
+        }
+        if self.code != reference.code {
+            annotations.push(if self.code {
+                Annotation::StartCode
+            } else {
+                Annotation::EndCode
+            });
+        }
+        if self.highlight != reference.highlight {
+            annotations.push(if self.highlight {
+                Annotation::StartHighlight
+            } else {
+                Annotation::EndHighlight
+            });
+        }
+        if self.italics != reference.italics {
+            annotations.push(if self.italics {
+                Annotation::StartItalics
+            } else {
+                Annotation::EndItalics
+            });
+        }
+        if self.link != reference.link {
+            annotations.push(if let Some(url) = self.link.as_ref() {
+                Annotation::StartLink { url: url.clone() }
+            } else {
+                Annotation::EndLink
+            });
+        }
+        if self.mention != reference.mention {
+            if let Some(mention) = self.mention.as_ref() {
+                annotations.push(Annotation::Mention(mention.clone()))
+            }
+        }
+        if self.strikethrough != reference.strikethrough {
+            annotations.push(if self.strikethrough {
+                Annotation::StartStrikethrough
+            } else {
+                Annotation::EndStrikethrough
+            });
+        }
+        if self.underline != reference.underline {
+            annotations.push(if self.underline {
+                Annotation::StartUnderline
+            } else {
+                Annotation::EndUnderline
+            });
+        }
+        annotations
+    }
+
+    /// Returns whether the given annotation is active in this struct.
+    pub fn contains(&self, annotation: &Annotation) -> bool {
+        match annotation {
+            Annotation::StartBold => self.bold,
+            Annotation::EndBold => !self.bold,
+            Annotation::StartCode => self.code,
+            Annotation::EndCode => !self.code,
+            Annotation::StartHighlight => self.highlight,
+            Annotation::EndHighlight => !self.highlight,
+            Annotation::StartItalics => self.italics,
+            Annotation::EndItalics => !self.italics,
+            Annotation::StartLink { .. } => self.link.is_some(),
+            Annotation::EndLink => self.link.is_none(),
+            Annotation::Mention(_) => self.mention.is_some(),
+            Annotation::StartStrikethrough => self.strikethrough,
+            Annotation::EndStrikethrough => !self.strikethrough,
+            Annotation::StartUnderline => self.underline,
+            Annotation::EndUnderline => !self.underline,
+        }
+    }
 }
 
 /// Annotation for the mention of a user.
