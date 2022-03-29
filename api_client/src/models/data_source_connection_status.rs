@@ -14,8 +14,8 @@
 pub enum DataSourceConnectionStatus {
     #[serde(rename = "connected")]
     Connected,
-    #[serde(rename = "disconnected")]
-    Disconnected,
+    #[serde(rename = "error")]
+    Error,
 
 }
 
@@ -23,7 +23,7 @@ impl ToString for DataSourceConnectionStatus {
     fn to_string(&self) -> String {
         match self {
             Self::Connected => String::from("connected"),
-            Self::Disconnected => String::from("disconnected"),
+            Self::Error => String::from("error"),
         }
     }
 }

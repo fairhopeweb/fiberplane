@@ -984,7 +984,7 @@ components:
       type: string
       enum:
         - connected
-        - disconnected
+        - error
     queryType:
       oneOf:
         - $ref: "#/components/schemas/seriesQuery"
