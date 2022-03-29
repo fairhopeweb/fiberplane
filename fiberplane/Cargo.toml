@@ -10,9 +10,7 @@ edition = "2018"
 crate-type = ["lib"]
 
 [dependencies]
-fp-bindgen = { git = "ssh://git@github.com/fiberplane/fp-bindgen.git", branch = "main", features = [
-    "time-compat",
-] }
+fp-bindgen = { version = "1.0.0", features = ["time-compat"] }
 # fp-bindgen = { path = "../fp-bindgen/fp-bindgen", features = ["time-compat"] }
 lazy_static = "1.4"
 once_cell = "1.8"
