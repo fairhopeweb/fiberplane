@@ -1,8 +1,8 @@
 use base64::DecodeError;
-use serde::{Deserialize, Serialize};
+use serde::{de, Deserialize, Serialize};
 use std::convert::TryFrom;
-use std::fmt::Debug;
-use std::{fmt::Display, str::FromStr};
+use std::fmt::{self, Debug, Display, Formatter};
+use std::str::FromStr;
 use thiserror::Error;
 use uuid::Uuid;
 
@@ -14,10 +14,10 @@ mod tests;
 /// The main motivation is that it is a slightly more
 /// condensed representation of a UUID and it looks
 /// better in URLs.
-#[derive(PartialEq, Hash, Eq, Serialize, Deserialize, Clone, Copy)]
+#[derive(PartialEq, Hash, Eq, Serialize, Clone, Copy)]
 // Force serde to go through the String representation to ensure
-// it is (de)serialized in the base64url-encoded format
-#[serde(try_from = "&str", into = "String")]
+// it is serialized in the base64url-encoded format
+#[serde(into = "String")]
 pub struct Base64Uuid(Uuid);
 
 impl Base64Uuid {
@@ -56,6 +56,39 @@ impl Base64Uuid {
         };
 
         Ok(Base64Uuid(uuid))
+    }
+}
+
+impl<'de> Deserialize<'de> for Base64Uuid {
+    fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+    where
+        D: serde::Deserializer<'de>,
+    {
+        struct Base64UuidVisitor;
+
+        impl<'vi> de::Visitor<'vi> for Base64UuidVisitor {
+            type Value = Base64Uuid;
+
+            fn expecting(&self, formatter: &mut Formatter) -> fmt::Result {
+                formatter.write_str("a base64url-encoded UUID")
+            }
+
+            fn visit_str<E>(self, value: &str) -> Result<Self::Value, E>
+            where
+                E: de::Error,
+            {
+                Base64Uuid::parse_str(value).map_err(de::Error::custom)
+            }
+
+            fn visit_string<E>(self, value: String) -> Result<Self::Value, E>
+            where
+                E: de::Error,
+            {
+                self.visit_str(&value)
+            }
+        }
+
+        deserializer.deserialize_str(Base64UuidVisitor)
     }
 }
 
@@ -100,13 +133,13 @@ impl TryFrom<&str> for Base64Uuid {
 }
 
 impl Display for Base64Uuid {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         f.write_str(&encode_base64(&self.0.as_bytes()))
     }
 }
 
 impl Debug for Base64Uuid {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         f.write_str(&encode_base64(&self.0.as_bytes()))
     }
 }
