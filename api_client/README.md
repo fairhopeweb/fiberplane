@@ -31,6 +31,8 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**get_notebook**](docs/DefaultApi.md#get_notebook) | **GET** /api/notebooks/{id} | 
 *DefaultApi* | [**get_profile**](docs/DefaultApi.md#get_profile) | **GET** /api/profile | 
 *DefaultApi* | [**get_profile_picture**](docs/DefaultApi.md#get_profile_picture) | **GET** /api/profile/picture | 
+*DefaultApi* | [**label_keys_list**](docs/DefaultApi.md#label_keys_list) | **GET** /api/labels/keys | 
+*DefaultApi* | [**label_values_list**](docs/DefaultApi.md#label_values_list) | **GET** /api/labels/values/{label_key} | 
 *DefaultApi* | [**logout**](docs/DefaultApi.md#logout) | **POST** /api/logout | 
 *DefaultApi* | [**notebook_create**](docs/DefaultApi.md#notebook_create) | **POST** /api/notebooks | 
 *DefaultApi* | [**notebook_list**](docs/DefaultApi.md#notebook_list) | **GET** /api/notebooks | 

@@ -11,6 +11,8 @@ Method | HTTP request | Description
 [**get_notebook**](DefaultApi.md#get_notebook) | **GET** /api/notebooks/{id} | 
 [**get_profile**](DefaultApi.md#get_profile) | **GET** /api/profile | 
 [**get_profile_picture**](DefaultApi.md#get_profile_picture) | **GET** /api/profile/picture | 
+[**label_keys_list**](DefaultApi.md#label_keys_list) | **GET** /api/labels/keys | 
+[**label_values_list**](DefaultApi.md#label_values_list) | **GET** /api/labels/values/{label_key} | 
 [**logout**](DefaultApi.md#logout) | **POST** /api/logout | 
 [**notebook_create**](DefaultApi.md#notebook_create) | **POST** /api/notebooks | 
 [**notebook_list**](DefaultApi.md#notebook_list) | **GET** /api/notebooks | 
@@ -245,6 +247,67 @@ No authorization required
 
 - **Content-Type**: Not defined
 - **Accept**: image/_*
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## label_keys_list
+
+> Vec<String> label_keys_list(prefix)
+
+
+Retrieve all label keys
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**prefix** | Option<**String**> | Prefix of the label key |  |
+
+### Return type
+
+**Vec<String>**
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## label_values_list
+
+> Vec<String> label_values_list(label_key, prefix)
+
+
+Retrieve all label values for a specific key
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**label_key** | **String** | The label key | [required] |
+**prefix** | Option<**String**> | Prefix of the label value |  |
+
+### Return type
+
+**Vec<String>**
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 

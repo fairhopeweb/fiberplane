@@ -1854,3 +1854,49 @@ paths:
                 items:
                   $ref: "#/components/schemas/user"
           description: OK
+  /api/labels/keys:
+    get:
+      operationId: label_keys_list
+      description: Retrieve all label keys
+      parameters:
+        - name: prefix
+          in: query
+          description: Prefix of the label key
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
+  /api/labels/values/{label_key}:
+    get:
+      operationId: label_values_list
+      description: Retrieve all label values for a specific key
+      parameters:
+        - name: label_key
+          in: path
+          description: The label key
+          required: true
+          schema:
+            type: string
+        - name: prefix
+          in: query
+          description: Prefix of the label value
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
