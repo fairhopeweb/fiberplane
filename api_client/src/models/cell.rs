@@ -133,6 +133,10 @@ pub enum Cell {
         read_only: Option<bool>,
         #[serde(rename = "sourceIds")]
         source_ids: Vec<String>,
+        #[serde(rename = "title")]
+        title: String,
+        #[serde(rename = "formatting", skip_serializing_if = "Option::is_none")]
+        formatting: Option<Vec<crate::models::Annotation>>,
         #[serde(rename = "timeRange", skip_serializing_if = "Option::is_none")]
         time_range: Option<Box<crate::models::TimeRange>>,
         #[serde(rename = "data", skip_serializing_if = "Option::is_none")]
@@ -164,6 +168,10 @@ pub enum Cell {
         read_only: Option<bool>,
         #[serde(rename = "sourceIds")]
         source_ids: Vec<String>,
+        #[serde(rename = "title")]
+        title: String,
+        #[serde(rename = "formatting", skip_serializing_if = "Option::is_none")]
+        formatting: Option<Vec<crate::models::Annotation>>,
         #[serde(rename = "data", skip_serializing_if = "Option::is_none")]
         data: Option<::std::collections::HashMap<String, Vec<crate::models::Instant>>>,
     },

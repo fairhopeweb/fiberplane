@@ -71,6 +71,8 @@ pub static TEST_NOTEBOOK: Lazy<Notebook> = Lazy::new(|| {
                 id: "c7".to_owned(),
                 source_ids: vec!["c6".to_owned()],
                 data: Some(data),
+                formatting: Some(Formatting::default()),
+                title: "Table".to_owned(),
                 read_only: None,
             }
         }),

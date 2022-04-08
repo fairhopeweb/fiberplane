@@ -21,17 +21,23 @@ pub struct TableCell {
     pub read_only: Option<bool>,
     #[serde(rename = "sourceIds")]
     pub source_ids: Vec<String>,
+    #[serde(rename = "title")]
+    pub title: String,
+    #[serde(rename = "formatting", skip_serializing_if = "Option::is_none")]
+    pub formatting: Option<Vec<crate::models::Annotation>>,
     #[serde(rename = "data", skip_serializing_if = "Option::is_none")]
     pub data: Option<::std::collections::HashMap<String, Vec<crate::models::Instant>>>,
 }
 
 impl TableCell {
-    pub fn new(_type: crate::models::CellType, id: String, source_ids: Vec<String>) -> TableCell {
+    pub fn new(_type: crate::models::CellType, id: String, source_ids: Vec<String>, title: String) -> TableCell {
         TableCell {
             _type,
             id,
             read_only: None,
             source_ids,
+            title,
+            formatting: None,
             data: None,
         }
     }

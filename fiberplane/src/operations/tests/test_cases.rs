@@ -78,6 +78,8 @@ fn create_add_cells_test_cases(test_cases: &mut Vec<OperationTestCase>) {
     let new_cell_3 = Cell::Table(TableCell {
         id: "n3".to_owned(),
         source_ids: vec![],
+        formatting: Some(Formatting::default()),
+        title: "New cell 3".to_owned(),
         data: None,
         read_only: None,
     });

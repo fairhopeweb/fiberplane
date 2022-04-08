@@ -292,6 +292,7 @@ components:
         - type
         - id
         - sourceIds
+        - title
       properties:
         type:
           $ref: "#/components/schemas/cellType"
@@ -303,6 +304,10 @@ components:
           type: array
           items:
             type: string
+        title:
+          type: string
+        formatting:
+          $ref: "#/components/schemas/formatting"
         data:
           type: object
           additionalProperties:
@@ -315,6 +320,7 @@ components:
         - type
         - id
         - sourceIds
+        - title
       properties:
         type:
           $ref: "#/components/schemas/cellType"
@@ -326,6 +332,10 @@ components:
           type: array
           items:
             type: string
+        title:
+          type: string
+        formatting:
+          $ref: "#/components/schemas/formatting"
         timeRange:
           $ref: "#/components/schemas/timeRange"
         data:

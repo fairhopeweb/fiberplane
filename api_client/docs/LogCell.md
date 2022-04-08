@@ -8,6 +8,8 @@ Name | Type | Description | Notes
 **id** | **String** |  | 
 **read_only** | Option<**bool**> |  | [optional]
 **source_ids** | **Vec<String>** |  | 
+**title** | **String** |  | 
+**formatting** | Option<[**Vec<crate::models::Annotation>**](annotation.md)> |  | [optional]
 **time_range** | Option<[**crate::models::TimeRange**](timeRange.md)> |  | [optional]
 **data** | Option<[**::std::collections::HashMap<String, Vec<crate::models::LogRecord>>**](array.md)> |  | [optional]
 

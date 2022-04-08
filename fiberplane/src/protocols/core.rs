@@ -157,10 +157,10 @@ impl Cell {
             Cell::Heading(cell) => cell.formatting.as_ref(),
             Cell::Image(_) => None,
             Cell::ListItem(cell) => cell.formatting.as_ref(),
-            Cell::Log(_) => None,
+            Cell::Log(cell) => cell.formatting.as_ref(),
             Cell::Loki(_) => None,
             Cell::Prometheus(_) => None,
-            Cell::Table(_) => None,
+            Cell::Table(cell) => cell.formatting.as_ref(),
             Cell::Text(cell) => cell.formatting.as_ref(),
         }
     }
@@ -212,6 +212,8 @@ impl Cell {
     pub fn text(&self) -> Option<&str> {
         match self {
             Cell::Graph(cell) => Some(&cell.title),
+            Cell::Log(cell) => Some(&cell.title),
+            Cell::Table(cell) => Some(&cell.title),
             cell => cell.content(),
         }
     }
@@ -378,16 +380,14 @@ impl Cell {
             Cell::Heading(cell) => Cell::Heading(cell.clone()),
             Cell::ListItem(cell) => Cell::ListItem(cell.clone()),
             Cell::Log(cell) => Cell::Log(LogCell {
-                id: cell.id.clone(),
                 data: cell.data.as_ref().map(|data| {
                     data.iter()
-                        .filter(|(k, _)| source_ids.contains(k))
+                        .filter(|&(k, _)| source_ids.contains(k))
                         .map(|(k, v)| (k.clone(), v.clone()))
                         .collect()
                 }),
-                time_range: cell.time_range.clone(),
                 source_ids,
-                ..*cell
+                ..cell.clone()
             }),
             Cell::Prometheus(cell) => Cell::Prometheus(cell.clone()),
             Cell::Elasticsearch(cell) => Cell::Elasticsearch(cell.clone()),
@@ -401,7 +401,7 @@ impl Cell {
                         .collect()
                 }),
                 source_ids,
-                ..*cell
+                ..cell.clone()
             }),
             Cell::Text(cell) => Cell::Text(cell.clone()),
             Cell::Image(cell) => Cell::Image(cell.clone()),
@@ -420,6 +420,23 @@ impl Cell {
                 source_ids: cell.source_ids.clone(),
                 time_range: cell.time_range.clone(),
                 title: text.to_owned(),
+                ..*cell
+            }),
+            Cell::Table(cell) => Cell::Table(TableCell {
+                id: cell.id.clone(),
+                data: cell.data.clone(),
+                title: text.to_owned(),
+                formatting: Some(vec![]),
+                source_ids: cell.source_ids.clone(),
+                ..*cell
+            }),
+            Cell::Log(cell) => Cell::Log(LogCell {
+                id: cell.id.clone(),
+                data: cell.data.clone(),
+                title: text.to_owned(),
+                formatting: Some(vec![]),
+                time_range: cell.time_range.clone(),
+                source_ids: cell.source_ids.clone(),
                 ..*cell
             }),
             cell => cell.with_content(text),
@@ -441,6 +458,23 @@ impl Cell {
                 ..*cell
             }),
             Cell::Graph(cell) => Cell::Graph(GraphCell {
+                id: cell.id.clone(),
+                data: cell.data.clone(),
+                formatting: Some(formatting),
+                source_ids: cell.source_ids.clone(),
+                time_range: cell.time_range.clone(),
+                title: text.to_owned(),
+                ..*cell
+            }),
+            Cell::Table(cell) => Cell::Table(TableCell {
+                id: cell.id.clone(),
+                data: cell.data.clone(),
+                formatting: Some(formatting),
+                source_ids: cell.source_ids.clone(),
+                title: text.to_owned(),
+                ..*cell
+            }),
+            Cell::Log(cell) => Cell::Log(LogCell {
                 id: cell.id.clone(),
                 data: cell.data.clone(),
                 formatting: Some(formatting),
@@ -471,10 +505,8 @@ impl Cell {
             | Cell::Divider(_)
             | Cell::Elasticsearch(_)
             | Cell::Image(_)
-            | Cell::Log(_)
             | Cell::Loki(_)
-            | Cell::Prometheus(_)
-            | Cell::Table(_) => self.with_text(text),
+            | Cell::Prometheus(_) => self.with_text(text),
         }
     }
 }
@@ -560,6 +592,12 @@ pub struct LogCell {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub read_only: Option<bool>,
     pub source_ids: Vec<String>,
+    /// Optional formatting to be applied to the cell's title.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub formatting: Option<Formatting>,
+
+    #[serde(default = "default_title")]
+    pub title: String,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub data: Option<BTreeMap<String, Vec<LogRecord>>>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -622,8 +660,19 @@ pub struct TableCell {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub read_only: Option<bool>,
     pub source_ids: Vec<String>,
+    /// Optional formatting to be applied to the cell's title.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub formatting: Option<Formatting>,
+
+    #[serde(default = "default_title")]
+    pub title: String,
+
     #[serde(skip_serializing_if = "Option::is_none")]
     pub data: Option<BTreeMap<String, Vec<Instant<f64>>>>,
+}
+
+fn default_title() -> String {
+    "".to_string()
 }
 
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, Serializable)]

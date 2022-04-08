@@ -21,6 +21,10 @@ pub struct LogCell {
     pub read_only: Option<bool>,
     #[serde(rename = "sourceIds")]
     pub source_ids: Vec<String>,
+    #[serde(rename = "title")]
+    pub title: String,
+    #[serde(rename = "formatting", skip_serializing_if = "Option::is_none")]
+    pub formatting: Option<Vec<crate::models::Annotation>>,
     #[serde(rename = "timeRange", skip_serializing_if = "Option::is_none")]
     pub time_range: Option<Box<crate::models::TimeRange>>,
     #[serde(rename = "data", skip_serializing_if = "Option::is_none")]
@@ -28,12 +32,14 @@ pub struct LogCell {
 }
 
 impl LogCell {
-    pub fn new(_type: crate::models::CellType, id: String, source_ids: Vec<String>) -> LogCell {
+    pub fn new(_type: crate::models::CellType, id: String, source_ids: Vec<String>, title: String) -> LogCell {
         LogCell {
             _type,
             id,
             read_only: None,
             source_ids,
+            title,
+            formatting: None,
             time_range: None,
             data: None,
         }
