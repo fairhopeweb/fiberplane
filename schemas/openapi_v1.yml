@@ -1379,6 +1379,24 @@ paths:
       responses:
         "200":
           description: OK
+  /api/notebooks/{id}/template.jsonnet:
+    parameters:
+      - name: id
+        in: path
+        description: ID of the notebook
+        required: true
+        schema:
+          type: string
+    get:
+      operationId: convert_notebook_to_template
+      description: Convert the notebook to a Template
+      responses:
+        "200":
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: OK
   /api/datasources:
     post:
       operationId: org_data_source_create

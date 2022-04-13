@@ -24,6 +24,7 @@ All URIs are relative to *https://fiberplane.com*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
+*DefaultApi* | [**convert_notebook_to_template**](docs/DefaultApi.md#convert_notebook_to_template) | **GET** /api/notebooks/{id}/template.jsonnet | 
 *DefaultApi* | [**delete_file**](docs/DefaultApi.md#delete_file) | **DELETE** /api/files/{notebookId}/{fileId} | 
 *DefaultApi* | [**delete_notebook**](docs/DefaultApi.md#delete_notebook) | **DELETE** /api/notebooks/{id} | 
 *DefaultApi* | [**file_upload**](docs/DefaultApi.md#file_upload) | **POST** /api/files/{notebookId} | 

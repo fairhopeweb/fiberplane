@@ -4,6 +4,7 @@ All URIs are relative to *https://fiberplane.com*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
+[**convert_notebook_to_template**](DefaultApi.md#convert_notebook_to_template) | **GET** /api/notebooks/{id}/template.jsonnet | 
 [**delete_file**](DefaultApi.md#delete_file) | **DELETE** /api/files/{notebookId}/{fileId} | 
 [**delete_notebook**](DefaultApi.md#delete_notebook) | **DELETE** /api/notebooks/{id} | 
 [**file_upload**](DefaultApi.md#file_upload) | **POST** /api/files/{notebookId} | 
@@ -44,6 +45,36 @@ Method | HTTP request | Description
 [**trigger_list**](DefaultApi.md#trigger_list) | **GET** /api/triggers | 
 [**update_profile_picture**](DefaultApi.md#update_profile_picture) | **POST** /api/profile/picture | 
 
+
+
+## convert_notebook_to_template
+
+> String convert_notebook_to_template(id)
+
+
+Convert the notebook to a Template
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**id** | **String** | ID of the notebook | [required] |
+
+### Return type
+
+**String**
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: text/plain
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 
 ## delete_file
