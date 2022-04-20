@@ -37,7 +37,7 @@ Method | HTTP request | Description
 [**template_expand**](DefaultApi.md#template_expand) | **POST** /api/templates/{templateId}/expand | 
 [**template_get**](DefaultApi.md#template_get) | **GET** /api/templates/{templateId} | 
 [**template_list**](DefaultApi.md#template_list) | **GET** /api/templates | 
-[**template_update**](DefaultApi.md#template_update) | **PUT** /api/templates/{templateId} | 
+[**template_update**](DefaultApi.md#template_update) | **PATCH** /api/templates/{templateId} | 
 [**trigger_create**](DefaultApi.md#trigger_create) | **POST** /api/triggers | 
 [**trigger_delete**](DefaultApi.md#trigger_delete) | **DELETE** /api/triggers/{triggerId} | 
 [**trigger_get**](DefaultApi.md#trigger_get) | **GET** /api/triggers/{triggerId} | 
@@ -1004,7 +1004,7 @@ This endpoint does not need any parameter.
 
 ## template_update
 
-> crate::models::Template template_update(template_id, new_template)
+> crate::models::Template template_update(template_id, update_template)
 
 
 ### Parameters
@@ -1013,7 +1013,7 @@ This endpoint does not need any parameter.
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
 **template_id** | **String** | ID of the template | [required] |
-**new_template** | [**NewTemplate**](NewTemplate.md) |  | [required] |
+**update_template** | [**UpdateTemplate**](UpdateTemplate.md) |  | [required] |
 
 ### Return type
 

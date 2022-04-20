@@ -84,6 +84,7 @@ docs/TextCell.md
 docs/TimeRange.md
 docs/Trigger.md
 docs/UnknownTemplateParameter.md
+docs/UpdateTemplate.md
 docs/User.md
 docs/UserType.md
 git_push.sh
@@ -173,5 +174,6 @@ src/models/text_cell.rs
 src/models/time_range.rs
 src/models/trigger.rs
 src/models/unknown_template_parameter.rs
+src/models/update_template.rs
 src/models/user.rs
 src/models/user_type.rs

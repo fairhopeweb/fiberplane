@@ -1305,12 +1305,12 @@ pub async fn template_list(configuration: &configuration::Configuration, ) -> Re
     }
 }
 
-pub async fn template_update(configuration: &configuration::Configuration, template_id: &str, new_template: crate::models::NewTemplate) -> Result<crate::models::Template, Error<TemplateUpdateError>> {
+pub async fn template_update(configuration: &configuration::Configuration, template_id: &str, update_template: crate::models::UpdateTemplate) -> Result<crate::models::Template, Error<TemplateUpdateError>> {
 
     let local_var_client = &configuration.client;
 
     let local_var_uri_str = format!("{}/api/templates/{templateId}", configuration.base_path, templateId=crate::apis::urlencode(template_id));
-    let mut local_var_req_builder = local_var_client.request(reqwest::Method::PUT, local_var_uri_str.as_str());
+    let mut local_var_req_builder = local_var_client.request(reqwest::Method::PATCH, local_var_uri_str.as_str());
 
     if let Some(ref local_var_user_agent) = configuration.user_agent {
         local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
@@ -1318,7 +1318,7 @@ pub async fn template_update(configuration: &configuration::Configuration, templ
     if let Some(ref local_var_token) = configuration.bearer_access_token {
         local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
     };
-    local_var_req_builder = local_var_req_builder.json(&new_template);
+    local_var_req_builder = local_var_req_builder.json(&update_template);
 
     let local_var_req = local_var_req_builder.build()?;
     let local_var_resp = local_var_client.execute(local_var_req).await?;

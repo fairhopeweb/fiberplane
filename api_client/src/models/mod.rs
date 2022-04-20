@@ -160,6 +160,8 @@ pub mod trigger;
 pub use self::trigger::Trigger;
 pub mod unknown_template_parameter;
 pub use self::unknown_template_parameter::UnknownTemplateParameter;
+pub mod update_template;
+pub use self::update_template::UpdateTemplate;
 pub mod user;
 pub use self::user::User;
 pub mod user_type;

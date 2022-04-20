@@ -1218,6 +1218,15 @@ components:
           type: string
         body:
           type: string
+    updateTemplate:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        body:
+          type: string
     trigger:
       type: object
       required:
@@ -1707,14 +1716,14 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/template"
-    put:
+    patch:
       operationId: template_update
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/newTemplate"
+              $ref: "#/components/schemas/updateTemplate"
       responses:
         "200":
           description: OK
