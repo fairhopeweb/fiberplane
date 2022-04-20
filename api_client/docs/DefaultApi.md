@@ -1119,7 +1119,7 @@ Name | Type | Description  | Required | Notes
 
 ## trigger_invoke
 
-> crate::models::Notebook trigger_invoke(trigger_id, secret_key, body)
+> crate::models::TriggerInvokeResponse trigger_invoke(trigger_id, secret_key, body)
 
 
 Invoke a trigger to create a notebook from the associated template
@@ -1135,7 +1135,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**crate::models::Notebook**](notebook.md)
+[**crate::models::TriggerInvokeResponse**](triggerInvokeResponse.md)
 
 ### Authorization
 

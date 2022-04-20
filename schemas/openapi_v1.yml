@@ -1267,6 +1267,20 @@ components:
           type: object
     templateExpandPayload:
       type: object
+    triggerInvokeResponse:
+      type: object
+      required:
+        - notebookTitle
+        - notebookId
+        - notebookUrl
+      properties:
+        notebookTitle:
+          type: string
+        notebookId:
+          type: string
+        notebookUrl:
+          type: string
+          format: uri
     createdBy:
       type: object
       required:
@@ -1877,7 +1891,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/notebook"
+                $ref: "#/components/schemas/triggerInvokeResponse"
   /api/organizations/current/users:
     get:
       operationId: org_user_list_current

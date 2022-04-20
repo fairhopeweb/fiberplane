@@ -158,6 +158,8 @@ pub mod time_range;
 pub use self::time_range::TimeRange;
 pub mod trigger;
 pub use self::trigger::Trigger;
+pub mod trigger_invoke_response;
+pub use self::trigger_invoke_response::TriggerInvokeResponse;
 pub mod unknown_template_parameter;
 pub use self::unknown_template_parameter::UnknownTemplateParameter;
 pub mod update_template;

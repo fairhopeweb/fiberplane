@@ -148,6 +148,7 @@ Class | Method | HTTP request | Description
  - [TextCell](docs/TextCell.md)
  - [TimeRange](docs/TimeRange.md)
  - [Trigger](docs/Trigger.md)
+ - [TriggerInvokeResponse](docs/TriggerInvokeResponse.md)
  - [UnknownTemplateParameter](docs/UnknownTemplateParameter.md)
  - [UpdateTemplate](docs/UpdateTemplate.md)
  - [User](docs/User.md)

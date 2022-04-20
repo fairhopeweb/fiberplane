@@ -1425,7 +1425,7 @@ pub async fn trigger_get(configuration: &configuration::Configuration, trigger_i
 }
 
 /// Invoke a trigger to create a notebook from the associated template
-pub async fn trigger_invoke(configuration: &configuration::Configuration, trigger_id: &str, secret_key: &str, body: Option<serde_json::Value>) -> Result<crate::models::Notebook, Error<TriggerInvokeError>> {
+pub async fn trigger_invoke(configuration: &configuration::Configuration, trigger_id: &str, secret_key: &str, body: Option<serde_json::Value>) -> Result<crate::models::TriggerInvokeResponse, Error<TriggerInvokeError>> {
 
     let local_var_client = &configuration.client;
 

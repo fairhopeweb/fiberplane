@@ -83,6 +83,7 @@ docs/TemplateSummary.md
 docs/TextCell.md
 docs/TimeRange.md
 docs/Trigger.md
+docs/TriggerInvokeResponse.md
 docs/UnknownTemplateParameter.md
 docs/UpdateTemplate.md
 docs/User.md
@@ -173,6 +174,7 @@ src/models/template_summary.rs
 src/models/text_cell.rs
 src/models/time_range.rs
 src/models/trigger.rs
+src/models/trigger_invoke_response.rs
 src/models/unknown_template_parameter.rs
 src/models/update_template.rs
 src/models/user.rs
