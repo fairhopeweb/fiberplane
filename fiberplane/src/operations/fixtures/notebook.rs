@@ -108,13 +108,15 @@ impl Notebook {
     /// Returns the notebook state with all the cells necessary for applying the given operation
     /// to it.
     fn state_for_operation(&self, operation: &Operation) -> NotebookState {
-        let cell_ids = relevant_cell_ids_for_operation(operation);
+        let cell_ids = self.cells.iter().map(|cell| cell.id().as_str()).collect();
+        let relevant_cell_ids = relevant_cell_ids_for_operation(operation);
         NotebookState {
-            cells: self
+            cell_ids,
+            relevant_cells: self
                 .cells
                 .iter()
                 .enumerate()
-                .filter(|(_, cell)| cell_ids.contains(cell.id()))
+                .filter(|(_, cell)| relevant_cell_ids.contains(cell.id()))
                 .map(|(index, cell)| CellRefWithIndex {
                     cell,
                     index: index as u32,
@@ -168,14 +170,19 @@ impl TransformOperationState for Notebook {
 }
 
 struct NotebookState<'a> {
-    cells: Vec<CellRefWithIndex<'a>>,
+    cell_ids: Vec<&'a str>,
+    relevant_cells: Vec<CellRefWithIndex<'a>>,
 }
 
 // Note: It would be easier to just use the trait implementation of `Notebook`, but the reason I'm
 // still sticking with a separate struct is so that we test `relevant_cell_ids_for_operation()` in
 // the process.
 impl<'a> ApplyOperationState for NotebookState<'a> {
+    fn all_cell_ids(&self) -> Vec<&str> {
+        self.cell_ids.clone()
+    }
+
     fn all_relevant_cells(&self) -> Vec<CellRefWithIndex> {
-        self.cells.clone()
+        self.relevant_cells.clone()
     }
 }

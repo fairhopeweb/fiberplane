@@ -16,6 +16,11 @@ pub struct CellRefWithIndex<'a> {
 /// See `relevant_cell_ids_for_operation()` if you want to know how to determine which cells may be
 /// affected by an operation.
 pub trait ApplyOperationState {
+    /// Returns the IDs of all the cells in the notebook.
+    ///
+    /// This includes IDs for cells that are not relevant to the operation itself.
+    fn all_cell_ids(&self) -> Vec<&str>;
+
     /// Returns all cells that may be relevant for the operation, including their indices.
     ///
     /// This may always return *more* cells than are relevant for the operation, but it must

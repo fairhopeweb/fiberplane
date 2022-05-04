@@ -11,6 +11,9 @@ pub enum Error {
     #[error("attempt to insert a duplicate ID")]
     DuplicateId(String),
 
+    #[error("insert index not valid")]
+    InvalidInsertIndex(u32),
+
     #[error("split index not valid on cell")]
     InvalidSplitIndex(u32, String),
 
@@ -19,7 +22,4 @@ pub enum Error {
 
     #[error("unauthorized")]
     Unauthorized(String),
-
-    #[error("insert index not valid")]
-    InvalidInsertIndex(u32),
 }

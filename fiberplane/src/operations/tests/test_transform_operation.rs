@@ -1,6 +1,9 @@
-use super::{fixtures::TEST_NOTEBOOK, test_cases::TEST_CASES};
 use crate::{
-    operations::{error::*, transform_operation::*},
+    operations::{
+        error::*,
+        fixtures::{TEST_CASES, TEST_NOTEBOOK},
+        transform_operation::*,
+    },
     protocols::operations::*,
     text_util::char_count,
 };

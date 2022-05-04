@@ -1,4 +1,4 @@
-use super::fixtures::TEST_NOTEBOOK;
+use super::test_notebook::TEST_NOTEBOOK;
 use crate::{
     operations::Notebook,
     protocols::{

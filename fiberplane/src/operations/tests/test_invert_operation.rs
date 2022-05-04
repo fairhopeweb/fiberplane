@@ -1,6 +1,8 @@
-use super::fixtures::TEST_NOTEBOOK;
-use super::test_cases::TEST_CASES;
-use crate::operations::{error::*, invert_operation};
+use crate::operations::{
+    error::*,
+    fixtures::{TEST_CASES, TEST_NOTEBOOK},
+    invert_operation,
+};
 use pretty_assertions::assert_eq;
 
 #[test]

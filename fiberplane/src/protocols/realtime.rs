@@ -304,15 +304,33 @@ impl RejectedMessage {
 #[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum RejectReason {
-    /// The requested apply operation was for an old version. The u32 contains
-    /// the current revision.
-    Outdated(OutdatedRejectReason),
+    /// The operation referenced an invalid cell index.
+    CellIndexOutOfBounds,
+
+    /// The operation referenced a non-existing cell.
+    #[serde(rename_all = "camelCase")]
+    CellNotFound { cell_id: String },
+
+    /// The operation tried to insert a cell with a non-unique ID.
+    #[serde(rename_all = "camelCase")]
+    DuplicateCellId { cell_id: String },
+
+    /// A label was submitted for already exists for the notebook.
+    DuplicateLabel(DuplicateLabelRejectReason),
 
     /// A label was submitted that was invalid.
     InvalidLabel(InvalidLabelRejectReason),
 
-    /// A label was submitted for already exists for the notebook.
-    DuplicateLabel(DuplicateLabelRejectReason),
+    /// Current notebook state does not match old state in operation.
+    InconsistentState,
+
+    /// Attempted to perform a text operation on a non-text cell.
+    #[serde(rename_all = "camelCase")]
+    NoTextCell { cell_id: String },
+
+    /// The requested apply operation was for an old version. The u32 contains
+    /// the current revision.
+    Outdated(OutdatedRejectReason),
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]

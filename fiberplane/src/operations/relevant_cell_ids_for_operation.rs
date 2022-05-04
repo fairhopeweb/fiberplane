@@ -1,19 +1,27 @@
 use crate::protocols::operations::*;
 
-/// Returns the IDs of all the cells that should be included in the notebook state passed to
-/// `apply_operation()`.
-///
-/// For performance reasons, you might want to reimplement this function elsewhere. For instance,
-/// Studio uses a TypeScript implementation in order to avoid having to serialize the operation
-/// to JSON unnecessarily.
-///
-/// Still, this implementation should be treated as the authoritative reference implementation,
-/// as it is the one that is used by the test harness, and therefore most likely to be correct.
+/// Returns the IDs of all the cells that should be included as part of the `ApplyOperationState`.
 pub fn relevant_cell_ids_for_operation(operation: &Operation) -> Vec<String> {
     match operation {
-        Operation::AddCells(_) => vec![],
-        Operation::MergeCells(MergeCellsOperation { target_cell_id, .. }) => {
-            vec![target_cell_id.clone()]
+        Operation::AddCells(AddCellsOperation {
+            referencing_cells, ..
+        }) => referencing_cells
+            .as_ref()
+            .map(|cells| cells.iter().map(|cell| cell.cell.id().clone()).collect())
+            .unwrap_or_default(),
+        Operation::MergeCells(MergeCellsOperation {
+            referencing_cells,
+            source_cell,
+            target_cell_id,
+            ..
+        }) => {
+            let mut relevant_cell_ids = vec![source_cell.id().clone(), target_cell_id.clone()];
+            if let Some(referencing_cells) = referencing_cells {
+                for c in referencing_cells {
+                    relevant_cell_ids.push(c.cell.id().clone());
+                }
+            }
+            relevant_cell_ids
         }
         Operation::MoveCells(MoveCellsOperation { cell_ids, .. }) => cell_ids.clone(),
         Operation::RemoveCells(RemoveCellsOperation {
