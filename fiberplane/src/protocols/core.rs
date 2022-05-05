@@ -509,6 +509,24 @@ impl Cell {
             | Cell::Prometheus(_) => self.with_text(text),
         }
     }
+
+    pub fn set_id(&mut self, id: String) {
+        match self {
+            Cell::Checkbox(cell) => cell.id = id,
+            Cell::Code(cell) => cell.id = id,
+            Cell::Graph(cell) => cell.id = id,
+            Cell::Heading(cell) => cell.id = id,
+            Cell::ListItem(cell) => cell.id = id,
+            Cell::Log(cell) => cell.id = id,
+            Cell::Prometheus(cell) => cell.id = id,
+            Cell::Elasticsearch(cell) => cell.id = id,
+            Cell::Loki(cell) => cell.id = id,
+            Cell::Table(cell) => cell.id = id,
+            Cell::Text(cell) => cell.id = id,
+            Cell::Image(cell) => cell.id = id,
+            Cell::Divider(cell) => cell.id = id,
+        }
+    }
 }
 
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, Serializable)]
