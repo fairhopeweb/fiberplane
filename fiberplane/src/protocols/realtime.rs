@@ -384,9 +384,9 @@ pub struct SubscriberAddedMessage {
     /// User details associated with the session.
     pub user: User,
 
-    /// ID of the focused cell. Empty if no cell is focused.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub focused_cell_id: Option<String>,
+    /// User's focus within the notebook.
+    #[serde(default)]
+    pub focus: NotebookFocus,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
@@ -419,9 +419,9 @@ pub struct FocusInfoMessage {
     /// ID of the notebook.
     pub notebook_id: String,
 
-    /// ID of the focused cell. Empty if no cell is focused.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub cell_id: Option<String>,
+    /// User's focus within the notebook.
+    #[serde(default)]
+    pub focus: NotebookFocus,
 
     /// Operation ID. Empty if the user has not provided a op_id.
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -438,9 +438,135 @@ pub struct SubscriberChangedFocusMessage {
     /// ID of the notebook.
     pub notebook_id: String,
 
-    /// ID of the focused cell. Empty if no cell is focused.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub cell_id: Option<String>,
+    /// User's focus within the notebook.
+    #[serde(default)]
+    pub focus: NotebookFocus,
+}
+
+/// A single focus position within a notebook.
+///
+/// Focus can be placed within a cell, and optionally within separate fields
+/// within the cell. An offset can be specified to indicate the exact position
+/// of the cursor within a text field.
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
+#[serde(rename_all = "camelCase")]
+pub struct FocusPosition {
+    /// ID of the focused cell.
+    ///
+    /// May be the ID of an actual cell, or a so-called "surrogate ID", such as
+    /// the ID that indicates focus is on the title field.
+    pub cell_id: String,
+
+    /// Key to identify which field inside a cell has focus.
+    /// May be `None` for cells that have only one (or no) text field.
+    /// E.g.: For time range cells, “to” or “from” could be used.
+    ///
+    /// Note that fields do not necessarily have to be text fields. For example,
+    /// we could also use this to indicate the user has focused a button for
+    /// graph navigation.
+    pub field: Option<String>,
+
+    /// Offset within the text field.
+    /// May be `None` if the focus is not inside a text field.
+    pub offset: Option<u32>,
+}
+
+/// Specifies the user's focus and optional selection within the notebook.
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
+#[serde(rename_all = "snake_case", tag = "type")]
+pub enum NotebookFocus {
+    /// The user has no focus within the notebook.
+    None,
+    /// The user focus is within the notebook and the focus is on a single
+    /// position. I.e. there is no selection.
+    Collapsed(FocusPosition),
+    /// The user has a selection within the notebook that started at the given
+    /// anchor position and ends at the given focus position.
+    Selection {
+        anchor: FocusPosition,
+        focus: FocusPosition,
+    },
+}
+
+impl NotebookFocus {
+    pub fn anchor_cell_id(&self) -> Option<&str> {
+        match self {
+            Self::None => None,
+            Self::Collapsed(collapsed) => Some(&collapsed.cell_id),
+            Self::Selection { anchor, .. } => Some(&anchor.cell_id),
+        }
+    }
+
+    pub fn anchor_offset(&self) -> u32 {
+        match self {
+            Self::None => 0,
+            Self::Collapsed(position) => position.offset.unwrap_or_default(),
+            Self::Selection { anchor, .. } => anchor.offset.unwrap_or_default(),
+        }
+    }
+
+    pub fn end_offset(&self) -> u32 {
+        match self {
+            Self::None => 0,
+            Self::Collapsed(position) => position.offset.unwrap_or_default(),
+            Self::Selection { anchor, focus } => std::cmp::max(
+                anchor.offset.unwrap_or_default(),
+                focus.offset.unwrap_or_default(),
+            ),
+        }
+    }
+
+    pub fn focus_cell_id(&self) -> Option<&str> {
+        match self {
+            Self::None => None,
+            Self::Collapsed(collapsed) => Some(&collapsed.cell_id),
+            Self::Selection { focus, .. } => Some(&focus.cell_id),
+        }
+    }
+
+    pub fn focus_offset(&self) -> u32 {
+        match self {
+            Self::None => 0,
+            Self::Collapsed(position) => position.offset.unwrap_or_default(),
+            Self::Selection { focus, .. } => focus.offset.unwrap_or_default(),
+        }
+    }
+
+    pub fn has_selection(&self) -> bool {
+        !self.is_collapsed()
+    }
+
+    /// Returns whether the cursor position is collapsed, ie. the opposite of
+    /// `has_selection()`.
+    pub fn is_collapsed(&self) -> bool {
+        match self {
+            Self::None | Self::Collapsed(_) => true,
+            Self::Selection { focus, anchor } => *focus == *anchor,
+        }
+    }
+
+    pub fn is_none(&self) -> bool {
+        matches!(self, Self::None)
+    }
+
+    pub fn start_offset(&self) -> u32 {
+        match self {
+            Self::None => 0,
+            Self::Collapsed(position) => position.offset.unwrap_or_default(),
+            Self::Selection { anchor, focus } => std::cmp::min(
+                anchor.offset.unwrap_or_default(),
+                focus.offset.unwrap_or_default(),
+            ),
+        }
+    }
+}
+
+impl Default for NotebookFocus {
+    fn default() -> Self {
+        Self::None
+    }
 }
 
 #[cfg(test)]
