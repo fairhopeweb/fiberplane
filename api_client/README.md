@@ -35,6 +35,7 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**label_keys_list**](docs/DefaultApi.md#label_keys_list) | **GET** /api/labels/keys | 
 *DefaultApi* | [**label_values_list**](docs/DefaultApi.md#label_values_list) | **GET** /api/labels/values/{label_key} | 
 *DefaultApi* | [**logout**](docs/DefaultApi.md#logout) | **POST** /api/logout | 
+*DefaultApi* | [**notebook_cells_append**](docs/DefaultApi.md#notebook_cells_append) | **POST** /api/notebooks/{id}/cells | 
 *DefaultApi* | [**notebook_create**](docs/DefaultApi.md#notebook_create) | **POST** /api/notebooks | 
 *DefaultApi* | [**notebook_list**](docs/DefaultApi.md#notebook_list) | **GET** /api/notebooks | 
 *DefaultApi* | [**oidc_authorize_google**](docs/DefaultApi.md#oidc_authorize_google) | **GET** /api/oidc/authorize/google | 

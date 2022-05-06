@@ -1420,6 +1420,34 @@ paths:
               schema:
                 type: string
           description: OK
+  /api/notebooks/{id}/cells:
+    parameters:
+      - name: id
+        in: path
+        description: ID of the notebook
+        required: true
+        schema:
+          type: string
+    post:
+      operationId: notebook_cells_append
+      description: Append the given cells to the notebook
+      requestBody:
+        description: Cells to append
+        content:
+          application/json:
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/cell"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/cell"
   /api/datasources:
     post:
       operationId: org_data_source_create

@@ -15,6 +15,7 @@ Method | HTTP request | Description
 [**label_keys_list**](DefaultApi.md#label_keys_list) | **GET** /api/labels/keys | 
 [**label_values_list**](DefaultApi.md#label_values_list) | **GET** /api/labels/values/{label_key} | 
 [**logout**](DefaultApi.md#logout) | **POST** /api/logout | 
+[**notebook_cells_append**](DefaultApi.md#notebook_cells_append) | **POST** /api/notebooks/{id}/cells | 
 [**notebook_create**](DefaultApi.md#notebook_create) | **POST** /api/notebooks | 
 [**notebook_list**](DefaultApi.md#notebook_list) | **GET** /api/notebooks | 
 [**oidc_authorize_google**](DefaultApi.md#oidc_authorize_google) | **GET** /api/oidc/authorize/google | 
@@ -366,6 +367,37 @@ This endpoint does not need any parameter.
 
 - **Content-Type**: Not defined
 - **Accept**: Not defined
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## notebook_cells_append
+
+> Vec<crate::models::Cell> notebook_cells_append(id, cell)
+
+
+Append the given cells to the notebook
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**id** | **String** | ID of the notebook | [required] |
+**cell** | Option<[**Vec<crate::models::Cell>**](cell.md)> | Cells to append |  |
+
+### Return type
+
+[**Vec<crate::models::Cell>**](cell.md)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 

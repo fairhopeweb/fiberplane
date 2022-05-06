@@ -92,6 +92,13 @@ pub enum LogoutError {
     UnknownValue(serde_json::Value),
 }
 
+/// struct for typed errors of method `notebook_cells_append`
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum NotebookCellsAppendError {
+    UnknownValue(serde_json::Value),
+}
+
 /// struct for typed errors of method `notebook_create`
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -623,6 +630,37 @@ pub async fn logout(configuration: &configuration::Configuration, ) -> Result<()
         Ok(())
     } else {
         let local_var_entity: Option<LogoutError> = serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
+
+/// Append the given cells to the notebook
+pub async fn notebook_cells_append(configuration: &configuration::Configuration, id: &str, cell: Option<Vec<crate::models::Cell>>) -> Result<Vec<crate::models::Cell>, Error<NotebookCellsAppendError>> {
+
+    let local_var_client = &configuration.client;
+
+    let local_var_uri_str = format!("{}/api/notebooks/{id}/cells", configuration.base_path, id=crate::apis::urlencode(id));
+    let mut local_var_req_builder = local_var_client.request(reqwest::Method::POST, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_user_agent) = configuration.user_agent {
+        local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+    if let Some(ref local_var_token) = configuration.bearer_access_token {
+        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
+    };
+    local_var_req_builder = local_var_req_builder.json(&cell);
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        serde_json::from_str(&local_var_content).map_err(Error::from)
+    } else {
+        let local_var_entity: Option<NotebookCellsAppendError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
         Err(Error::ResponseError(local_var_error))
     }
