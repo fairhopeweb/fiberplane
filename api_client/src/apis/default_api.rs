@@ -636,7 +636,7 @@ pub async fn logout(configuration: &configuration::Configuration, ) -> Result<()
 }
 
 /// Append the given cells to the notebook
-pub async fn notebook_cells_append(configuration: &configuration::Configuration, id: &str, cell: Option<Vec<crate::models::Cell>>) -> Result<Vec<crate::models::Cell>, Error<NotebookCellsAppendError>> {
+pub async fn notebook_cells_append(configuration: &configuration::Configuration, id: &str, cell: Vec<crate::models::Cell>) -> Result<Vec<crate::models::Cell>, Error<NotebookCellsAppendError>> {
 
     let local_var_client = &configuration.client;
 
@@ -667,7 +667,7 @@ pub async fn notebook_cells_append(configuration: &configuration::Configuration,
 }
 
 /// Create a new notebook
-pub async fn notebook_create(configuration: &configuration::Configuration, new_notebook: Option<crate::models::NewNotebook>) -> Result<crate::models::Notebook, Error<NotebookCreateError>> {
+pub async fn notebook_create(configuration: &configuration::Configuration, new_notebook: crate::models::NewNotebook) -> Result<crate::models::Notebook, Error<NotebookCreateError>> {
 
     let local_var_client = &configuration.client;
 
@@ -764,7 +764,7 @@ pub async fn oidc_authorize_google(configuration: &configuration::Configuration,
 }
 
 /// Create an organization data-source
-pub async fn org_data_source_create(configuration: &configuration::Configuration, new_org_data_source: Option<crate::models::NewOrgDataSource>) -> Result<crate::models::OrgDataSource, Error<OrgDataSourceCreateError>> {
+pub async fn org_data_source_create(configuration: &configuration::Configuration, new_org_data_source: crate::models::NewOrgDataSource) -> Result<crate::models::OrgDataSource, Error<OrgDataSourceCreateError>> {
 
     let local_var_client = &configuration.client;
 
@@ -825,7 +825,7 @@ pub async fn org_user_list_current(configuration: &configuration::Configuration,
 }
 
 /// Modifies individual properties of a single notebook
-pub async fn patch_notebook(configuration: &configuration::Configuration, id: &str, notebook_patch: Option<crate::models::NotebookPatch>) -> Result<(), Error<PatchNotebookError>> {
+pub async fn patch_notebook(configuration: &configuration::Configuration, id: &str, notebook_patch: crate::models::NotebookPatch) -> Result<(), Error<PatchNotebookError>> {
 
     let local_var_client = &configuration.client;
 
@@ -856,7 +856,7 @@ pub async fn patch_notebook(configuration: &configuration::Configuration, id: &s
 }
 
 /// Create a new notebook
-pub async fn pinned_notebook_create(configuration: &configuration::Configuration, new_pinned_notebook: Option<crate::models::NewPinnedNotebook>) -> Result<(), Error<PinnedNotebookCreateError>> {
+pub async fn pinned_notebook_create(configuration: &configuration::Configuration, new_pinned_notebook: crate::models::NewPinnedNotebook) -> Result<(), Error<PinnedNotebookCreateError>> {
 
     let local_var_client = &configuration.client;
 
@@ -946,7 +946,7 @@ pub async fn pinned_notebook_list(configuration: &configuration::Configuration, 
 }
 
 /// Create a new proxy
-pub async fn proxy_create(configuration: &configuration::Configuration, new_proxy: Option<crate::models::NewProxy>) -> Result<crate::models::Proxy, Error<ProxyCreateError>> {
+pub async fn proxy_create(configuration: &configuration::Configuration, new_proxy: crate::models::NewProxy) -> Result<crate::models::Proxy, Error<ProxyCreateError>> {
 
     let local_var_client = &configuration.client;
 

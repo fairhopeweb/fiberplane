@@ -384,7 +384,7 @@ Append the given cells to the notebook
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
 **id** | **String** | ID of the notebook | [required] |
-**cell** | Option<[**Vec<crate::models::Cell>**](cell.md)> | Cells to append |  |
+**cell** | [**Vec<crate::models::Cell>**](cell.md) | Cells to append | [required] |
 
 ### Return type
 
@@ -414,7 +414,7 @@ Create a new notebook
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**new_notebook** | Option<[**NewNotebook**](NewNotebook.md)> | new notebook |  |
+**new_notebook** | [**NewNotebook**](NewNotebook.md) | new notebook | [required] |
 
 ### Return type
 
@@ -502,7 +502,7 @@ Create an organization data-source
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**new_org_data_source** | Option<[**NewOrgDataSource**](NewOrgDataSource.md)> | new data-source |  |
+**new_org_data_source** | [**NewOrgDataSource**](NewOrgDataSource.md) | new data-source | [required] |
 
 ### Return type
 
@@ -560,7 +560,7 @@ Modifies individual properties of a single notebook
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
 **id** | **String** | ID of the notebook | [required] |
-**notebook_patch** | Option<[**NotebookPatch**](NotebookPatch.md)> | updated properties |  |
+**notebook_patch** | [**NotebookPatch**](NotebookPatch.md) | updated properties | [required] |
 
 ### Return type
 
@@ -590,7 +590,7 @@ Create a new notebook
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**new_pinned_notebook** | Option<[**NewPinnedNotebook**](NewPinnedNotebook.md)> | new notebook |  |
+**new_pinned_notebook** | [**NewPinnedNotebook**](NewPinnedNotebook.md) | new notebook | [required] |
 
 ### Return type
 
@@ -675,7 +675,7 @@ Create a new proxy
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**new_proxy** | Option<[**NewProxy**](NewProxy.md)> | new proxy |  |
+**new_proxy** | [**NewProxy**](NewProxy.md) | new proxy | [required] |
 
 ### Return type
 

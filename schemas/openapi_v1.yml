@@ -1356,6 +1356,7 @@ paths:
       description: "Create a new notebook"
       requestBody:
         description: new notebook
+        required: true
         content:
           application/json:
             schema:
@@ -1395,6 +1396,7 @@ paths:
       description: "Modifies individual properties of a single notebook"
       requestBody:
         description: updated properties
+        required: true
         content:
           application/json:
             schema:
@@ -1433,6 +1435,7 @@ paths:
       description: Append the given cells to the notebook
       requestBody:
         description: Cells to append
+        required: true
         content:
           application/json:
             schema:
@@ -1454,6 +1457,7 @@ paths:
       description: "Create an organization data-source"
       requestBody:
         description: new data-source
+        required: true
         content:
           application/json:
             schema:
@@ -1478,6 +1482,7 @@ paths:
       description: "upload a file"
       requestBody:
         description: a file
+        required: true
         content:
           multipart/form-data:
             schema:
@@ -1552,6 +1557,7 @@ paths:
       description: "Upload profile image"
       requestBody:
         description: a file
+        required: true
         content:
           multipart/form-data:
             schema:
@@ -1577,6 +1583,7 @@ paths:
       description: "Create a new notebook"
       requestBody:
         description: new notebook
+        required: true
         content:
           application/json:
             schema:
@@ -1615,6 +1622,7 @@ paths:
       description: "Create a new proxy"
       requestBody:
         description: new proxy
+        required: true
         content:
           application/json:
             schema:
