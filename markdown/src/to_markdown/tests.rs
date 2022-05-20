@@ -59,6 +59,25 @@ fn formatted_text() {
 }
 
 #[test]
+fn text_cells() {
+    let mut converter = NotebookConverter::new();
+    converter.convert_cells(
+        "notebook-id",
+        [
+            Cell::Text(TextCell {
+                content: "Some text".to_string(),
+                ..Default::default()
+            }),
+            Cell::Text(TextCell {
+                content: "Some more text".to_string(),
+                ..Default::default()
+            }),
+        ],
+    );
+    assert_eq!(converter.into_markdown(), "Some text\n\nSome more text");
+}
+
+#[test]
 fn mentions() {
     let mut converter = NotebookConverter::new();
     converter.convert_formatted_text(
@@ -126,6 +145,36 @@ fn inline_code() {
         ]),
     );
     assert_eq!(converter.into_markdown(), "Some `code` here");
+}
+
+#[test]
+fn code_blocks() {
+    let mut converter = NotebookConverter::new();
+    converter.convert_cells(
+        "notebook-id",
+        [
+            Cell::Code(CodeCell {
+                content: "Some code".to_string(),
+                ..Default::default()
+            }),
+            Cell::Code(CodeCell {
+                content: "Some more code\non multiple lines".to_string(),
+                ..Default::default()
+            }),
+        ],
+    );
+    assert_eq!(
+        converter.into_markdown(),
+        "
+```
+Some code
+```
+
+```
+Some more code
+on multiple lines
+```"
+    );
 }
 
 #[test]
@@ -344,9 +393,80 @@ fn nested_unordered_lists() {
     assert_eq!(
         converter.into_markdown(),
         "\
-* one
-  * one-one
-  * one-two
-* two"
+- one
+  - one-one
+  - one-two
+- two"
+    );
+}
+
+#[test]
+fn checkboxes() {
+    let mut converter = NotebookConverter::new();
+    converter.convert_cells(
+        "notebook-id",
+        [
+            Cell::Checkbox(CheckboxCell {
+                content: "one".to_string(),
+                checked: true,
+                ..Default::default()
+            }),
+            Cell::Checkbox(CheckboxCell {
+                content: "two".to_string(),
+                checked: false,
+                ..Default::default()
+            }),
+        ],
+    );
+    let markdown = converter.into_markdown();
+    assert_eq!(markdown, "- [x] one\n- [ ] two\n");
+}
+
+#[test]
+fn text_cells_after_lists() {
+    let mut converter = NotebookConverter::new();
+    converter.convert_cells(
+        "notebook_id",
+        [
+            Cell::ListItem(ListItemCell {
+                content: "one".to_string(),
+                list_type: ListType::Ordered,
+                ..Default::default()
+            }),
+            Cell::ListItem(ListItemCell {
+                content: "two".to_string(),
+                list_type: ListType::Ordered,
+                ..Default::default()
+            }),
+            Cell::Text(TextCell {
+                content: "three".to_string(),
+                ..Default::default()
+            }),
+            Cell::Checkbox(CheckboxCell {
+                content: "four".to_string(),
+                ..Default::default()
+            }),
+            Cell::Checkbox(CheckboxCell {
+                content: "five".to_string(),
+                ..Default::default()
+            }),
+            Cell::Text(TextCell {
+                content: "six".to_string(),
+                ..Default::default()
+            }),
+        ],
+    );
+    assert_eq!(
+        converter.into_markdown(),
+        "\
+1. one
+1. two
+
+three
+
+- [ ] four
+- [ ] five
+
+six"
     );
 }

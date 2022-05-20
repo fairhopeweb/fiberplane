@@ -115,11 +115,24 @@ fn parsing_rich_text() {
 
 #[test]
 fn parsing_code_blocks() {
-    let cell = markdown_to_cells("```\ncode\non multiple lines\n```")
-        .pop()
-        .unwrap();
-    assert_eq!(cell.content(), Some("code\non multiple lines"));
-    assert!(matches!(cell, Cell::Code(_)));
+    let cells = markdown_to_cells(
+        "
+```
+Some code
+```
+
+```
+Some more code
+on multiple lines
+```",
+    );
+    assert_eq!(cells[0].content(), Some("Some code"));
+    assert!(matches!(cells[0], Cell::Code(_)));
+    assert_eq!(
+        cells[1].content(),
+        Some("Some more code\non multiple lines")
+    );
+    assert!(matches!(cells[1], Cell::Code(_)));
 }
 
 #[test_case("[*link*](url)"; "formatting in text")]

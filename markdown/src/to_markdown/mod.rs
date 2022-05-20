@@ -2,7 +2,7 @@ use fiberplane::protocols::core::{Cell, HeadingType, ListItemCell, ListType, Not
 use fiberplane::protocols::formatting::{Annotation, AnnotationWithOffset, Formatting};
 use pulldown_cmark::Event::{self, *};
 use pulldown_cmark::{CodeBlockKind, CowStr, HeadingLevel, LinkType, Tag};
-use pulldown_cmark_to_cmark::cmark;
+use pulldown_cmark_to_cmark::{cmark_with_options, Options};
 use std::cmp::Ordering;
 use tracing::warn;
 use url::Url;
@@ -77,10 +77,24 @@ impl<'a> NotebookConverter<'a> {
         while let Some(cell) = cells.next() {
             match cell {
                 Cell::Checkbox(cell) => {
-                    self.events.push(Start(Tag::Item));
-                    self.events.push(TaskListMarker(cell.checked));
-                    self.convert_formatted_text(cell.content, cell.formatting);
-                    self.events.push(End(Tag::Item));
+                    // Gather all of the adjacent checkbox cells into a list
+                    // (If we don't start the list, the Tag::Item is ignored)
+                    let mut checkbox_cells = vec![cell];
+                    while let Some(Cell::Checkbox(cell)) =
+                        cells.next_if(|c| matches!(c, Cell::Checkbox(_)))
+                    {
+                        checkbox_cells.push(cell);
+                    }
+                    for cell in checkbox_cells {
+                        self.events.push(Start(Tag::List(None)));
+                        self.events.push(Start(Tag::Item));
+                        self.events.push(TaskListMarker(cell.checked));
+                        self.convert_formatted_text(cell.content, cell.formatting);
+                        self.events.push(End(Tag::Item));
+                    }
+                    self.events.push(End(Tag::List(None)));
+                    // We add a newline here to ensure that the next cell is rendered on a new line
+                    self.events.push(SoftBreak);
                 }
                 Cell::Code(cell) => self.convert_code_block(cell.content),
                 Cell::Divider(_) => self.events.push(Rule),
@@ -121,30 +135,34 @@ impl<'a> NotebookConverter<'a> {
                     // Now, handle all of the other items in the list
                     // Note: we only support lists where all of the list item cells are adjacent to
                     // one another (there cannot be any other type of cell mixed into the list)
-                    while let Some(Cell::ListItem(_)) = cells.peek() {
-                        if let Some(Cell::ListItem(cell)) = cells.next() {
-                            let cell_level = cell.level.unwrap_or_default();
+                    while let Some(Cell::ListItem(cell)) =
+                        cells.next_if(|c| matches!(c, Cell::ListItem(_)))
+                    {
+                        let cell_level = cell.level.unwrap_or_default();
 
-                            // Depending on the cell's level, determine whether to start a nested list
-                            // or close previously started items
-                            match cell_level.cmp(&self.list_level) {
-                                Ordering::Greater => self.start_new_list(&cell),
-                                Ordering::Less => self.end_lists_to_level(cell_level),
-                                Ordering::Equal => {
-                                    // Close the previous item (because this is another item at the same level)
-                                    self.events.push(End(Tag::Item));
-                                }
+                        // Depending on the cell's level, determine whether to start a nested list
+                        // or close previously started items
+                        match cell_level.cmp(&self.list_level) {
+                            Ordering::Greater => self.start_new_list(&cell),
+                            Ordering::Less => self.end_lists_to_level(cell_level),
+                            Ordering::Equal => {
+                                // Close the previous item (because this is another item at the same level)
+                                self.events.push(End(Tag::Item));
                             }
-
-                            self.add_list_item(cell);
                         }
+
+                        self.add_list_item(cell);
                     }
 
                     self.end_all_lists();
                 }
                 Cell::Loki(cell) => self.convert_code_block(cell.content),
                 Cell::Prometheus(cell) => self.convert_code_block(cell.content),
-                Cell::Text(cell) => self.convert_formatted_text(cell.content, cell.formatting),
+                Cell::Text(cell) => {
+                    self.events.push(Start(Tag::Paragraph));
+                    self.convert_formatted_text(cell.content, cell.formatting);
+                    self.events.push(End(Tag::Paragraph));
+                }
                 Cell::Graph(_) => warn!("Ignoring Graph cell because they are not yet supported"),
                 Cell::Log(_) => warn!("Ignoring Log cell because they are not yet supported"),
                 Cell::Table(_) => warn!("Ignoring Table cell because they are not yet supported"),
@@ -154,7 +172,16 @@ impl<'a> NotebookConverter<'a> {
 
     fn into_markdown(self) -> String {
         let mut markdown = String::new();
-        cmark(self.events.into_iter(), &mut markdown).unwrap();
+        cmark_with_options(
+            self.events.into_iter(),
+            &mut markdown,
+            Options {
+                code_block_token_count: 3,
+                list_token: '-',
+                ..Default::default()
+            },
+        )
+        .unwrap();
         markdown
     }
 
@@ -317,7 +344,9 @@ impl<'a> NotebookConverter<'a> {
     fn convert_code_block(&mut self, content: String) {
         let tag = Tag::CodeBlock(CodeBlockKind::Fenced("".into()));
         self.events.push(Start(tag.clone()));
-        self.events.push(Text(content.into()));
+        self.text(content);
+        // We add a newline here to ensure that the code block ending is on its own line
+        self.events.push(SoftBreak);
         self.events.push(End(tag.clone()));
     }
 
