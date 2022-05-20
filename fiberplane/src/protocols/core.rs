@@ -510,21 +510,71 @@ impl Cell {
         }
     }
 
-    pub fn set_id(&mut self, id: String) {
+    pub fn id_mut(&mut self) -> &mut String {
         match self {
-            Cell::Checkbox(cell) => cell.id = id,
-            Cell::Code(cell) => cell.id = id,
-            Cell::Graph(cell) => cell.id = id,
-            Cell::Heading(cell) => cell.id = id,
-            Cell::ListItem(cell) => cell.id = id,
-            Cell::Log(cell) => cell.id = id,
-            Cell::Prometheus(cell) => cell.id = id,
-            Cell::Elasticsearch(cell) => cell.id = id,
-            Cell::Loki(cell) => cell.id = id,
-            Cell::Table(cell) => cell.id = id,
-            Cell::Text(cell) => cell.id = id,
-            Cell::Image(cell) => cell.id = id,
-            Cell::Divider(cell) => cell.id = id,
+            Cell::Checkbox(cell) => &mut cell.id,
+            Cell::Code(cell) => &mut cell.id,
+            Cell::Graph(cell) => &mut cell.id,
+            Cell::Heading(cell) => &mut cell.id,
+            Cell::ListItem(cell) => &mut cell.id,
+            Cell::Log(cell) => &mut cell.id,
+            Cell::Prometheus(cell) => &mut cell.id,
+            Cell::Elasticsearch(cell) => &mut cell.id,
+            Cell::Loki(cell) => &mut cell.id,
+            Cell::Table(cell) => &mut cell.id,
+            Cell::Text(cell) => &mut cell.id,
+            Cell::Image(cell) => &mut cell.id,
+            Cell::Divider(cell) => &mut cell.id,
+        }
+    }
+
+    pub fn content_mut(&mut self) -> Option<&mut String> {
+        match self {
+            Cell::Graph(cell) => Some(&mut cell.title),
+            Cell::Log(cell) => Some(&mut cell.title),
+            Cell::Table(cell) => Some(&mut cell.title),
+            Cell::Checkbox(cell) => Some(&mut cell.content),
+            Cell::Code(cell) => Some(&mut cell.content),
+            Cell::Heading(cell) => Some(&mut cell.content),
+            Cell::ListItem(cell) => Some(&mut cell.content),
+            Cell::Prometheus(cell) => Some(&mut cell.content),
+            Cell::Elasticsearch(cell) => Some(&mut cell.content),
+            Cell::Loki(cell) => Some(&mut cell.content),
+            Cell::Text(cell) => Some(&mut cell.content),
+            Cell::Image(_) | Cell::Divider(_) => None,
+        }
+    }
+
+    /// Returns a mutable reference to the formatting array if the cell type supports formatting.
+    ///
+    /// If the cell type supports formatting but the cell does not have any, this method
+    /// will initialize the formatting as an empty array.
+    pub fn formatting_mut(&mut self) -> Option<&mut Formatting> {
+        let formatting = match self {
+            Cell::Checkbox(cell) => Some(&mut cell.formatting),
+            Cell::Graph(cell) => Some(&mut cell.formatting),
+            Cell::Heading(cell) => Some(&mut cell.formatting),
+            Cell::ListItem(cell) => Some(&mut cell.formatting),
+            Cell::Log(cell) => Some(&mut cell.formatting),
+            Cell::Table(cell) => Some(&mut cell.formatting),
+            Cell::Text(cell) => Some(&mut cell.formatting),
+            Cell::Code(_)
+            | Cell::Prometheus(_)
+            | Cell::Elasticsearch(_)
+            | Cell::Loki(_)
+            | Cell::Image(_)
+            | Cell::Divider(_) => None,
+        };
+
+        // Turn the Option<&mut Option<Formatting>> into a Option<&mut Formatting>
+        // and initialize the formatting array if necessary
+        match formatting {
+            Some(Some(formatting)) => Some(formatting),
+            Some(formatting @ None) => {
+                *formatting = Some(vec![]);
+                formatting.as_mut()
+            }
+            None => None,
         }
     }
 }
@@ -588,7 +638,7 @@ pub struct GraphCell {
     pub data: Option<BTreeMap<String, Vec<Series<f64>>>>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(rename_all = "camelCase")]
 pub struct HeadingCell {
@@ -622,7 +672,7 @@ pub struct LogCell {
     pub time_range: Option<TimeRange>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(rename_all = "camelCase")]
 pub struct ListItemCell {
@@ -767,12 +817,24 @@ pub enum HeadingType {
     H3,
 }
 
+impl Default for HeadingType {
+    fn default() -> Self {
+        HeadingType::H1
+    }
+}
+
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(rename_all = "snake_case")]
 pub enum ListType {
     Ordered,
     Unordered,
+}
+
+impl Default for ListType {
+    fn default() -> Self {
+        ListType::Unordered
+    }
 }
 
 /// A range in time from a given timestamp (inclusive) up to another timestamp (exclusive).

@@ -1,0 +1,15 @@
+[package]
+name = "fiberplane-markdown"
+description = "Utilities to convert Fiberplane Notebooks to and from Markdown"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+fiberplane = { path = "../fiberplane" }
+pulldown-cmark = "0.9.1"
+pulldown-cmark-to-cmark = "10.0.1"
+tracing = "0.1.34"
+url = "2.2.2"
+
+[dev-dependencies]
+test-case = "2.0.2"

@@ -3,5 +3,6 @@ members = [
     "api_client",
     "base64uuid",
     "fiberplane",
+    "markdown",
     "time_util",
 ]
