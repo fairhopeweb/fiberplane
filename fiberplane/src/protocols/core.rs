@@ -149,19 +149,37 @@ impl Cell {
     /// Returns the cell's formatting, if any.
     pub fn formatting(&self) -> Option<&Formatting> {
         match self {
+            Cell::Code(_)
+            | Cell::Divider(_)
+            | Cell::Elasticsearch(_)
+            | Cell::Image(_)
+            | Cell::Loki(_)
+            | Cell::Prometheus(_) => None,
             Cell::Checkbox(cell) => cell.formatting.as_ref(),
-            Cell::Code(_) => None,
-            Cell::Divider(_) => None,
-            Cell::Elasticsearch(_) => None,
             Cell::Graph(cell) => cell.formatting.as_ref(),
             Cell::Heading(cell) => cell.formatting.as_ref(),
-            Cell::Image(_) => None,
             Cell::ListItem(cell) => cell.formatting.as_ref(),
             Cell::Log(cell) => cell.formatting.as_ref(),
-            Cell::Loki(_) => None,
-            Cell::Prometheus(_) => None,
             Cell::Table(cell) => cell.formatting.as_ref(),
             Cell::Text(cell) => cell.formatting.as_ref(),
+        }
+    }
+
+    pub fn supports_formatting(&self) -> bool {
+        match self {
+            Cell::Code(_)
+            | Cell::Divider(_)
+            | Cell::Elasticsearch(_)
+            | Cell::Image(_)
+            | Cell::Loki(_)
+            | Cell::Prometheus(_) => false,
+            Cell::Checkbox(_)
+            | Cell::Graph(_)
+            | Cell::Heading(_)
+            | Cell::ListItem(_)
+            | Cell::Log(_)
+            | Cell::Table(_)
+            | Cell::Text(_) => true,
         }
     }
 

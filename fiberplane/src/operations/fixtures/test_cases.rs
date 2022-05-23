@@ -792,6 +792,29 @@ fn create_update_cell_test_cases(test_cases: &mut Vec<OperationTestCase>) {
             cells[2] = updated_cell4.clone();
         }),
     });
+
+    let updated_cell5: Cell = Cell::Log(LogCell {
+        id: "c11".to_owned(),
+        formatting: None,
+        title: "Logs".to_owned(),
+        source_ids: vec!["c10".to_owned()],
+        data: None,
+        read_only: Some(true),
+        time_range: Some(TimeRange {
+            from: 50.0,
+            to: 150.0,
+        }),
+    });
+
+    test_cases.push(OperationTestCase {
+        operation: Operation::UpdateCell(UpdateCellOperation {
+            old_cell: Box::new(TEST_NOTEBOOK.cells[10].clone()),
+            updated_cell: Box::new(updated_cell5.clone()),
+        }),
+        expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
+            cells[10] = updated_cell5.clone();
+        }),
+    })
 }
 
 fn create_update_notebook_time_range_test_cases(test_cases: &mut Vec<OperationTestCase>) {

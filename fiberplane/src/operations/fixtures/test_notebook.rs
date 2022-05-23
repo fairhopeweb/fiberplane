@@ -156,6 +156,23 @@ pub static TEST_NOTEBOOK: Lazy<Notebook> = Lazy::new(|| {
                 }),
             }
         }),
+        Cell::Elasticsearch(ElasticsearchCell {
+            id: "c10".to_owned(),
+            content: "kubernetes.labels.app:api".to_owned(),
+            read_only: None,
+        }),
+        Cell::Log(LogCell {
+            id: "c11".to_owned(),
+            formatting: None,
+            title: "Logs".to_owned(),
+            source_ids: vec!["c10".to_owned()],
+            data: None,
+            read_only: None,
+            time_range: Some(TimeRange {
+                from: 50.0,
+                to: 150.0,
+            }),
+        }),
     ];
 
     let mut data_sources = BTreeMap::new();
