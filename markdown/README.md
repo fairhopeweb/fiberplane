@@ -5,6 +5,7 @@
 
 ### Markdown to Notebook
 
+- Images
 - Block quotes (uses text cells instead)
 - Headings level 4-6
 - Tables
@@ -12,6 +13,7 @@
 
 ### Notebook to Markdown
 
+- Images
 - Code-formatting or highlighted text that *also* as other formatting applied (e.g. bold inside inline code)
 - Underlined text (uses italics instead)
 - Graphs

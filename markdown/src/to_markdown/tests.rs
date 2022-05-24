@@ -124,6 +124,7 @@ fn images() {
                 url: Some("http://example.com/image.png".to_string()),
                 ..Default::default()
             }),
+            // This one is ignored because it has no URL
             Cell::Image(ImageCell {
                 file_id: Some("file_id".to_string()),
                 ..Default::default()
@@ -131,7 +132,7 @@ fn images() {
         ],
     );
     let markdown = converter.into_markdown();
-    assert_eq!(markdown, "![](http://example.com/image.png)\n\n![](https://fiberplane.com/api/files/notebook_id/file_id)");
+    assert_eq!(markdown, "![](http://example.com/image.png)");
 }
 
 #[test]

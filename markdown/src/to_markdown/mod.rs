@@ -5,7 +5,6 @@ use pulldown_cmark::{CodeBlockKind, CowStr, HeadingLevel, LinkType, Tag};
 use pulldown_cmark_to_cmark::{cmark_with_options, Options};
 use std::cmp::Ordering;
 use tracing::warn;
-use url::Url;
 
 #[cfg(test)]
 mod tests;
@@ -15,15 +14,6 @@ pub fn notebook_to_markdown(notebook: Notebook) -> String {
     NotebookConverter::new().convert_to_markdown(notebook)
 }
 
-/// Convert the notebook to Markdown
-///
-/// The base URL is used to convert Image File IDs to URLs.
-pub fn notebook_to_markdown_with_base_url(notebook: Notebook, base_url: Url) -> String {
-    let mut converter = NotebookConverter::new();
-    converter.set_base_url(base_url);
-    converter.convert_to_markdown(notebook)
-}
-
 /// Convert the cells to Markdown
 pub fn cells_to_markdown(cells: impl IntoIterator<Item = Cell>) -> String {
     let mut converter = NotebookConverter::new();
@@ -31,22 +21,8 @@ pub fn cells_to_markdown(cells: impl IntoIterator<Item = Cell>) -> String {
     converter.into_markdown()
 }
 
-/// Convert the cells to Markdown
-///
-/// The base URL is used to convert Image File IDs to URLs.
-pub fn cells_to_markdown_with_base_url(
-    cells: impl IntoIterator<Item = Cell>,
-    base_url: Url,
-) -> String {
-    let mut converter = NotebookConverter::new();
-    converter.set_base_url(base_url);
-    converter.convert_cells("notebook_id", cells);
-    converter.into_markdown()
-}
-
 struct NotebookConverter<'a> {
     events: Vec<Event<'a>>,
-    base_url: Url,
     /// This is a stack of list-related tags that will need to be closed
     list_tag_stack: Vec<(u8, Tag<'a>)>,
     list_level: u8,
@@ -56,14 +32,9 @@ impl<'a> NotebookConverter<'a> {
     fn new() -> Self {
         NotebookConverter {
             events: Vec::new(),
-            base_url: Url::parse("https://fiberplane.com").unwrap(),
             list_tag_stack: Vec::new(),
             list_level: 0,
         }
-    }
-
-    fn set_base_url(&mut self, base_url: Url) {
-        self.base_url = base_url;
     }
 
     fn convert_to_markdown(mut self, notebook: Notebook) -> String {
@@ -112,21 +83,14 @@ impl<'a> NotebookConverter<'a> {
                 }
                 Cell::Image(cell) => {
                     let url = if let Some(url) = cell.url {
-                        url
-                    } else if let Some(file_id) = cell.file_id {
-                        self.base_url
-                            .join(&format!("/api/files/{}/{}", notebook_id, file_id))
-                            .unwrap()
-                            .to_string()
+                        let tag = Tag::Image(LinkType::Inline, url.into(), "".into());
+                        self.events.push(Start(Tag::Paragraph));
+                        self.events.push(Start(tag.clone()));
+                        self.events.push(End(tag));
+                        self.events.push(End(Tag::Paragraph));
                     } else {
-                        warn!("Ignoring image cell that has no URL or file ID");
-                        continue;
+                        warn!("Ignoring image cell that has no URL: {:?}", cell);
                     };
-                    let tag = Tag::Image(LinkType::Inline, url.into(), "".into());
-                    self.events.push(Start(Tag::Paragraph));
-                    self.events.push(Start(tag.clone()));
-                    self.events.push(End(tag));
-                    self.events.push(End(Tag::Paragraph));
                 }
                 Cell::ListItem(cell) => {
                     self.start_new_list(&cell);
