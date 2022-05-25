@@ -465,10 +465,12 @@ pub struct FocusPosition {
     /// Note that fields do not necessarily have to be text fields. For example,
     /// we could also use this to indicate the user has focused a button for
     /// graph navigation.
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub field: Option<String>,
 
     /// Offset within the text field.
     /// May be `None` if the focus is not inside a text field.
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub offset: Option<u32>,
 }
 
@@ -499,6 +501,14 @@ impl NotebookFocus {
         }
     }
 
+    pub fn anchor_field(&self) -> Option<&str> {
+        match self {
+            Self::None => None,
+            Self::Collapsed(collapsed) => collapsed.field.as_deref(),
+            Self::Selection { anchor, .. } => anchor.field.as_deref(),
+        }
+    }
+
     pub fn anchor_offset(&self) -> u32 {
         match self {
             Self::None => 0,
@@ -507,6 +517,7 @@ impl NotebookFocus {
         }
     }
 
+    // FIXME FP-625: This still assumes the selection can only be a single cell.
     pub fn end_offset(&self) -> u32 {
         match self {
             Self::None => 0,
@@ -523,6 +534,14 @@ impl NotebookFocus {
             Self::None => None,
             Self::Collapsed(collapsed) => Some(&collapsed.cell_id),
             Self::Selection { focus, .. } => Some(&focus.cell_id),
+        }
+    }
+
+    pub fn focus_field(&self) -> Option<&str> {
+        match self {
+            Self::None => None,
+            Self::Collapsed(collapsed) => collapsed.field.as_deref(),
+            Self::Selection { focus, .. } => focus.field.as_deref(),
         }
     }
 
@@ -551,6 +570,7 @@ impl NotebookFocus {
         matches!(self, Self::None)
     }
 
+    // FIXME FP-625: This still assumes the selection can only be a single cell.
     pub fn start_offset(&self) -> u32 {
         match self {
             Self::None => 0,
