@@ -7,6 +7,7 @@ docs/AnnotationType.md
 docs/ArrayTemplateParameter.md
 docs/BooleanTemplateParameter.md
 docs/Cell.md
+docs/CellAppendText.md
 docs/CellType.md
 docs/CheckboxCell.md
 docs/CodeCell.md
@@ -98,6 +99,7 @@ src/models/annotation_type.rs
 src/models/array_template_parameter.rs
 src/models/boolean_template_parameter.rs
 src/models/cell.rs
+src/models/cell_append_text.rs
 src/models/cell_type.rs
 src/models/checkbox_cell.rs
 src/models/code_cell.rs

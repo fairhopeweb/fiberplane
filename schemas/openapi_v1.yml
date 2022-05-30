@@ -389,6 +389,15 @@ components:
           format: int32
         preview:
           type: string
+    cellAppendText:
+      type: object
+      required:
+        - content
+      properties:
+        content:
+          type: string
+        formatting:
+          $ref: "#/components/schemas/formatting"
     notebook:
       type: object
       required:
@@ -1451,6 +1460,37 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/cell"
+  /api/notebooks/{notebookId}/cells/{cellId}/append:
+    parameters:
+      - name: notebookId
+        in: path
+        description: ID of the notebook
+        required: true
+        schema:
+          type: string
+      - name: cellId
+        in: path
+        description: ID of the notebook cell
+        required: true
+        schema:
+          type: string
+    post:
+      operationId: notebook_cell_append_text
+      description: Append the given text and optional formatting to the specified cell
+      requestBody:
+        description: Content and optional formatting to append
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/cellAppendText"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/cell"
   /api/datasources:
     post:
       operationId: org_data_source_create

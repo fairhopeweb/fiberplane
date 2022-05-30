@@ -8,6 +8,8 @@ pub mod boolean_template_parameter;
 pub use self::boolean_template_parameter::BooleanTemplateParameter;
 pub mod cell;
 pub use self::cell::Cell;
+pub mod cell_append_text;
+pub use self::cell_append_text::CellAppendText;
 pub mod cell_type;
 pub use self::cell_type::CellType;
 pub mod checkbox_cell;
