@@ -19,6 +19,7 @@ Method | HTTP request | Description
 [**notebook_cells_append**](DefaultApi.md#notebook_cells_append) | **POST** /api/notebooks/{id}/cells | 
 [**notebook_create**](DefaultApi.md#notebook_create) | **POST** /api/notebooks | 
 [**notebook_list**](DefaultApi.md#notebook_list) | **GET** /api/notebooks | 
+[**notebook_search**](DefaultApi.md#notebook_search) | **POST** /api/search/notebooks | 
 [**oidc_authorize_google**](DefaultApi.md#oidc_authorize_google) | **GET** /api/oidc/authorize/google | 
 [**org_data_source_create**](DefaultApi.md#org_data_source_create) | **POST** /api/datasources | 
 [**org_user_list_current**](DefaultApi.md#org_user_list_current) | **GET** /api/organizations/current/users | 
@@ -487,6 +488,36 @@ This endpoint does not need any parameter.
 ### HTTP request headers
 
 - **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## notebook_search
+
+> Vec<crate::models::NotebookSummary> notebook_search(notebook_search)
+
+
+Search for notebooks
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**notebook_search** | [**NotebookSearch**](NotebookSearch.md) | Notebook search payload | [required] |
+
+### Return type
+
+[**Vec<crate::models::NotebookSummary>**](notebookSummary.md)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
 - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)

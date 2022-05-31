@@ -1342,6 +1342,20 @@ components:
           type: string
         value:
           type: string
+    notebookSearch:
+      properties:
+        labels:
+          description: |
+            Search notebooks based on labels. You can search for an exact label
+            match by supplying both an key and a value. You can also search for
+            all labels that have a specific key by passing passing a key with a
+            null value or a empty string value. The notebook's labels needs to
+            match _every_ label search that is provided.
+          type: object
+          nullable: true
+          additionalProperties:
+            type: string
+            nullable: true # this does not seem to have any effect on the generated rust client
 # Most routes require authentication. The ones
 # that do not will specify "security: []"
 security:
@@ -2027,3 +2041,23 @@ paths:
                 type: array
                 items:
                   type: string
+  /api/search/notebooks:
+    post:
+      operationId: notebook_search
+      description: Search for notebooks
+      requestBody:
+        required: true
+        description: Notebook search payload
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/notebookSearch"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/notebookSummary"

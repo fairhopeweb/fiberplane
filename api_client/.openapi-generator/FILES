@@ -52,6 +52,7 @@ docs/NewTrigger.md
 docs/Notebook.md
 docs/NotebookDataSource.md
 docs/NotebookPatch.md
+docs/NotebookSearch.md
 docs/NotebookSummary.md
 docs/NotebookVisibility.md
 docs/NumberTemplateParameter.md
@@ -144,6 +145,7 @@ src/models/new_trigger.rs
 src/models/notebook.rs
 src/models/notebook_data_source.rs
 src/models/notebook_patch.rs
+src/models/notebook_search.rs
 src/models/notebook_summary.rs
 src/models/notebook_visibility.rs
 src/models/number_template_parameter.rs

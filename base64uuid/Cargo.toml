@@ -6,7 +6,7 @@ edition = "2021"
 [dependencies]
 base64 = "0.13.0"
 serde = { version = "1.0.133", features = ["derive"] }
-uuid = { version = "0.8.2", features = ["v4"] }
+uuid = { version = "1", features = ["v4"] }
 thiserror = "1.0.30"
 
 [dev-dependencies]

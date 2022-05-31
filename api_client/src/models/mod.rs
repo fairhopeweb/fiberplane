@@ -96,6 +96,8 @@ pub mod notebook_data_source;
 pub use self::notebook_data_source::NotebookDataSource;
 pub mod notebook_patch;
 pub use self::notebook_patch::NotebookPatch;
+pub mod notebook_search;
+pub use self::notebook_search::NotebookSearch;
 pub mod notebook_summary;
 pub use self::notebook_summary::NotebookSummary;
 pub mod notebook_visibility;

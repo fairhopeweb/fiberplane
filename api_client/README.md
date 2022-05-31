@@ -39,6 +39,7 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**notebook_cells_append**](docs/DefaultApi.md#notebook_cells_append) | **POST** /api/notebooks/{id}/cells | 
 *DefaultApi* | [**notebook_create**](docs/DefaultApi.md#notebook_create) | **POST** /api/notebooks | 
 *DefaultApi* | [**notebook_list**](docs/DefaultApi.md#notebook_list) | **GET** /api/notebooks | 
+*DefaultApi* | [**notebook_search**](docs/DefaultApi.md#notebook_search) | **POST** /api/search/notebooks | 
 *DefaultApi* | [**oidc_authorize_google**](docs/DefaultApi.md#oidc_authorize_google) | **GET** /api/oidc/authorize/google | 
 *DefaultApi* | [**org_data_source_create**](docs/DefaultApi.md#org_data_source_create) | **POST** /api/datasources | 
 *DefaultApi* | [**org_user_list_current**](docs/DefaultApi.md#org_user_list_current) | **GET** /api/organizations/current/users | 
@@ -119,6 +120,7 @@ Class | Method | HTTP request | Description
  - [Notebook](docs/Notebook.md)
  - [NotebookDataSource](docs/NotebookDataSource.md)
  - [NotebookPatch](docs/NotebookPatch.md)
+ - [NotebookSearch](docs/NotebookSearch.md)
  - [NotebookSummary](docs/NotebookSummary.md)
  - [NotebookVisibility](docs/NotebookVisibility.md)
  - [NumberTemplateParameter](docs/NumberTemplateParameter.md)
