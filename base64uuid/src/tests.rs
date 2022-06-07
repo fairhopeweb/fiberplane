@@ -58,3 +58,14 @@ fn debug_format() {
     let debug = format!("{:?}", uuid);
     assert_eq!(&debug, "sMHuhm9GTxuNi3hJ51287g")
 }
+
+#[test]
+fn no_start_dash() {
+    // As the UUID is randomly generated, sample it 10'000 times to get a good sense if it works or not
+    for _ in 0..10000 {
+        let uuid = Base64Uuid::new();
+        let str = uuid.to_string();
+
+        assert!(!str.starts_with('-'), "Base64 UUID started with dash");
+    }
+}

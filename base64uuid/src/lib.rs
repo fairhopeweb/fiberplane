@@ -23,7 +23,12 @@ pub struct Base64Uuid(Uuid);
 impl Base64Uuid {
     pub fn new() -> Self {
         let uuid = Uuid::new_v4();
-        Base64Uuid(uuid)
+
+        // If the uuid starts with `-`, our cli will think it's an argument so just regenerate them in that case
+        match uuid.as_bytes().first() {
+            Some(248..=251) | None => Self::new(),
+            _ => Base64Uuid(uuid),
+        }
     }
 
     pub fn nil() -> Self {
