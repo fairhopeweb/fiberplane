@@ -1073,14 +1073,18 @@ Name | Type | Description  | Required | Notes
 
 ## template_list
 
-> Vec<crate::models::TemplateSummary> template_list()
+> Vec<crate::models::TemplateSummary> template_list(sort_by, sort_direction)
 
 
 List the templates that have been uploaded
 
 ### Parameters
 
-This endpoint does not need any parameter.
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**sort_by** | Option<**String**> | Sort the resulting list by the following field (defaults to title) |  |
+**sort_direction** | Option<**String**> | Sort the resulting list in the following direction (defaults to ascending) |  |
 
 ### Return type
 

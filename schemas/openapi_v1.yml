@@ -1356,6 +1356,17 @@ components:
           additionalProperties:
             type: string
             nullable: true # this does not seem to have any effect on the generated rust client
+  parameters:
+    sortDirection:
+      in: query
+      name: sort_direction
+      description: Sort the resulting list in the following direction (defaults to ascending)
+      schema:
+        type: string
+        enum:
+          - "ascending"
+          - "descending"
+      required: false
 # Most routes require authentication. The ones
 # that do not will specify "security: []"
 security:
@@ -1794,6 +1805,18 @@ paths:
     get:
       operationId: template_list
       description: List the templates that have been uploaded
+      parameters:
+        - in: query
+          name: sort_by
+          description: Sort the resulting list by the following field (defaults to title)
+          schema:
+            type: string
+            enum:
+              - "title"
+              - "created_at"
+              - "updated_at"
+          required: false
+        - $ref: "#/components/parameters/sortDirection"
       responses:
         "200":
           description: OK

@@ -13,18 +13,21 @@ crate-type = ["lib"]
 fixtures = []
 
 [dependencies]
-fp-bindgen = {version = "1.0.0", features = ["time-compat"]}
+clap = { version = "3.0.5" }
+fp-bindgen = { version = "1.0.0", features = ["time-compat"] }
 # fp-bindgen = { path = "../fp-bindgen/fp-bindgen", features = ["time-compat"] }
 lazy_static = "1.4"
 once_cell = "1.8"
 # Regular expressions are so-far only used for link recognization during Markdown parsing.
 # No special Unicode support is required for this, and pulling in the optimization crates
 # doesn't seem worth it, at least for FiberKit.
-regex = {version = "1.5", features = ["std"]}
-serde = {version = "1.0", features = ["derive"]}
+regex = { version = "1.5", features = ["std"] }
+serde = { version = "1.0", features = ["derive"] }
 thiserror = "1.0"
-time = {version = "0.3", features = ["serde-human-readable"]}
-time_util = {path = "../time_util"}
+time = { version = "0.3", features = ["serde-human-readable"] }
+time_util = { path = "../time_util" }
+strum = "0.24"
+strum_macros = "0.24"
 
 [dev-dependencies]
 pretty_assertions = "0.7"

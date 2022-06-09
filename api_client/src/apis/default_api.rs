@@ -1390,13 +1390,19 @@ pub async fn template_get(configuration: &configuration::Configuration, template
 }
 
 /// List the templates that have been uploaded
-pub async fn template_list(configuration: &configuration::Configuration, ) -> Result<Vec<crate::models::TemplateSummary>, Error<TemplateListError>> {
+pub async fn template_list(configuration: &configuration::Configuration, sort_by: Option<&str>, sort_direction: Option<&str>) -> Result<Vec<crate::models::TemplateSummary>, Error<TemplateListError>> {
 
     let local_var_client = &configuration.client;
 
     let local_var_uri_str = format!("{}/api/templates", configuration.base_path);
     let mut local_var_req_builder = local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
 
+    if let Some(ref local_var_str) = sort_by {
+        local_var_req_builder = local_var_req_builder.query(&[("sort_by", &local_var_str.to_string())]);
+    }
+    if let Some(ref local_var_str) = sort_direction {
+        local_var_req_builder = local_var_req_builder.query(&[("sort_direction", &local_var_str.to_string())]);
+    }
     if let Some(ref local_var_user_agent) = configuration.user_agent {
         local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
     }
