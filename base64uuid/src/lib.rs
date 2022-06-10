@@ -6,6 +6,8 @@ use std::str::FromStr;
 use thiserror::Error;
 use uuid::Uuid;
 
+pub mod serde_uuid;
+
 #[cfg(test)]
 mod tests;
 
