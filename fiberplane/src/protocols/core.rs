@@ -50,7 +50,7 @@ impl From<Notebook> for NewNotebook {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Serializable)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(rename_all = "snake_case")]
 pub enum UserType {
@@ -59,7 +59,7 @@ pub enum UserType {
     Organization,
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Serializable)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(rename_all = "camelCase")]
 pub struct CreatedBy {
@@ -68,7 +68,7 @@ pub struct CreatedBy {
     pub name: String,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Deserialize, Serialize, Serializable)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(rename_all = "snake_case")]
 pub enum NotebookVisibility {
@@ -597,7 +597,7 @@ impl Cell {
     }
 }
 
-#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(rename_all = "camelCase")]
 pub struct CheckboxCell {
@@ -613,7 +613,7 @@ pub struct CheckboxCell {
     pub read_only: Option<bool>,
 }
 
-#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(rename_all = "camelCase")]
 pub struct CodeCell {
@@ -626,7 +626,7 @@ pub struct CodeCell {
     pub syntax: Option<String>,
 }
 
-#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(rename_all = "camelCase")]
 pub struct DividerCell {
@@ -656,7 +656,7 @@ pub struct GraphCell {
     pub data: Option<BTreeMap<String, Vec<Series<f64>>>>,
 }
 
-#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(rename_all = "camelCase")]
 pub struct HeadingCell {
@@ -690,7 +690,7 @@ pub struct LogCell {
     pub time_range: Option<TimeRange>,
 }
 
-#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(rename_all = "camelCase")]
 pub struct ListItemCell {
@@ -708,7 +708,7 @@ pub struct ListItemCell {
     pub start_number: Option<u16>,
 }
 
-#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(rename_all = "camelCase")]
 pub struct PrometheusCell {
@@ -718,7 +718,7 @@ pub struct PrometheusCell {
     pub read_only: Option<bool>,
 }
 
-#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(rename_all = "camelCase")]
 pub struct ElasticsearchCell {
@@ -728,7 +728,7 @@ pub struct ElasticsearchCell {
     pub read_only: Option<bool>,
 }
 
-#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(rename_all = "camelCase")]
 pub struct LokiCell {
@@ -761,7 +761,7 @@ fn default_title() -> String {
     "".to_string()
 }
 
-#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(rename_all = "camelCase")]
 pub struct TextCell {
@@ -809,7 +809,7 @@ pub struct ImageCell {
     pub url: Option<String>,
 }
 
-#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(rename_all = "snake_case")]
 pub enum GraphType {
@@ -817,7 +817,7 @@ pub enum GraphType {
     Line,
 }
 
-#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(rename_all = "snake_case")]
 pub enum StackingType {
@@ -826,7 +826,7 @@ pub enum StackingType {
     Percentage,
 }
 
-#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(rename_all = "snake_case")]
 pub enum HeadingType {
@@ -841,7 +841,7 @@ impl Default for HeadingType {
     }
 }
 
-#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(rename_all = "snake_case")]
 pub enum ListType {
@@ -866,7 +866,7 @@ pub struct TimeRange {
 /// Timestamp specified in seconds since the UNIX epoch, with subsecond precision.
 pub type Timestamp = f64;
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 pub struct Metric {
     pub name: String,
@@ -880,7 +880,7 @@ pub struct Point<T> {
     pub value: T,
 }
 
-#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[deprecated(note = "see FP-676: https://linear.app/fiberplane/issue/FP-676/deprecate-point-type")]
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(rename_all = "snake_case")]
@@ -963,7 +963,7 @@ impl Series<f64> {
 
 /// NotebookDataSource represents the way a data-source can be embedded in a
 /// Notebook.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum NotebookDataSource {
@@ -977,7 +977,7 @@ pub enum NotebookDataSource {
 
 /// OrganizationDataSource represents a data-source as stored for a organization
 /// on the API.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(rename_all = "camelCase")]
 pub struct InlineDataSource {
@@ -987,7 +987,7 @@ pub struct InlineDataSource {
 
 /// OrganizationDataSource represents a data-source as stored for a organization
 /// on the API.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(rename_all = "camelCase")]
 pub struct OrganizationDataSource {
@@ -1008,7 +1008,7 @@ pub struct OrganizationDataSource {
 
 /// A data-source represents all the configuration for a specific component or
 /// service. It will be used by provider.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum DataSource {
@@ -1058,7 +1058,7 @@ impl From<&DataSourceType> for &'static str {
     }
 }
 
-#[derive(thiserror::Error, Debug, PartialEq)]
+#[derive(thiserror::Error, Debug, PartialEq, Eq)]
 #[error("Unexpected data source type: {0}")]
 pub struct UnexpectedDataSourceType(String);
 
@@ -1084,7 +1084,7 @@ impl Display for DataSourceType {
 /// A data-source for Prometheus. Currently only requires a url. This should be
 /// a full URL starting with http:// or https:// the domain, and optionally a
 /// port and a path.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(rename_all = "camelCase")]
 pub struct PrometheusDataSource {
@@ -1094,7 +1094,7 @@ pub struct PrometheusDataSource {
 /// A data-source for Elasticsearch. Currently only requires a url. This should be
 /// a full URL starting with http:// or https:// the domain, and optionally a
 /// port and a path.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(rename_all = "camelCase")]
 pub struct ElasticsearchDataSource {
@@ -1110,7 +1110,7 @@ pub struct ElasticsearchDataSource {
 /// A data-source for Loki. Currently only requires a url. This should be
 /// a full URL starting with http:// or https:// the domain, and optionally a
 /// port and a path.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(rename_all = "camelCase")]
 pub struct LokiDataSource {
@@ -1118,7 +1118,7 @@ pub struct LokiDataSource {
 }
 
 /// Relays requests for a data-source to a proxy server registered with the API.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(rename_all = "camelCase")]
 pub struct ProxyDataSource {
@@ -1133,7 +1133,7 @@ pub struct ProxyDataSource {
 }
 
 /// Labels that are associated with a Notebook.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(rename_all = "camelCase")]
 pub struct Label {
@@ -1229,7 +1229,7 @@ impl Label {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Serializable, Error)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq, Serializable, Error)]
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(rename_all = "snake_case")]
 pub enum LabelValidationError {

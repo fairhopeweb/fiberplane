@@ -34,7 +34,7 @@ pub struct InsertCellChange {
 }
 
 /// Specifies the cell with the given ID must be deleted.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::operations")]
 #[serde(rename_all = "camelCase")]
 pub struct DeleteCellChange {
@@ -42,7 +42,7 @@ pub struct DeleteCellChange {
 }
 
 /// Moves the cells with the given IDs to the given index.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::operations")]
 #[serde(rename_all = "camelCase")]
 pub struct MoveCellsChange {
@@ -68,7 +68,7 @@ pub struct UpdateCellChange {
 /// must be updated.
 ///
 /// Optionally updates the formatting as well.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::operations")]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateCellTextChange {
@@ -99,7 +99,7 @@ pub struct UpdateNotebookTimeRangeChange {
 }
 
 /// Specifies the title of the notebook must be updated.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::operations")]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateNotebookTitleChange {
@@ -107,7 +107,7 @@ pub struct UpdateNotebookTitleChange {
 }
 
 /// Specifies the given data-source must be created with the following name.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::operations")]
 #[serde(rename_all = "camelCase")]
 pub struct AddDataSourceChange {
@@ -116,7 +116,7 @@ pub struct AddDataSourceChange {
 }
 
 /// Specifies the data-source with the given name must be deleted.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::operations")]
 #[serde(rename_all = "camelCase")]
 pub struct DeleteDataSourceChange {
@@ -124,7 +124,7 @@ pub struct DeleteDataSourceChange {
 }
 
 /// Specifies the given data-source must be updated.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::operations")]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateDataSourceChange {
@@ -133,7 +133,7 @@ pub struct UpdateDataSourceChange {
 }
 
 /// Specifies the given label must be added.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::operations")]
 #[serde(rename_all = "camelCase")]
 pub struct AddLabelChange {
@@ -142,7 +142,7 @@ pub struct AddLabelChange {
 }
 
 /// Specifies the given label must be updated.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::operations")]
 #[serde(rename_all = "camelCase")]
 pub struct ReplaceLabelChange {
@@ -154,7 +154,7 @@ pub struct ReplaceLabelChange {
 }
 
 /// Specifies the given label must be removed.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::operations")]
 #[serde(rename_all = "camelCase")]
 pub struct RemoveLabelChange {

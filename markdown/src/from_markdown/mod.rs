@@ -131,7 +131,9 @@ impl<'a> MarkdownConverter<'a> {
                     };
 
                     append_formatting(cell, Annotation::StartCode);
-                    cell.content_mut().map(|c| c.push_str(&content));
+                    if let Some(c) = cell.content_mut() {
+                        c.push_str(&content)
+                    }
                     append_formatting(cell, Annotation::EndCode);
                 }
                 SoftBreak => {

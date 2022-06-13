@@ -9,6 +9,9 @@ use time::format_description::well_known::Rfc3339;
 use time::OffsetDateTime;
 
 /// Serialize an [`OffsetDateTime`] using the well-known RFC3339 format.
+#[deprecated(
+    note = "Use official time's serde-well-known feature: https://linear.app/fiberplane/issue/FP-1733/remove-time-util"
+)]
 pub fn serialize<S: Serializer>(
     datetime: &OffsetDateTime,
     serializer: S,
@@ -19,6 +22,9 @@ pub fn serialize<S: Serializer>(
         .serialize(serializer)
 }
 
+#[deprecated(
+    note = "Use official time's serde-well-known feature: https://linear.app/fiberplane/issue/FP-1733/remove-time-util"
+)]
 /// Deserialize an [`OffsetDateTime`] from its RFC3339 representation.
 pub fn deserialize<'a, D: Deserializer<'a>>(deserializer: D) -> Result<OffsetDateTime, D::Error> {
     OffsetDateTime::parse(<_>::deserialize(deserializer)?, &Rfc3339).map_err(D::Error::custom)

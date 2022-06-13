@@ -91,7 +91,7 @@ pub struct MergeCellsOperation {
 }
 
 /// Moves one or more cells.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::operations")]
 #[serde(rename_all = "camelCase")]
 pub struct MoveCellsOperation {
@@ -125,7 +125,7 @@ pub struct RemoveCellsOperation {
 }
 
 /// Replaces the part of the content in any content type cell or the title of a graph cell.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::operations")]
 #[serde(rename_all = "camelCase")]
 pub struct ReplaceTextOperation {
@@ -227,7 +227,7 @@ pub struct UpdateNotebookTimeRangeOperation {
 }
 
 /// Updates the notebook title.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::operations")]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateNotebookTitleOperation {
@@ -236,7 +236,7 @@ pub struct UpdateNotebookTitleOperation {
 }
 
 /// Adds an data-source to an notebook.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::operations")]
 #[serde(rename_all = "camelCase")]
 pub struct AddDataSourceOperation {
@@ -248,7 +248,7 @@ pub struct AddDataSourceOperation {
 }
 
 /// Updates an data-source in an notebook.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::operations")]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateDataSourceOperation {
@@ -263,7 +263,7 @@ pub struct UpdateDataSourceOperation {
 }
 
 /// Remove an data-source to an notebook.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::operations")]
 #[serde(rename_all = "camelCase")]
 pub struct RemoveDataSourceOperation {
@@ -283,7 +283,7 @@ pub struct CellWithIndex {
 }
 
 /// Add an label to an notebook.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::operations")]
 #[serde(rename_all = "camelCase")]
 pub struct AddLabelOperation {
@@ -292,7 +292,7 @@ pub struct AddLabelOperation {
 }
 
 /// Replace an label in an notebook.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::operations")]
 #[serde(rename_all = "camelCase")]
 pub struct ReplaceLabelOperation {
@@ -304,7 +304,7 @@ pub struct ReplaceLabelOperation {
 }
 
 /// Remove an label in an notebook.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::operations")]
 #[serde(rename_all = "camelCase")]
 pub struct RemoveLabelOperation {

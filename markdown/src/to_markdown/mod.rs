@@ -43,7 +43,7 @@ impl<'a> NotebookConverter<'a> {
         self.into_markdown()
     }
 
-    fn convert_cells(&mut self, notebook_id: &str, cells: impl IntoIterator<Item = Cell>) {
+    fn convert_cells(&mut self, _notebook_id: &str, cells: impl IntoIterator<Item = Cell>) {
         let mut cells = cells.into_iter().peekable();
         while let Some(cell) = cells.next() {
             match cell {
@@ -82,7 +82,7 @@ impl<'a> NotebookConverter<'a> {
                     self.events.push(End(tag));
                 }
                 Cell::Image(cell) => {
-                    let url = if let Some(url) = cell.url {
+                    if let Some(url) = cell.url {
                         let tag = Tag::Image(LinkType::Inline, url.into(), "".into());
                         self.events.push(Start(Tag::Paragraph));
                         self.events.push(Start(tag.clone()));

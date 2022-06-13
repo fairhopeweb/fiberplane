@@ -11,7 +11,7 @@ pub type Formatting = Vec<AnnotationWithOffset>;
 /// Newtype representing `(offset, Annotation)` tuples.
 ///
 /// Used inside the `Formatting` vector.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::formatting")]
 #[serde(rename_all = "camelCase")]
 pub struct AnnotationWithOffset {
@@ -37,7 +37,7 @@ impl AnnotationWithOffset {
 /// A rich-text annotation.
 ///
 /// Annotations are typically found inside a `Formatting` vector.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::formatting")]
 #[serde(rename_all = "snake_case", tag = "type")]
 pub enum Annotation {
@@ -90,7 +90,7 @@ impl Annotation {
 
 /// A struct that represents all the formatting that is active at any given
 /// character offset.
-#[derive(Debug, Default, Deserialize, Serialize, Clone, PartialEq, Serializable)]
+#[derive(Debug, Default, Deserialize, Serialize, Clone, PartialEq, Eq, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::formatting")]
 #[serde(rename_all = "camelCase")]
 pub struct ActiveFormatting {
@@ -197,7 +197,7 @@ impl ActiveFormatting {
 /// mention will stop at the first non-matching character. Mentions for
 /// which the first character of the name does not align must be ignored in
 /// their entirety.
-#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Serializable)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::formatting")]
 #[serde(rename_all = "camelCase")]
 pub struct Mention {
