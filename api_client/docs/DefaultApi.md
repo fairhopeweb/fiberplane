@@ -16,6 +16,7 @@ Method | HTTP request | Description
 [**label_values_list**](DefaultApi.md#label_values_list) | **GET** /api/labels/values/{label_key} | 
 [**logout**](DefaultApi.md#logout) | **POST** /api/logout | 
 [**notebook_cell_append_text**](DefaultApi.md#notebook_cell_append_text) | **POST** /api/notebooks/{notebookId}/cells/{cellId}/append | 
+[**notebook_cell_replace_text**](DefaultApi.md#notebook_cell_replace_text) | **POST** /api/notebooks/{notebookId}/cells/{cellId}/replaceText | 
 [**notebook_cells_append**](DefaultApi.md#notebook_cells_append) | **POST** /api/notebooks/{id}/cells | 
 [**notebook_create**](DefaultApi.md#notebook_create) | **POST** /api/notebooks | 
 [**notebook_list**](DefaultApi.md#notebook_list) | **GET** /api/notebooks | 
@@ -388,6 +389,38 @@ Name | Type | Description  | Required | Notes
 **notebook_id** | **String** | ID of the notebook | [required] |
 **cell_id** | **String** | ID of the notebook cell | [required] |
 **cell_append_text** | [**CellAppendText**](CellAppendText.md) | Content and optional formatting to append | [required] |
+
+### Return type
+
+[**crate::models::Cell**](cell.md)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## notebook_cell_replace_text
+
+> crate::models::Cell notebook_cell_replace_text(notebook_id, cell_id, cell_replace_text)
+
+
+Replace some text and formatting in the specified cell
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**notebook_id** | **String** | ID of the notebook | [required] |
+**cell_id** | **String** | ID of the notebook cell | [required] |
+**cell_replace_text** | [**CellReplaceText**](CellReplaceText.md) |  | [required] |
 
 ### Return type
 

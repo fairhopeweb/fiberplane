@@ -398,6 +398,24 @@ components:
           type: string
         formatting:
           $ref: "#/components/schemas/formatting"
+    cellReplaceText:
+      type: object
+      required:
+        - offset
+        - newText
+        - oldText
+      properties:
+        offset:
+          type: integer
+          format: int32
+        newText:
+          type: string
+        newFormatting:
+          $ref: "#/components/schemas/formatting"
+        oldText:
+          type: string
+        oldFormatting:
+          $ref: "#/components/schemas/formatting"
     notebook:
       type: object
       required:
@@ -1509,6 +1527,36 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/cellAppendText"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/cell"
+  /api/notebooks/{notebookId}/cells/{cellId}/replaceText:
+    parameters:
+      - name: notebookId
+        in: path
+        description: ID of the notebook
+        required: true
+        schema:
+          type: string
+      - name: cellId
+        in: path
+        description: ID of the notebook cell
+        required: true
+        schema:
+          type: string
+    post:
+      operationId: notebook_cell_replace_text
+      description: Replace some text and formatting in the specified cell
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/cellReplaceText"
       responses:
         "200":
           description: OK

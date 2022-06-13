@@ -10,6 +10,8 @@ pub mod cell;
 pub use self::cell::Cell;
 pub mod cell_append_text;
 pub use self::cell_append_text::CellAppendText;
+pub mod cell_replace_text;
+pub use self::cell_replace_text::CellReplaceText;
 pub mod cell_type;
 pub use self::cell_type::CellType;
 pub mod checkbox_cell;

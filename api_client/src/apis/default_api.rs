@@ -99,6 +99,13 @@ pub enum NotebookCellAppendTextError {
     UnknownValue(serde_json::Value),
 }
 
+/// struct for typed errors of method `notebook_cell_replace_text`
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum NotebookCellReplaceTextError {
+    UnknownValue(serde_json::Value),
+}
+
 /// struct for typed errors of method `notebook_cells_append`
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -675,6 +682,37 @@ pub async fn notebook_cell_append_text(configuration: &configuration::Configurat
         serde_json::from_str(&local_var_content).map_err(Error::from)
     } else {
         let local_var_entity: Option<NotebookCellAppendTextError> = serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
+
+/// Replace some text and formatting in the specified cell
+pub async fn notebook_cell_replace_text(configuration: &configuration::Configuration, notebook_id: &str, cell_id: &str, cell_replace_text: crate::models::CellReplaceText) -> Result<crate::models::Cell, Error<NotebookCellReplaceTextError>> {
+
+    let local_var_client = &configuration.client;
+
+    let local_var_uri_str = format!("{}/api/notebooks/{notebookId}/cells/{cellId}/replaceText", configuration.base_path, notebookId=crate::apis::urlencode(notebook_id), cellId=crate::apis::urlencode(cell_id));
+    let mut local_var_req_builder = local_var_client.request(reqwest::Method::POST, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_user_agent) = configuration.user_agent {
+        local_var_req_builder = local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+    if let Some(ref local_var_token) = configuration.bearer_access_token {
+        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
+    };
+    local_var_req_builder = local_var_req_builder.json(&cell_replace_text);
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        serde_json::from_str(&local_var_content).map_err(Error::from)
+    } else {
+        let local_var_entity: Option<NotebookCellReplaceTextError> = serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent { status: local_var_status, content: local_var_content, entity: local_var_entity };
         Err(Error::ResponseError(local_var_error))
     }
