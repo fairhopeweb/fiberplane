@@ -27,6 +27,7 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**convert_notebook_to_template**](docs/DefaultApi.md#convert_notebook_to_template) | **GET** /api/notebooks/{id}/template.jsonnet | 
 *DefaultApi* | [**delete_file**](docs/DefaultApi.md#delete_file) | **DELETE** /api/files/{notebookId}/{fileId} | 
 *DefaultApi* | [**delete_notebook**](docs/DefaultApi.md#delete_notebook) | **DELETE** /api/notebooks/{id} | 
+*DefaultApi* | [**event_create**](docs/DefaultApi.md#event_create) | **POST** /api/events | 
 *DefaultApi* | [**file_upload**](docs/DefaultApi.md#file_upload) | **POST** /api/files/{notebookId} | 
 *DefaultApi* | [**get_file**](docs/DefaultApi.md#get_file) | **GET** /api/files/{notebookId}/{fileId} | 
 *DefaultApi* | [**get_notebook**](docs/DefaultApi.md#get_notebook) | **GET** /api/notebooks/{id} | 
@@ -98,6 +99,7 @@ Class | Method | HTTP request | Description
  - [EndLinkAnnotation](docs/EndLinkAnnotation.md)
  - [EndStrikethroughAnnotation](docs/EndStrikethroughAnnotation.md)
  - [EndUnderlineAnnotation](docs/EndUnderlineAnnotation.md)
+ - [Event](docs/Event.md)
  - [FileSummary](docs/FileSummary.md)
  - [GraphCell](docs/GraphCell.md)
  - [HeadingCell](docs/HeadingCell.md)
@@ -113,6 +115,7 @@ Class | Method | HTTP request | Description
  - [LokiDataSource](docs/LokiDataSource.md)
  - [MentionAnnotation](docs/MentionAnnotation.md)
  - [Metric](docs/Metric.md)
+ - [NewEvent](docs/NewEvent.md)
  - [NewNotebook](docs/NewNotebook.md)
  - [NewOrgDataSource](docs/NewOrgDataSource.md)
  - [NewPinnedNotebook](docs/NewPinnedNotebook.md)

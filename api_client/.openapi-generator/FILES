@@ -29,6 +29,7 @@ docs/EndItalicsAnnotation.md
 docs/EndLinkAnnotation.md
 docs/EndStrikethroughAnnotation.md
 docs/EndUnderlineAnnotation.md
+docs/Event.md
 docs/FileSummary.md
 docs/GraphCell.md
 docs/HeadingCell.md
@@ -44,6 +45,7 @@ docs/LokiCell.md
 docs/LokiDataSource.md
 docs/MentionAnnotation.md
 docs/Metric.md
+docs/NewEvent.md
 docs/NewNotebook.md
 docs/NewOrgDataSource.md
 docs/NewPinnedNotebook.md
@@ -122,6 +124,7 @@ src/models/end_italics_annotation.rs
 src/models/end_link_annotation.rs
 src/models/end_strikethrough_annotation.rs
 src/models/end_underline_annotation.rs
+src/models/event.rs
 src/models/file_summary.rs
 src/models/graph_cell.rs
 src/models/heading_cell.rs
@@ -138,6 +141,7 @@ src/models/loki_data_source.rs
 src/models/mention_annotation.rs
 src/models/metric.rs
 src/models/mod.rs
+src/models/new_event.rs
 src/models/new_notebook.rs
 src/models/new_org_data_source.rs
 src/models/new_pinned_notebook.rs

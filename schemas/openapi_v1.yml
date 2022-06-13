@@ -1374,6 +1374,42 @@ components:
           additionalProperties:
             type: string
             nullable: true # this does not seem to have any effect on the generated rust client
+    newEvent:
+      type: object
+      required:
+        - "title"
+      properties:
+        title:
+          type: string
+        labels:
+          type: object # Hash Map
+          additionalProperties:
+            type: string
+            nullable: true
+        time:
+          type: string
+          format: date-time
+    event:
+      type: object
+      properties:
+        id:
+          type: string
+          format: base64uuid
+        title:
+          type: string
+        labels:
+          type: object # Hash Map
+          additionalProperties:
+            type: string
+        occurrenceTime:
+          type: string
+          format: date-time
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
   parameters:
     sortDirection:
       in: query
@@ -2132,3 +2168,21 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/notebookSummary"
+  /api/events:
+    post:
+      operationId: event_create
+      description: Creates a new event
+      requestBody:
+        required: true
+        description: Event creation payload
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/newEvent"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/event"

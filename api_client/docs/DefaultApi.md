@@ -7,6 +7,7 @@ Method | HTTP request | Description
 [**convert_notebook_to_template**](DefaultApi.md#convert_notebook_to_template) | **GET** /api/notebooks/{id}/template.jsonnet | 
 [**delete_file**](DefaultApi.md#delete_file) | **DELETE** /api/files/{notebookId}/{fileId} | 
 [**delete_notebook**](DefaultApi.md#delete_notebook) | **DELETE** /api/notebooks/{id} | 
+[**event_create**](DefaultApi.md#event_create) | **POST** /api/events | 
 [**file_upload**](DefaultApi.md#file_upload) | **POST** /api/files/{notebookId} | 
 [**get_file**](DefaultApi.md#get_file) | **GET** /api/files/{notebookId}/{fileId} | 
 [**get_notebook**](DefaultApi.md#get_notebook) | **GET** /api/notebooks/{id} | 
@@ -136,6 +137,36 @@ Name | Type | Description  | Required | Notes
 
 - **Content-Type**: Not defined
 - **Accept**: Not defined
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## event_create
+
+> crate::models::Event event_create(new_event)
+
+
+Creates a new event
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**new_event** | [**NewEvent**](NewEvent.md) | Event creation payload | [required] |
+
+### Return type
+
+[**crate::models::Event**](event.md)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
