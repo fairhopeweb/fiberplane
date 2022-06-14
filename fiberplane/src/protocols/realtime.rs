@@ -374,11 +374,11 @@ pub struct SubscriberAddedMessage {
     pub session_id: String,
 
     /// The moment the session was created.
-    #[serde(with = "time_util::serde_rfc3339")]
+    #[serde(with = "time::serde::rfc3339")]
     pub created_at: OffsetDateTime,
 
     /// The last time the user was active in this session.
-    #[serde(with = "time_util::serde_rfc3339")]
+    #[serde(with = "time::serde::rfc3339")]
     pub updated_at: OffsetDateTime,
 
     /// User details associated with the session.
