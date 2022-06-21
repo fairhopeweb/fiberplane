@@ -12,3 +12,7 @@ docker run --rm \
             -g rust \
             -o /local/api_client \
             --skip-validate-spec
+
+# Git patches don't apply if we're not in the base directory of the project (where .git lives): https://stackoverflow.com/a/67790361/11494565
+cd $BASE_DIR
+git apply -v "./schemas/patches/json_query_parameter.patch"

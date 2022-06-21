@@ -1421,6 +1421,20 @@ components:
           - "ascending"
           - "descending"
       required: false
+    page:
+      in: query
+      name: page
+      description: Page number which should be displayed; 0-indexed (defaults to 0)
+      schema:
+        type: integer
+      required: false
+    limit:
+      in: query
+      name: limit
+      description: Maximum amount of results to display per page (defaults to 20)
+      schema:
+        type: integer
+      required: false
 # Most routes require authentication. The ones
 # that do not will specify "security: []"
 security:
@@ -2169,6 +2183,52 @@ paths:
                 items:
                   $ref: "#/components/schemas/notebookSummary"
   /api/events:
+    get:
+      operationId: event_list
+      description: Get a list of all events matching the query
+      parameters:
+        - in: query
+          name: occurrence_time_start
+          required: true
+          schema:
+            type: string
+            format: date-time
+        - in: query
+          name: occurrence_time_end
+          required: true
+          schema:
+            type: string
+            format: date-time
+        - in: query
+          name: labels
+          schema:
+            type: object
+            nullable: true
+            additionalProperties:
+              type: string
+        - in: query
+          name: sort_by
+          description: Sort the resulting list by the following field (defaults to occurrence_time)
+          schema:
+            type: string
+            enum:
+              - "title"
+              - "occurrence_time"
+              - "created_at"
+              - "updated_at"
+          required: false
+        - $ref: "#/components/parameters/sortDirection"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/limit"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/event"
     post:
       operationId: event_create
       description: Creates a new event

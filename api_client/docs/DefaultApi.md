@@ -8,6 +8,7 @@ Method | HTTP request | Description
 [**delete_file**](DefaultApi.md#delete_file) | **DELETE** /api/files/{notebookId}/{fileId} | 
 [**delete_notebook**](DefaultApi.md#delete_notebook) | **DELETE** /api/notebooks/{id} | 
 [**event_create**](DefaultApi.md#event_create) | **POST** /api/events | 
+[**event_list**](DefaultApi.md#event_list) | **GET** /api/events | 
 [**file_upload**](DefaultApi.md#file_upload) | **POST** /api/files/{notebookId} | 
 [**get_file**](DefaultApi.md#get_file) | **GET** /api/files/{notebookId}/{fileId} | 
 [**get_notebook**](DefaultApi.md#get_notebook) | **GET** /api/notebooks/{id} | 
@@ -166,6 +167,42 @@ Name | Type | Description  | Required | Notes
 ### HTTP request headers
 
 - **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## event_list
+
+> Vec<crate::models::Event> event_list(occurrence_time_start, occurrence_time_end, labels, sort_by, sort_direction, page, limit)
+
+
+Get a list of all events matching the query
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**occurrence_time_start** | **String** |  | [required] |
+**occurrence_time_end** | **String** |  | [required] |
+**labels** | Option<[**::std::collections::HashMap<String, String>**](String.md)> |  |  |
+**sort_by** | Option<**String**> | Sort the resulting list by the following field (defaults to occurrence_time) |  |
+**sort_direction** | Option<**String**> | Sort the resulting list in the following direction (defaults to ascending) |  |
+**page** | Option<**i32**> | Page number which should be displayed; 0-indexed (defaults to 0) |  |
+**limit** | Option<**i32**> | Maximum amount of results to display per page (defaults to 20) |  |
+
+### Return type
+
+[**Vec<crate::models::Event>**](event.md)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
 - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)

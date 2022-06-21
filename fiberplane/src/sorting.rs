@@ -73,3 +73,32 @@ impl SortField for TemplateListSortFields {
         Self::Title
     }
 }
+
+#[derive(Debug, Deserialize, Serialize, Clone, ArgEnum, strum_macros::IntoStaticStr)]
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum EventSortFields {
+    Title,
+    OccurrenceTime,
+    CreatedAt,
+    UpdatedAt,
+}
+
+impl EventSortFields {
+    #[inline]
+    pub fn to_sql(&self) -> &'static str {
+        match self {
+            EventSortFields::Title => "title",
+            EventSortFields::OccurrenceTime => "occurrence_time",
+            EventSortFields::UpdatedAt => "updated_at",
+            EventSortFields::CreatedAt => "created_at",
+        }
+    }
+}
+
+impl SortField for EventSortFields {
+    #[inline]
+    fn default_sort_field() -> Self {
+        Self::OccurrenceTime
+    }
+}
