@@ -184,7 +184,7 @@ impl Cell {
     }
 
     /// Returns the cell's ID.
-    pub fn id(&self) -> &String {
+    pub fn id(&self) -> &str {
         match self {
             Cell::Checkbox(cell) => &cell.id,
             Cell::Code(cell) => &cell.id,
@@ -546,23 +546,6 @@ impl Cell {
         }
     }
 
-    pub fn content_mut(&mut self) -> Option<&mut String> {
-        match self {
-            Cell::Graph(cell) => Some(&mut cell.title),
-            Cell::Log(cell) => Some(&mut cell.title),
-            Cell::Table(cell) => Some(&mut cell.title),
-            Cell::Checkbox(cell) => Some(&mut cell.content),
-            Cell::Code(cell) => Some(&mut cell.content),
-            Cell::Heading(cell) => Some(&mut cell.content),
-            Cell::ListItem(cell) => Some(&mut cell.content),
-            Cell::Prometheus(cell) => Some(&mut cell.content),
-            Cell::Elasticsearch(cell) => Some(&mut cell.content),
-            Cell::Loki(cell) => Some(&mut cell.content),
-            Cell::Text(cell) => Some(&mut cell.content),
-            Cell::Image(_) | Cell::Divider(_) => None,
-        }
-    }
-
     /// Returns a mutable reference to the formatting array if the cell type supports formatting.
     ///
     /// If the cell type supports formatting but the cell does not have any, this method
@@ -593,6 +576,24 @@ impl Cell {
                 formatting.as_mut()
             }
             None => None,
+        }
+    }
+
+    /// Returns a mutable reference to the cell's text, if any.
+    pub fn text_mut(&mut self) -> Option<&mut String> {
+        match self {
+            Cell::Graph(cell) => Some(&mut cell.title),
+            Cell::Log(cell) => Some(&mut cell.title),
+            Cell::Table(cell) => Some(&mut cell.title),
+            Cell::Checkbox(cell) => Some(&mut cell.content),
+            Cell::Code(cell) => Some(&mut cell.content),
+            Cell::Heading(cell) => Some(&mut cell.content),
+            Cell::ListItem(cell) => Some(&mut cell.content),
+            Cell::Prometheus(cell) => Some(&mut cell.content),
+            Cell::Elasticsearch(cell) => Some(&mut cell.content),
+            Cell::Loki(cell) => Some(&mut cell.content),
+            Cell::Text(cell) => Some(&mut cell.content),
+            Cell::Image(_) | Cell::Divider(_) => None,
         }
     }
 }

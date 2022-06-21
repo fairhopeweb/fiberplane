@@ -18,13 +18,9 @@ use super::core::Label;
 #[fp(rust_plugin_module = "fiberplane::protocols::operations")]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Operation {
-    AddCells(AddCellsOperation),
-    MergeCells(MergeCellsOperation),
     MoveCells(MoveCellsOperation),
-    RemoveCells(RemoveCellsOperation),
+    ReplaceCells(ReplaceCellsOperation),
     ReplaceText(ReplaceTextOperation),
-    SplitCell(SplitCellOperation),
-    UpdateCell(UpdateCellOperation),
     UpdateNotebookTimeRange(UpdateNotebookTimeRangeOperation),
     UpdateNotebookTitle(UpdateNotebookTitleOperation),
     AddDataSource(AddDataSourceOperation),
@@ -33,61 +29,6 @@ pub enum Operation {
     AddLabel(AddLabelOperation),
     ReplaceLabel(ReplaceLabelOperation),
     RemoveLabel(RemoveLabelOperation),
-}
-
-/// Adds one or more cells at the given position.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::operations")]
-#[serde(rename_all = "camelCase")]
-pub struct AddCellsOperation {
-    /// The new cells, including their index after adding.
-    pub cells: Vec<CellWithIndex>,
-
-    /// Optional, existing cells to which references to the newly added cells have been added.
-    ///
-    /// This is not something that currently happens from the UI, but is useful to atomically
-    /// revert a `RemoveCellsOperation`.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub referencing_cells: Option<Vec<CellWithIndex>>,
-}
-
-/// Merges the cell immediately after the target cell into it by appending its content.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::operations")]
-#[serde(rename_all = "camelCase")]
-pub struct MergeCellsOperation {
-    /// Optional text we want to "glue" between the content of the target cell and the source cell.
-    /// This is useful if we want to revert a `SplitCellOperation` that contained selected text.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub glue_text: Option<String>,
-
-    /// Optional formatting to apply to the glue text.
-    ///
-    /// Offsets in the formatting are relative to the start of the glue text.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub glue_formatting: Option<Formatting>,
-
-    /// Source cell that will be merged into the target cell. This should be the cell immediately
-    /// after the target cell.
-    pub source_cell: Cell,
-
-    /// The length of the text content of the target cell right before the merge. This is the index
-    /// at which we will want to split the cell if we need to revert the merge.
-    ///
-    /// Please be aware this length refers to the number of Unicode Scalar Values (non-surrogate
-    /// codepoints) in the cell content, which may require additional effort to determine correctly.
-    pub target_content_length: u32,
-
-    /// ID of the target cell into which the merge will be performed.
-    pub target_cell_id: String,
-
-    /// Optional cells that referenced the source cell and which are affected by the removal of it.
-    ///
-    /// If a referencing cell *only* references the source cell, it may be removed.
-    /// Otherwise, the source cell may simply be unreferenced and the referencing cell will be
-    /// retained.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub referencing_cells: Option<Vec<CellWithIndex>>,
 }
 
 /// Moves one or more cells.
@@ -107,21 +48,155 @@ pub struct MoveCellsOperation {
     pub to_index: u32,
 }
 
-/// Removes one or more cells.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+/// Replaces one or more cells at once.
+///
+/// Note: This operation is relatively coarse and can be (ab)used to perform
+/// `ReplaceText` operations as well. In order to preserve intent as much as
+/// possible, please use `ReplaceText` where possible.
+///
+/// Note: This operation may not be used to move cells, other than the necessary
+/// corrections in cell indices that account for newly inserted and removed
+/// cells. Attempts to move cells to other indices will cause validation to
+/// fail.
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::operations")]
 #[serde(rename_all = "camelCase")]
-pub struct RemoveCellsOperation {
-    /// The removed cells, including their index before the removal.
-    pub removed_cells: Vec<CellWithIndex>,
-
-    /// Optional cells that referenced the removed cells and which are affected by the removal.
+pub struct ReplaceCellsOperation {
+    /// Vector of the new cells, including their new indices.
     ///
-    /// If a referencing cell *only* references the removed cells, it may be cascade removed.
-    /// Otherwise, the removed cells may simply be unreferenced and the referencing cell will be
-    /// retained.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub referencing_cells: Option<Vec<CellWithIndex>>,
+    /// Indices of the new cells must be ordered incrementally to form a single,
+    /// cohesive range of cells.
+    ///
+    /// Note that "new" does not imply "newly inserted". If a cell with the same
+    /// ID is part of the `old_cells` field, it will merely be updated. Only
+    /// cells in the `new_cells` field that are not part of the `old_cells` will
+    /// be newly inserted.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub new_cells: Vec<CellWithIndex>,
+
+    /// Vector of the old cells, including their old indices.
+    ///
+    /// Indices of the old cells must be ordered incrementally to form a single,
+    /// cohesive range of cells.
+    ///
+    /// Note that "old" does not imply "removed". If a cell with the same
+    /// ID is part of the `new_cells` field, it will merely be updated. Only
+    /// cells in the `old_cells` field that are not part of the `new_cells` will
+    /// be removed.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub old_cells: Vec<CellWithIndex>,
+
+    /// Offset at which to split the first of the old cells.
+    ///
+    /// In this context, splitting means that the text of the cell in the
+    /// notebook is split in two at the split offset. The first part is kept,
+    /// while the second part (which must match the cell's text in `old_cells`)
+    /// is replaced with the text given in the first of the `new_cells`.
+    ///
+    /// If `None`, no cell is split.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub split_offset: Option<u32>,
+
+    /// Offset from which to merge the remainder of the last old cell.
+    ///
+    /// In this context, merging means that the text of the new cell is merged
+    /// from two parts. The first part comes the last of the `new_cells`, while
+    /// the second part is what remains of the cell in the notebook after the
+    /// merge offset.
+    ///
+    /// If `None`, no cells are merged.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub merge_offset: Option<u32>,
+
+    /// Optional cells which are updated as a result of the replacing of other
+    /// cells. This is intended to be used for cells that reference the
+    /// `new_cells` and which now need to be updated as a result of the
+    /// operation being applied to those cells.
+    ///
+    /// These referencing cells may also be newly inserted if they are not
+    /// included in the `old_referencing_cells`.
+    ///
+    /// Indices of new referencing cells do not need to form a cohesive range,
+    /// but they should still be ordered in ascending order.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub new_referencing_cells: Vec<CellWithIndex>,
+
+    /// Optional cells which are updated as a result of the replacing of other
+    /// cells. This is intended to be used for cells that reference the
+    /// `old_cells` and which now need to be updated as a result of the
+    /// operation being applied to those cells.
+    ///
+    /// These referencing cells may also be removed if they are not included in
+    /// the `new_referencing_cells`.
+    ///
+    /// Indices of old referencing cells do not need to form a cohesive range,
+    /// but they should still be ordered in ascending order.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub old_referencing_cells: Vec<CellWithIndex>,
+}
+
+impl ReplaceCellsOperation {
+    /// Returns all the new cell IDs, including the ones in the
+    /// `new_referencing_cells` field.
+    pub fn all_newly_inserted_cells(&self) -> impl Iterator<Item = &CellWithIndex> {
+        self.newly_inserted_cells()
+            .chain(self.newly_inserted_referencing_cells())
+    }
+
+    /// Returns all the old cell IDs, including the ones in the
+    /// `old_referencing_cells` field.
+    pub fn all_old_cells(&self) -> impl Iterator<Item = &CellWithIndex> {
+        self.old_cells
+            .iter()
+            .chain(self.old_referencing_cells.iter())
+    }
+
+    /// Returns all the old removed cell IDs, including the ones from the
+    /// `old_referencing_cells` field.
+    pub fn all_old_removed_cells(&self) -> impl Iterator<Item = &CellWithIndex> {
+        self.old_removed_cells()
+            .chain(self.old_removed_referencing_cells())
+    }
+
+    /// Returns all newly inserted cells, excluding referencing cells.
+    pub fn newly_inserted_cells(&self) -> impl Iterator<Item = &CellWithIndex> {
+        self.new_cells.iter().filter(move |new_cell| {
+            !self
+                .old_cells
+                .iter()
+                .any(|old_cell| old_cell.id() == new_cell.id())
+        })
+    }
+
+    /// Returns all newly inserted referencing cells.
+    pub fn newly_inserted_referencing_cells(&self) -> impl Iterator<Item = &CellWithIndex> {
+        self.new_referencing_cells.iter().filter(move |new_cell| {
+            !self
+                .old_referencing_cells
+                .iter()
+                .any(|old_cell| old_cell.id() == new_cell.id())
+        })
+    }
+
+    /// Returns all old cells that will be removed, excluding referencing cells.
+    pub fn old_removed_cells(&self) -> impl Iterator<Item = &CellWithIndex> {
+        self.old_cells.iter().filter(move |old_cell| {
+            !self
+                .new_cells
+                .iter()
+                .any(|new_cell| new_cell.id() == old_cell.id())
+        })
+    }
+
+    /// Returns all old referencing cells that will be removed.
+    pub fn old_removed_referencing_cells(&self) -> impl Iterator<Item = &CellWithIndex> {
+        self.old_referencing_cells.iter().filter(move |old_cell| {
+            !self
+                .new_referencing_cells
+                .iter()
+                .any(|new_cell| new_cell.id() == old_cell.id())
+        })
+    }
 }
 
 /// Replaces the part of the content in any content type cell or the title of a graph cell.
@@ -158,63 +233,6 @@ pub struct ReplaceTextOperation {
     /// Offsets in the formatting are relative to the start of the old text.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub old_formatting: Option<Formatting>,
-}
-
-/// Splits a cell at the given position.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::operations")]
-#[serde(rename_all = "camelCase")]
-pub struct SplitCellOperation {
-    /// ID of the cell that will be split.
-    pub cell_id: String,
-
-    /// The character index inside the cell to split at.
-    ///
-    /// Please be aware this index refers to the position of a Unicode Scalar Value (non-surrogate
-    /// codepoint) in the cell content, which may require additional effort to determine correctly.
-    pub split_index: u32,
-
-    /// If any text was selected at the moment of splitting, that selection is removed; only the
-    /// part before the selection is retained in the split cell, while only the part after the
-    /// selection ends up in the new cell.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub removed_text: Option<String>,
-
-    /// Optional formatting that was applied to the removed text.
-    ///
-    /// Offsets in the formatting are relative to the start of the removed text.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub removed_formatting: Option<Formatting>,
-
-    /// Newly created cell after the split.
-    pub new_cell: Cell,
-
-    /// Optional cells to which a reference to the newly added cell should be added. These may be
-    /// cells that will need to be newly inserted.
-    ///
-    /// This is not something that currently happens from the UI, but is useful to atomically
-    /// revert a `MergeCellsOperation`.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub referencing_cells: Option<Vec<CellWithIndex>>,
-}
-
-/// Updates arbitrary properties of a cell.
-///
-/// **Warning:** Because this operation is so coarse, it breaks assumptions about intent and
-///              convergence. Please use `ReplaceText` when possible. In the future we may wish
-///              to introduce other more fine-grained operations as well.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::operations")]
-#[serde(rename_all = "camelCase")]
-pub struct UpdateCellOperation {
-    /// The old cell with its content, so that we can revert the update if necessary.
-    ///
-    /// Note this cell may even have a different ID, in which case the old cell is swapped out for
-    /// the updated one while maintaining its position.
-    pub old_cell: Box<Cell>,
-
-    /// The newly updated cell.
-    pub updated_cell: Box<Cell>,
 }
 
 /// Updates the notebook time range.
@@ -280,6 +298,20 @@ pub struct RemoveDataSourceOperation {
 pub struct CellWithIndex {
     pub cell: Cell,
     pub index: u32,
+}
+
+impl CellWithIndex {
+    pub fn formatting(&self) -> Option<&Formatting> {
+        self.cell.formatting()
+    }
+
+    pub fn id(&self) -> &str {
+        self.cell.id()
+    }
+
+    pub fn text(&self) -> Option<&str> {
+        self.cell.text()
+    }
 }
 
 /// Add an label to an notebook.

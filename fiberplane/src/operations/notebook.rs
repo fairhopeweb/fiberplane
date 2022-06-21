@@ -1,9 +1,9 @@
 use crate::operations::{ApplyOperationState, CellRefWithIndex};
-pub use crate::protocols::core::{Notebook, NotebookVisibility};
+pub use crate::protocols::core::{Cell, Notebook, NotebookVisibility};
 
 impl ApplyOperationState for Notebook {
     fn all_cell_ids(&self) -> Vec<&str> {
-        self.cells.iter().map(|cell| cell.id().as_str()).collect()
+        self.cells.iter().map(Cell::id).collect()
     }
 
     fn all_relevant_cells(&self) -> Vec<CellRefWithIndex> {

@@ -1,14 +1,29 @@
+use super::utils::is_annotation_included_in_formatting;
 use crate::{
-    markdown::formatting_from_markdown,
     operations::{changes::*, error::*},
     protocols::{core::*, formatting::*, operations::*},
-    text_util::char_count,
+    text_util::{char_count, char_slice, char_slice_from},
 };
+use std::cmp::Ordering;
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct CellRefWithIndex<'a> {
     pub cell: &'a Cell,
     pub index: u32,
+}
+
+impl<'a> CellRefWithIndex<'a> {
+    pub fn formatting(&self) -> Option<&Formatting> {
+        self.cell.formatting()
+    }
+
+    pub fn id(&self) -> &str {
+        self.cell.id()
+    }
+
+    pub fn text(&self) -> Option<&str> {
+        self.cell.text()
+    }
 }
 
 /// Allows `apply_operation()` to query for the cells that may be affected by a single operation.
@@ -40,7 +55,7 @@ pub trait ApplyOperationState {
     fn cell_with_index(&self, id: &str) -> Option<CellRefWithIndex> {
         self.all_relevant_cells()
             .into_iter()
-            .find(|c| c.cell.id() == id)
+            .find(|cell| cell.id() == id)
     }
 }
 
@@ -58,13 +73,9 @@ pub fn apply_operation(
 ) -> Result<Vec<Change>, Error> {
     use Operation::*;
     match operation {
-        AddCells(operation) => Ok(apply_add_cells_operation(state, operation)),
-        MergeCells(operation) => apply_merge_cells_operation(state, operation),
         MoveCells(operation) => Ok(apply_move_cells_operation(state, operation)),
-        RemoveCells(operation) => Ok(apply_remove_cells_operation(state, operation)),
+        ReplaceCells(operation) => apply_replace_cells_operation(state, operation),
         ReplaceText(operation) => apply_replace_text_operation(state, operation),
-        SplitCell(operation) => apply_split_cells_operation(state, operation),
-        UpdateCell(operation) => apply_update_cell_operation(state, operation),
         UpdateNotebookTimeRange(operation) => {
             Ok(apply_update_notebook_time_range(state, operation))
         }
@@ -78,103 +89,6 @@ pub fn apply_operation(
     }
 }
 
-fn apply_add_cells_operation(
-    _: &dyn ApplyOperationState,
-    operation: &AddCellsOperation,
-) -> Vec<Change> {
-    let mut changes: Vec<Change> = operation
-        .cells
-        .iter()
-        .map(|CellWithIndex { cell, index }| {
-            Change::InsertCell(InsertCellChange {
-                cell: cell.clone(),
-                index: *index,
-            })
-        })
-        .collect();
-
-    if let Some(referencing_cells) = &operation.referencing_cells {
-        for referencing_cell in referencing_cells {
-            changes.push(Change::UpdateCell(UpdateCellChange {
-                cell: referencing_cell.cell.clone(),
-            }))
-        }
-    }
-
-    changes
-}
-
-fn apply_merge_cells_operation(
-    state: &dyn ApplyOperationState,
-    operation: &MergeCellsOperation,
-) -> Result<Vec<Change>, Error> {
-    let MergeCellsOperation {
-        source_cell,
-        target_cell_id,
-        target_content_length,
-        glue_text,
-        glue_formatting,
-        referencing_cells,
-    } = operation;
-
-    let target_cell = state
-        .cell(target_cell_id)
-        .ok_or_else(|| Error::CellNotFound(target_cell_id.clone()))?;
-    if target_cell.content().unwrap_or_default().chars().count() != *target_content_length as usize
-    {
-        return Err(Error::ContentLengthMismatch(*target_content_length));
-    }
-
-    let target_content = target_cell.content().unwrap_or_default();
-    let source_content = source_cell.content().unwrap_or_default();
-    let glue: &str = glue_text.as_ref().map(String::as_ref).unwrap_or_default();
-
-    let mut changes = vec![
-        Change::UpdateCellText(UpdateCellTextChange {
-            cell_id: target_cell_id.clone(),
-            text: format!("{}{}{}", target_content, glue, source_content),
-            formatting: Some(
-                [
-                    target_cell
-                        .formatting()
-                        .cloned()
-                        .unwrap_or_else(|| formatting_from_markdown(target_content)),
-                    glue_formatting
-                        .as_ref()
-                        .map(|formatting| translate(formatting, *target_content_length as i64))
-                        .unwrap_or_default(),
-                    source_cell
-                        .formatting()
-                        .map(|formatting| {
-                            translate(
-                                formatting,
-                                (*target_content_length + char_count(glue)) as i64,
-                            )
-                        })
-                        .unwrap_or_else(|| formatting_from_markdown(source_content)),
-                ]
-                .concat(),
-            ),
-        }),
-        Change::DeleteCell(DeleteCellChange {
-            cell_id: source_cell.id().clone(),
-        }),
-    ];
-
-    if let Some(referencing_cells) = referencing_cells.as_ref() {
-        for referencing_cell in referencing_cells {
-            let mut source_ids = referencing_cell.cell.source_ids();
-            source_ids.retain(|id| id != source_cell.id());
-            changes.push(get_change_for_dropped_reference(
-                referencing_cell,
-                source_ids,
-            ));
-        }
-    }
-
-    Ok(changes)
-}
-
 fn apply_move_cells_operation(
     _: &dyn ApplyOperationState,
     operation: &MoveCellsOperation,
@@ -185,146 +99,299 @@ fn apply_move_cells_operation(
     })]
 }
 
-fn apply_remove_cells_operation(
-    _: &dyn ApplyOperationState,
-    operation: &RemoveCellsOperation,
-) -> Vec<Change> {
-    let mut changes: Vec<Change> = operation
-        .removed_cells
+fn apply_replace_cells_operation(
+    state: &dyn ApplyOperationState,
+    operation: &ReplaceCellsOperation,
+) -> Result<Vec<Change>, Error> {
+    let mut new_cells = operation
+        .new_cells
         .iter()
-        .map(|removed_cell| {
-            Change::DeleteCell(DeleteCellChange {
-                cell_id: removed_cell.cell.id().clone(),
-            })
-        })
-        .collect();
+        .enumerate()
+        .map(|(index, cell)| {
+            // The split offset is only used for the first cell,
+            // so use `None` otherwise.
+            let split_offset = if index == 0 {
+                operation.split_offset
+            } else {
+                None
+            };
+            // The merge offset is only used for the last cell,
+            // so use `None` otherwise.
+            let merge_offset = if index == operation.new_cells.len() - 1 {
+                operation.merge_offset
+            } else {
+                None
+            };
 
-    if let Some(referencing_cells) = &operation.referencing_cells {
-        for referencing_cell in referencing_cells {
-            let mut source_ids = referencing_cell.cell.source_ids();
-            source_ids.retain(|id| !operation.removed_cells.iter().any(|c| c.cell.id() == id));
-            changes.push(get_change_for_dropped_reference(
-                referencing_cell,
-                source_ids,
-            ));
+            let cell = if let Some(split_offset) = split_offset {
+                let first_old_cell = operation.old_cells.first().ok_or_else(|| {
+                    Error::InternalError("old cells should not be empty".to_owned())
+                })?;
+                let first_original_cell = state
+                    .cell(first_old_cell.id())
+                    .ok_or_else(|| Error::CellNotFound(first_old_cell.id().to_owned()))?;
+
+                // If there is a split offset, the text of the actual new cell
+                // (`new_text`) will be a concatenation of the text of the
+                // original cell (up to the split offset) and the text provided
+                // in the operation (assigned to `new_cell_text`).
+                let new_cell_text = cell.text().unwrap_or_default();
+                let new_text = format!(
+                    "{}{}{}",
+                    first_original_cell
+                        .text()
+                        .map(|text| char_slice(text, 0, split_offset as usize))
+                        .unwrap_or_default(),
+                    new_cell_text,
+                    // Be careful, if there is only one new cell, we also need
+                    // to take the merge offset into account.
+                    if let Some(merge_offset) = merge_offset {
+                        operation
+                            .old_cells
+                            .last()
+                            .map(CellWithIndex::id)
+                            .and_then(|cell_id| state.cell(cell_id))
+                            .and_then(Cell::text)
+                            .map(|text| char_slice_from(text, merge_offset as usize))
+                            .unwrap_or_default()
+                    } else {
+                        ""
+                    }
+                );
+                if cell.cell.supports_formatting() {
+                    // For formatting, things are even a little bit trickier.
+                    // New formatting is a concatenation of original formatting
+                    // and newly provided formatting, similar to how `new_text`
+                    // was created. However, for formatting that is exactly at
+                    // the split offset, we need to look at which annotations
+                    // are provided in the operation's matching old cell
+                    // formatting. Annotations that are provided in the
+                    // operation are stripped, while those that are not are
+                    // kept.
+                    let old_formatting = first_old_cell.formatting();
+                    let mut new_formatting: Formatting = first_original_cell
+                        .formatting()
+                        .map(|formatting| {
+                            formatting
+                                .iter()
+                                .filter(|annotation| match annotation.offset.cmp(&split_offset) {
+                                    Ordering::Less => true,
+                                    Ordering::Equal => !old_formatting
+                                        .map(|old_formatting| {
+                                            is_annotation_included_in_formatting(
+                                                &annotation.annotation,
+                                                annotation.offset - split_offset,
+                                                old_formatting,
+                                            )
+                                        })
+                                        .unwrap_or_default(),
+                                    Ordering::Greater => false,
+                                })
+                                .cloned()
+                                .collect()
+                        })
+                        .unwrap_or_default();
+                    if let Some(formatting) = cell.formatting() {
+                        for annotation in formatting.iter() {
+                            new_formatting.push(annotation.translate(split_offset as i64));
+                        }
+                    }
+                    // And again, if there is only one new cell, merge offset
+                    // should be considered too.
+                    if let (Some(merge_offset), Some(formatting)) = (
+                        merge_offset,
+                        operation
+                            .old_cells
+                            .last()
+                            .map(CellWithIndex::id)
+                            .and_then(|cell_id| state.cell(cell_id))
+                            .and_then(Cell::formatting),
+                    ) {
+                        let old_formatting = operation
+                            .old_cells
+                            .last()
+                            .and_then(CellWithIndex::formatting);
+                        let delta =
+                            (split_offset + char_count(new_cell_text)) as i64 - merge_offset as i64;
+                        for annotation in formatting.iter().filter(|annotation| {
+                            match annotation.offset.cmp(&merge_offset) {
+                                Ordering::Greater => true,
+                                Ordering::Equal => !old_formatting
+                                    .map(|old_formatting| {
+                                        if split_offset <= merge_offset {
+                                            is_annotation_included_in_formatting(
+                                                &annotation.annotation,
+                                                merge_offset - split_offset,
+                                                old_formatting,
+                                            )
+                                        } else {
+                                            false
+                                        }
+                                    })
+                                    .unwrap_or_default(),
+                                Ordering::Less => false,
+                            }
+                        }) {
+                            new_formatting.push(annotation.translate(delta));
+                        }
+                    }
+                    CellWithIndex {
+                        cell: cell.cell.with_rich_text(&new_text, new_formatting),
+                        index: cell.index,
+                    }
+                } else {
+                    CellWithIndex {
+                        cell: cell.cell.with_text(&new_text),
+                        index: cell.index,
+                    }
+                }
+            } else if let Some(merge_offset) = merge_offset {
+                let last_old_cell = operation.old_cells.last().ok_or_else(|| {
+                    Error::InternalError("old cells should not be empty".to_owned())
+                })?;
+                let last_original_cell = state
+                    .cell(last_old_cell.id())
+                    .ok_or_else(|| Error::CellNotFound(last_old_cell.id().to_owned()))?;
+
+                // If there is a merge offset, the text of the actual new cell
+                // (`new_text`) will be a concatenation of the text provided in
+                // the operation (`new_cell_text`) and the text of the original
+                // cell (from the merge offset onwards).
+                let new_cell_text = cell.text().unwrap_or_default();
+                let new_text = format!(
+                    "{}{}",
+                    new_cell_text,
+                    last_original_cell
+                        .text()
+                        .map(|text| char_slice_from(text, merge_offset as usize))
+                        .unwrap_or_default()
+                );
+                if cell.cell.supports_formatting() {
+                    // For formatting, we also need to consider whether
+                    // annotations are included in the operation's old
+                    // formatting again (see above).
+                    let mut new_formatting: Formatting = Vec::new();
+                    if let Some(formatting) = cell.formatting() {
+                        for annotation in formatting.iter() {
+                            new_formatting.push(annotation.clone());
+                        }
+                    }
+                    if let Some(formatting) = last_original_cell.formatting() {
+                        let old_formatting = last_old_cell.formatting();
+                        let delta = char_count(new_cell_text) as i64 - merge_offset as i64;
+                        for annotation in formatting.iter().filter(|annotation| {
+                            match annotation.offset.cmp(&merge_offset) {
+                                Ordering::Greater => true,
+                                Ordering::Equal => !old_formatting
+                                    .map(|old_formatting| {
+                                        is_annotation_included_in_formatting(
+                                            &annotation.annotation,
+                                            merge_offset
+                                                - if operation.old_cells.len() == 1 {
+                                                    operation.split_offset.unwrap_or_default()
+                                                } else {
+                                                    0
+                                                },
+                                            old_formatting,
+                                        )
+                                    })
+                                    .unwrap_or_default(),
+                                Ordering::Less => false,
+                            }
+                        }) {
+                            new_formatting.push(annotation.translate(delta));
+                        }
+                    }
+                    CellWithIndex {
+                        cell: cell.cell.with_rich_text(&new_text, new_formatting),
+                        index: cell.index,
+                    }
+                } else {
+                    CellWithIndex {
+                        cell: cell.cell.with_text(&new_text),
+                        index: cell.index,
+                    }
+                }
+            } else {
+                cell.clone()
+            };
+
+            Ok(cell)
+        })
+        .collect::<Result<Vec<CellWithIndex>, Error>>()?;
+    for new_referencing_cell in operation.new_referencing_cells.iter() {
+        new_cells.push(new_referencing_cell.clone());
+    }
+
+    let mut changes: Vec<Change> = Vec::new();
+
+    for cell in operation.old_cells.iter() {
+        if let Some((index, new_cell)) = new_cells
+            .iter()
+            .enumerate()
+            .find(|(_, new_cell)| new_cell.id() == cell.id())
+        {
+            changes.push(Change::UpdateCell(UpdateCellChange {
+                cell: new_cell.cell.clone(),
+            }));
+            new_cells.remove(index);
+        } else {
+            changes.push(Change::DeleteCell(DeleteCellChange {
+                cell_id: cell.id().to_owned(),
+            }));
+        }
+    }
+    for cell in operation.old_referencing_cells.iter() {
+        if let Some((index, new_cell)) = new_cells
+            .iter()
+            .enumerate()
+            .find(|(_, new_cell)| new_cell.id() == cell.id())
+        {
+            changes.push(Change::UpdateCell(UpdateCellChange {
+                cell: new_cell.cell.clone(),
+            }));
+            new_cells.remove(index);
+        } else {
+            changes.push(Change::DeleteCell(DeleteCellChange {
+                cell_id: cell.id().to_owned(),
+            }));
         }
     }
 
-    changes
+    for cell in new_cells {
+        changes.push(Change::InsertCell(InsertCellChange {
+            cell: cell.cell.clone(),
+            index: cell.index,
+        }));
+    }
+
+    Ok(changes)
 }
 
 fn apply_replace_text_operation(
     state: &dyn ApplyOperationState,
     operation: &ReplaceTextOperation,
 ) -> Result<Vec<Change>, Error> {
-    match state.cell(&operation.cell_id) {
-        Some(cell) => {
-            if let Some(text) = cell.text() {
-                Ok(vec![Change::UpdateCellText(UpdateCellTextChange {
-                    cell_id: operation.cell_id.clone(),
-                    text: replace_text(text, operation),
-                    formatting: Some(replace_formatting(
-                        cell.formatting()
-                            .cloned()
-                            .unwrap_or_else(|| formatting_from_markdown(text)),
-                        operation,
-                    )),
-                })])
-            } else {
-                Err(Error::NoContentCell(operation.cell_id.clone()))
-            }
-        }
-        None => Err(Error::CellNotFound(operation.cell_id.clone())),
-    }
-}
-
-fn apply_split_cells_operation(
-    state: &dyn ApplyOperationState,
-    operation: &SplitCellOperation,
-) -> Result<Vec<Change>, Error> {
-    let cell_with_index = state
-        .cell_with_index(&operation.cell_id)
+    let cell = state
+        .cell(&operation.cell_id)
         .ok_or_else(|| Error::CellNotFound(operation.cell_id.clone()))?;
-    let cell = &cell_with_index.cell;
+    let text = cell
+        .text()
+        .ok_or_else(|| Error::NoTextCell(operation.cell_id.clone()))?;
 
-    let mut changes = vec![
-        Change::UpdateCellText(UpdateCellTextChange {
-            cell_id: cell.id().clone(),
-            text: cell
-                .content()
-                .map(|c| c.chars().take(operation.split_index as usize).collect())
-                .unwrap_or_default(),
-            formatting: cell.formatting().map(|formatting| {
-                formatting
-                    .iter()
-                    .take(first_annotation_index_for_offset(
-                        formatting,
-                        operation.split_index,
-                    ))
-                    .cloned()
-                    .collect()
-            }),
-        }),
-        Change::InsertCell(InsertCellChange {
-            cell: operation.new_cell.clone(),
-            index: cell_with_index.index + 1,
-        }),
-    ];
-
-    if let Some(referencing_cells) = &operation.referencing_cells {
-        for referencing_cell in referencing_cells {
-            if state
-                .all_relevant_cells()
-                .iter()
-                .any(|c| c.cell.id() == referencing_cell.cell.id())
-            {
-                changes.push(Change::UpdateCell(UpdateCellChange {
-                    cell: referencing_cell.cell.clone(),
-                }))
-            } else {
-                changes.push(Change::InsertCell(InsertCellChange {
-                    cell: referencing_cell.cell.clone(),
-                    index: referencing_cell.index,
-                }))
-            }
-        }
-    }
-
-    Ok(changes)
-}
-
-fn apply_update_cell_operation(
-    state: &dyn ApplyOperationState,
-    operation: &UpdateCellOperation,
-) -> Result<Vec<Change>, Error> {
-    if operation.updated_cell.id() == operation.old_cell.id() {
-        Ok(vec![Change::UpdateCell(UpdateCellChange {
-            cell: operation.updated_cell.as_ref().clone(),
-        })])
-    } else if state
-        .all_relevant_cells()
-        .iter()
-        .any(|c| c.cell.id() == operation.updated_cell.id())
-    {
-        Err(Error::DuplicateId(operation.updated_cell.id().clone()))
-    } else {
-        // If the ID changed, we remove the old cell and insert the new one at the old index.
-        // This is necessary to let remove and merge cell operations converge:
-        let index = state
-            .cell_with_index(operation.old_cell.id())
-            .ok_or_else(|| Error::CellNotFound(operation.old_cell.id().clone()))?
-            .index;
-
-        Ok(vec![
-            Change::DeleteCell(DeleteCellChange {
-                cell_id: operation.old_cell.id().clone(),
-            }),
-            Change::InsertCell(InsertCellChange {
-                cell: operation.updated_cell.as_ref().clone(),
-                index,
-            }),
-        ])
-    }
+    let old_text_len = char_count(&operation.old_text);
+    Ok(vec![Change::UpdateCellText(UpdateCellTextChange {
+        cell_id: operation.cell_id.clone(),
+        text: replace_text(text, &operation.new_text, operation.offset, old_text_len),
+        formatting: Some(replace_formatting(
+            cell.formatting(),
+            operation.old_formatting.as_ref(),
+            operation.new_formatting.as_ref(),
+            operation.offset,
+            old_text_len,
+            char_count(&operation.new_text),
+        )),
+    })])
 }
 
 fn apply_update_notebook_time_range(
@@ -406,73 +473,76 @@ fn apply_remove_label_operation(
     })]
 }
 
-fn get_change_for_dropped_reference(
-    referencing_cell: &CellWithIndex,
-    source_ids: Vec<&str>,
-) -> Change {
-    if source_ids.is_empty() {
-        Change::DeleteCell(DeleteCellChange {
-            cell_id: referencing_cell.cell.id().clone(),
-        })
-    } else {
-        Change::UpdateCell(UpdateCellChange {
-            cell: referencing_cell
-                .cell
-                .with_source_ids(source_ids.into_iter().map(String::from).collect()),
-        })
-    }
-}
-
+/// Performs a formatting replacement within the given `formatting`. The
+/// replacement will start at `offset`, remove the given `old_formatting`
+/// (which may contain offsets from `0` through `old_text_len`), and replace
+/// it with `new_formatting` (which may contain offsets from `0` through
+/// `new_text_len`).
 pub fn replace_formatting(
-    mut formatting: Formatting,
-    operation: &ReplaceTextOperation,
+    formatting: Option<&Formatting>,
+    old_formatting: Option<&Formatting>,
+    new_formatting: Option<&Formatting>,
+    offset: u32,
+    old_text_len: u32,
+    new_text_len: u32,
 ) -> Formatting {
-    let offset = operation.offset as i64;
-
-    if let Some(old_formatting) = &operation.old_formatting {
-        formatting.retain(|annotation| !old_formatting.contains(&annotation.translate(-offset)));
-    }
+    let formatting = if let Some(old_formatting) = old_formatting {
+        formatting
+            .map(|formatting| {
+                formatting
+                    .iter()
+                    .filter(|annotation| {
+                        annotation.offset < offset
+                            || annotation.offset > offset + old_text_len
+                            || !is_annotation_included_in_formatting(
+                                &annotation.annotation,
+                                annotation.offset - offset,
+                                old_formatting,
+                            )
+                    })
+                    .cloned()
+                    .collect()
+            })
+            .unwrap_or_default()
+    } else {
+        formatting.cloned().unwrap_or_default()
+    };
 
     // We split the formatting at the index *beyond* the offset, so that no
     // formatting is lost unless explicitly included in the `old_formatting`.
-    let split_index = first_annotation_index_beyond_offset(&formatting, operation.offset);
-    let continue_index = if operation.old_text.is_empty() {
+    let split_index = first_annotation_index_beyond_offset(&formatting, offset);
+    let merge_index = if old_text_len == 0 {
         // We continue from the split index, or annotations that are *at* the
         // index would get duplicated.
         split_index
     } else {
         // If we removed text, we continue *before* the offset from where the
         // text continues, to avoid losing formatting again.
-        first_annotation_index_for_offset(
-            &formatting,
-            operation.offset + char_count(&operation.old_text),
-        )
+        first_annotation_index_for_offset(&formatting, offset + old_text_len)
     };
 
-    let delta = char_count(&operation.new_text) as i64 - char_count(&operation.old_text) as i64;
+    let delta = new_text_len as i64 - old_text_len as i64;
     [
         &formatting[0..split_index],
-        &operation
-            .new_formatting
-            .as_ref()
-            .map(|formatting| translate(formatting, offset))
+        &new_formatting
+            .map(|formatting| translate(formatting, offset as i64))
             .unwrap_or_default(),
         &formatting
             .iter()
-            .skip(continue_index)
+            .skip(merge_index)
             .map(|annotation| annotation.translate(delta))
             .collect::<Vec<_>>(),
     ]
     .concat()
 }
 
-pub fn replace_text(text: &str, operation: &ReplaceTextOperation) -> String {
+/// Performs a string replacement within the given `text`. The replacement will
+/// start at `offset`, remove the given `old_text_len` characters, and replace
+/// them with `new_text`.
+pub fn replace_text(text: &str, new_text: &str, offset: u32, old_text_len: u32) -> String {
     text.chars()
-        .take(operation.offset as usize)
-        .chain(operation.new_text.chars())
-        .chain(
-            text.chars()
-                .skip((operation.offset + char_count(&operation.old_text)) as usize),
-        )
+        .take(offset as usize)
+        .chain(new_text.chars())
+        .chain(text.chars().skip((offset + old_text_len) as usize))
         .collect()
 }

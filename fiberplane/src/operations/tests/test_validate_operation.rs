@@ -4,26 +4,30 @@ use crate::{
         validate_operation,
     },
     protocols::{core::*, operations::*, realtime::RejectReason},
+    text_util::char_count,
 };
 use pretty_assertions::assert_eq;
 
 #[test]
-pub fn test_validate_test_cases() -> Result<(), RejectReason> {
+pub fn test_validate_test_cases() {
     // All operations from the test cases should be able to be validated without errors.
     for test_case in TEST_CASES.iter() {
-        validate_operation(&*TEST_NOTEBOOK, &test_case.operation)?;
+        assert_eq!(
+            validate_operation(&*TEST_NOTEBOOK, &test_case.operation),
+            Ok(()),
+            "Operation from test cases failed to validate: {:?}",
+            test_case.operation
+        );
     }
-
-    Ok(())
 }
 
 #[test]
-pub fn test_invalid_add_cells_operations() {
+pub fn test_invalid_replace_cells_operations() {
     assert_eq!(
         validate_operation(
             &*TEST_NOTEBOOK,
-            &Operation::AddCells(AddCellsOperation {
-                cells: vec![CellWithIndex {
+            &Operation::ReplaceCells(ReplaceCellsOperation {
+                new_cells: vec![CellWithIndex {
                     cell: Cell::Text(TextCell {
                         id: "out_of_range".to_owned(),
                         content: "Out of range".to_owned(),
@@ -31,7 +35,7 @@ pub fn test_invalid_add_cells_operations() {
                     }),
                     index: TEST_NOTEBOOK.cells.len() as u32 + 1
                 }],
-                referencing_cells: None,
+                ..Default::default()
             })
         ),
         Err(RejectReason::CellIndexOutOfBounds)
@@ -40,8 +44,8 @@ pub fn test_invalid_add_cells_operations() {
     assert_eq!(
         validate_operation(
             &*TEST_NOTEBOOK,
-            &Operation::AddCells(AddCellsOperation {
-                cells: vec![CellWithIndex {
+            &Operation::ReplaceCells(ReplaceCellsOperation {
+                new_cells: vec![CellWithIndex {
                     cell: Cell::Text(TextCell {
                         id: "c1".to_owned(),
                         content: "Duplicate".to_owned(),
@@ -49,7 +53,7 @@ pub fn test_invalid_add_cells_operations() {
                     }),
                     index: 0
                 }],
-                referencing_cells: None,
+                ..Default::default()
             })
         ),
         Err(RejectReason::DuplicateCellId {
@@ -60,8 +64,8 @@ pub fn test_invalid_add_cells_operations() {
     assert_eq!(
         validate_operation(
             &*TEST_NOTEBOOK,
-            &Operation::AddCells(AddCellsOperation {
-                cells: vec![
+            &Operation::ReplaceCells(ReplaceCellsOperation {
+                new_cells: vec![
                     CellWithIndex {
                         cell: Cell::Text(TextCell {
                             id: "duplicate".to_owned(),
@@ -79,11 +83,78 @@ pub fn test_invalid_add_cells_operations() {
                         index: 2
                     }
                 ],
-                referencing_cells: None,
+                ..Default::default()
             })
         ),
         Err(RejectReason::DuplicateCellId {
             cell_id: "duplicate".to_owned()
+        })
+    );
+
+    assert_eq!(
+        validate_operation(
+            &*TEST_NOTEBOOK,
+            &Operation::ReplaceCells(ReplaceCellsOperation {
+                new_cells: vec![
+                    CellWithIndex {
+                        cell: TEST_NOTEBOOK.cells[3].with_text(""),
+                        index: 3,
+                    },
+                    CellWithIndex {
+                        cell: Cell::Prometheus(PrometheusCell {
+                            id: "s1".to_owned(),
+                            content: "memstats_alloc_bytes".to_owned(),
+                            read_only: None,
+                        }),
+                        index: 4,
+                    },
+                ],
+                old_cells: vec![CellWithIndex {
+                    // The cell content doesn't align with the offset:
+                    cell: TEST_NOTEBOOK.cells[3].with_text("memstats_alloc_bytes"),
+                    index: 3,
+                }],
+                split_offset: Some(4),
+                merge_offset: None,
+                ..Default::default()
+            })
+        ),
+        Err(RejectReason::InconsistentState)
+    );
+
+    assert_eq!(
+        validate_operation(
+            &*TEST_NOTEBOOK,
+            &Operation::ReplaceCells(ReplaceCellsOperation {
+                new_cells: vec![
+                    CellWithIndex {
+                        cell: TEST_NOTEBOOK.cells[3].with_text(""),
+                        index: 3,
+                    },
+                    CellWithIndex {
+                        cell: Cell::Prometheus(PrometheusCell {
+                            id: "s1".to_owned(),
+                            content: "memstats_alloc_bytes".to_owned(),
+                            read_only: None,
+                        }),
+                        index: 4,
+                    },
+                ],
+                old_cells: vec![CellWithIndex {
+                    cell: TEST_NOTEBOOK.cells[3].with_text(""),
+                    index: 3,
+                }],
+                // Invalid split offset:
+                split_offset: TEST_NOTEBOOK.cells[3]
+                    .text()
+                    .map(char_count)
+                    .map(|text_len| text_len + 1),
+                merge_offset: None,
+                ..Default::default()
+            })
+        ),
+        Err(RejectReason::FailedPrecondition {
+            message: "`split_offset` is outside of target cell's text length".to_owned(),
         })
     );
 }

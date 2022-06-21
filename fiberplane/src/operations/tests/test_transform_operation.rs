@@ -2,10 +2,14 @@ use crate::{
     operations::{
         error::*,
         fixtures::{TEST_CASES, TEST_NOTEBOOK},
-        transform_operation::*,
+        invert_operation,
+        transforms::convergence::*,
+        transforms::*,
+        validate_operation::{get_existing_cell_to_compare, validate_operation},
+        ApplyOperationState,
     },
-    protocols::operations::*,
-    text_util::char_count,
+    protocols::{core::*, operations::*, realtime::RejectReason},
+    text_util::{char_count, char_slice},
 };
 use pretty_assertions::assert_eq;
 
@@ -19,53 +23,28 @@ use pretty_assertions::assert_eq;
 /// operations can, and we exclude non-converging operations from the test.
 fn converge(operation1: &Operation, operation2: &Operation) -> bool {
     match operation1 {
-        Operation::AddCells(operation1) => match operation2 {
-            Operation::AddCells(operation2) => adds_converge(operation1, operation2),
-            Operation::RemoveCells(operation2) => add_and_remove_converge(operation1, operation2),
-            _ => true,
-        },
-        Operation::MergeCells(operation1) => match operation2 {
-            Operation::MergeCells(operation2) => merges_converge(operation1, operation2),
-            Operation::RemoveCells(operation2) => merge_and_remove_converge(operation1, operation2),
-            Operation::UpdateCell(operation2) => merge_and_update_converge(operation1, operation2),
-            _ => true,
-        },
         Operation::MoveCells(operation1) => match operation2 {
             Operation::MoveCells(operation2) => moves_converge(operation1, operation2),
+            Operation::ReplaceCells(operation2) => {
+                move_and_replace_cells_converge(operation1, operation2)
+            }
             _ => true,
         },
-        Operation::RemoveCells(operation1) => match operation2 {
-            Operation::AddCells(operation2) => add_and_remove_converge(operation2, operation1),
-            Operation::MergeCells(operation2) => merge_and_remove_converge(operation2, operation1),
+        Operation::ReplaceCells(operation1) => match operation2 {
+            Operation::MoveCells(operation2) => {
+                move_and_replace_cells_converge(operation2, operation1)
+            }
+            Operation::ReplaceCells(operation2) => replace_cells_converge(operation1, operation2),
+            Operation::ReplaceText(operation2) => {
+                replace_cells_and_replace_text_converge(operation1, operation2)
+            }
             _ => true,
         },
         Operation::ReplaceText(operation1) => match operation2 {
+            Operation::ReplaceCells(operation2) => {
+                replace_cells_and_replace_text_converge(operation2, operation1)
+            }
             Operation::ReplaceText(operation2) => replace_texts_converge(operation1, operation2),
-            Operation::SplitCell(operation2) => {
-                replace_text_and_split_converge(operation1, operation2)
-            }
-            Operation::UpdateCell(operation2) => {
-                replace_text_and_update_cell_converge(operation1, operation2)
-            }
-            _ => true,
-        },
-        Operation::SplitCell(operation1) => match operation2 {
-            Operation::ReplaceText(operation2) => {
-                replace_text_and_split_converge(operation2, operation1)
-            }
-            Operation::SplitCell(operation2) => splits_converge(operation1, operation2),
-            Operation::UpdateCell(operation2) => &operation1.cell_id != operation2.old_cell.id(),
-            _ => true,
-        },
-        Operation::UpdateCell(operation1) => match operation2 {
-            Operation::MergeCells(operation2) => merge_and_update_converge(operation2, operation1),
-            Operation::ReplaceText(operation2) => {
-                replace_text_and_update_cell_converge(operation2, operation1)
-            }
-            Operation::SplitCell(operation2) => operation1.old_cell.id() != &operation2.cell_id,
-            Operation::UpdateCell(operation2) => {
-                operation1.old_cell.id() != operation2.old_cell.id()
-            }
             _ => true,
         },
         Operation::UpdateNotebookTimeRange(_) => {
@@ -116,94 +95,6 @@ fn converge(operation1: &Operation, operation2: &Operation) -> bool {
     }
 }
 
-// If two operations are trying to add cells with the same IDs, they (currently) cannot converge.
-fn adds_converge(add1: &AddCellsOperation, add2: &AddCellsOperation) -> bool {
-    let add2_cell_ids: Vec<&String> = add2.cells.iter().map(|c| c.cell.id()).collect();
-    !add1
-        .cells
-        .iter()
-        .any(|c| add2_cell_ids.contains(&c.cell.id()))
-}
-
-// A remove operation cannot converge with an add cells operation if it tries to remove the cells
-// added by that operation (which should be acceptable, because they would be considered to have a
-// causal relationship).
-fn add_and_remove_converge(add: &AddCellsOperation, remove: &RemoveCellsOperation) -> bool {
-    let add_cell_ids: Vec<&String> = add.cells.iter().map(|c| c.cell.id()).collect();
-    !remove
-        .removed_cells
-        .iter()
-        .any(|c| add_cell_ids.contains(&c.cell.id()))
-}
-
-// If the source xor target of a merge is removed (not both!), and there are
-// other cells to remove as well, we cannot converge because the transformation
-// would require multiple operations to represent the result.
-fn merge_and_remove_converge(merge: &MergeCellsOperation, remove: &RemoveCellsOperation) -> bool {
-    if remove.removed_cells.len() < 2 {
-        return true;
-    }
-
-    let source_removed = remove
-        .removed_cells
-        .iter()
-        .any(|c| c.cell.id() == merge.source_cell.id());
-    let target_removed = remove
-        .removed_cells
-        .iter()
-        .any(|c| c.cell.id() == &merge.target_cell_id);
-    !(source_removed ^ target_removed)
-}
-
-fn merges_converge(merge1: &MergeCellsOperation, merge2: &MergeCellsOperation) -> bool {
-    // Two identical merges make each other obsolete, which converges by definition:
-    if merge1 == merge2 {
-        return true;
-    }
-
-    // Merges (currently) only converge if they don't involve the same cells:
-    merge1.target_cell_id != merge2.target_cell_id
-        && merge1.source_cell.id() != merge2.source_cell.id()
-}
-
-fn replace_text_and_split_converge(
-    replace: &ReplaceTextOperation,
-    split: &SplitCellOperation,
-) -> bool {
-    if replace.cell_id != split.cell_id {
-        return true;
-    }
-
-    // Converge works as long as the split doesn't overlap with the replaced region:
-    replace.offset + char_count(&replace.old_text) <= split.split_index
-        || split.split_index
-            + split
-                .removed_text
-                .as_ref()
-                .map(char_count)
-                .unwrap_or_default()
-            >= replace.offset
-}
-
-fn replace_texts_converge(
-    replace1: &ReplaceTextOperation,
-    replace2: &ReplaceTextOperation,
-) -> bool {
-    // Two identical replacements make each other obsolete, which converges by definition:
-    if replace1 == replace2 {
-        return true;
-    }
-
-    // Replacements in different cells always converge:
-    if replace1.cell_id != replace2.cell_id {
-        return true;
-    }
-
-    // Convergence works as long as there's no overlap in the regions being replaced:
-    replace1.offset + char_count(&replace1.old_text) < replace2.offset
-        || replace1.offset > replace2.offset + char_count(&replace2.old_text)
-}
-
 #[test]
 pub fn test_transform_operation() -> Result<(), Error> {
     let testable_operations: Vec<&Operation> = TEST_CASES
@@ -224,78 +115,214 @@ pub fn test_transform_operation() -> Result<(), Error> {
         .collect();
 
     // Verify the amount of permutations, to make sure we don't accidentally skip any:
-    assert_eq!(testable_permutations.len(), 837);
+    assert_eq!(testable_permutations.len(), 940);
 
-    for (operation1, operation2) in testable_permutations.iter() {
-        match (
-            transform_operation(&*TEST_NOTEBOOK, operation1, operation2)?,
-            transform_operation(&*TEST_NOTEBOOK, operation2, operation1)?,
-        ) {
+    for (i, (operation1, operation2)) in testable_permutations.iter().enumerate() {
+        let progress = format!(
+            "Successful operations: {}/{} ({} untested)",
+            i,
+            testable_permutations.len(),
+            testable_permutations.len() - i - 1
+        );
+
+        let transformed_operation1 = transform_operation(&*TEST_NOTEBOOK, operation1, operation2)?;
+        let transformed_operation2 = transform_operation(&*TEST_NOTEBOOK, operation2, operation1)?;
+
+        let notebook_after_operation1 = TEST_NOTEBOOK.apply_operation(operation1)?;
+        let notebook_after_operation2 = TEST_NOTEBOOK.apply_operation(operation2)?;
+
+        if let Some(transformed_operation) = transformed_operation1.as_ref() {
+            assert_transformed_operation_properties(
+                &notebook_after_operation2,
+                operation1,
+                operation2,
+                transformed_operation,
+                &progress,
+            );
+        }
+
+        if let Some(transformed_operation) = transformed_operation2.as_ref() {
+            assert_transformed_operation_properties(
+                &notebook_after_operation1,
+                operation2,
+                operation1,
+                transformed_operation,
+                &progress,
+            );
+        }
+
+        match (transformed_operation1, transformed_operation2) {
             (Some(transformed_operation1), Some(transformed_operation2)) => {
                 // Regardless of order, applying both operations should result in the same notebook:
                 assert_eq!(
-                    TEST_NOTEBOOK
-                        .apply_operation(operation1)?
-                        .apply_operation(&transformed_operation2),
-                    TEST_NOTEBOOK
-                        .apply_operation(operation2)?
-                        .apply_operation(&transformed_operation1),
+                    notebook_after_operation1.apply_operation(&transformed_operation2),
+                    notebook_after_operation2.apply_operation(&transformed_operation1),
                     "Transformed operations diverged!\n\
                     Operation 1: {:?}\n\
                     Was transformed to: {:?}\n\
                     Operation 2: {:?}\n\
-                    Was transformed to: {:?}",
+                    Was transformed to: {:?}\n{}",
                     operation1,
                     transformed_operation1,
                     operation2,
                     transformed_operation2,
+                    progress
                 );
             }
             (Some(transformed_operation1), None) => {
                 assert_eq!(
-                    TEST_NOTEBOOK.apply_operation(operation1)?,
-                    TEST_NOTEBOOK
-                        .apply_operation(operation2)?
-                        .apply_operation(&transformed_operation1)?,
+                    notebook_after_operation1,
+                    notebook_after_operation2.apply_operation(&transformed_operation1)?,
                     "Transformed operations diverged!\n\
                         Operation 1: {:?}\n\
                         Was transformed to: {:?}\n\
-                        Operation 2 (dropped after transform): {:?}",
+                        Operation 2 (dropped after transform): {:?}\n{}",
                     operation1,
                     transformed_operation1,
                     operation2,
+                    progress
                 );
             }
             (None, Some(transformed_operation2)) => {
                 assert_eq!(
-                    TEST_NOTEBOOK
-                        .apply_operation(operation1)?
-                        .apply_operation(&transformed_operation2)?,
-                    TEST_NOTEBOOK.apply_operation(operation2)?,
+                    notebook_after_operation1.apply_operation(&transformed_operation2)?,
+                    notebook_after_operation2,
                     "Transformed operations diverged!\n\
                     Operation 1 (dropped after transform): {:?}\n\
                     Operation 2: {:?}\n\
-                    Was transformed to: {:?}",
+                    Was transformed to: {:?}\n{}",
                     operation1,
                     operation2,
                     transformed_operation2,
+                    progress
                 );
             }
             (None, None) => {
                 // If both operations tried to do the exact same thing,
                 // they'd both make the other obsolete:
                 assert_eq!(
-                    TEST_NOTEBOOK.apply_operation(operation1)?,
-                    TEST_NOTEBOOK.apply_operation(operation2)?,
+                    notebook_after_operation1, notebook_after_operation2,
                     "Transformed operations diverged!\n\
                     Operation 1 (dropped after transform): {:?}\n\
-                    Operation 2 (dropped after transform): {:?}",
-                    operation1,
-                    operation2,
+                    Operation 2 (dropped after transform): {:?}\n{}",
+                    operation1, operation2, progress
                 );
             }
         }
     }
 
     Ok(())
+}
+
+fn assert_transformed_operation_properties(
+    notebook: &Notebook,
+    original_operation: &Operation,
+    predecessor: &Operation,
+    transformed_operation: &Operation,
+    progress: &str,
+) {
+    let validation_result = validate_operation(notebook, transformed_operation);
+    report_validation_error(
+        validation_result,
+        notebook,
+        original_operation,
+        predecessor,
+        transformed_operation,
+        progress,
+    );
+
+    let inverted_operation = invert_operation(transformed_operation);
+    let inverted_inverted_operation = invert_operation(&inverted_operation);
+    assert_eq!(
+        transformed_operation,
+        &inverted_inverted_operation,
+        "Transformation resulted in non-revertible operation!\n\
+        Operation: {:?}\n\
+        Was transformed to: {:?}\n\
+        After transformation with: {:?}\n\
+        Inverted operation: {:?}\n\
+        Non-matching double-inverted operation: {:?}\n{}",
+        original_operation,
+        transformed_operation,
+        predecessor,
+        inverted_operation,
+        inverted_inverted_operation,
+        progress
+    );
+}
+
+fn report_validation_error(
+    validation_result: Result<(), RejectReason>,
+    notebook: &Notebook,
+    original_operation: &Operation,
+    predecessor: &Operation,
+    transformed_operation: &Operation,
+    progress: &str,
+) {
+    let validation_error = match validation_result {
+        Ok(()) => return, // Great!
+        Err(reject_reason) => reject_reason,
+    };
+
+    if validation_error == RejectReason::InconsistentState {
+        match transformed_operation {
+            Operation::ReplaceCells(op) => {
+                for (i, old_cell) in op.old_cells.iter().enumerate() {
+                    if let Some(actual_cell) = notebook.cell_with_index(old_cell.id()) {
+                        if let Ok(Some(original_cell)) =
+                            get_existing_cell_to_compare(&actual_cell, i, op)
+                        {
+                            assert_eq!(
+                                old_cell,
+                                &CellWithIndex {
+                                    cell: original_cell,
+                                    index: actual_cell.index,
+                                },
+                                "Transformation resulted in operation with inconsistent state!\n\
+                                Operation: {:?}\n\
+                                Was transformed to: {:?}\n\
+                                After transformation with: {:?}\n{}",
+                                original_operation,
+                                transformed_operation,
+                                predecessor,
+                                progress
+                            )
+                        }
+                    }
+                }
+            }
+            Operation::ReplaceText(op) => {
+                if let Some(cell) = TransformOperationState::cell(notebook, &op.cell_id) {
+                    assert_eq!(
+                        cell.text()
+                            .map(|text| char_slice(
+                                text,
+                                op.offset as usize,
+                                (op.offset + char_count(&op.old_text)) as usize
+                            ))
+                            .unwrap_or_default(),
+                        &op.old_text,
+                        "Transformation resulted in operation with inconsistent state!\n\
+                        Operation: {:?}\n\
+                        Was transformed to: {:?}\n\
+                        After transformation with: {:?}\n{}",
+                        original_operation,
+                        transformed_operation,
+                        predecessor,
+                        progress
+                    )
+                }
+            }
+            _ => {}
+        }
+    }
+
+    panic!(
+        "Transformation resulted in invalid operation!\n\
+            Operation: {:?}\n\
+            Was transformed to: {:?}\n\
+            After transformation with: {:?}\n\
+            Validation error: {:?}\n{}",
+        original_operation, transformed_operation, predecessor, validation_error, progress
+    );
 }

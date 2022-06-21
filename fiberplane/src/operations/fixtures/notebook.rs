@@ -55,7 +55,7 @@ impl Notebook {
                 text,
                 formatting,
             }) => self.with_updated_cells(|cells| {
-                if let Some(index) = cells.iter().position(|c| c.id() == &cell_id) {
+                if let Some(index) = cells.iter().position(|cell| cell.id() == cell_id) {
                     cells[index] =
                         cells[index].with_rich_text(&text, formatting.unwrap_or_default());
                 }
@@ -108,7 +108,7 @@ impl Notebook {
     /// Returns the notebook state with all the cells necessary for applying the given operation
     /// to it.
     fn state_for_operation(&self, operation: &Operation) -> NotebookState {
-        let cell_ids = self.cells.iter().map(|cell| cell.id().as_str()).collect();
+        let cell_ids = self.cells.iter().map(Cell::id).collect();
         let relevant_cell_ids = relevant_cell_ids_for_operation(operation);
         NotebookState {
             cell_ids,
@@ -116,7 +116,7 @@ impl Notebook {
                 .cells
                 .iter()
                 .enumerate()
-                .filter(|(_, cell)| relevant_cell_ids.contains(cell.id()))
+                .filter(|(_, cell)| relevant_cell_ids.contains(&cell.id()))
                 .map(|(index, cell)| CellRefWithIndex {
                     cell,
                     index: index as u32,

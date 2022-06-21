@@ -115,8 +115,8 @@ impl<'a> MarkdownConverter<'a> {
                 End(tag) => self.end_tag(tag),
                 Text(content) => {
                     if let Some(cell) = &mut self.current_cell {
-                        if let Some(cell_content) = cell.content_mut() {
-                            cell_content.push_str(&content);
+                        if let Some(cell_text) = cell.text_mut() {
+                            cell_text.push_str(&content);
                             continue;
                         }
                     }
@@ -131,22 +131,22 @@ impl<'a> MarkdownConverter<'a> {
                     };
 
                     append_formatting(cell, Annotation::StartCode);
-                    if let Some(c) = cell.content_mut() {
+                    if let Some(c) = cell.text_mut() {
                         c.push_str(&content)
                     }
                     append_formatting(cell, Annotation::EndCode);
                 }
                 SoftBreak => {
                     if let Some(cell) = &mut self.current_cell {
-                        if let Some(content) = cell.content_mut() {
-                            content.push(' ');
+                        if let Some(text) = cell.text_mut() {
+                            text.push(' ');
                         }
                     }
                 }
                 HardBreak | Html(CowStr::Borrowed("<br>")) | Html(CowStr::Borrowed("<br />")) => {
                     if let Some(cell) = &mut self.current_cell {
-                        if let Some(content) = cell.content_mut() {
-                            content.push('\n');
+                        if let Some(text) = cell.text_mut() {
+                            text.push('\n');
                             continue;
                         }
                     }

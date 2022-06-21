@@ -2,6 +2,7 @@ use crate::protocols::core::{LabelValidationError, UserType};
 use crate::protocols::operations::Operation;
 use fp_bindgen::prelude::*;
 use serde::{Deserialize, Serialize};
+use std::cmp::Ordering;
 use std::fmt::Debug;
 use time::OffsetDateTime;
 
@@ -318,6 +319,10 @@ pub enum RejectReason {
     /// A label was submitted for already exists for the notebook.
     DuplicateLabel(DuplicateLabelRejectReason),
 
+    /// The operation failed some miscellaneous precondition.
+    #[serde(rename_all = "camelCase")]
+    FailedPrecondition { message: String },
+
     /// A label was submitted that was invalid.
     InvalidLabel(InvalidLabelRejectReason),
 
@@ -517,15 +522,57 @@ impl NotebookFocus {
         }
     }
 
-    // FIXME FP-625: This still assumes the selection can only be a single cell.
-    pub fn end_offset(&self) -> u32 {
+    pub fn anchor_position(&self) -> Option<&FocusPosition> {
+        match self {
+            Self::None => None,
+            Self::Collapsed(position) => Some(position),
+            Self::Selection { anchor, .. } => Some(anchor),
+        }
+    }
+
+    pub fn end_cell_id(&self, cell_ids: &[&str]) -> Option<&str> {
+        match self {
+            Self::None => None,
+            Self::Collapsed(position) => Some(&position.cell_id),
+            Self::Selection { anchor, focus } => {
+                let anchor_cell_index = cell_ids
+                    .iter()
+                    .position(|cell_id| cell_id == &anchor.cell_id)
+                    .unwrap_or_default();
+                let focus_cell_index = cell_ids
+                    .iter()
+                    .position(|cell_id| cell_id == &focus.cell_id)
+                    .unwrap_or_default();
+                if anchor_cell_index > focus_cell_index {
+                    Some(&anchor.cell_id)
+                } else {
+                    Some(&focus.cell_id)
+                }
+            }
+        }
+    }
+
+    pub fn end_offset(&self, cell_ids: &[&str]) -> u32 {
         match self {
             Self::None => 0,
             Self::Collapsed(position) => position.offset.unwrap_or_default(),
-            Self::Selection { anchor, focus } => std::cmp::max(
-                anchor.offset.unwrap_or_default(),
-                focus.offset.unwrap_or_default(),
-            ),
+            Self::Selection { anchor, focus } => {
+                let anchor_cell_index = cell_ids
+                    .iter()
+                    .position(|cell_id| cell_id == &anchor.cell_id)
+                    .unwrap_or_default();
+                let anchor_offset = anchor.offset.unwrap_or_default();
+                let focus_cell_index = cell_ids
+                    .iter()
+                    .position(|cell_id| cell_id == &focus.cell_id)
+                    .unwrap_or_default();
+                let focus_offset = focus.offset.unwrap_or_default();
+                match anchor_cell_index.cmp(&focus_cell_index) {
+                    Ordering::Greater => anchor_offset,
+                    Ordering::Equal => std::cmp::max(anchor_offset, focus_offset),
+                    Ordering::Less => focus_offset,
+                }
+            }
         }
     }
 
@@ -553,6 +600,14 @@ impl NotebookFocus {
         }
     }
 
+    pub fn focus_position(&self) -> Option<&FocusPosition> {
+        match self {
+            Self::None => None,
+            Self::Collapsed(position) => Some(&position),
+            Self::Selection { focus, .. } => Some(&focus),
+        }
+    }
+
     pub fn has_selection(&self) -> bool {
         !self.is_collapsed()
     }
@@ -570,15 +625,49 @@ impl NotebookFocus {
         matches!(self, Self::None)
     }
 
-    // FIXME FP-625: This still assumes the selection can only be a single cell.
-    pub fn start_offset(&self) -> u32 {
+    pub fn start_cell_id(&self, cell_ids: &[&str]) -> Option<&str> {
+        match self {
+            Self::None => None,
+            Self::Collapsed(position) => Some(&position.cell_id),
+            Self::Selection { anchor, focus } => {
+                let anchor_cell_index = cell_ids
+                    .iter()
+                    .position(|cell_id| cell_id == &anchor.cell_id)
+                    .unwrap_or_default();
+                let focus_cell_index = cell_ids
+                    .iter()
+                    .position(|cell_id| cell_id == &focus.cell_id)
+                    .unwrap_or_default();
+                if anchor_cell_index < focus_cell_index {
+                    Some(&anchor.cell_id)
+                } else {
+                    Some(&focus.cell_id)
+                }
+            }
+        }
+    }
+
+    pub fn start_offset(&self, cell_ids: &[&str]) -> u32 {
         match self {
             Self::None => 0,
             Self::Collapsed(position) => position.offset.unwrap_or_default(),
-            Self::Selection { anchor, focus } => std::cmp::min(
-                anchor.offset.unwrap_or_default(),
-                focus.offset.unwrap_or_default(),
-            ),
+            Self::Selection { anchor, focus } => {
+                let anchor_cell_index = cell_ids
+                    .iter()
+                    .position(|cell_id| cell_id == &anchor.cell_id)
+                    .unwrap_or_default();
+                let anchor_offset = anchor.offset.unwrap_or_default();
+                let focus_cell_index = cell_ids
+                    .iter()
+                    .position(|cell_id| cell_id == &focus.cell_id)
+                    .unwrap_or_default();
+                let focus_offset = focus.offset.unwrap_or_default();
+                match anchor_cell_index.cmp(&focus_cell_index) {
+                    Ordering::Less => anchor_offset,
+                    Ordering::Equal => std::cmp::min(anchor_offset, focus_offset),
+                    Ordering::Greater => focus_offset,
+                }
+            }
         }
     }
 }

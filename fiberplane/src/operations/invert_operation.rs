@@ -1,4 +1,4 @@
-use crate::protocols::operations::*;
+use crate::{protocols::operations::*, text_util::char_count};
 
 /// Inverts an operation.
 ///
@@ -11,13 +11,9 @@ use crate::protocols::operations::*;
 pub fn invert_operation(operation: &Operation) -> Operation {
     use Operation::*;
     match operation {
-        AddCells(operation) => invert_add_cells_operation(operation),
-        MergeCells(operation) => invert_merge_cells_operation(operation),
         MoveCells(operation) => invert_move_cells_operation(operation),
-        RemoveCells(operation) => invert_remove_cells_operation(operation),
-        SplitCell(operation) => invert_split_cells_operation(operation),
+        ReplaceCells(operation) => invert_replace_cells_operation(operation),
         ReplaceText(operation) => invert_replace_text_operation(operation),
-        UpdateCell(operation) => invert_update_cell_operation(operation),
         UpdateNotebookTimeRange(operation) => invert_update_notebook_time_range(operation),
         UpdateNotebookTitle(operation) => invert_update_notebook_title(operation),
         AddDataSource(operation) => invert_add_data_source_operation(operation),
@@ -29,24 +25,6 @@ pub fn invert_operation(operation: &Operation) -> Operation {
     }
 }
 
-fn invert_add_cells_operation(operation: &AddCellsOperation) -> Operation {
-    Operation::RemoveCells(RemoveCellsOperation {
-        referencing_cells: operation.referencing_cells.as_ref().cloned(),
-        removed_cells: operation.cells.clone(),
-    })
-}
-
-fn invert_merge_cells_operation(operation: &MergeCellsOperation) -> Operation {
-    Operation::SplitCell(SplitCellOperation {
-        cell_id: operation.target_cell_id.clone(),
-        new_cell: operation.source_cell.clone(),
-        referencing_cells: operation.referencing_cells.clone(),
-        removed_text: operation.glue_text.clone(),
-        removed_formatting: operation.glue_formatting.clone(),
-        split_index: operation.target_content_length,
-    })
-}
-
 fn invert_move_cells_operation(operation: &MoveCellsOperation) -> Operation {
     Operation::MoveCells(MoveCellsOperation {
         cell_ids: operation.cell_ids.clone(),
@@ -55,36 +33,23 @@ fn invert_move_cells_operation(operation: &MoveCellsOperation) -> Operation {
     })
 }
 
-fn invert_remove_cells_operation(operation: &RemoveCellsOperation) -> Operation {
-    let mut added_cells: Vec<CellWithIndex> = operation.removed_cells.clone();
-    let mut newly_referencing_cells: Vec<CellWithIndex> = vec![];
-
-    if let Some(referencing_cells) = &operation.referencing_cells {
-        for referencing_cell in referencing_cells {
-            let mut source_ids = referencing_cell.cell.source_ids();
-            for removed_cell in &operation.removed_cells {
-                if let Some(index) = source_ids
-                    .iter()
-                    .position(|id| id == removed_cell.cell.id())
-                {
-                    source_ids.remove(index);
+fn invert_replace_cells_operation(operation: &ReplaceCellsOperation) -> Operation {
+    Operation::ReplaceCells(ReplaceCellsOperation {
+        new_cells: operation.old_cells.clone(),
+        old_cells: operation.new_cells.clone(),
+        new_referencing_cells: operation.old_referencing_cells.clone(),
+        old_referencing_cells: operation.new_referencing_cells.clone(),
+        split_offset: operation.split_offset,
+        merge_offset: operation.merge_offset.map(|_| {
+            match (operation.new_cells.first(), operation.new_cells.last()) {
+                (Some(first_cell), Some(last_cell)) if first_cell.id() == last_cell.id() => {
+                    operation.split_offset.unwrap_or_default()
+                        + last_cell.cell.text().map(char_count).unwrap_or_default()
                 }
+                (_, Some(last_cell)) => last_cell.cell.text().map(char_count).unwrap_or_default(),
+                _ => 0,
             }
-            if source_ids.is_empty() {
-                added_cells.push(referencing_cell.clone());
-            } else {
-                newly_referencing_cells.push(referencing_cell.clone());
-            }
-        }
-    }
-
-    Operation::AddCells(AddCellsOperation {
-        cells: added_cells,
-        referencing_cells: if newly_referencing_cells.is_empty() {
-            None
-        } else {
-            Some(newly_referencing_cells)
-        },
+        }),
     })
 }
 
@@ -96,24 +61,6 @@ fn invert_replace_text_operation(operation: &ReplaceTextOperation) -> Operation 
         old_formatting: operation.new_formatting.clone(),
         new_text: operation.old_text.clone(),
         new_formatting: operation.old_formatting.clone(),
-    })
-}
-
-fn invert_split_cells_operation(operation: &SplitCellOperation) -> Operation {
-    Operation::MergeCells(MergeCellsOperation {
-        glue_text: operation.removed_text.clone(),
-        glue_formatting: operation.removed_formatting.clone(),
-        referencing_cells: operation.referencing_cells.clone(),
-        source_cell: operation.new_cell.clone(),
-        target_cell_id: operation.cell_id.clone(),
-        target_content_length: operation.split_index,
-    })
-}
-
-fn invert_update_cell_operation(operation: &UpdateCellOperation) -> Operation {
-    Operation::UpdateCell(UpdateCellOperation {
-        updated_cell: operation.old_cell.clone(),
-        old_cell: operation.updated_cell.clone(),
     })
 }
 

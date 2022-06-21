@@ -23,3 +23,10 @@ pub fn char_slice(text: &str, start: usize, end: usize) -> &str {
     let end = char_index(text, end as u32);
     &text[start..end]
 }
+
+/// Returns a slice of a string, based on character offsets instead of byte
+/// indices.
+pub fn char_slice_from(text: &str, start: usize) -> &str {
+    let start = char_index(text, start as u32);
+    &text[start..]
+}

@@ -4,7 +4,8 @@ mod error;
 mod invert_operation;
 mod notebook;
 mod relevant_cell_ids_for_operation;
-mod transform_operation;
+mod transforms;
+mod utils;
 mod validate_operation;
 
 #[cfg(any(feature = "fixtures", test))]
@@ -21,5 +22,5 @@ pub use error::*;
 pub use invert_operation::invert_operation;
 pub use notebook::*;
 pub use relevant_cell_ids_for_operation::relevant_cell_ids_for_operation;
-pub use transform_operation::{transform_operation, TransformOperationState};
+pub use transforms::{transform_operation, TransformOperationState};
 pub use validate_operation::validate_operation;

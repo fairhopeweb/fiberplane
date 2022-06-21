@@ -23,7 +23,7 @@ enum CellChangeState {
 }
 
 impl CellChangeState {
-    fn cell_id(&self) -> Option<&String> {
+    fn cell_id(&self) -> Option<&str> {
         match self {
             Self::None => None,
             Self::Inserted { cell, .. } => Some(cell.id()),
@@ -99,6 +99,9 @@ pub fn simplify_changes(changes: Vec<Change>) -> Vec<Change> {
                         }
                     }
                 } else {
+                    if let Some(change) = current_cell_state.into_change() {
+                        simplified_changes.push(change);
+                    }
                     simplified_changes.push(Change::DeleteCell(delete_change));
                 }
 
@@ -258,10 +261,10 @@ pub fn simplify_changes(changes: Vec<Change>) -> Vec<Change> {
         let skip_change = match &simplified_changes[i] {
             Change::UpdateCell(update_change) => simplified_changes.iter().skip(i + 1).any(|change| {
                 matches!(change, Change::UpdateCell(other) if other.cell.id() == update_change.cell.id()) ||
-                matches!(change, Change::DeleteCell(other) if &other.cell_id == update_change.cell.id())
+                matches!(change, Change::DeleteCell(other) if other.cell_id == update_change.cell.id())
             }),
             Change::UpdateCellText(update_change) => simplified_changes.iter().skip(i + 1).any(|change| {
-                matches!(change, Change::UpdateCell(other) if other.cell.id() == &update_change.cell_id) ||
+                matches!(change, Change::UpdateCell(other) if other.cell.id() == update_change.cell_id) ||
                 matches!(change, Change::UpdateCellText(other) if other.cell_id == update_change.cell_id) ||
                 matches!(change, Change::DeleteCell(other) if other.cell_id == update_change.cell_id)
             }),

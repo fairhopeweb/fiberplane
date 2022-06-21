@@ -26,6 +26,7 @@ pub static TEST_CASES: Lazy<Vec<OperationTestCase>> = Lazy::new(|| {
     create_remove_cells_test_cases(&mut test_cases);
     create_replace_text_test_cases(&mut test_cases);
     create_split_cell_test_cases(&mut test_cases);
+    create_split_and_merge_cell_test_cases(&mut test_cases);
     create_update_cell_test_cases(&mut test_cases);
     create_update_notebook_time_range_test_cases(&mut test_cases);
 
@@ -56,8 +57,8 @@ fn create_add_cells_test_cases(test_cases: &mut Vec<OperationTestCase>) {
 
     // Test appending cells to the back:
     test_cases.push(OperationTestCase {
-        operation: Operation::AddCells(AddCellsOperation {
-            cells: vec![
+        operation: Operation::ReplaceCells(ReplaceCellsOperation {
+            new_cells: vec![
                 CellWithIndex {
                     cell: new_cell_1.clone(),
                     index: TEST_NOTEBOOK.cells.len() as u32,
@@ -67,7 +68,7 @@ fn create_add_cells_test_cases(test_cases: &mut Vec<OperationTestCase>) {
                     index: TEST_NOTEBOOK.cells.len() as u32 + 1,
                 },
             ],
-            referencing_cells: None,
+            ..Default::default()
         }),
         expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
             cells.push(new_cell_1.clone());
@@ -86,12 +87,12 @@ fn create_add_cells_test_cases(test_cases: &mut Vec<OperationTestCase>) {
 
     // Test prepending cells to the front:
     test_cases.push(OperationTestCase {
-        operation: Operation::AddCells(AddCellsOperation {
-            cells: vec![CellWithIndex {
+        operation: Operation::ReplaceCells(ReplaceCellsOperation {
+            new_cells: vec![CellWithIndex {
                 cell: new_cell_3.clone(),
                 index: 0,
             }],
-            referencing_cells: None,
+            ..Default::default()
         }),
         expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
             cells.insert(0, new_cell_3.clone());
@@ -108,12 +109,12 @@ fn create_add_cells_test_cases(test_cases: &mut Vec<OperationTestCase>) {
 
     // Test inserting a cell somewhere in the middle:
     test_cases.push(OperationTestCase {
-        operation: Operation::AddCells(AddCellsOperation {
-            cells: vec![CellWithIndex {
+        operation: Operation::ReplaceCells(ReplaceCellsOperation {
+            new_cells: vec![CellWithIndex {
                 cell: new_cell_4.clone(),
                 index: 4,
             }],
-            referencing_cells: None,
+            ..Default::default()
         }),
         expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
             cells.insert(4, new_cell_4.clone());
@@ -129,12 +130,12 @@ fn create_add_cells_test_cases(test_cases: &mut Vec<OperationTestCase>) {
 
     // Test inserting another at the same position to cover transforms:
     test_cases.push(OperationTestCase {
-        operation: Operation::AddCells(AddCellsOperation {
-            cells: vec![CellWithIndex {
+        operation: Operation::ReplaceCells(ReplaceCellsOperation {
+            new_cells: vec![CellWithIndex {
                 cell: new_cell_5.clone(),
                 index: 4,
             }],
-            referencing_cells: None,
+            ..Default::default()
         }),
         expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
             cells.insert(4, new_cell_5.clone());
@@ -149,16 +150,21 @@ fn create_add_cells_test_cases(test_cases: &mut Vec<OperationTestCase>) {
 
     // Test inserting a cell and atomatically creating a reference to it:
     test_cases.push(OperationTestCase {
-        operation: Operation::AddCells(AddCellsOperation {
-            cells: vec![CellWithIndex {
+        operation: Operation::ReplaceCells(ReplaceCellsOperation {
+            new_cells: vec![CellWithIndex {
                 cell: new_cell_6.clone(),
                 index: 0,
             }],
-            referencing_cells: Some(vec![CellWithIndex {
+            new_referencing_cells: vec![CellWithIndex {
                 cell: TEST_NOTEBOOK.cells[6]
                     .with_source_ids(vec!["c6".to_owned(), "n6".to_owned()]),
+                index: 7,
+            }],
+            old_referencing_cells: vec![CellWithIndex {
+                cell: TEST_NOTEBOOK.cells[6].clone(),
                 index: 6,
-            }]),
+            }],
+            ..Default::default()
         }),
         expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
             cells.insert(0, new_cell_6);
@@ -173,13 +179,24 @@ fn create_add_cells_test_cases(test_cases: &mut Vec<OperationTestCase>) {
 
 fn create_merge_cells_test_cases(test_cases: &mut Vec<OperationTestCase>) {
     test_cases.push(OperationTestCase {
-        operation: Operation::MergeCells(MergeCellsOperation {
-            glue_text: None,
-            glue_formatting: None,
-            source_cell: TEST_NOTEBOOK.cells[2].clone(),
-            target_cell_id: "c2".to_owned(),
-            target_content_length: TEST_NOTEBOOK.cells[1].content().map(char_count).unwrap(),
-            referencing_cells: None,
+        operation: Operation::ReplaceCells(ReplaceCellsOperation {
+            new_cells: vec![CellWithIndex {
+                cell: TEST_NOTEBOOK.cells[1].with_text(""),
+                index: 1,
+            }],
+            old_cells: vec![
+                CellWithIndex {
+                    cell: TEST_NOTEBOOK.cells[1].with_text(""),
+                    index: 1,
+                },
+                CellWithIndex {
+                    cell: TEST_NOTEBOOK.cells[2].with_text(""),
+                    index: 2,
+                },
+            ],
+            split_offset: Some(TEST_NOTEBOOK.cells[1].content().map(char_count).unwrap()),
+            merge_offset: Some(0),
+            ..Default::default()
         }),
         expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
             cells[1] = cells[1].with_appended_rich_text(
@@ -193,13 +210,38 @@ fn create_merge_cells_test_cases(test_cases: &mut Vec<OperationTestCase>) {
     // Make sure the cells of this test case overlap with the ones from the first, to
     // be able to test transforms between them:
     test_cases.push(OperationTestCase {
-        operation: Operation::MergeCells(MergeCellsOperation {
-            glue_text: None,
-            glue_formatting: None,
-            source_cell: TEST_NOTEBOOK.cells[3].clone(),
-            target_cell_id: "c3".to_owned(),
-            target_content_length: TEST_NOTEBOOK.cells[2].content().map(char_count).unwrap(),
-            referencing_cells: Some(vec![TEST_NOTEBOOK.clone_cell_with_index_by_id("c9")]),
+        operation: Operation::ReplaceCells(ReplaceCellsOperation {
+            new_cells: vec![CellWithIndex {
+                cell: TEST_NOTEBOOK.cells[2].with_text(""),
+                index: 2,
+            }],
+            old_cells: vec![
+                CellWithIndex {
+                    cell: TEST_NOTEBOOK.cells[2].with_text(""),
+                    index: 2,
+                },
+                CellWithIndex {
+                    cell: TEST_NOTEBOOK.cells[3].with_text(""),
+                    index: 3,
+                },
+            ],
+            new_referencing_cells: vec![CellWithIndex {
+                cell: TEST_NOTEBOOK.cells[8].with_source_ids(
+                    TEST_NOTEBOOK.cells[8]
+                        .source_ids()
+                        .iter()
+                        .filter(|&&id| id != "c4")
+                        .map(|&id| id.to_owned())
+                        .collect(),
+                ),
+                index: 7,
+            }],
+            old_referencing_cells: vec![CellWithIndex {
+                cell: TEST_NOTEBOOK.cells[8].clone(),
+                index: 8,
+            }],
+            split_offset: Some(TEST_NOTEBOOK.cells[2].content().map(char_count).unwrap()),
+            merge_offset: Some(0),
         }),
         expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
             cells[2] = cells[2].with_appended_rich_text(
@@ -222,16 +264,44 @@ fn create_merge_cells_test_cases(test_cases: &mut Vec<OperationTestCase>) {
 
     // Test merging with "glue text", which typically results from inverting a split cell operation:
     test_cases.push(OperationTestCase {
-        operation: Operation::MergeCells(MergeCellsOperation {
-            glue_text: Some("glue".to_owned()),
-            glue_formatting: Some(vec![
-                AnnotationWithOffset::new(0, Annotation::StartBold),
-                AnnotationWithOffset::new(4, Annotation::EndBold),
-            ]),
-            source_cell: TEST_NOTEBOOK.cells[3].clone(),
-            target_cell_id: "c3".to_owned(),
-            target_content_length: TEST_NOTEBOOK.cells[2].content().map(char_count).unwrap(),
-            referencing_cells: Some(vec![TEST_NOTEBOOK.clone_cell_with_index_by_id("c9")]),
+        operation: Operation::ReplaceCells(ReplaceCellsOperation {
+            new_cells: vec![CellWithIndex {
+                cell: TEST_NOTEBOOK.cells[2].with_rich_text(
+                    "glue",
+                    vec![
+                        AnnotationWithOffset::new(0, Annotation::StartBold),
+                        AnnotationWithOffset::new(4, Annotation::EndBold),
+                    ],
+                ),
+                index: 2,
+            }],
+            old_cells: vec![
+                CellWithIndex {
+                    cell: TEST_NOTEBOOK.cells[2].with_text(""),
+                    index: 2,
+                },
+                CellWithIndex {
+                    cell: TEST_NOTEBOOK.cells[3].with_text(""),
+                    index: 3,
+                },
+            ],
+            new_referencing_cells: vec![CellWithIndex {
+                cell: TEST_NOTEBOOK.cells[8].with_source_ids(
+                    TEST_NOTEBOOK.cells[8]
+                        .source_ids()
+                        .iter()
+                        .filter(|&&id| id != "c4")
+                        .map(|&id| id.to_owned())
+                        .collect(),
+                ),
+                index: 7,
+            }],
+            old_referencing_cells: vec![CellWithIndex {
+                cell: TEST_NOTEBOOK.cells[8].clone(),
+                index: 8,
+            }],
+            split_offset: Some(TEST_NOTEBOOK.cells[2].content().map(char_count).unwrap()),
+            merge_offset: Some(0),
         }),
         expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
             cells[2] = cells[2].with_appended_rich_text(
@@ -257,21 +327,35 @@ fn create_merge_cells_test_cases(test_cases: &mut Vec<OperationTestCase>) {
 
     // Another with glue text, that overlaps with the previous:
     test_cases.push(OperationTestCase {
-        operation: Operation::MergeCells(MergeCellsOperation {
-            glue_text: Some("gluten".to_owned()),
-            glue_formatting: Some(vec![
-                AnnotationWithOffset::new(
-                    0,
-                    Annotation::StartLink {
-                        url: "https://en.wikipedia.org/wiki/Gluten".to_owned(),
-                    },
+        operation: Operation::ReplaceCells(ReplaceCellsOperation {
+            new_cells: vec![CellWithIndex {
+                cell: TEST_NOTEBOOK.cells[1].with_rich_text(
+                    "gluten",
+                    vec![
+                        AnnotationWithOffset::new(
+                            0,
+                            Annotation::StartLink {
+                                url: "https://en.wikipedia.org/wiki/Gluten".to_owned(),
+                            },
+                        ),
+                        AnnotationWithOffset::new(6, Annotation::EndLink),
+                    ],
                 ),
-                AnnotationWithOffset::new(6, Annotation::EndLink),
-            ]),
-            source_cell: TEST_NOTEBOOK.cells[2].clone(),
-            target_cell_id: "c2".to_owned(),
-            target_content_length: TEST_NOTEBOOK.cells[1].content().map(char_count).unwrap(),
-            referencing_cells: None,
+                index: 1,
+            }],
+            old_cells: vec![
+                CellWithIndex {
+                    cell: TEST_NOTEBOOK.cells[1].with_text(""),
+                    index: 1,
+                },
+                CellWithIndex {
+                    cell: TEST_NOTEBOOK.cells[2].with_text(""),
+                    index: 2,
+                },
+            ],
+            split_offset: Some(TEST_NOTEBOOK.cells[1].content().map(char_count).unwrap()),
+            merge_offset: Some(0),
+            ..Default::default()
         }),
         expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
             cells[1] = cells[1].with_appended_rich_text(
@@ -323,9 +407,17 @@ fn create_move_cells_test_cases(test_cases: &mut Vec<OperationTestCase>) {
 
 fn create_remove_cells_test_cases(test_cases: &mut Vec<OperationTestCase>) {
     test_cases.push(OperationTestCase {
-        operation: Operation::RemoveCells(RemoveCellsOperation {
-            referencing_cells: Some(vec![TEST_NOTEBOOK.clone_cell_with_index_by_id("c9")]),
-            removed_cells: vec![TEST_NOTEBOOK.clone_cell_with_index_by_id("c4")],
+        operation: Operation::ReplaceCells(ReplaceCellsOperation {
+            old_cells: vec![TEST_NOTEBOOK.clone_cell_with_index_by_id("c4")],
+            new_referencing_cells: vec![CellWithIndex {
+                cell: TEST_NOTEBOOK.cells[8].with_source_ids(vec!["c6".to_owned()]),
+                index: 7,
+            }],
+            old_referencing_cells: vec![CellWithIndex {
+                cell: TEST_NOTEBOOK.cells[8].clone(),
+                index: 8,
+            }],
+            ..Default::default()
         }),
         expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
             cells.remove(3);
@@ -346,12 +438,20 @@ fn create_remove_cells_test_cases(test_cases: &mut Vec<OperationTestCase>) {
     // Make sure the cells of this test case overlap with the ones from the first, to
     // be able to test transforms between them:
     test_cases.push(OperationTestCase {
-        operation: Operation::RemoveCells(RemoveCellsOperation {
-            removed_cells: vec![
+        operation: Operation::ReplaceCells(ReplaceCellsOperation {
+            old_cells: vec![
                 TEST_NOTEBOOK.clone_cell_with_index_by_id("c4"),
                 TEST_NOTEBOOK.clone_cell_with_index_by_id("c5"),
             ],
-            referencing_cells: Some(vec![TEST_NOTEBOOK.clone_cell_with_index_by_id("c9")]),
+            new_referencing_cells: vec![CellWithIndex {
+                cell: TEST_NOTEBOOK.cells[8].with_source_ids(vec!["c6".to_owned()]),
+                index: 6,
+            }],
+            old_referencing_cells: vec![CellWithIndex {
+                cell: TEST_NOTEBOOK.cells[8].clone(),
+                index: 8,
+            }],
+            ..Default::default()
         }),
         expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
             cells.remove(3);
@@ -372,16 +472,23 @@ fn create_remove_cells_test_cases(test_cases: &mut Vec<OperationTestCase>) {
 
     // Test removing all the sources from an output cell:
     test_cases.push(OperationTestCase {
-        operation: Operation::RemoveCells(RemoveCellsOperation {
-            removed_cells: vec![
+        operation: Operation::ReplaceCells(ReplaceCellsOperation {
+            old_cells: vec![
                 TEST_NOTEBOOK.clone_cell_with_index_by_id("c4"),
                 TEST_NOTEBOOK.clone_cell_with_index_by_id("c5"),
                 TEST_NOTEBOOK.clone_cell_with_index_by_id("c6"),
             ],
-            referencing_cells: Some(vec![
-                TEST_NOTEBOOK.clone_cell_with_index_by_id("c7"),
-                TEST_NOTEBOOK.clone_cell_with_index_by_id("c9"),
-            ]),
+            old_referencing_cells: vec![
+                CellWithIndex {
+                    cell: TEST_NOTEBOOK.cells[6].clone(),
+                    index: 6,
+                },
+                CellWithIndex {
+                    cell: TEST_NOTEBOOK.cells[8].clone(),
+                    index: 8,
+                },
+            ],
+            ..Default::default()
         }),
         expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
             cells.remove(3);
@@ -562,6 +669,36 @@ fn create_replace_text_test_cases(test_cases: &mut Vec<OperationTestCase>) {
         }),
     });
 
+    // Another insertion at the exact same offset as the previous one:
+    test_cases.push(OperationTestCase {
+        operation: Operation::ReplaceText(ReplaceTextOperation {
+            cell_id: "c8".to_owned(),
+            offset: 17,
+            new_text: "ing".to_owned(),
+            new_formatting: None,
+            old_text: "".to_owned(),
+            old_formatting: None,
+        }),
+        expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
+            cells[7] = cells[7].with_rich_text(
+                "No test *notebooking* would be complete without some **Markdown**.\n\
+            \n\
+            Right before our crown jewel: ***a locked, multi-sourced bar graph with a custom \
+            time range***!",
+                vec![
+                    AnnotationWithOffset::new(8, Annotation::StartItalics),
+                    AnnotationWithOffset::new(21, Annotation::EndItalics),
+                    AnnotationWithOffset::new(53, Annotation::StartBold),
+                    AnnotationWithOffset::new(65, Annotation::EndBold),
+                    AnnotationWithOffset::new(98, Annotation::StartBold),
+                    AnnotationWithOffset::new(98, Annotation::StartItalics),
+                    AnnotationWithOffset::new(162, Annotation::EndBold),
+                    AnnotationWithOffset::new(162, Annotation::EndItalics),
+                ],
+            )
+        }),
+    });
+
     test_cases.push(OperationTestCase {
         operation: Operation::ReplaceText(ReplaceTextOperation {
             cell_id: "c8".to_owned(),
@@ -591,6 +728,55 @@ fn create_replace_text_test_cases(test_cases: &mut Vec<OperationTestCase>) {
             )
         }),
     });
+
+    test_cases.push(OperationTestCase {
+        operation: Operation::ReplaceCells(ReplaceCellsOperation {
+            old_cells: vec![TEST_NOTEBOOK.clone_cell_with_index_by_id("c4")],
+            new_cells: vec![
+                CellWithIndex {
+                    cell: Cell::Text(TextCell {
+                        id: "n1".to_owned(),
+                        content: "hello".to_owned(),
+                        ..Default::default()
+                    }),
+                    index: 3,
+                },
+                CellWithIndex {
+                    cell: Cell::Text(TextCell {
+                        id: "n2".to_owned(),
+                        content: "hello".to_owned(),
+                        ..Default::default()
+                    }),
+                    index: 4,
+                },
+            ],
+            old_referencing_cells: vec![CellWithIndex {
+                cell: TEST_NOTEBOOK.cells[8].clone(),
+                index: 8,
+            }],
+            new_referencing_cells: vec![CellWithIndex {
+                cell: TEST_NOTEBOOK.cells[8].with_source_ids(vec!["c6".to_owned()]),
+                index: 9,
+            }],
+            ..Default::default()
+        }),
+        expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
+            cells[3] = Cell::Text(TextCell {
+                id: "n1".to_owned(),
+                content: "hello".to_owned(),
+                ..Default::default()
+            });
+            cells.insert(
+                4,
+                Cell::Text(TextCell {
+                    id: "n2".to_owned(),
+                    content: "hello".to_owned(),
+                    ..Default::default()
+                }),
+            );
+            cells[9] = cells[9].with_source_ids(vec!["c6".to_owned()]);
+        }),
+    })
 }
 
 fn create_split_cell_test_cases(test_cases: &mut Vec<OperationTestCase>) {
@@ -601,13 +787,24 @@ fn create_split_cell_test_cases(test_cases: &mut Vec<OperationTestCase>) {
     });
 
     test_cases.push(OperationTestCase {
-        operation: Operation::SplitCell(SplitCellOperation {
-            cell_id: "c4".to_owned(),
-            removed_text: None,
-            removed_formatting: None,
-            split_index: 3,
-            new_cell: split_cell1.clone(),
-            referencing_cells: None,
+        operation: Operation::ReplaceCells(ReplaceCellsOperation {
+            new_cells: vec![
+                CellWithIndex {
+                    cell: TEST_NOTEBOOK.cells[3].with_text(""),
+                    index: 3,
+                },
+                CellWithIndex {
+                    cell: split_cell1.clone(),
+                    index: 4,
+                },
+            ],
+            old_cells: vec![CellWithIndex {
+                cell: TEST_NOTEBOOK.cells[3].with_text("memstats_alloc_bytes"),
+                index: 3,
+            }],
+            split_offset: Some(3),
+            merge_offset: None,
+            ..Default::default()
         }),
         expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
             cells[3] = cells[3].with_content("go_");
@@ -622,13 +819,24 @@ fn create_split_cell_test_cases(test_cases: &mut Vec<OperationTestCase>) {
     });
 
     test_cases.push(OperationTestCase {
-        operation: Operation::SplitCell(SplitCellOperation {
-            cell_id: "c4".to_owned(),
-            removed_text: Some("alloc_".to_owned()),
-            removed_formatting: None,
-            split_index: 12,
-            new_cell: split_cell2.clone(),
-            referencing_cells: None,
+        operation: Operation::ReplaceCells(ReplaceCellsOperation {
+            new_cells: vec![
+                CellWithIndex {
+                    cell: TEST_NOTEBOOK.cells[3].with_text(""),
+                    index: 3,
+                },
+                CellWithIndex {
+                    cell: split_cell2.clone(),
+                    index: 4,
+                },
+            ],
+            old_cells: vec![CellWithIndex {
+                cell: TEST_NOTEBOOK.cells[3].with_text("alloc_bytes"),
+                index: 3,
+            }],
+            split_offset: Some(12),
+            merge_offset: None,
+            ..Default::default()
         }),
         expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
             cells[3] = cells[3].with_content("go_memstats_");
@@ -644,20 +852,35 @@ fn create_split_cell_test_cases(test_cases: &mut Vec<OperationTestCase>) {
     });
 
     test_cases.push(OperationTestCase {
-        operation: Operation::SplitCell(SplitCellOperation {
-            cell_id: "c4".to_owned(),
-            removed_text: None,
-            removed_formatting: None,
-            split_index: 18,
-            new_cell: split_cell3.clone(),
-            referencing_cells: Some(vec![CellWithIndex {
+        operation: Operation::ReplaceCells(ReplaceCellsOperation {
+            new_cells: vec![
+                CellWithIndex {
+                    cell: TEST_NOTEBOOK.cells[3].with_text(""),
+                    index: 3,
+                },
+                CellWithIndex {
+                    cell: split_cell3.clone(),
+                    index: 4,
+                },
+            ],
+            old_cells: vec![CellWithIndex {
+                cell: TEST_NOTEBOOK.cells[3].with_text("bytes"),
+                index: 3,
+            }],
+            split_offset: Some(18),
+            merge_offset: None,
+            new_referencing_cells: vec![CellWithIndex {
                 cell: TEST_NOTEBOOK.cells[8].with_source_ids(vec![
                     "c4".to_owned(),
                     "c6".to_owned(),
                     "s3".to_owned(),
                 ]),
                 index: 9,
-            }]),
+            }],
+            old_referencing_cells: vec![CellWithIndex {
+                cell: TEST_NOTEBOOK.cells[8].clone(),
+                index: 8,
+            }],
         }),
         expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
             cells[3] = cells[3].with_content("go_memstats_alloc_");
@@ -676,16 +899,17 @@ fn create_split_cell_test_cases(test_cases: &mut Vec<OperationTestCase>) {
     });
 
     // Splitting a list item results in two list items:
+    let content_before_split = "No test *notebook* would be complete without some **Markdown**.";
+    let removed_content = "\n\n";
+    let content_after_split = "Right before our crown jewel: ***a locked, multi-sourced bar graph with a custom time range***!";
     let split_cell4 = Cell::ListItem(ListItemCell {
         id: "s4".to_owned(),
-        content:
-            "Right before our crown jewel: ***a locked, multi-sourced bar graph with a custom time range***!"
-                .to_owned(),
+        content: content_after_split.to_owned(),
         formatting: Some(vec![
             AnnotationWithOffset::new(30, Annotation::StartBold),
             AnnotationWithOffset::new(30, Annotation::StartItalics),
             AnnotationWithOffset::new(94, Annotation::EndBold),
-            AnnotationWithOffset::new(94, Annotation::EndItalics)
+            AnnotationWithOffset::new(94, Annotation::EndItalics),
         ]),
         level: None,
         list_type: ListType::Unordered,
@@ -694,17 +918,41 @@ fn create_split_cell_test_cases(test_cases: &mut Vec<OperationTestCase>) {
     });
 
     test_cases.push(OperationTestCase {
-        operation: Operation::SplitCell(SplitCellOperation {
-            cell_id: "c8".to_owned(),
-            removed_text: Some("\n\n".to_owned()),
-            removed_formatting: Some(Formatting::default()),
-            split_index: 63,
-            new_cell: split_cell4.clone(),
-            referencing_cells: None,
+        operation: Operation::ReplaceCells(ReplaceCellsOperation {
+            new_cells: vec![
+                CellWithIndex {
+                    cell: TEST_NOTEBOOK.cells[7].with_text(""),
+                    index: 7,
+                },
+                CellWithIndex {
+                    cell: split_cell4.clone(),
+                    index: 8,
+                },
+            ],
+            old_cells: vec![CellWithIndex {
+                cell: TEST_NOTEBOOK.cells[7].with_rich_text(
+                    &format!("{}{}", removed_content, content_after_split),
+                    split_cell4
+                        .formatting()
+                        .map(|formatting| {
+                            formatting
+                                .iter()
+                                .map(|annotation| {
+                                    annotation.translate(removed_content.len() as i64)
+                                })
+                                .collect()
+                        })
+                        .unwrap_or_default(),
+                ),
+                index: 7,
+            }],
+            split_offset: Some(content_before_split.len() as u32),
+            merge_offset: None,
+            ..Default::default()
         }),
         expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
             cells[7] = cells[7].with_rich_text(
-                "No test *notebook* would be complete without some **Markdown**.",
+                content_before_split,
                 vec![
                     AnnotationWithOffset::new(8, Annotation::StartItalics),
                     AnnotationWithOffset::new(18, Annotation::EndItalics),
@@ -713,6 +961,131 @@ fn create_split_cell_test_cases(test_cases: &mut Vec<OperationTestCase>) {
                 ],
             );
             cells.insert(8, split_cell4);
+        }),
+    });
+}
+
+fn create_split_and_merge_cell_test_cases(test_cases: &mut Vec<OperationTestCase>) {
+    test_cases.push(OperationTestCase {
+        operation: Operation::ReplaceCells(ReplaceCellsOperation {
+            old_cells: vec![
+                CellWithIndex {
+                    cell: Cell::Text(TextCell {
+                        id: "c3".to_owned(),
+                        content: "introductory text".to_owned(),
+                        formatting: Some(Formatting::default()),
+                        read_only: None,
+                    }),
+                    index: 2,
+                },
+                CellWithIndex {
+                    cell: Cell::Prometheus(PrometheusCell {
+                        id: "c4".to_owned(),
+                        content: "go_memstats".to_owned(),
+                        read_only: None,
+                    }),
+                    index: 3,
+                },
+            ],
+            new_cells: vec![CellWithIndex {
+                cell: Cell::Text(TextCell {
+                    id: "c3".to_owned(),
+                    content: "".to_owned(),
+                    formatting: Some(Formatting::default()),
+                    read_only: None,
+                }),
+                index: 2,
+            }],
+            split_offset: Some(5),
+            merge_offset: Some(11),
+            ..Default::default()
+        }),
+        expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
+            cells[2] = cells[2].with_text("Some _alloc_bytes");
+            cells.remove(3);
+        }),
+    });
+
+    test_cases.push(OperationTestCase {
+        operation: Operation::ReplaceCells(ReplaceCellsOperation {
+            old_cells: vec![
+                CellWithIndex {
+                    cell: Cell::Heading(HeadingCell {
+                        id: "c2".to_owned(),
+                        heading_type: HeadingType::H2,
+                        content: "subtitle".to_owned(),
+                        formatting: Some(Formatting::default()),
+                        read_only: Some(true),
+                    }),
+                    index: 1,
+                },
+                CellWithIndex {
+                    cell: Cell::Text(TextCell {
+                        id: "c3".to_owned(),
+                        content: "Some ".to_owned(),
+                        formatting: Some(Formatting::default()),
+                        read_only: None,
+                    }),
+                    index: 2,
+                },
+            ],
+            new_cells: vec![CellWithIndex {
+                cell: Cell::Heading(HeadingCell {
+                    id: "c2".to_owned(),
+                    heading_type: HeadingType::H2,
+                    content: "heading".to_owned(),
+                    formatting: Some(Formatting::default()),
+                    read_only: Some(true),
+                }),
+                index: 1,
+            }],
+            split_offset: Some(7),
+            merge_offset: Some(5),
+            ..Default::default()
+        }),
+        expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
+            cells[1] = cells[1].with_text("Locked headingintroductory text");
+            cells.remove(2);
+        }),
+    });
+
+    test_cases.push(OperationTestCase {
+        operation: Operation::ReplaceCells(ReplaceCellsOperation {
+            old_cells: vec![
+                CellWithIndex {
+                    cell: Cell::Text(TextCell {
+                        id: "c3".to_owned(),
+                        content: "text".to_owned(),
+                        formatting: Some(Formatting::default()),
+                        read_only: None,
+                    }),
+                    index: 2,
+                },
+                CellWithIndex {
+                    cell: Cell::Prometheus(PrometheusCell {
+                        id: "c4".to_owned(),
+                        content: "go_memstats".to_owned(),
+                        read_only: None,
+                    }),
+                    index: 3,
+                },
+            ],
+            new_cells: vec![CellWithIndex {
+                cell: Cell::Text(TextCell {
+                    id: "c3".to_owned(),
+                    content: "".to_owned(),
+                    formatting: Some(Formatting::default()),
+                    read_only: None,
+                }),
+                index: 2,
+            }],
+            split_offset: Some(18),
+            merge_offset: Some(11),
+            ..Default::default()
+        }),
+        expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
+            cells[2] = cells[2].with_text("Some introductory _alloc_bytes");
+            cells.remove(3);
         }),
     });
 }
@@ -729,9 +1102,16 @@ fn create_update_cell_test_cases(test_cases: &mut Vec<OperationTestCase>) {
     });
 
     test_cases.push(OperationTestCase {
-        operation: Operation::UpdateCell(UpdateCellOperation {
-            old_cell: Box::new(TEST_NOTEBOOK.cells[2].clone()),
-            updated_cell: Box::new(updated_cell1.clone()),
+        operation: Operation::ReplaceCells(ReplaceCellsOperation {
+            new_cells: vec![CellWithIndex {
+                cell: updated_cell1.clone(),
+                index: 2,
+            }],
+            old_cells: vec![CellWithIndex {
+                cell: TEST_NOTEBOOK.cells[2].clone(),
+                index: 2,
+            }],
+            ..Default::default()
         }),
         expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
             cells[2] = updated_cell1.clone();
@@ -749,9 +1129,16 @@ fn create_update_cell_test_cases(test_cases: &mut Vec<OperationTestCase>) {
     });
 
     test_cases.push(OperationTestCase {
-        operation: Operation::UpdateCell(UpdateCellOperation {
-            old_cell: Box::new(TEST_NOTEBOOK.cells[2].clone()),
-            updated_cell: Box::new(updated_cell2.clone()),
+        operation: Operation::ReplaceCells(ReplaceCellsOperation {
+            new_cells: vec![CellWithIndex {
+                cell: updated_cell2.clone(),
+                index: 2,
+            }],
+            old_cells: vec![CellWithIndex {
+                cell: TEST_NOTEBOOK.cells[2].clone(),
+                index: 2,
+            }],
+            ..Default::default()
         }),
         expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
             cells[2] = updated_cell2.clone();
@@ -767,9 +1154,16 @@ fn create_update_cell_test_cases(test_cases: &mut Vec<OperationTestCase>) {
     });
 
     test_cases.push(OperationTestCase {
-        operation: Operation::UpdateCell(UpdateCellOperation {
-            old_cell: Box::new(TEST_NOTEBOOK.cells[2].clone()),
-            updated_cell: Box::new(updated_cell3.clone()),
+        operation: Operation::ReplaceCells(ReplaceCellsOperation {
+            new_cells: vec![CellWithIndex {
+                cell: updated_cell3.clone(),
+                index: 2,
+            }],
+            old_cells: vec![CellWithIndex {
+                cell: TEST_NOTEBOOK.cells[2].clone(),
+                index: 2,
+            }],
+            ..Default::default()
         }),
         expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
             cells[2] = updated_cell3.clone();
@@ -784,9 +1178,16 @@ fn create_update_cell_test_cases(test_cases: &mut Vec<OperationTestCase>) {
     });
 
     test_cases.push(OperationTestCase {
-        operation: Operation::UpdateCell(UpdateCellOperation {
-            old_cell: Box::new(TEST_NOTEBOOK.cells[2].clone()),
-            updated_cell: Box::new(updated_cell4.clone()),
+        operation: Operation::ReplaceCells(ReplaceCellsOperation {
+            new_cells: vec![CellWithIndex {
+                cell: updated_cell4.clone(),
+                index: 2,
+            }],
+            old_cells: vec![CellWithIndex {
+                cell: TEST_NOTEBOOK.cells[2].clone(),
+                index: 2,
+            }],
+            ..Default::default()
         }),
         expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
             cells[2] = updated_cell4.clone();
@@ -807,9 +1208,16 @@ fn create_update_cell_test_cases(test_cases: &mut Vec<OperationTestCase>) {
     });
 
     test_cases.push(OperationTestCase {
-        operation: Operation::UpdateCell(UpdateCellOperation {
-            old_cell: Box::new(TEST_NOTEBOOK.cells[10].clone()),
-            updated_cell: Box::new(updated_cell5.clone()),
+        operation: Operation::ReplaceCells(ReplaceCellsOperation {
+            new_cells: vec![CellWithIndex {
+                cell: updated_cell5.clone(),
+                index: 10,
+            }],
+            old_cells: vec![CellWithIndex {
+                cell: TEST_NOTEBOOK.cells[10].clone(),
+                index: 10,
+            }],
+            ..Default::default()
         }),
         expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
             cells[10] = updated_cell5.clone();

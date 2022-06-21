@@ -1,5 +1,7 @@
-use super::*;
-use crate::protocols::core::*;
+use crate::{
+    operations::*,
+    protocols::{core::*, formatting::Formatting},
+};
 use pretty_assertions::assert_eq;
 
 #[test]
@@ -9,7 +11,7 @@ pub fn test_simplify_delete_changes() {
             cell: Cell::Text(TextCell {
                 content: "1".to_owned(),
                 id: "test_cell".to_owned(),
-                read_only: None,
+                ..Default::default()
             }),
         }),
         Change::DeleteCell(DeleteCellChange {
@@ -30,7 +32,7 @@ pub fn test_simplify_delete_changes() {
             cell: Cell::Text(TextCell {
                 content: "1".to_owned(),
                 id: "test_cell".to_owned(),
-                read_only: None,
+                ..Default::default()
             }),
             index: 3,
         }),
@@ -70,7 +72,7 @@ pub fn test_simplify_move_changes() {
             cell: Cell::Text(TextCell {
                 content: "1".to_owned(),
                 id: "test_cell".to_owned(),
-                read_only: None,
+                ..Default::default()
             }),
             index: 3,
         }),
@@ -87,7 +89,7 @@ pub fn test_simplify_move_changes() {
             cell: Cell::Text(TextCell {
                 content: "1".to_owned(),
                 id: "test_cell".to_owned(),
-                read_only: None,
+                ..Default::default()
             }),
             index: 2,
         })]
@@ -101,7 +103,7 @@ pub fn test_simplify_insert_changes() {
             cell: Cell::Text(TextCell {
                 content: "1".to_owned(),
                 id: "test_cell".to_owned(),
-                read_only: None,
+                ..Default::default()
             }),
             index: 3,
         }),
@@ -109,7 +111,7 @@ pub fn test_simplify_insert_changes() {
             cell: Cell::Text(TextCell {
                 content: "2".to_owned(),
                 id: "test_cell".to_owned(),
-                read_only: None,
+                ..Default::default()
             }),
         }),
     ];
@@ -121,7 +123,7 @@ pub fn test_simplify_insert_changes() {
             cell: Cell::Text(TextCell {
                 content: "2".to_owned(),
                 id: "test_cell".to_owned(),
-                read_only: None,
+                ..Default::default()
             }),
             index: 3
         })]
@@ -135,14 +137,14 @@ pub fn test_simplify_update_changes() {
             cell: Cell::Text(TextCell {
                 content: "1".to_owned(),
                 id: "test_cell".to_owned(),
-                read_only: None,
+                ..Default::default()
             }),
         }),
         Change::UpdateCell(UpdateCellChange {
             cell: Cell::Text(TextCell {
                 content: "2".to_owned(),
                 id: "test_cell".to_owned(),
-                read_only: None,
+                ..Default::default()
             }),
         }),
     ];
@@ -154,10 +156,29 @@ pub fn test_simplify_update_changes() {
             cell: Cell::Text(TextCell {
                 content: "2".to_owned(),
                 id: "test_cell".to_owned(),
-                read_only: None
+                ..Default::default()
             })
         })]
     );
+}
+
+#[test]
+pub fn test_simplify_update_and_delete_changes() {
+    let changes = vec![
+        Change::UpdateCell(UpdateCellChange {
+            cell: Cell::Text(TextCell {
+                content: "1".to_owned(),
+                id: "test_cell".to_owned(),
+                ..Default::default()
+            }),
+        }),
+        Change::DeleteCell(DeleteCellChange {
+            cell_id: "other_cell".to_owned(),
+        }),
+    ];
+
+    // Deletion shouldn't affect update to other cell:
+    assert_eq!(simplify_changes(changes.clone()), changes);
 }
 
 #[test]
@@ -166,10 +187,12 @@ pub fn test_simplify_update_text_changes() {
         Change::UpdateCellText(UpdateCellTextChange {
             cell_id: "test_cell".to_owned(),
             text: "1".to_owned(),
+            formatting: None,
         }),
         Change::UpdateCellText(UpdateCellTextChange {
             cell_id: "test_cell".to_owned(),
             text: "2".to_owned(),
+            formatting: None,
         }),
     ];
 
@@ -179,6 +202,7 @@ pub fn test_simplify_update_text_changes() {
         vec![Change::UpdateCellText(UpdateCellTextChange {
             cell_id: "test_cell".to_owned(),
             text: "2".to_owned(),
+            formatting: None,
         })]
     );
 }
@@ -190,12 +214,13 @@ pub fn test_simplify_update_and_update_text_changes() {
             cell: Cell::Text(TextCell {
                 content: "1".to_owned(),
                 id: "test_cell".to_owned(),
-                read_only: None,
+                ..Default::default()
             }),
         }),
         Change::UpdateCellText(UpdateCellTextChange {
             cell_id: "test_cell".to_owned(),
             text: "2".to_owned(),
+            formatting: None,
         }),
     ];
 
@@ -206,7 +231,8 @@ pub fn test_simplify_update_and_update_text_changes() {
             cell: Cell::Text(TextCell {
                 content: "2".to_owned(),
                 id: "test_cell".to_owned(),
-                read_only: None,
+                formatting: Some(Formatting::default()),
+                ..Default::default()
             }),
         })]
     );
@@ -215,12 +241,13 @@ pub fn test_simplify_update_and_update_text_changes() {
         Change::UpdateCellText(UpdateCellTextChange {
             cell_id: "test_cell".to_owned(),
             text: "1".to_owned(),
+            formatting: None,
         }),
         Change::UpdateCell(UpdateCellChange {
             cell: Cell::Text(TextCell {
                 content: "2".to_owned(),
                 id: "test_cell".to_owned(),
-                read_only: None,
+                ..Default::default()
             }),
         }),
     ];
@@ -232,7 +259,7 @@ pub fn test_simplify_update_and_update_text_changes() {
             cell: Cell::Text(TextCell {
                 content: "2".to_owned(),
                 id: "test_cell".to_owned(),
-                read_only: None,
+                ..Default::default()
             }),
         })]
     );
@@ -245,14 +272,14 @@ pub fn test_simplify_complex_changes() {
             cell: Cell::Text(TextCell {
                 content: "2_1".to_owned(),
                 id: "test_cell2".to_owned(),
-                read_only: None,
+                ..Default::default()
             }),
         }),
         Change::InsertCell(InsertCellChange {
             cell: Cell::Text(TextCell {
                 content: "1_1".to_owned(),
                 id: "test_cell1".to_owned(),
-                read_only: None,
+                ..Default::default()
             }),
             index: 3,
         }),
@@ -264,21 +291,21 @@ pub fn test_simplify_complex_changes() {
             cell: Cell::Text(TextCell {
                 content: "1_2".to_owned(),
                 id: "test_cell1".to_owned(),
-                read_only: None,
+                ..Default::default()
             }),
         }),
         Change::UpdateCell(UpdateCellChange {
             cell: Cell::Text(TextCell {
                 content: "3_1".to_owned(),
                 id: "test_cell3".to_owned(),
-                read_only: None,
+                ..Default::default()
             }),
         }),
         Change::UpdateCell(UpdateCellChange {
             cell: Cell::Text(TextCell {
                 content: "2_2".to_owned(),
                 id: "test_cell2".to_owned(),
-                read_only: None,
+                ..Default::default()
             }),
         }),
         Change::DeleteCell(DeleteCellChange {
@@ -288,7 +315,7 @@ pub fn test_simplify_complex_changes() {
             cell: Cell::Text(TextCell {
                 content: "3_2".to_owned(),
                 id: "test_cell3".to_owned(),
-                read_only: None,
+                ..Default::default()
             }),
         }),
         Change::AddDataSource(AddDataSourceChange {
@@ -308,7 +335,7 @@ pub fn test_simplify_complex_changes() {
                 cell: Cell::Text(TextCell {
                     content: "1_2".to_owned(),
                     id: "test_cell1".to_owned(),
-                    read_only: None,
+                    ..Default::default()
                 }),
                 index: 2,
             }),
@@ -327,7 +354,7 @@ pub fn test_simplify_complex_changes() {
                 cell: Cell::Text(TextCell {
                     content: "3_2".to_owned(),
                     id: "test_cell3".to_owned(),
-                    read_only: None,
+                    ..Default::default()
                 }),
             }),
         ]
