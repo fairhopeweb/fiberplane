@@ -28,6 +28,7 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**delete_file**](docs/DefaultApi.md#delete_file) | **DELETE** /api/files/{notebookId}/{fileId} | 
 *DefaultApi* | [**delete_notebook**](docs/DefaultApi.md#delete_notebook) | **DELETE** /api/notebooks/{id} | 
 *DefaultApi* | [**event_create**](docs/DefaultApi.md#event_create) | **POST** /api/events | 
+*DefaultApi* | [**event_delete**](docs/DefaultApi.md#event_delete) | **DELETE** /api/events/{id} | 
 *DefaultApi* | [**event_list**](docs/DefaultApi.md#event_list) | **GET** /api/events | 
 *DefaultApi* | [**file_upload**](docs/DefaultApi.md#file_upload) | **POST** /api/files/{notebookId} | 
 *DefaultApi* | [**get_file**](docs/DefaultApi.md#get_file) | **GET** /api/files/{notebookId}/{fileId} | 
