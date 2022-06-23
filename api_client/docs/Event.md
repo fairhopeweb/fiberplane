@@ -4,12 +4,12 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**id** | Option<**String**> |  | [optional]
-**title** | Option<**String**> |  | [optional]
-**labels** | Option<**::std::collections::HashMap<String, String>**> |  | [optional]
-**occurrence_time** | Option<**String**> |  | [optional]
-**created_at** | Option<**String**> |  | [optional]
-**updated_at** | Option<**String**> |  | [optional]
+**id** | **String** |  | 
+**title** | **String** |  | 
+**labels** | **::std::collections::HashMap<String, String>** |  | 
+**occurrence_time** | **String** |  | 
+**created_at** | **String** |  | 
+**updated_at** | **String** |  | 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

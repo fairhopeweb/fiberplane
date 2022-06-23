@@ -13,29 +13,29 @@
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Event {
-    #[serde(rename = "id", skip_serializing_if = "Option::is_none")]
-    pub id: Option<String>,
-    #[serde(rename = "title", skip_serializing_if = "Option::is_none")]
-    pub title: Option<String>,
-    #[serde(rename = "labels", skip_serializing_if = "Option::is_none")]
-    pub labels: Option<::std::collections::HashMap<String, String>>,
-    #[serde(rename = "occurrenceTime", skip_serializing_if = "Option::is_none")]
-    pub occurrence_time: Option<String>,
-    #[serde(rename = "createdAt", skip_serializing_if = "Option::is_none")]
-    pub created_at: Option<String>,
-    #[serde(rename = "updatedAt", skip_serializing_if = "Option::is_none")]
-    pub updated_at: Option<String>,
+    #[serde(rename = "id")]
+    pub id: String,
+    #[serde(rename = "title")]
+    pub title: String,
+    #[serde(rename = "labels")]
+    pub labels: ::std::collections::HashMap<String, String>,
+    #[serde(rename = "occurrenceTime")]
+    pub occurrence_time: String,
+    #[serde(rename = "createdAt")]
+    pub created_at: String,
+    #[serde(rename = "updatedAt")]
+    pub updated_at: String,
 }
 
 impl Event {
-    pub fn new() -> Event {
+    pub fn new(id: String, title: String, labels: ::std::collections::HashMap<String, String>, occurrence_time: String, created_at: String, updated_at: String) -> Event {
         Event {
-            id: None,
-            title: None,
-            labels: None,
-            occurrence_time: None,
-            created_at: None,
-            updated_at: None,
+            id,
+            title,
+            labels,
+            occurrence_time,
+            created_at,
+            updated_at,
         }
     }
 }

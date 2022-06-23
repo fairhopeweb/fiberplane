@@ -1391,6 +1391,13 @@ components:
           format: date-time
     event:
       type: object
+      required:
+        - "id"
+        - "title"
+        - "labels"
+        - "occurrenceTime"
+        - "createdAt"
+        - "updatedAt"
       properties:
         id:
           type: string
