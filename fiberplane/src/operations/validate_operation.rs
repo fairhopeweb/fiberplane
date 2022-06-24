@@ -477,7 +477,10 @@ pub fn get_existing_cell_to_compare(
             let split_formatting = formatting
                 .iter()
                 .filter(|&annotation| {
-                    if annotation.offset > split_offset && annotation.offset < end_offset {
+                    if annotation.offset > split_offset
+                        && (annotation.offset < end_offset
+                            || (merge_offset.is_none() && annotation.offset == end_offset))
+                    {
                         true
                     } else if annotation.offset == split_offset
                         || Some(annotation.offset) == merge_offset

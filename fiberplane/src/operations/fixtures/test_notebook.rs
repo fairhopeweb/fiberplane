@@ -173,6 +173,62 @@ pub static TEST_NOTEBOOK: Lazy<Notebook> = Lazy::new(|| {
                 to: 150.0,
             }),
         }),
+        Cell::Text(TextCell {
+            id: "c12".to_owned(),
+            content: "italic bold both".to_owned(),
+            formatting: Some(vec![
+                AnnotationWithOffset {
+                    annotation: Annotation::StartItalics,
+                    offset: 0,
+                },
+                AnnotationWithOffset {
+                    annotation: Annotation::EndItalics,
+                    offset: 6,
+                },
+                AnnotationWithOffset {
+                    annotation: Annotation::StartBold,
+                    offset: 7,
+                },
+                AnnotationWithOffset {
+                    annotation: Annotation::EndBold,
+                    offset: 11,
+                },
+                AnnotationWithOffset {
+                    annotation: Annotation::StartItalics,
+                    offset: 12,
+                },
+                AnnotationWithOffset {
+                    annotation: Annotation::StartBold,
+                    offset: 12,
+                },
+                AnnotationWithOffset {
+                    annotation: Annotation::EndItalics,
+                    offset: 16,
+                },
+                AnnotationWithOffset {
+                    annotation: Annotation::EndBold,
+                    offset: 16,
+                },
+            ]),
+            read_only: None,
+        }),
+        Cell::Text(TextCell {
+            id: "c13".to_owned(),
+            content: "🇳🇱 and https://fiberplane.com".to_owned(),
+            formatting: Some(vec![
+                AnnotationWithOffset {
+                    annotation: Annotation::StartLink {
+                        url: "https://fiberplane.com".to_owned(),
+                    },
+                    offset: 7,
+                },
+                AnnotationWithOffset {
+                    annotation: Annotation::EndLink,
+                    offset: 29,
+                },
+            ]),
+            read_only: None,
+        }),
     ];
 
     let mut data_sources = BTreeMap::new();

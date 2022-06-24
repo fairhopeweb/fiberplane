@@ -27,6 +27,7 @@ pub static TEST_CASES: Lazy<Vec<OperationTestCase>> = Lazy::new(|| {
     create_replace_text_test_cases(&mut test_cases);
     create_split_cell_test_cases(&mut test_cases);
     create_split_and_merge_cell_test_cases(&mut test_cases);
+    create_toggle_formatting_test_cases(&mut test_cases);
     create_update_cell_test_cases(&mut test_cases);
     create_update_notebook_time_range_test_cases(&mut test_cases);
 
@@ -1086,6 +1087,90 @@ fn create_split_and_merge_cell_test_cases(test_cases: &mut Vec<OperationTestCase
         expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
             cells[2] = cells[2].with_text("Some introductory _alloc_bytes");
             cells.remove(3);
+        }),
+    });
+}
+
+fn create_toggle_formatting_test_cases(test_cases: &mut Vec<OperationTestCase>) {
+    // Strip boldness from two cells, only one of which has a bold section:
+    test_cases.push(OperationTestCase {
+        operation: Operation::ReplaceCells(ReplaceCellsOperation {
+            new_cells: vec![
+                CellWithIndex {
+                    cell: TEST_NOTEBOOK.cells[11].with_rich_text(
+                        "both",
+                        vec![AnnotationWithOffset {
+                            annotation: Annotation::EndItalics,
+                            offset: 4,
+                        }],
+                    ),
+                    index: 11,
+                },
+                CellWithIndex {
+                    cell: TEST_NOTEBOOK.cells[12].with_rich_text("🇳🇱 and", Formatting::default()),
+                    index: 12,
+                },
+            ],
+            old_cells: vec![
+                CellWithIndex {
+                    cell: TEST_NOTEBOOK.cells[11].with_rich_text(
+                        "both",
+                        vec![
+                            AnnotationWithOffset {
+                                annotation: Annotation::StartBold,
+                                offset: 0,
+                            },
+                            AnnotationWithOffset {
+                                annotation: Annotation::EndItalics,
+                                offset: 4,
+                            },
+                            AnnotationWithOffset {
+                                annotation: Annotation::EndBold,
+                                offset: 4,
+                            },
+                        ],
+                    ),
+                    index: 11,
+                },
+                CellWithIndex {
+                    cell: TEST_NOTEBOOK.cells[12].with_rich_text("🇳🇱 and", Formatting::default()),
+                    index: 12,
+                },
+            ],
+            split_offset: Some(12),
+            merge_offset: Some(6),
+            ..Default::default()
+        }),
+        expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
+            cells[11] = TEST_NOTEBOOK.cells[11].with_rich_text(
+                "italic bold both",
+                vec![
+                    AnnotationWithOffset {
+                        annotation: Annotation::StartItalics,
+                        offset: 0,
+                    },
+                    AnnotationWithOffset {
+                        annotation: Annotation::EndItalics,
+                        offset: 6,
+                    },
+                    AnnotationWithOffset {
+                        annotation: Annotation::StartBold,
+                        offset: 7,
+                    },
+                    AnnotationWithOffset {
+                        annotation: Annotation::EndBold,
+                        offset: 11,
+                    },
+                    AnnotationWithOffset {
+                        annotation: Annotation::StartItalics,
+                        offset: 12,
+                    },
+                    AnnotationWithOffset {
+                        annotation: Annotation::EndItalics,
+                        offset: 16,
+                    },
+                ],
+            );
         }),
     });
 }
