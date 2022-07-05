@@ -13,7 +13,7 @@ crate-type = ["lib"]
 fixtures = []
 
 [dependencies]
-clap = { version = "3.0.5", features = ["derive"] }
+clap = { version = "3", features = ["derive"] }
 fp-bindgen = { version = "1.0.0", features = ["time-compat"] }
 # fp-bindgen = { path = "../fp-bindgen/fp-bindgen", features = ["time-compat"] }
 lazy_static = "1.4"
