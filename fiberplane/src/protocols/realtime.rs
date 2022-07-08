@@ -506,6 +506,12 @@ impl NotebookFocus {
         }
     }
 
+    pub fn anchor_cell_index(&self, cell_ids: &[&str]) -> Option<usize> {
+        cell_ids
+            .iter()
+            .position(|cell_id| Some(*cell_id) == self.anchor_cell_id())
+    }
+
     pub fn anchor_field(&self) -> Option<&str> {
         match self {
             Self::None => None,
@@ -535,14 +541,8 @@ impl NotebookFocus {
             Self::None => None,
             Self::Collapsed(position) => Some(&position.cell_id),
             Self::Selection { anchor, focus } => {
-                let anchor_cell_index = cell_ids
-                    .iter()
-                    .position(|cell_id| cell_id == &anchor.cell_id)
-                    .unwrap_or_default();
-                let focus_cell_index = cell_ids
-                    .iter()
-                    .position(|cell_id| cell_id == &focus.cell_id)
-                    .unwrap_or_default();
+                let anchor_cell_index = self.anchor_cell_index(cell_ids).unwrap_or_default();
+                let focus_cell_index = self.focus_cell_index(cell_ids).unwrap_or_default();
                 if anchor_cell_index > focus_cell_index {
                     Some(&anchor.cell_id)
                 } else {
@@ -557,15 +557,9 @@ impl NotebookFocus {
             Self::None => 0,
             Self::Collapsed(position) => position.offset.unwrap_or_default(),
             Self::Selection { anchor, focus } => {
-                let anchor_cell_index = cell_ids
-                    .iter()
-                    .position(|cell_id| cell_id == &anchor.cell_id)
-                    .unwrap_or_default();
+                let anchor_cell_index = self.anchor_cell_index(cell_ids).unwrap_or_default();
                 let anchor_offset = anchor.offset.unwrap_or_default();
-                let focus_cell_index = cell_ids
-                    .iter()
-                    .position(|cell_id| cell_id == &focus.cell_id)
-                    .unwrap_or_default();
+                let focus_cell_index = self.focus_cell_index(cell_ids).unwrap_or_default();
                 let focus_offset = focus.offset.unwrap_or_default();
                 match anchor_cell_index.cmp(&focus_cell_index) {
                     Ordering::Greater => anchor_offset,
@@ -582,6 +576,12 @@ impl NotebookFocus {
             Self::Collapsed(collapsed) => Some(&collapsed.cell_id),
             Self::Selection { focus, .. } => Some(&focus.cell_id),
         }
+    }
+
+    pub fn focus_cell_index(&self, cell_ids: &[&str]) -> Option<usize> {
+        cell_ids
+            .iter()
+            .position(|cell_id| Some(*cell_id) == self.focus_cell_id())
     }
 
     pub fn focus_field(&self) -> Option<&str> {
@@ -630,15 +630,9 @@ impl NotebookFocus {
             Self::None => None,
             Self::Collapsed(position) => Some(&position.cell_id),
             Self::Selection { anchor, focus } => {
-                let anchor_cell_index = cell_ids
-                    .iter()
-                    .position(|cell_id| cell_id == &anchor.cell_id)
-                    .unwrap_or_default();
-                let focus_cell_index = cell_ids
-                    .iter()
-                    .position(|cell_id| cell_id == &focus.cell_id)
-                    .unwrap_or_default();
-                if anchor_cell_index < focus_cell_index {
+                if self.anchor_cell_index(cell_ids).unwrap_or_default()
+                    < self.focus_cell_index(cell_ids).unwrap_or_default()
+                {
                     Some(&anchor.cell_id)
                 } else {
                     Some(&focus.cell_id)
@@ -652,15 +646,9 @@ impl NotebookFocus {
             Self::None => 0,
             Self::Collapsed(position) => position.offset.unwrap_or_default(),
             Self::Selection { anchor, focus } => {
-                let anchor_cell_index = cell_ids
-                    .iter()
-                    .position(|cell_id| cell_id == &anchor.cell_id)
-                    .unwrap_or_default();
+                let anchor_cell_index = self.anchor_cell_index(cell_ids).unwrap_or_default();
                 let anchor_offset = anchor.offset.unwrap_or_default();
-                let focus_cell_index = cell_ids
-                    .iter()
-                    .position(|cell_id| cell_id == &focus.cell_id)
-                    .unwrap_or_default();
+                let focus_cell_index = self.focus_cell_index(cell_ids).unwrap_or_default();
                 let focus_offset = focus.offset.unwrap_or_default();
                 match anchor_cell_index.cmp(&focus_cell_index) {
                     Ordering::Less => anchor_offset,
