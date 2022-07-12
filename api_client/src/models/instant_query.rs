@@ -16,11 +16,11 @@ pub struct InstantQuery {
     #[serde(rename = "type")]
     pub _type: String,
     #[serde(rename = "time")]
-    pub time: f32,
+    pub time: f64,
 }
 
 impl InstantQuery {
-    pub fn new(_type: String, time: f32) -> InstantQuery {
+    pub fn new(_type: String, time: f64) -> InstantQuery {
         InstantQuery {
             _type,
             time,

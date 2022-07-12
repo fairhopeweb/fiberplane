@@ -16,7 +16,7 @@ pub enum QueryType {
     #[serde(rename="instant")]
     InstantQuery {
         #[serde(rename = "time")]
-        time: f32,
+        time: f64,
     },
     #[serde(rename="series")]
     SeriesQuery {

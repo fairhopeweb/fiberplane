@@ -14,13 +14,13 @@
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct TimeRange {
     #[serde(rename = "from")]
-    pub from: f32,
+    pub from: f64,
     #[serde(rename = "to")]
-    pub to: f32,
+    pub to: f64,
 }
 
 impl TimeRange {
-    pub fn new(from: f32, to: f32) -> TimeRange {
+    pub fn new(from: f64, to: f64) -> TimeRange {
         TimeRange {
             from,
             to,

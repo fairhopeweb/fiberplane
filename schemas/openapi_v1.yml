@@ -507,10 +507,10 @@ components:
       properties:
         from:
           type: number
-          format: float
+          format: double
         to:
           type: number
-          format: float
+          format: double
     formatting:
       type: array
       items:
@@ -793,10 +793,10 @@ components:
       properties:
         timestamp:
           type: number
-          format: float
+          format: double
         value:
           type: number
-          format: float
+          format: double
     pointType:
       deprecated: true
       type: string
@@ -1051,7 +1051,7 @@ components:
           type: string
         time:
           type: number
-          format: float
+          format: double
     dataSourceSummary:
       type: object
       required:

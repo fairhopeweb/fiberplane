@@ -14,13 +14,13 @@
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Point {
     #[serde(rename = "timestamp")]
-    pub timestamp: f32,
+    pub timestamp: f64,
     #[serde(rename = "value")]
-    pub value: f32,
+    pub value: f64,
 }
 
 impl Point {
-    pub fn new(timestamp: f32, value: f32) -> Point {
+    pub fn new(timestamp: f64, value: f64) -> Point {
         Point {
             timestamp,
             value,
