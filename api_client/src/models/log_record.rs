@@ -14,7 +14,7 @@
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct LogRecord {
     #[serde(rename = "timestamp")]
-    pub timestamp: f32,
+    pub timestamp: f64,
     #[serde(rename = "body")]
     pub body: String,
     #[serde(rename = "attributes")]
@@ -28,7 +28,7 @@ pub struct LogRecord {
 }
 
 impl LogRecord {
-    pub fn new(timestamp: f32, body: String, attributes: ::std::collections::HashMap<String, String>, resource: ::std::collections::HashMap<String, String>) -> LogRecord {
+    pub fn new(timestamp: f64, body: String, attributes: ::std::collections::HashMap<String, String>, resource: ::std::collections::HashMap<String, String>) -> LogRecord {
         LogRecord {
             timestamp,
             body,

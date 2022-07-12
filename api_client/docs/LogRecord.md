@@ -4,7 +4,7 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**timestamp** | **f32** |  | 
+**timestamp** | **f64** |  | 
 **body** | **String** |  | 
 **attributes** | **::std::collections::HashMap<String, String>** |  | 
 **resource** | **::std::collections::HashMap<String, String>** |  | 
