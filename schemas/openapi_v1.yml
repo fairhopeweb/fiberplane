@@ -1389,6 +1389,13 @@ components:
         time:
           type: string
           format: date-time
+    newToken:
+      type: object
+      required:
+        - "title"
+      properties:
+        title:
+          type: string
     event:
       type: object
       required:
@@ -1417,6 +1424,13 @@ components:
         updatedAt:
           type: string
           format: date-time
+    token:
+      type: object
+      required:
+        - "token"
+      properties:
+        token:
+          type: string
   parameters:
     sortDirection:
       in: query
@@ -2268,3 +2282,21 @@ paths:
       responses:
         "200":
           description: OK
+  /api/tokens:
+    post:
+      operationId: token_create
+      description: Creates a new token
+      requestBody:
+        required: true
+        description: Token creation payload
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/newToken"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/token"

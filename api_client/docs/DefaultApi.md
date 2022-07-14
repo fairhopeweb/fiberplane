@@ -45,6 +45,7 @@ Method | HTTP request | Description
 [**template_get**](DefaultApi.md#template_get) | **GET** /api/templates/{templateId} | 
 [**template_list**](DefaultApi.md#template_list) | **GET** /api/templates | 
 [**template_update**](DefaultApi.md#template_update) | **PATCH** /api/templates/{templateId} | 
+[**token_create**](DefaultApi.md#token_create) | **POST** /api/tokens | 
 [**trigger_create**](DefaultApi.md#trigger_create) | **POST** /api/triggers | 
 [**trigger_delete**](DefaultApi.md#trigger_delete) | **DELETE** /api/triggers/{triggerId} | 
 [**trigger_get**](DefaultApi.md#trigger_get) | **GET** /api/triggers/{triggerId} | 
@@ -1250,6 +1251,36 @@ Name | Type | Description  | Required | Notes
 ### Return type
 
 [**crate::models::Template**](template.md)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## token_create
+
+> crate::models::Token token_create(new_token)
+
+
+Creates a new token
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**new_token** | [**NewToken**](NewToken.md) | Token creation payload | [required] |
+
+### Return type
+
+[**crate::models::Token**](token.md)
 
 ### Authorization
 

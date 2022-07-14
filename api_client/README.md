@@ -65,6 +65,7 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**template_get**](docs/DefaultApi.md#template_get) | **GET** /api/templates/{templateId} | 
 *DefaultApi* | [**template_list**](docs/DefaultApi.md#template_list) | **GET** /api/templates | 
 *DefaultApi* | [**template_update**](docs/DefaultApi.md#template_update) | **PATCH** /api/templates/{templateId} | 
+*DefaultApi* | [**token_create**](docs/DefaultApi.md#token_create) | **POST** /api/tokens | 
 *DefaultApi* | [**trigger_create**](docs/DefaultApi.md#trigger_create) | **POST** /api/triggers | 
 *DefaultApi* | [**trigger_delete**](docs/DefaultApi.md#trigger_delete) | **DELETE** /api/triggers/{triggerId} | 
 *DefaultApi* | [**trigger_get**](docs/DefaultApi.md#trigger_get) | **GET** /api/triggers/{triggerId} | 
@@ -123,6 +124,7 @@ Class | Method | HTTP request | Description
  - [NewPinnedNotebook](docs/NewPinnedNotebook.md)
  - [NewProxy](docs/NewProxy.md)
  - [NewTemplate](docs/NewTemplate.md)
+ - [NewToken](docs/NewToken.md)
  - [NewTrigger](docs/NewTrigger.md)
  - [Notebook](docs/Notebook.md)
  - [NotebookDataSource](docs/NotebookDataSource.md)
@@ -159,6 +161,7 @@ Class | Method | HTTP request | Description
  - [TemplateSummary](docs/TemplateSummary.md)
  - [TextCell](docs/TextCell.md)
  - [TimeRange](docs/TimeRange.md)
+ - [Token](docs/Token.md)
  - [Trigger](docs/Trigger.md)
  - [TriggerInvokeResponse](docs/TriggerInvokeResponse.md)
  - [UnknownTemplateParameter](docs/UnknownTemplateParameter.md)
