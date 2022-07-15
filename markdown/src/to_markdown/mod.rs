@@ -43,7 +43,7 @@ impl<'a> NotebookConverter<'a> {
         self.into_markdown()
     }
 
-    fn convert_cells(&mut self, _notebook_id: &str, cells: impl IntoIterator<Item = Cell>) {
+    fn convert_cells(&mut self, notebook_id: &str, cells: impl IntoIterator<Item = Cell>) {
         let mut cells = cells.into_iter().peekable();
         while let Some(cell) = cells.next() {
             match cell {
@@ -122,6 +122,15 @@ impl<'a> NotebookConverter<'a> {
                 }
                 Cell::Loki(cell) => self.convert_code_block(cell.content),
                 Cell::Prometheus(cell) => self.convert_code_block(cell.content),
+                Cell::Provider(cell) => {
+                    if !cell.title.is_empty() {
+                        self.events.push(Start(Tag::Paragraph));
+                        self.convert_formatted_text(cell.title, cell.formatting);
+                        self.events.push(End(Tag::Paragraph));
+                    }
+
+                    self.convert_cells(notebook_id, cell.output);
+                }
                 Cell::Text(cell) => {
                     self.events.push(Start(Tag::Paragraph));
                     self.convert_formatted_text(cell.content, cell.formatting);

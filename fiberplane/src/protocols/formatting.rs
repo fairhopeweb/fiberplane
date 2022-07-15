@@ -12,7 +12,10 @@ pub type Formatting = Vec<AnnotationWithOffset>;
 ///
 /// Used inside the `Formatting` vector.
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::formatting")]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::formatting",
+    rust_wasmer_runtime_module = "fiberplane::protocols::formatting"
+)]
 #[serde(rename_all = "camelCase")]
 pub struct AnnotationWithOffset {
     pub offset: u32,
@@ -38,7 +41,10 @@ impl AnnotationWithOffset {
 ///
 /// Annotations are typically found inside a `Formatting` vector.
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::formatting")]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::formatting",
+    rust_wasmer_runtime_module = "fiberplane::protocols::formatting"
+)]
 #[serde(rename_all = "snake_case", tag = "type")]
 pub enum Annotation {
     StartBold,
@@ -91,7 +97,10 @@ impl Annotation {
 /// A struct that represents all the formatting that is active at any given
 /// character offset.
 #[derive(Debug, Default, Deserialize, Serialize, Clone, PartialEq, Eq, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::formatting")]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::formatting",
+    rust_wasmer_runtime_module = "fiberplane::protocols::formatting"
+)]
 #[serde(rename_all = "camelCase")]
 pub struct ActiveFormatting {
     pub bold: bool,
@@ -198,7 +207,10 @@ impl ActiveFormatting {
 /// which the first character of the name does not align must be ignored in
 /// their entirety.
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::formatting")]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::formatting",
+    rust_wasmer_runtime_module = "fiberplane::protocols::formatting"
+)]
 #[serde(rename_all = "camelCase")]
 pub struct Mention {
     pub name: String,

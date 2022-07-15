@@ -158,6 +158,25 @@ pub enum Cell {
         #[serde(rename = "readOnly", skip_serializing_if = "Option::is_none")]
         read_only: Option<bool>,
     },
+    #[serde(rename = "provider")]
+    ProviderCell {
+        #[serde(rename = "id")]
+        id: String,
+        #[serde(rename = "intent")]
+        intent: String,
+        #[serde(rename = "queryData", skip_serializing_if = "Option::is_none")]
+        query_data: Option<String>,
+        #[serde(rename = "response", skip_serializing_if = "Option::is_none")]
+        response: Option<Box<crate::models::ProviderResponse>>,
+        #[serde(rename = "output", skip_serializing_if = "Option::is_none")]
+        output: Option<Vec<crate::models::Cell>>,
+        #[serde(rename = "title", skip_serializing_if = "Option::is_none")]
+        title: Option<String>,
+        #[serde(rename = "formatting", skip_serializing_if = "Option::is_none")]
+        formatting: Option<Vec<crate::models::Annotation>>,
+        #[serde(rename = "readOnly", skip_serializing_if = "Option::is_none")]
+        read_only: Option<bool>,
+    },
     #[serde(rename = "table")]
     TableCell {
         #[serde(rename = "id")]

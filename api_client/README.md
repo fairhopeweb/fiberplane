@@ -139,6 +139,8 @@ Class | Method | HTTP request | Description
  - [PointType](docs/PointType.md)
  - [PrometheusCell](docs/PrometheusCell.md)
  - [PrometheusDataSource](docs/PrometheusDataSource.md)
+ - [ProviderCell](docs/ProviderCell.md)
+ - [ProviderResponse](docs/ProviderResponse.md)
  - [Proxy](docs/Proxy.md)
  - [ProxyConnectionStatus](docs/ProxyConnectionStatus.md)
  - [ProxyDataSource](docs/ProxyDataSource.md)

@@ -51,48 +51,51 @@ components:
         - $ref: "#/components/schemas/checkboxCell"
         - $ref: "#/components/schemas/codeCell"
         - $ref: "#/components/schemas/dividerCell"
+        - $ref: "#/components/schemas/elasticsearchCell"
         - $ref: "#/components/schemas/graphCell"
         - $ref: "#/components/schemas/headingCell"
+        - $ref: "#/components/schemas/imageCell"
         - $ref: "#/components/schemas/listItemCell"
         - $ref: "#/components/schemas/logCell"
-        - $ref: "#/components/schemas/prometheusCell"
-        - $ref: "#/components/schemas/elasticsearchCell"
         - $ref: "#/components/schemas/lokiCell"
+        - $ref: "#/components/schemas/prometheusCell"
+        - $ref: "#/components/schemas/providerCell"
         - $ref: "#/components/schemas/tableCell"
         - $ref: "#/components/schemas/textCell"
-        - $ref: "#/components/schemas/imageCell"
       discriminator:
         propertyName: type
         mapping:
           checkbox: "#/components/schemas/checkboxCell"
           code: "#/components/schemas/codeCell"
           divider: "#/components/schemas/dividerCell"
+          elasticsearch: "#/components/schemas/elasticsearchCell"
           graph: "#/components/schemas/graphCell"
           heading: "#/components/schemas/headingCell"
+          image: "#/components/schemas/imageCell"
           list_item: "#/components/schemas/listItemCell"
           log: "#/components/schemas/logCell"
-          prometheus: "#/components/schemas/prometheusCell"
-          elasticsearch: "#/components/schemas/elasticsearchCell"
           loki: "#/components/schemas/lokiCell"
+          prometheus: "#/components/schemas/prometheusCell"
+          provider: "#/components/schemas/providerCell"
           table: "#/components/schemas/tableCell"
           text: "#/components/schemas/textCell"
-          image: "#/components/schemas/imageCell"
     cellType:
       type: string
       enum:
         - checkbox
         - code
         - divider
+        - elasticsearch
         - graph
         - heading
+        - image
         - list_item
         - log
-        - prometheus
-        - elasticsearch
         - loki
+        - prometheus
+        - provider
         - table
         - text
-        - image
     checkboxCell:
       type: object
       required:
@@ -256,6 +259,43 @@ components:
           type: string
         readOnly:
           type: boolean
+    providerCell:
+      type: object
+      required:
+        - type
+        - id
+        - intent
+      properties:
+        type:
+          $ref: "#/components/schemas/cellType"
+        id:
+          type: string
+        intent:
+          type: string
+        queryData:
+          type: string
+        response:
+          $ref: "#/components/schemas/providerResponse"
+        output:
+          type: array
+          items:
+            $ref: "#/components/schemas/cell"
+        title:
+          type: string
+        formatting:
+          $ref: "#/components/schemas/formatting"
+        readOnly:
+          type: boolean
+    providerResponse:
+      type: object
+      required:
+        - data
+        - mimeType
+      properties:
+        data:
+          type: string
+        mimeType:
+          type: string
     elasticsearchCell:
       type: object
       required:

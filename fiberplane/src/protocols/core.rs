@@ -1,4 +1,7 @@
-use super::formatting::{translate, AnnotationWithOffset, Formatting};
+use super::{
+    formatting::{translate, AnnotationWithOffset, Formatting},
+    providers::ProviderResponse,
+};
 use crate::{markdown::formatting_from_markdown, text_util::char_count};
 use fp_bindgen::prelude::Serializable;
 use once_cell::sync::Lazy;
@@ -24,7 +27,10 @@ const MAX_LABEL_NAME_LENGTH: usize = 63;
 const MAX_LABEL_PREFIX_LENGTH: usize = 253;
 
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
 #[serde(rename_all = "camelCase")]
 pub struct NewNotebook {
     pub title: String,
@@ -51,7 +57,10 @@ impl From<Notebook> for NewNotebook {
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
 #[serde(rename_all = "snake_case")]
 pub enum UserType {
     Anonymous,
@@ -60,7 +69,10 @@ pub enum UserType {
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
 #[serde(rename_all = "camelCase")]
 pub struct CreatedBy {
     #[serde(rename = "type")]
@@ -69,7 +81,10 @@ pub struct CreatedBy {
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
 #[serde(rename_all = "snake_case")]
 pub enum NotebookVisibility {
     Private,
@@ -83,7 +98,10 @@ impl Default for NotebookVisibility {
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
 #[serde(rename_all = "camelCase")]
 pub struct Notebook {
     pub id: String,
@@ -108,22 +126,26 @@ pub struct Notebook {
 
 /// Representation of a single notebook cell.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Cell {
     Checkbox(CheckboxCell),
     Code(CodeCell),
+    Divider(DividerCell),
+    Elasticsearch(ElasticsearchCell),
     Graph(GraphCell),
     Heading(HeadingCell),
-    ListItem(ListItemCell),
-    Prometheus(PrometheusCell),
-    Elasticsearch(ElasticsearchCell),
-    Loki(LokiCell),
-    Table(TableCell),
-    Log(LogCell),
-    Text(TextCell),
     Image(ImageCell),
-    Divider(DividerCell),
+    ListItem(ListItemCell),
+    Log(LogCell),
+    Loki(LokiCell),
+    Prometheus(PrometheusCell),
+    Provider(ProviderCell),
+    Table(TableCell),
+    Text(TextCell),
 }
 
 impl Cell {
@@ -132,17 +154,18 @@ impl Cell {
         match self {
             Cell::Checkbox(cell) => Some(&cell.content),
             Cell::Code(cell) => Some(&cell.content),
+            Cell::Divider(_) => None,
+            Cell::Elasticsearch(cell) => Some(&cell.content),
             Cell::Graph(_) => None,
             Cell::Heading(cell) => Some(&cell.content),
+            Cell::Image(_) => None,
             Cell::ListItem(cell) => Some(&cell.content),
             Cell::Log(_) => None,
-            Cell::Prometheus(cell) => Some(&cell.content),
-            Cell::Elasticsearch(cell) => Some(&cell.content),
             Cell::Loki(cell) => Some(&cell.content),
+            Cell::Prometheus(cell) => Some(&cell.content),
+            Cell::Provider(_) => None,
             Cell::Table(_) => None,
             Cell::Text(cell) => Some(&cell.content),
-            Cell::Image(_) => None,
-            Cell::Divider(_) => None,
         }
     }
 
@@ -160,6 +183,7 @@ impl Cell {
             Cell::Heading(cell) => cell.formatting.as_ref(),
             Cell::ListItem(cell) => cell.formatting.as_ref(),
             Cell::Log(cell) => cell.formatting.as_ref(),
+            Cell::Provider(cell) => cell.formatting.as_ref(),
             Cell::Table(cell) => cell.formatting.as_ref(),
             Cell::Text(cell) => cell.formatting.as_ref(),
         }
@@ -178,6 +202,7 @@ impl Cell {
             | Cell::Heading(_)
             | Cell::ListItem(_)
             | Cell::Log(_)
+            | Cell::Provider(_)
             | Cell::Table(_)
             | Cell::Text(_) => true,
         }
@@ -188,17 +213,18 @@ impl Cell {
         match self {
             Cell::Checkbox(cell) => &cell.id,
             Cell::Code(cell) => &cell.id,
+            Cell::Divider(cell) => &cell.id,
+            Cell::Elasticsearch(cell) => &cell.id,
             Cell::Graph(cell) => &cell.id,
             Cell::Heading(cell) => &cell.id,
+            Cell::Image(cell) => &cell.id,
             Cell::ListItem(cell) => &cell.id,
             Cell::Log(cell) => &cell.id,
-            Cell::Prometheus(cell) => &cell.id,
-            Cell::Elasticsearch(cell) => &cell.id,
             Cell::Loki(cell) => &cell.id,
+            Cell::Prometheus(cell) => &cell.id,
+            Cell::Provider(cell) => &cell.id,
             Cell::Table(cell) => &cell.id,
             Cell::Text(cell) => &cell.id,
-            Cell::Image(cell) => &cell.id,
-            Cell::Divider(cell) => &cell.id,
         }
     }
 
@@ -215,14 +241,15 @@ impl Cell {
             Cell::Table(cell) => cell.source_ids.iter().map(String::as_str).collect(),
             Cell::Checkbox(_)
             | Cell::Code(_)
-            | Cell::Heading(_)
-            | Cell::ListItem(_)
-            | Cell::Prometheus(_)
+            | Cell::Divider(_)
             | Cell::Elasticsearch(_)
-            | Cell::Loki(_)
-            | Cell::Text(_)
+            | Cell::Heading(_)
             | Cell::Image(_)
-            | Cell::Divider(_) => vec![],
+            | Cell::ListItem(_)
+            | Cell::Loki(_)
+            | Cell::Prometheus(_)
+            | Cell::Provider(_)
+            | Cell::Text(_) => vec![],
         }
     }
 
@@ -231,6 +258,7 @@ impl Cell {
         match self {
             Cell::Graph(cell) => Some(&cell.title),
             Cell::Log(cell) => Some(&cell.title),
+            Cell::Provider(cell) => Some(&cell.title),
             Cell::Table(cell) => Some(&cell.title),
             cell => cell.content(),
         }
@@ -276,6 +304,12 @@ impl Cell {
                 syntax: cell.syntax.clone(),
                 ..*cell
             }),
+            Cell::Divider(cell) => Cell::Divider(cell.clone()),
+            Cell::Elasticsearch(cell) => Cell::Elasticsearch(ElasticsearchCell {
+                id: cell.id.clone(),
+                content: content.to_owned(),
+                ..*cell
+            }),
             Cell::Graph(cell) => Cell::Graph(cell.clone()),
             Cell::Heading(cell) => Cell::Heading(HeadingCell {
                 id: cell.id.clone(),
@@ -283,6 +317,7 @@ impl Cell {
                 formatting: Some(vec![]),
                 ..*cell
             }),
+            Cell::Image(cell) => Cell::Image(cell.clone()),
             Cell::ListItem(cell) => Cell::ListItem(ListItemCell {
                 id: cell.id.clone(),
                 content: content.to_owned(),
@@ -290,21 +325,17 @@ impl Cell {
                 ..*cell
             }),
             Cell::Log(cell) => Cell::Log(cell.clone()),
-            Cell::Prometheus(cell) => Cell::Prometheus(PrometheusCell {
-                id: cell.id.clone(),
-                content: content.to_owned(),
-                ..*cell
-            }),
-            Cell::Elasticsearch(cell) => Cell::Elasticsearch(ElasticsearchCell {
-                id: cell.id.clone(),
-                content: content.to_owned(),
-                ..*cell
-            }),
             Cell::Loki(cell) => Cell::Loki(LokiCell {
                 id: cell.id.clone(),
                 content: content.to_owned(),
                 ..*cell
             }),
+            Cell::Prometheus(cell) => Cell::Prometheus(PrometheusCell {
+                id: cell.id.clone(),
+                content: content.to_owned(),
+                ..*cell
+            }),
+            Cell::Provider(cell) => Cell::Provider(cell.clone()),
             Cell::Table(cell) => Cell::Table(cell.clone()),
             Cell::Text(cell) => Cell::Text(TextCell {
                 id: cell.id.clone(),
@@ -312,8 +343,6 @@ impl Cell {
                 formatting: Some(vec![]),
                 ..*cell
             }),
-            Cell::Image(cell) => Cell::Image(cell.clone()),
-            Cell::Divider(cell) => Cell::Divider(cell.clone()),
         }
     }
 
@@ -329,11 +358,23 @@ impl Cell {
                 id: id.to_owned(),
                 ..cell.clone()
             }),
+            Cell::Divider(cell) => Cell::Divider(DividerCell {
+                id: id.to_owned(),
+                ..cell.clone()
+            }),
+            Cell::Elasticsearch(cell) => Cell::Elasticsearch(ElasticsearchCell {
+                id: id.to_owned(),
+                ..cell.clone()
+            }),
             Cell::Graph(cell) => Cell::Graph(GraphCell {
                 id: id.to_owned(),
                 ..cell.clone()
             }),
             Cell::Heading(cell) => Cell::Heading(HeadingCell {
+                id: id.to_owned(),
+                ..cell.clone()
+            }),
+            Cell::Image(cell) => Cell::Image(ImageCell {
                 id: id.to_owned(),
                 ..cell.clone()
             }),
@@ -345,15 +386,15 @@ impl Cell {
                 id: id.to_owned(),
                 ..cell.clone()
             }),
+            Cell::Loki(cell) => Cell::Loki(LokiCell {
+                id: id.to_owned(),
+                ..cell.clone()
+            }),
             Cell::Prometheus(cell) => Cell::Prometheus(PrometheusCell {
                 id: id.to_owned(),
                 ..cell.clone()
             }),
-            Cell::Elasticsearch(cell) => Cell::Elasticsearch(ElasticsearchCell {
-                id: id.to_owned(),
-                ..cell.clone()
-            }),
-            Cell::Loki(cell) => Cell::Loki(LokiCell {
+            Cell::Provider(cell) => Cell::Provider(ProviderCell {
                 id: id.to_owned(),
                 ..cell.clone()
             }),
@@ -362,14 +403,6 @@ impl Cell {
                 ..cell.clone()
             }),
             Cell::Text(cell) => Cell::Text(TextCell {
-                id: id.to_owned(),
-                ..cell.clone()
-            }),
-            Cell::Image(cell) => Cell::Image(ImageCell {
-                id: id.to_owned(),
-                ..cell.clone()
-            }),
-            Cell::Divider(cell) => Cell::Divider(DividerCell {
                 id: id.to_owned(),
                 ..cell.clone()
             }),
@@ -385,6 +418,8 @@ impl Cell {
         match self {
             Cell::Checkbox(cell) => Cell::Checkbox(cell.clone()),
             Cell::Code(cell) => Cell::Code(cell.clone()),
+            Cell::Divider(cell) => Cell::Divider(cell.clone()),
+            Cell::Elasticsearch(cell) => Cell::Elasticsearch(cell.clone()),
             Cell::Graph(cell) => Cell::Graph(GraphCell {
                 data: cell.data.as_ref().map(|data| {
                     data.iter()
@@ -396,6 +431,7 @@ impl Cell {
                 ..cell.clone()
             }),
             Cell::Heading(cell) => Cell::Heading(cell.clone()),
+            Cell::Image(cell) => Cell::Image(cell.clone()),
             Cell::ListItem(cell) => Cell::ListItem(cell.clone()),
             Cell::Log(cell) => Cell::Log(LogCell {
                 data: cell.data.as_ref().map(|data| {
@@ -407,9 +443,9 @@ impl Cell {
                 source_ids,
                 ..cell.clone()
             }),
-            Cell::Prometheus(cell) => Cell::Prometheus(cell.clone()),
-            Cell::Elasticsearch(cell) => Cell::Elasticsearch(cell.clone()),
             Cell::Loki(cell) => Cell::Loki(cell.clone()),
+            Cell::Prometheus(cell) => Cell::Prometheus(cell.clone()),
+            Cell::Provider(cell) => Cell::Provider(cell.clone()),
             Cell::Table(cell) => Cell::Table(TableCell {
                 id: cell.id.clone(),
                 data: cell.data.as_ref().map(|data| {
@@ -422,8 +458,6 @@ impl Cell {
                 ..cell.clone()
             }),
             Cell::Text(cell) => Cell::Text(cell.clone()),
-            Cell::Image(cell) => Cell::Image(cell.clone()),
-            Cell::Divider(cell) => Cell::Divider(cell.clone()),
         }
     }
 
@@ -440,20 +474,30 @@ impl Cell {
                 title: text.to_owned(),
                 ..*cell
             }),
-            Cell::Table(cell) => Cell::Table(TableCell {
-                id: cell.id.clone(),
-                data: cell.data.clone(),
-                title: text.to_owned(),
-                formatting: Some(vec![]),
-                source_ids: cell.source_ids.clone(),
-                ..*cell
-            }),
             Cell::Log(cell) => Cell::Log(LogCell {
                 id: cell.id.clone(),
                 data: cell.data.clone(),
                 title: text.to_owned(),
                 formatting: Some(vec![]),
                 time_range: cell.time_range.clone(),
+                source_ids: cell.source_ids.clone(),
+                ..*cell
+            }),
+            Cell::Provider(cell) => Cell::Provider(ProviderCell {
+                id: cell.id.clone(),
+                formatting: Some(Vec::new()),
+                intent: cell.intent.clone(),
+                output: cell.output.clone(),
+                query_data: cell.query_data.clone(),
+                read_only: cell.read_only,
+                response: cell.response.clone(),
+                title: text.to_owned(),
+            }),
+            Cell::Table(cell) => Cell::Table(TableCell {
+                id: cell.id.clone(),
+                data: cell.data.clone(),
+                title: text.to_owned(),
+                formatting: Some(vec![]),
                 source_ids: cell.source_ids.clone(),
                 ..*cell
             }),
@@ -513,6 +557,16 @@ impl Cell {
                 formatting: Some(formatting),
                 ..*cell
             }),
+            Cell::Provider(cell) => Cell::Provider(ProviderCell {
+                id: cell.id.clone(),
+                formatting: Some(formatting),
+                intent: cell.intent.clone(),
+                output: cell.output.clone(),
+                query_data: cell.query_data.clone(),
+                read_only: cell.read_only,
+                response: cell.response.clone(),
+                title: text.to_owned(),
+            }),
             Cell::Text(cell) => Cell::Text(TextCell {
                 id: cell.id.clone(),
                 content: text.to_owned(),
@@ -532,17 +586,18 @@ impl Cell {
         match self {
             Cell::Checkbox(cell) => &mut cell.id,
             Cell::Code(cell) => &mut cell.id,
+            Cell::Divider(cell) => &mut cell.id,
+            Cell::Elasticsearch(cell) => &mut cell.id,
             Cell::Graph(cell) => &mut cell.id,
             Cell::Heading(cell) => &mut cell.id,
+            Cell::Image(cell) => &mut cell.id,
             Cell::ListItem(cell) => &mut cell.id,
             Cell::Log(cell) => &mut cell.id,
-            Cell::Prometheus(cell) => &mut cell.id,
-            Cell::Elasticsearch(cell) => &mut cell.id,
             Cell::Loki(cell) => &mut cell.id,
+            Cell::Prometheus(cell) => &mut cell.id,
+            Cell::Provider(cell) => &mut cell.id,
             Cell::Table(cell) => &mut cell.id,
             Cell::Text(cell) => &mut cell.id,
-            Cell::Image(cell) => &mut cell.id,
-            Cell::Divider(cell) => &mut cell.id,
         }
     }
 
@@ -557,14 +612,15 @@ impl Cell {
             Cell::Heading(cell) => Some(&mut cell.formatting),
             Cell::ListItem(cell) => Some(&mut cell.formatting),
             Cell::Log(cell) => Some(&mut cell.formatting),
+            Cell::Provider(cell) => Some(&mut cell.formatting),
             Cell::Table(cell) => Some(&mut cell.formatting),
             Cell::Text(cell) => Some(&mut cell.formatting),
             Cell::Code(_)
-            | Cell::Prometheus(_)
+            | Cell::Divider(_)
             | Cell::Elasticsearch(_)
-            | Cell::Loki(_)
             | Cell::Image(_)
-            | Cell::Divider(_) => None,
+            | Cell::Loki(_)
+            | Cell::Prometheus(_) => None,
         };
 
         // Turn the Option<&mut Option<Formatting>> into a Option<&mut Formatting>
@@ -582,24 +638,29 @@ impl Cell {
     /// Returns a mutable reference to the cell's text, if any.
     pub fn text_mut(&mut self) -> Option<&mut String> {
         match self {
-            Cell::Graph(cell) => Some(&mut cell.title),
-            Cell::Log(cell) => Some(&mut cell.title),
-            Cell::Table(cell) => Some(&mut cell.title),
             Cell::Checkbox(cell) => Some(&mut cell.content),
             Cell::Code(cell) => Some(&mut cell.content),
+            Cell::Divider(_) => None,
+            Cell::Image(_) => None,
+            Cell::Elasticsearch(cell) => Some(&mut cell.content),
+            Cell::Graph(cell) => Some(&mut cell.title),
             Cell::Heading(cell) => Some(&mut cell.content),
             Cell::ListItem(cell) => Some(&mut cell.content),
-            Cell::Prometheus(cell) => Some(&mut cell.content),
-            Cell::Elasticsearch(cell) => Some(&mut cell.content),
+            Cell::Log(cell) => Some(&mut cell.title),
             Cell::Loki(cell) => Some(&mut cell.content),
+            Cell::Prometheus(cell) => Some(&mut cell.content),
+            Cell::Provider(cell) => Some(&mut cell.title),
+            Cell::Table(cell) => Some(&mut cell.title),
             Cell::Text(cell) => Some(&mut cell.content),
-            Cell::Image(_) | Cell::Divider(_) => None,
         }
     }
 }
 
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Eq, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
 #[serde(rename_all = "camelCase")]
 pub struct CheckboxCell {
     pub id: String,
@@ -615,7 +676,10 @@ pub struct CheckboxCell {
 }
 
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Eq, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
 #[serde(rename_all = "camelCase")]
 pub struct CodeCell {
     pub id: String,
@@ -628,7 +692,10 @@ pub struct CodeCell {
 }
 
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Eq, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
 #[serde(rename_all = "camelCase")]
 pub struct DividerCell {
     pub id: String,
@@ -638,7 +705,10 @@ pub struct DividerCell {
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
 #[serde(rename_all = "camelCase")]
 pub struct GraphCell {
     pub id: String,
@@ -658,7 +728,10 @@ pub struct GraphCell {
 }
 
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Eq, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
 #[serde(rename_all = "camelCase")]
 pub struct HeadingCell {
     pub id: String,
@@ -672,7 +745,10 @@ pub struct HeadingCell {
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
 #[serde(rename_all = "camelCase")]
 pub struct LogCell {
     pub id: String,
@@ -692,7 +768,10 @@ pub struct LogCell {
 }
 
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Eq, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
 #[serde(rename_all = "camelCase")]
 pub struct ListItemCell {
     pub id: String,
@@ -710,7 +789,10 @@ pub struct ListItemCell {
 }
 
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Eq, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
 #[serde(rename_all = "camelCase")]
 pub struct PrometheusCell {
     pub id: String,
@@ -719,8 +801,54 @@ pub struct PrometheusCell {
     pub read_only: Option<bool>,
 }
 
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, Serializable)]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
+#[serde(rename_all = "camelCase")]
+pub struct ProviderCell {
+    pub id: String,
+
+    /// The intent served by this provider cell.
+    ///
+    /// See: https://www.notion.so/fiberplane/RFC-45-Provider-Protocol-2-0-Revised-4ec85a0233924b2db0010d8cdae75e16#c8ed5dfbfd764e6bbd5c5b79333f9d6e
+    pub intent: String,
+
+    /// Query data encoded as "<mime-type>,<data>", where the MIME type is
+    /// either "application/x-www-form-urlencoded" or "multipart/form-data".
+    /// This is used for storing data for the Query Builder.
+    ///
+    /// Note: The format follows the specification for data URLs, without the
+    ///       `data:` prefix. See: https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/Data_URLs
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub query_data: Option<String>,
+
+    /// Optional response data from the provider.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub response: Option<ProviderResponse>,
+
+    /// Optional list of generated output cells.
+    #[serde(default)]
+    pub output: Vec<Cell>,
+
+    /// Optional title to assign the cell.
+    #[serde(default)]
+    pub title: String,
+
+    /// Optional formatting to apply to the title.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub formatting: Option<Formatting>,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub read_only: Option<bool>,
+}
+
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Eq, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
 #[serde(rename_all = "camelCase")]
 pub struct ElasticsearchCell {
     pub id: String,
@@ -730,7 +858,10 @@ pub struct ElasticsearchCell {
 }
 
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Eq, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
 #[serde(rename_all = "camelCase")]
 pub struct LokiCell {
     pub id: String,
@@ -740,7 +871,10 @@ pub struct LokiCell {
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
 #[serde(rename_all = "camelCase")]
 pub struct TableCell {
     pub id: String,
@@ -763,7 +897,10 @@ fn default_title() -> String {
 }
 
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Eq, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
 #[serde(rename_all = "camelCase")]
 pub struct TextCell {
     pub id: String,
@@ -776,7 +913,10 @@ pub struct TextCell {
 }
 
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
 #[serde(rename_all = "camelCase")]
 pub struct ImageCell {
     pub id: String,
@@ -811,7 +951,10 @@ pub struct ImageCell {
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
 #[serde(rename_all = "snake_case")]
 pub enum GraphType {
     Bar,
@@ -819,7 +962,10 @@ pub enum GraphType {
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
 #[serde(rename_all = "snake_case")]
 pub enum StackingType {
     None,
@@ -828,7 +974,10 @@ pub enum StackingType {
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
 #[serde(rename_all = "snake_case")]
 pub enum HeadingType {
     H1,
@@ -843,7 +992,10 @@ impl Default for HeadingType {
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
 #[serde(rename_all = "snake_case")]
 pub enum ListType {
     Ordered,
@@ -858,7 +1010,10 @@ impl Default for ListType {
 
 /// A range in time from a given timestamp (inclusive) up to another timestamp (exclusive).
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
 pub struct TimeRange {
     pub from: Timestamp,
     pub to: Timestamp,
@@ -868,14 +1023,20 @@ pub struct TimeRange {
 pub type Timestamp = f64;
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
 pub struct Metric {
     pub name: String,
     pub labels: HashMap<String, String>,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
 pub struct Point<T> {
     pub timestamp: Timestamp,
     pub value: T,
@@ -883,7 +1044,10 @@ pub struct Point<T> {
 
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[deprecated(note = "see FP-676: https://linear.app/fiberplane/issue/FP-676/deprecate-point-type")]
-#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
 #[serde(rename_all = "snake_case")]
 pub enum PointType {
     F64,
@@ -892,7 +1056,10 @@ pub enum PointType {
 
 /// A single data-point in time, with meta-data about the metric it was taken from.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
 #[serde(rename_all = "camelCase")]
 pub struct Instant<T>
 where
@@ -920,7 +1087,10 @@ impl Instant<f64> {
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
 #[serde(rename_all = "camelCase")]
 pub struct LogRecord {
     pub timestamp: Timestamp,
@@ -933,7 +1103,10 @@ pub struct LogRecord {
 
 /// A series of data-points in time, with meta-data about the metric it was taken from.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
 #[serde(rename_all = "camelCase")]
 pub struct Series<T>
 where
@@ -965,7 +1138,10 @@ impl Series<f64> {
 /// NotebookDataSource represents the way a data-source can be embedded in a
 /// Notebook.
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum NotebookDataSource {
     /// Inline is a data-source which only exists in this notebook.
@@ -979,7 +1155,10 @@ pub enum NotebookDataSource {
 /// OrganizationDataSource represents a data-source as stored for a organization
 /// on the API.
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
 #[serde(rename_all = "camelCase")]
 pub struct InlineDataSource {
     /// The actual data-source.
@@ -989,7 +1168,10 @@ pub struct InlineDataSource {
 /// OrganizationDataSource represents a data-source as stored for a organization
 /// on the API.
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
 #[serde(rename_all = "camelCase")]
 pub struct OrganizationDataSource {
     /// identifier used to manipulate this data-source.
@@ -1010,7 +1192,10 @@ pub struct OrganizationDataSource {
 /// A data-source represents all the configuration for a specific component or
 /// service. It will be used by provider.
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum DataSource {
     Prometheus(PrometheusDataSource),
@@ -1039,7 +1224,10 @@ impl From<&DataSource> for DataSourceType {
 #[derive(
     Clone, Debug, PartialEq, Serialize, Deserialize, Serializable, Hash, PartialOrd, Eq, Ord,
 )]
-#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
 #[serde(rename_all = "camelCase")]
 pub enum DataSourceType {
     Prometheus,
@@ -1086,7 +1274,10 @@ impl Display for DataSourceType {
 /// a full URL starting with http:// or https:// the domain, and optionally a
 /// port and a path.
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
 #[serde(rename_all = "camelCase")]
 pub struct PrometheusDataSource {
     pub url: String,
@@ -1096,7 +1287,10 @@ pub struct PrometheusDataSource {
 /// a full URL starting with http:// or https:// the domain, and optionally a
 /// port and a path.
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
 #[serde(rename_all = "camelCase")]
 pub struct ElasticsearchDataSource {
     pub url: String,
@@ -1112,7 +1306,10 @@ pub struct ElasticsearchDataSource {
 /// a full URL starting with http:// or https:// the domain, and optionally a
 /// port and a path.
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
 #[serde(rename_all = "camelCase")]
 pub struct LokiDataSource {
     pub url: String,
@@ -1120,7 +1317,10 @@ pub struct LokiDataSource {
 
 /// Relays requests for a data-source to a proxy server registered with the API.
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
 #[serde(rename_all = "camelCase")]
 pub struct ProxyDataSource {
     /// ID of the proxy as known by the API.
@@ -1135,7 +1335,10 @@ pub struct ProxyDataSource {
 
 /// Labels that are associated with a Notebook.
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
 #[serde(rename_all = "camelCase")]
 pub struct Label {
     /// The key of the label. Should be unique for a single Notebook.
@@ -1231,7 +1434,10 @@ impl Label {
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq, Serializable, Error)]
-#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
 #[serde(rename_all = "snake_case")]
 pub enum LabelValidationError {
     #[error("The key in the label was empty")]

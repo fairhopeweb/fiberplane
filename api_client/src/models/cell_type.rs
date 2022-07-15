@@ -17,26 +17,28 @@ pub enum CellType {
     Code,
     #[serde(rename = "divider")]
     Divider,
+    #[serde(rename = "elasticsearch")]
+    Elasticsearch,
     #[serde(rename = "graph")]
     Graph,
     #[serde(rename = "heading")]
     Heading,
+    #[serde(rename = "image")]
+    Image,
     #[serde(rename = "list_item")]
     ListItem,
     #[serde(rename = "log")]
     Log,
-    #[serde(rename = "prometheus")]
-    Prometheus,
-    #[serde(rename = "elasticsearch")]
-    Elasticsearch,
     #[serde(rename = "loki")]
     Loki,
+    #[serde(rename = "prometheus")]
+    Prometheus,
+    #[serde(rename = "provider")]
+    Provider,
     #[serde(rename = "table")]
     Table,
     #[serde(rename = "text")]
     Text,
-    #[serde(rename = "image")]
-    Image,
 }
 
 impl ToString for CellType {
@@ -45,16 +47,17 @@ impl ToString for CellType {
             Self::Checkbox => String::from("checkbox"),
             Self::Code => String::from("code"),
             Self::Divider => String::from("divider"),
+            Self::Elasticsearch => String::from("elasticsearch"),
             Self::Graph => String::from("graph"),
             Self::Heading => String::from("heading"),
+            Self::Image => String::from("image"),
             Self::ListItem => String::from("list_item"),
             Self::Log => String::from("log"),
-            Self::Prometheus => String::from("prometheus"),
-            Self::Elasticsearch => String::from("elasticsearch"),
             Self::Loki => String::from("loki"),
+            Self::Prometheus => String::from("prometheus"),
+            Self::Provider => String::from("provider"),
             Self::Table => String::from("table"),
             Self::Text => String::from("text"),
-            Self::Image => String::from("image"),
         }
     }
 }
