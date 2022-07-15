@@ -16,3 +16,6 @@ docker run --rm \
 # Git patches don't apply if we're not in the base directory of the project (where .git lives): https://stackoverflow.com/a/67790361/11494565
 cd "$SCRIPT_DIR/../"
 git apply -v "./schemas/patches/json_query_parameter.patch"
+
+cd "$SCRIPT_DIR/../api_client"
+cargo fmt
