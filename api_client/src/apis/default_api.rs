@@ -307,6 +307,13 @@ pub enum TokenCreateError {
     UnknownValue(serde_json::Value),
 }
 
+/// struct for typed errors of method `token_list`
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum TokenListError {
+    UnknownValue(serde_json::Value),
+}
+
 /// struct for typed errors of method `trigger_create`
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -2141,6 +2148,64 @@ pub async fn token_create(
         serde_json::from_str(&local_var_content).map_err(Error::from)
     } else {
         let local_var_entity: Option<TokenCreateError> =
+            serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent {
+            status: local_var_status,
+            content: local_var_content,
+            entity: local_var_entity,
+        };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
+
+/// Gets a list of api tokens
+pub async fn token_list(
+    configuration: &configuration::Configuration,
+    sort_by: Option<&str>,
+    sort_direction: Option<&str>,
+    page: Option<i32>,
+    limit: Option<i32>,
+) -> Result<Vec<crate::models::TokenSummary>, Error<TokenListError>> {
+    let local_var_client = &configuration.client;
+
+    let local_var_uri_str = format!("{}/api/tokens", configuration.base_path);
+    let mut local_var_req_builder =
+        local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_str) = sort_by {
+        local_var_req_builder =
+            local_var_req_builder.query(&[("sort_by", &local_var_str.to_string())]);
+    }
+    if let Some(ref local_var_str) = sort_direction {
+        local_var_req_builder =
+            local_var_req_builder.query(&[("sort_direction", &local_var_str.to_string())]);
+    }
+    if let Some(ref local_var_str) = page {
+        local_var_req_builder =
+            local_var_req_builder.query(&[("page", &local_var_str.to_string())]);
+    }
+    if let Some(ref local_var_str) = limit {
+        local_var_req_builder =
+            local_var_req_builder.query(&[("limit", &local_var_str.to_string())]);
+    }
+    if let Some(ref local_var_user_agent) = configuration.user_agent {
+        local_var_req_builder =
+            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+    if let Some(ref local_var_token) = configuration.bearer_access_token {
+        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
+    };
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        serde_json::from_str(&local_var_content).map_err(Error::from)
+    } else {
+        let local_var_entity: Option<TokenListError> =
             serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent {
             status: local_var_status,

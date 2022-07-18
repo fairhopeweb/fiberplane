@@ -174,6 +174,8 @@ pub mod time_range;
 pub use self::time_range::TimeRange;
 pub mod token;
 pub use self::token::Token;
+pub mod token_summary;
+pub use self::token_summary::TokenSummary;
 pub mod trigger;
 pub use self::trigger::Trigger;
 pub mod trigger_invoke_response;

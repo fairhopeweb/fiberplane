@@ -91,6 +91,7 @@ docs/TemplateSummary.md
 docs/TextCell.md
 docs/TimeRange.md
 docs/Token.md
+docs/TokenSummary.md
 docs/Trigger.md
 docs/TriggerInvokeResponse.md
 docs/UnknownTemplateParameter.md
@@ -191,6 +192,7 @@ src/models/template_summary.rs
 src/models/text_cell.rs
 src/models/time_range.rs
 src/models/token.rs
+src/models/token_summary.rs
 src/models/trigger.rs
 src/models/trigger_invoke_response.rs
 src/models/unknown_template_parameter.rs

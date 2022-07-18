@@ -1471,6 +1471,24 @@ components:
       properties:
         token:
           type: string
+    tokenSummary:
+      type: object
+      required:
+        - "id"
+        - "title"
+        - "createdAt"
+      properties:
+        id:
+          type: string
+          format: base64uuid
+        title:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
   parameters:
     sortDirection:
       in: query
@@ -2323,6 +2341,32 @@ paths:
         "200":
           description: OK
   /api/tokens:
+    get:
+      operationId: token_list
+      description: Gets a list of api tokens
+      parameters:
+        - in: query
+          name: sort_by
+          description: Sort the resulting list by the following field (defaults to title)
+          schema:
+            type: string
+            enum:
+              - "title"
+              - "created_at"
+              - "expires_at"
+          required: false
+        - $ref: "#/components/parameters/sortDirection"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/limit"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/tokenSummary"
     post:
       operationId: token_create
       description: Creates a new token

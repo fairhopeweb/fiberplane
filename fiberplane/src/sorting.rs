@@ -102,3 +102,30 @@ impl SortField for EventSortFields {
         Self::OccurrenceTime
     }
 }
+
+#[derive(Debug, Deserialize, Serialize, Clone, ArgEnum, strum_macros::IntoStaticStr)]
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum TokenListSortFields {
+    Title,
+    CreatedAt,
+    ExpiresAt,
+}
+
+impl TokenListSortFields {
+    #[inline]
+    pub fn to_sql(&self) -> &'static str {
+        match self {
+            TokenListSortFields::Title => "title",
+            TokenListSortFields::CreatedAt => "created_at",
+            TokenListSortFields::ExpiresAt => "expires_at",
+        }
+    }
+}
+
+impl SortField for TokenListSortFields {
+    #[inline]
+    fn default_sort_field() -> Self {
+        Self::Title
+    }
+}

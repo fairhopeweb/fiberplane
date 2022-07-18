@@ -46,6 +46,7 @@ Method | HTTP request | Description
 [**template_list**](DefaultApi.md#template_list) | **GET** /api/templates | 
 [**template_update**](DefaultApi.md#template_update) | **PATCH** /api/templates/{templateId} | 
 [**token_create**](DefaultApi.md#token_create) | **POST** /api/tokens | 
+[**token_list**](DefaultApi.md#token_list) | **GET** /api/tokens | 
 [**trigger_create**](DefaultApi.md#trigger_create) | **POST** /api/triggers | 
 [**trigger_delete**](DefaultApi.md#trigger_delete) | **DELETE** /api/triggers/{triggerId} | 
 [**trigger_get**](DefaultApi.md#trigger_get) | **GET** /api/triggers/{triggerId} | 
@@ -1289,6 +1290,39 @@ Name | Type | Description  | Required | Notes
 ### HTTP request headers
 
 - **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## token_list
+
+> Vec<crate::models::TokenSummary> token_list(sort_by, sort_direction, page, limit)
+
+
+Gets a list of api tokens
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**sort_by** | Option<**String**> | Sort the resulting list by the following field (defaults to title) |  |
+**sort_direction** | Option<**String**> | Sort the resulting list in the following direction (defaults to ascending) |  |
+**page** | Option<**i32**> | Page number which should be displayed; 0-indexed (defaults to 0) |  |
+**limit** | Option<**i32**> | Maximum amount of results to display per page (defaults to 20) |  |
+
+### Return type
+
+[**Vec<crate::models::TokenSummary>**](tokenSummary.md)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
 - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
