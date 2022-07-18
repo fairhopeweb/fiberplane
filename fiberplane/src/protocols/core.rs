@@ -134,6 +134,7 @@ pub struct Notebook {
 pub enum Cell {
     Checkbox(CheckboxCell),
     Code(CodeCell),
+    Discussion(DiscussionCell),
     Divider(DividerCell),
     Elasticsearch(ElasticsearchCell),
     Graph(GraphCell),
@@ -154,6 +155,7 @@ impl Cell {
         match self {
             Cell::Checkbox(cell) => Some(&cell.content),
             Cell::Code(cell) => Some(&cell.content),
+            Cell::Discussion(_) => None,
             Cell::Divider(_) => None,
             Cell::Elasticsearch(cell) => Some(&cell.content),
             Cell::Graph(_) => None,
@@ -173,6 +175,7 @@ impl Cell {
     pub fn formatting(&self) -> Option<&Formatting> {
         match self {
             Cell::Code(_)
+            | Cell::Discussion(_)
             | Cell::Divider(_)
             | Cell::Elasticsearch(_)
             | Cell::Image(_)
@@ -192,6 +195,7 @@ impl Cell {
     pub fn supports_formatting(&self) -> bool {
         match self {
             Cell::Code(_)
+            | Cell::Discussion(_)
             | Cell::Divider(_)
             | Cell::Elasticsearch(_)
             | Cell::Image(_)
@@ -213,6 +217,7 @@ impl Cell {
         match self {
             Cell::Checkbox(cell) => &cell.id,
             Cell::Code(cell) => &cell.id,
+            Cell::Discussion(cell) => &cell.id,
             Cell::Divider(cell) => &cell.id,
             Cell::Elasticsearch(cell) => &cell.id,
             Cell::Graph(cell) => &cell.id,
@@ -241,6 +246,7 @@ impl Cell {
             Cell::Table(cell) => cell.source_ids.iter().map(String::as_str).collect(),
             Cell::Checkbox(_)
             | Cell::Code(_)
+            | Cell::Discussion(_)
             | Cell::Divider(_)
             | Cell::Elasticsearch(_)
             | Cell::Heading(_)
@@ -304,6 +310,7 @@ impl Cell {
                 syntax: cell.syntax.clone(),
                 ..*cell
             }),
+            Cell::Discussion(cell) => Cell::Discussion(cell.clone()),
             Cell::Divider(cell) => Cell::Divider(cell.clone()),
             Cell::Elasticsearch(cell) => Cell::Elasticsearch(ElasticsearchCell {
                 id: cell.id.clone(),
@@ -355,6 +362,10 @@ impl Cell {
                 ..cell.clone()
             }),
             Cell::Code(cell) => Cell::Code(CodeCell {
+                id: id.to_owned(),
+                ..cell.clone()
+            }),
+            Cell::Discussion(cell) => Cell::Discussion(DiscussionCell {
                 id: id.to_owned(),
                 ..cell.clone()
             }),
@@ -418,6 +429,7 @@ impl Cell {
         match self {
             Cell::Checkbox(cell) => Cell::Checkbox(cell.clone()),
             Cell::Code(cell) => Cell::Code(cell.clone()),
+            Cell::Discussion(cell) => Cell::Discussion(cell.clone()),
             Cell::Divider(cell) => Cell::Divider(cell.clone()),
             Cell::Elasticsearch(cell) => Cell::Elasticsearch(cell.clone()),
             Cell::Graph(cell) => Cell::Graph(GraphCell {
@@ -574,6 +586,7 @@ impl Cell {
                 ..*cell
             }),
             Cell::Code(_)
+            | Cell::Discussion(_)
             | Cell::Divider(_)
             | Cell::Elasticsearch(_)
             | Cell::Image(_)
@@ -586,6 +599,7 @@ impl Cell {
         match self {
             Cell::Checkbox(cell) => &mut cell.id,
             Cell::Code(cell) => &mut cell.id,
+            Cell::Discussion(cell) => &mut cell.id,
             Cell::Divider(cell) => &mut cell.id,
             Cell::Elasticsearch(cell) => &mut cell.id,
             Cell::Graph(cell) => &mut cell.id,
@@ -616,6 +630,7 @@ impl Cell {
             Cell::Table(cell) => Some(&mut cell.formatting),
             Cell::Text(cell) => Some(&mut cell.formatting),
             Cell::Code(_)
+            | Cell::Discussion(_)
             | Cell::Divider(_)
             | Cell::Elasticsearch(_)
             | Cell::Image(_)
@@ -640,6 +655,7 @@ impl Cell {
         match self {
             Cell::Checkbox(cell) => Some(&mut cell.content),
             Cell::Code(cell) => Some(&mut cell.content),
+            Cell::Discussion(_) => None,
             Cell::Divider(_) => None,
             Cell::Image(_) => None,
             Cell::Elasticsearch(cell) => Some(&mut cell.content),
@@ -948,6 +964,16 @@ pub struct ImageCell {
     /// Fiberplane Studio.
     #[serde(skip_serializing_if = "Option::is_none")]
     pub url: Option<String>,
+}
+
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::core")]
+#[serde(rename_all = "camelCase")]
+pub struct DiscussionCell {
+    pub id: String,
+    pub thread_id: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub read_only: Option<bool>,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]

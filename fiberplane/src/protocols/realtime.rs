@@ -1,3 +1,4 @@
+use crate::protocols::comments::{Thread, ThreadItem};
 use crate::protocols::core::{LabelValidationError, UserType};
 use crate::protocols::operations::Operation;
 use fp_bindgen::prelude::*;
@@ -82,6 +83,18 @@ pub enum ServerRealtimeMessage {
     SubscriberRemoved(SubscriberRemovedMessage),
 
     SubscriberChangedFocus(SubscriberChangedFocusMessage),
+
+    /// A new comment thread was added to the notebook.
+    ThreadAdded(ThreadAddedMessage),
+
+    /// A new item was added to a comment thread (e.g. a comment or a thread status change).
+    ThreadItemAdded(ThreadItemAddedMessage),
+
+    /// A new item was added to a comment thread (e.g. a comment or a thread status change).
+    ThreadItemUpdated(ThreadItemUpdatedMessage),
+
+    /// A comment thread was deleted
+    ThreadDeleted(ThreadDeletedMessage),
 }
 
 #[derive(Clone, Deserialize, PartialEq, Eq, Serialize, Serializable)]
@@ -664,6 +677,40 @@ impl Default for NotebookFocus {
     fn default() -> Self {
         Self::None
     }
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
+#[serde(rename_all = "camelCase")]
+pub struct ThreadAddedMessage {
+    pub notebook_id: String,
+    pub thread: Thread,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
+#[serde(rename_all = "camelCase")]
+pub struct ThreadItemAddedMessage {
+    pub notebook_id: String,
+    pub thread_id: String,
+    pub thread_item: ThreadItem,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
+#[serde(rename_all = "camelCase")]
+pub struct ThreadItemUpdatedMessage {
+    pub notebook_id: String,
+    pub thread_id: String,
+    pub thread_item: ThreadItem,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
+#[serde(rename_all = "camelCase")]
+pub struct ThreadDeletedMessage {
+    pub notebook_id: String,
+    pub thread_id: String,
 }
 
 #[cfg(test)]
