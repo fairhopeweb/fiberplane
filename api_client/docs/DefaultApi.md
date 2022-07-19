@@ -46,6 +46,7 @@ Method | HTTP request | Description
 [**template_list**](DefaultApi.md#template_list) | **GET** /api/templates | 
 [**template_update**](DefaultApi.md#template_update) | **PATCH** /api/templates/{templateId} | 
 [**token_create**](DefaultApi.md#token_create) | **POST** /api/tokens | 
+[**token_delete**](DefaultApi.md#token_delete) | **DELETE** /api/tokens/{id} | 
 [**token_list**](DefaultApi.md#token_list) | **GET** /api/tokens | 
 [**trigger_create**](DefaultApi.md#trigger_create) | **POST** /api/triggers | 
 [**trigger_delete**](DefaultApi.md#trigger_delete) | **DELETE** /api/triggers/{triggerId} | 
@@ -1291,6 +1292,36 @@ Name | Type | Description  | Required | Notes
 
 - **Content-Type**: application/json
 - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## token_delete
+
+> token_delete(id)
+
+
+Deletes a token
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**id** | **String** | ID of the token which should be deleted  # Deleting current token  If you want to delete the token with which you sent the request, call `/api/logout` instead.  | [required] |
+
+### Return type
+
+ (empty response body)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: Not defined
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
