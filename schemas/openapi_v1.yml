@@ -1525,8 +1525,6 @@ components:
       type: object
       required:
         - id
-        - firstItem
-        - recentItems
         - status
         - createdBy
         - createdAt
@@ -1565,7 +1563,7 @@ components:
         propertyName: type
         mapping:
           comment: "#/components/schemas/commentThreadItem"
-          statusChange: "#/components/schemas/statusChangeThreadItem"
+          status_change: "#/components/schemas/statusChangeThreadItem"
     commentThreadItem:
       allOf:
         - $ref: "#/components/schemas/comment"
@@ -1614,7 +1612,7 @@ components:
           type: string
           format: base64uuid
         status:
-          $ref: "#/components/schemas/formatting"
+          $ref: "#/components/schemas/threadStatus"
         createdBy:
           $ref: "#/components/schemas/userSummary"
         createdAt:

@@ -6,7 +6,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **_type** | [**crate::models::ThreadItemType**](threadItemType.md) |  | 
 **id** | **String** |  | 
-**status** | [**Vec<crate::models::Annotation>**](annotation.md) |  | 
+**status** | [**crate::models::ThreadStatus**](threadStatus.md) |  | 
 **created_by** | [**crate::models::UserSummary**](userSummary.md) |  | 
 **created_at** | **String** |  | 
 

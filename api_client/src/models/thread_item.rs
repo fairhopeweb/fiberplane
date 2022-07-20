@@ -26,12 +26,12 @@ pub enum ThreadItem {
         #[serde(rename = "updatedAt")]
         updated_at: String,
     },
-    #[serde(rename = "statusChange")]
+    #[serde(rename = "status_change")]
     StatusChangeThreadItem {
         #[serde(rename = "id")]
         id: String,
         #[serde(rename = "status")]
-        status: Vec<crate::models::Annotation>,
+        status: crate::models::ThreadStatus,
         #[serde(rename = "createdBy")]
         created_by: Box<crate::models::UserSummary>,
         #[serde(rename = "createdAt")]

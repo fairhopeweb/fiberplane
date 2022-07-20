@@ -15,7 +15,7 @@ pub struct StatusChangeThreadItem {
     #[serde(rename = "id")]
     pub id: String,
     #[serde(rename = "status")]
-    pub status: Vec<crate::models::Annotation>,
+    pub status: crate::models::ThreadStatus,
     #[serde(rename = "createdBy")]
     pub created_by: Box<crate::models::UserSummary>,
     #[serde(rename = "createdAt")]
@@ -26,7 +26,7 @@ impl StatusChangeThreadItem {
     pub fn new(
         _type: crate::models::ThreadItemType,
         id: String,
-        status: Vec<crate::models::Annotation>,
+        status: crate::models::ThreadStatus,
         created_by: crate::models::UserSummary,
         created_at: String,
     ) -> StatusChangeThreadItem {

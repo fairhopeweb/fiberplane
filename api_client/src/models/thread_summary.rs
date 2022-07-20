@@ -12,11 +12,11 @@
 pub struct ThreadSummary {
     #[serde(rename = "id")]
     pub id: String,
-    #[serde(rename = "firstItem")]
-    pub first_item: Box<crate::models::ThreadItem>,
+    #[serde(rename = "firstItem", skip_serializing_if = "Option::is_none")]
+    pub first_item: Option<Box<crate::models::ThreadItem>>,
     /// Most recent thread items, sorted in chronological order
-    #[serde(rename = "recentItems")]
-    pub recent_items: Vec<crate::models::ThreadItem>,
+    #[serde(rename = "recentItems", skip_serializing_if = "Option::is_none")]
+    pub recent_items: Option<Vec<crate::models::ThreadItem>>,
     #[serde(rename = "status")]
     pub status: crate::models::ThreadStatus,
     #[serde(rename = "createdBy")]
@@ -30,8 +30,6 @@ pub struct ThreadSummary {
 impl ThreadSummary {
     pub fn new(
         id: String,
-        first_item: crate::models::ThreadItem,
-        recent_items: Vec<crate::models::ThreadItem>,
         status: crate::models::ThreadStatus,
         created_by: crate::models::UserSummary,
         created_at: String,
@@ -39,8 +37,8 @@ impl ThreadSummary {
     ) -> ThreadSummary {
         ThreadSummary {
             id,
-            first_item: Box::new(first_item),
-            recent_items,
+            first_item: None,
+            recent_items: None,
             status,
             created_by: Box::new(created_by),
             created_at,

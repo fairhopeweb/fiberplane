@@ -5,8 +5,8 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **id** | **String** |  | 
-**first_item** | [**crate::models::ThreadItem**](threadItem.md) |  | 
-**recent_items** | [**Vec<crate::models::ThreadItem>**](threadItem.md) | Most recent thread items, sorted in chronological order | 
+**first_item** | Option<[**crate::models::ThreadItem**](threadItem.md)> |  | [optional]
+**recent_items** | Option<[**Vec<crate::models::ThreadItem>**](threadItem.md)> | Most recent thread items, sorted in chronological order | [optional]
 **status** | [**crate::models::ThreadStatus**](threadStatus.md) |  | 
 **created_by** | [**crate::models::UserSummary**](userSummary.md) |  | 
 **created_at** | **String** |  | 
