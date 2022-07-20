@@ -1489,6 +1489,175 @@ components:
         expiresAt:
           type: string
           format: date-time
+    thread:
+      type: object
+      required:
+        - id
+        - items
+        - status
+        - createdBy
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: base64uuid
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/threadItem"
+        status:
+          $ref: "#/components/schemas/threadStatus"
+        createdBy:
+          $ref: "#/components/schemas/userSummary"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    threadStatus:
+      type: string
+      enum:
+        - "open"
+        - "resolved"
+    threadSummary:
+      type: object
+      required:
+        - id
+        - firstItem
+        - recentItems
+        - status
+        - createdBy
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: base64uuid
+        firstItem:
+          $ref: "#/components/schemas/threadItem"
+        recentItems:
+          type: array
+          description: Most recent thread items, sorted in chronological order
+          items:
+            $ref: "#/components/schemas/threadItem"
+        status:
+          $ref: "#/components/schemas/threadStatus"
+        createdBy:
+          $ref: "#/components/schemas/userSummary"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    threadItemType:
+      type: string
+      enum:
+        - "comment"
+        - "status_change"
+    threadItem:
+      oneOf:
+        - $ref: "#/components/schemas/commentThreadItem"
+        - $ref: "#/components/schemas/statusChangeThreadItem"
+      discriminator:
+        propertyName: type
+        mapping:
+          comment: "#/components/schemas/commentThreadItem"
+          statusChange: "#/components/schemas/statusChangeThreadItem"
+    commentThreadItem:
+      allOf:
+        - $ref: "#/components/schemas/comment"
+        - type: object
+          required:
+            - type
+          properties:
+            type:
+              $ref: "#/components/schemas/threadItemType"
+    comment:
+      type: object
+      required:
+        - id
+        - createdBy
+        - content
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: base64uuid
+        content:
+          type: string
+        formatting:
+          $ref: "#/components/schemas/formatting"
+        createdBy:
+          $ref: "#/components/schemas/userSummary"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    statusChangeThreadItem:
+      type: object
+      required:
+        - type
+        - id
+        - createdBy
+        - status
+        - createdAt
+      properties:
+        type:
+          $ref: "#/components/schemas/threadItemType"
+        id:
+          type: string
+          format: base64uuid
+        status:
+          $ref: "#/components/schemas/formatting"
+        createdBy:
+          $ref: "#/components/schemas/userSummary"
+        createdAt:
+          type: string
+          format: date-time
+    newThread:
+      type: object
+      properties:
+        id:
+          type: string
+          format: base64uuid
+        comment:
+          $ref: "#/components/schemas/newComment"
+    newComment:
+      type: object
+      required:
+        - content
+      properties:
+        id:
+          type: string
+          format: base64uuid
+        content:
+          type: string
+        formatting:
+          $ref: "#/components/schemas/formatting"
+    updateComment:
+      type: object
+      properties:
+        content:
+          type: string
+        formatting:
+          $ref: "#/components/schemas/formatting"
+    userSummary:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          format: base64uuid
+        name:
+          type: string
   parameters:
     sortDirection:
       in: query
@@ -1514,6 +1683,34 @@ components:
       schema:
         type: integer
       required: false
+    threadId:
+      in: path
+      name: threadId
+      required: true
+      schema:
+        type: string
+        format: base64uuid
+    commentId:
+      in: path
+      name: commentId
+      required: true
+      schema:
+        type: string
+        format: base64uuid
+  responses:
+    thread:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/thread"
+    comment:
+      description: OK
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/comment"
+
 # Most routes require authentication. The ones
 # that do not will specify "security: []"
 security:
@@ -1693,6 +1890,44 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/cell"
+  /api/notebooks/{notebookId}/threads:
+    parameters:
+      - name: notebookId
+        in: path
+        description: ID of the notebook
+        required: true
+        schema:
+          type: string
+    post:
+      operationId: thread_create
+      description: Create a new comment thread
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/newThread"
+      responses:
+        "200":
+          $ref: "#/components/responses/thread"
+    get:
+      operationId: threads_list
+      description: List the threads in the given notebook
+      parameters:
+        - name: status
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/threadStatus"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/threadSummary"
   /api/datasources:
     post:
       operationId: org_data_source_create
@@ -2390,9 +2625,9 @@ paths:
         in: path
         description: |
           ID of the token which should be deleted
-          
+
           # Deleting current token
-          
+
           If you want to delete the token with which you sent the request, call `/api/logout` instead.
         required: true
         schema:
@@ -2401,6 +2636,73 @@ paths:
     delete:
       operationId: token_delete
       description: Deletes a token
+      responses:
+        "200":
+          description: OK
+  /api/threads/{threadId}:
+    parameters:
+      - $ref: "#/components/parameters/threadId"
+    get:
+      operationId: thread_get
+      responses:
+        "200":
+          $ref: "#/components/responses/thread"
+    delete:
+      operationId: thread_delete
+      responses:
+        "200":
+          description: OK
+  /api/threads/{threadId}/resolve:
+    parameters:
+      - $ref: "#/components/parameters/threadId"
+    post:
+      operationId: thread_resolve
+      responses:
+        "200":
+          $ref: "#/components/responses/thread"
+  /api/threads/{threadId}/reopen:
+    parameters:
+      - $ref: "#/components/parameters/threadId"
+    post:
+      operationId: thread_reopen
+      responses:
+        "200":
+          $ref: "#/components/responses/thread"
+  /api/threads/{threadId}/comments:
+    parameters:
+      - $ref: "#/components/parameters/threadId"
+    post:
+      operationId: comment_create
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/newComment"
+      responses:
+        "200":
+          $ref: "#/components/responses/comment"
+  /api/comments/{commentId}:
+    parameters:
+      - $ref: "#/components/parameters/commentId"
+    get:
+      operationId: comment_get
+      responses:
+        "200":
+          $ref: "#/components/responses/comment"
+    patch:
+      operationId: comment_update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/updateComment"
+      responses:
+        "200":
+          $ref: "#/components/responses/comment"
+    delete:
+      operationId: comment_delete
       responses:
         "200":
           description: OK

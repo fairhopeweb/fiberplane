@@ -13,6 +13,34 @@ use reqwest;
 use super::{configuration, Error};
 use crate::apis::ResponseContent;
 
+/// struct for typed errors of method `comment_create`
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum CommentCreateError {
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method `comment_delete`
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum CommentDeleteError {
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method `comment_get`
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum CommentGetError {
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method `comment_update`
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum CommentUpdateError {
+    UnknownValue(serde_json::Value),
+}
+
 /// struct for typed errors of method `convert_notebook_to_template`
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -300,6 +328,48 @@ pub enum TemplateUpdateError {
     UnknownValue(serde_json::Value),
 }
 
+/// struct for typed errors of method `thread_create`
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum ThreadCreateError {
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method `thread_delete`
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum ThreadDeleteError {
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method `thread_get`
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum ThreadGetError {
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method `thread_reopen`
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum ThreadReopenError {
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method `thread_resolve`
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum ThreadResolveError {
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method `threads_list`
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum ThreadsListError {
+    UnknownValue(serde_json::Value),
+}
+
 /// struct for typed errors of method `token_create`
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -361,6 +431,178 @@ pub enum TriggerListError {
 #[serde(untagged)]
 pub enum UpdateProfilePictureError {
     UnknownValue(serde_json::Value),
+}
+
+pub async fn comment_create(
+    configuration: &configuration::Configuration,
+    thread_id: &str,
+    new_comment: crate::models::NewComment,
+) -> Result<crate::models::Comment, Error<CommentCreateError>> {
+    let local_var_client = &configuration.client;
+
+    let local_var_uri_str = format!(
+        "{}/api/threads/{threadId}/comments",
+        configuration.base_path,
+        threadId = crate::apis::urlencode(thread_id)
+    );
+    let mut local_var_req_builder =
+        local_var_client.request(reqwest::Method::POST, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_user_agent) = configuration.user_agent {
+        local_var_req_builder =
+            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+    if let Some(ref local_var_token) = configuration.bearer_access_token {
+        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
+    };
+    local_var_req_builder = local_var_req_builder.json(&new_comment);
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        serde_json::from_str(&local_var_content).map_err(Error::from)
+    } else {
+        let local_var_entity: Option<CommentCreateError> =
+            serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent {
+            status: local_var_status,
+            content: local_var_content,
+            entity: local_var_entity,
+        };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
+
+pub async fn comment_delete(
+    configuration: &configuration::Configuration,
+    comment_id: &str,
+) -> Result<(), Error<CommentDeleteError>> {
+    let local_var_client = &configuration.client;
+
+    let local_var_uri_str = format!(
+        "{}/api/comments/{commentId}",
+        configuration.base_path,
+        commentId = crate::apis::urlencode(comment_id)
+    );
+    let mut local_var_req_builder =
+        local_var_client.request(reqwest::Method::DELETE, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_user_agent) = configuration.user_agent {
+        local_var_req_builder =
+            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+    if let Some(ref local_var_token) = configuration.bearer_access_token {
+        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
+    };
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        Ok(())
+    } else {
+        let local_var_entity: Option<CommentDeleteError> =
+            serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent {
+            status: local_var_status,
+            content: local_var_content,
+            entity: local_var_entity,
+        };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
+
+pub async fn comment_get(
+    configuration: &configuration::Configuration,
+    comment_id: &str,
+) -> Result<crate::models::Comment, Error<CommentGetError>> {
+    let local_var_client = &configuration.client;
+
+    let local_var_uri_str = format!(
+        "{}/api/comments/{commentId}",
+        configuration.base_path,
+        commentId = crate::apis::urlencode(comment_id)
+    );
+    let mut local_var_req_builder =
+        local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_user_agent) = configuration.user_agent {
+        local_var_req_builder =
+            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+    if let Some(ref local_var_token) = configuration.bearer_access_token {
+        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
+    };
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        serde_json::from_str(&local_var_content).map_err(Error::from)
+    } else {
+        let local_var_entity: Option<CommentGetError> =
+            serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent {
+            status: local_var_status,
+            content: local_var_content,
+            entity: local_var_entity,
+        };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
+
+pub async fn comment_update(
+    configuration: &configuration::Configuration,
+    comment_id: &str,
+    update_comment: crate::models::UpdateComment,
+) -> Result<crate::models::Comment, Error<CommentUpdateError>> {
+    let local_var_client = &configuration.client;
+
+    let local_var_uri_str = format!(
+        "{}/api/comments/{commentId}",
+        configuration.base_path,
+        commentId = crate::apis::urlencode(comment_id)
+    );
+    let mut local_var_req_builder =
+        local_var_client.request(reqwest::Method::PATCH, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_user_agent) = configuration.user_agent {
+        local_var_req_builder =
+            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+    if let Some(ref local_var_token) = configuration.bearer_access_token {
+        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
+    };
+    local_var_req_builder = local_var_req_builder.json(&update_comment);
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        serde_json::from_str(&local_var_content).map_err(Error::from)
+    } else {
+        let local_var_entity: Option<CommentUpdateError> =
+            serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent {
+            status: local_var_status,
+            content: local_var_content,
+            entity: local_var_entity,
+        };
+        Err(Error::ResponseError(local_var_error))
+    }
 }
 
 /// Convert the notebook to a Template
@@ -2115,6 +2357,267 @@ pub async fn template_update(
         serde_json::from_str(&local_var_content).map_err(Error::from)
     } else {
         let local_var_entity: Option<TemplateUpdateError> =
+            serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent {
+            status: local_var_status,
+            content: local_var_content,
+            entity: local_var_entity,
+        };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
+
+/// Create a new comment thread
+pub async fn thread_create(
+    configuration: &configuration::Configuration,
+    notebook_id: &str,
+    new_thread: crate::models::NewThread,
+) -> Result<crate::models::Thread, Error<ThreadCreateError>> {
+    let local_var_client = &configuration.client;
+
+    let local_var_uri_str = format!(
+        "{}/api/notebooks/{notebookId}/threads",
+        configuration.base_path,
+        notebookId = crate::apis::urlencode(notebook_id)
+    );
+    let mut local_var_req_builder =
+        local_var_client.request(reqwest::Method::POST, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_user_agent) = configuration.user_agent {
+        local_var_req_builder =
+            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+    if let Some(ref local_var_token) = configuration.bearer_access_token {
+        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
+    };
+    local_var_req_builder = local_var_req_builder.json(&new_thread);
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        serde_json::from_str(&local_var_content).map_err(Error::from)
+    } else {
+        let local_var_entity: Option<ThreadCreateError> =
+            serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent {
+            status: local_var_status,
+            content: local_var_content,
+            entity: local_var_entity,
+        };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
+
+pub async fn thread_delete(
+    configuration: &configuration::Configuration,
+    thread_id: &str,
+) -> Result<(), Error<ThreadDeleteError>> {
+    let local_var_client = &configuration.client;
+
+    let local_var_uri_str = format!(
+        "{}/api/threads/{threadId}",
+        configuration.base_path,
+        threadId = crate::apis::urlencode(thread_id)
+    );
+    let mut local_var_req_builder =
+        local_var_client.request(reqwest::Method::DELETE, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_user_agent) = configuration.user_agent {
+        local_var_req_builder =
+            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+    if let Some(ref local_var_token) = configuration.bearer_access_token {
+        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
+    };
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        Ok(())
+    } else {
+        let local_var_entity: Option<ThreadDeleteError> =
+            serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent {
+            status: local_var_status,
+            content: local_var_content,
+            entity: local_var_entity,
+        };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
+
+pub async fn thread_get(
+    configuration: &configuration::Configuration,
+    thread_id: &str,
+) -> Result<crate::models::Thread, Error<ThreadGetError>> {
+    let local_var_client = &configuration.client;
+
+    let local_var_uri_str = format!(
+        "{}/api/threads/{threadId}",
+        configuration.base_path,
+        threadId = crate::apis::urlencode(thread_id)
+    );
+    let mut local_var_req_builder =
+        local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_user_agent) = configuration.user_agent {
+        local_var_req_builder =
+            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+    if let Some(ref local_var_token) = configuration.bearer_access_token {
+        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
+    };
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        serde_json::from_str(&local_var_content).map_err(Error::from)
+    } else {
+        let local_var_entity: Option<ThreadGetError> =
+            serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent {
+            status: local_var_status,
+            content: local_var_content,
+            entity: local_var_entity,
+        };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
+
+pub async fn thread_reopen(
+    configuration: &configuration::Configuration,
+    thread_id: &str,
+) -> Result<crate::models::Thread, Error<ThreadReopenError>> {
+    let local_var_client = &configuration.client;
+
+    let local_var_uri_str = format!(
+        "{}/api/threads/{threadId}/reopen",
+        configuration.base_path,
+        threadId = crate::apis::urlencode(thread_id)
+    );
+    let mut local_var_req_builder =
+        local_var_client.request(reqwest::Method::POST, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_user_agent) = configuration.user_agent {
+        local_var_req_builder =
+            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+    if let Some(ref local_var_token) = configuration.bearer_access_token {
+        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
+    };
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        serde_json::from_str(&local_var_content).map_err(Error::from)
+    } else {
+        let local_var_entity: Option<ThreadReopenError> =
+            serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent {
+            status: local_var_status,
+            content: local_var_content,
+            entity: local_var_entity,
+        };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
+
+pub async fn thread_resolve(
+    configuration: &configuration::Configuration,
+    thread_id: &str,
+) -> Result<crate::models::Thread, Error<ThreadResolveError>> {
+    let local_var_client = &configuration.client;
+
+    let local_var_uri_str = format!(
+        "{}/api/threads/{threadId}/resolve",
+        configuration.base_path,
+        threadId = crate::apis::urlencode(thread_id)
+    );
+    let mut local_var_req_builder =
+        local_var_client.request(reqwest::Method::POST, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_user_agent) = configuration.user_agent {
+        local_var_req_builder =
+            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+    if let Some(ref local_var_token) = configuration.bearer_access_token {
+        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
+    };
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        serde_json::from_str(&local_var_content).map_err(Error::from)
+    } else {
+        let local_var_entity: Option<ThreadResolveError> =
+            serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent {
+            status: local_var_status,
+            content: local_var_content,
+            entity: local_var_entity,
+        };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
+
+/// List the threads in the given notebook
+pub async fn threads_list(
+    configuration: &configuration::Configuration,
+    notebook_id: &str,
+    status: Option<crate::models::ThreadStatus>,
+) -> Result<Vec<crate::models::ThreadSummary>, Error<ThreadsListError>> {
+    let local_var_client = &configuration.client;
+
+    let local_var_uri_str = format!(
+        "{}/api/notebooks/{notebookId}/threads",
+        configuration.base_path,
+        notebookId = crate::apis::urlencode(notebook_id)
+    );
+    let mut local_var_req_builder =
+        local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_str) = status {
+        local_var_req_builder =
+            local_var_req_builder.query(&[("status", &local_var_str.to_string())]);
+    }
+    if let Some(ref local_var_user_agent) = configuration.user_agent {
+        local_var_req_builder =
+            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+    if let Some(ref local_var_token) = configuration.bearer_access_token {
+        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
+    };
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        serde_json::from_str(&local_var_content).map_err(Error::from)
+    } else {
+        let local_var_entity: Option<ThreadsListError> =
             serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent {
             status: local_var_status,

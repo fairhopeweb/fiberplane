@@ -4,6 +4,10 @@ All URIs are relative to *https://fiberplane.com*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------
+[**comment_create**](DefaultApi.md#comment_create) | **POST** /api/threads/{threadId}/comments | 
+[**comment_delete**](DefaultApi.md#comment_delete) | **DELETE** /api/comments/{commentId} | 
+[**comment_get**](DefaultApi.md#comment_get) | **GET** /api/comments/{commentId} | 
+[**comment_update**](DefaultApi.md#comment_update) | **PATCH** /api/comments/{commentId} | 
 [**convert_notebook_to_template**](DefaultApi.md#convert_notebook_to_template) | **GET** /api/notebooks/{id}/template.jsonnet | 
 [**delete_file**](DefaultApi.md#delete_file) | **DELETE** /api/files/{notebookId}/{fileId} | 
 [**delete_notebook**](DefaultApi.md#delete_notebook) | **DELETE** /api/notebooks/{id} | 
@@ -45,6 +49,12 @@ Method | HTTP request | Description
 [**template_get**](DefaultApi.md#template_get) | **GET** /api/templates/{templateId} | 
 [**template_list**](DefaultApi.md#template_list) | **GET** /api/templates | 
 [**template_update**](DefaultApi.md#template_update) | **PATCH** /api/templates/{templateId} | 
+[**thread_create**](DefaultApi.md#thread_create) | **POST** /api/notebooks/{notebookId}/threads | 
+[**thread_delete**](DefaultApi.md#thread_delete) | **DELETE** /api/threads/{threadId} | 
+[**thread_get**](DefaultApi.md#thread_get) | **GET** /api/threads/{threadId} | 
+[**thread_reopen**](DefaultApi.md#thread_reopen) | **POST** /api/threads/{threadId}/reopen | 
+[**thread_resolve**](DefaultApi.md#thread_resolve) | **POST** /api/threads/{threadId}/resolve | 
+[**threads_list**](DefaultApi.md#threads_list) | **GET** /api/notebooks/{notebookId}/threads | 
 [**token_create**](DefaultApi.md#token_create) | **POST** /api/tokens | 
 [**token_delete**](DefaultApi.md#token_delete) | **DELETE** /api/tokens/{id} | 
 [**token_list**](DefaultApi.md#token_list) | **GET** /api/tokens | 
@@ -55,6 +65,120 @@ Method | HTTP request | Description
 [**trigger_list**](DefaultApi.md#trigger_list) | **GET** /api/triggers | 
 [**update_profile_picture**](DefaultApi.md#update_profile_picture) | **POST** /api/profile/picture | 
 
+
+
+## comment_create
+
+> crate::models::Comment comment_create(thread_id, new_comment)
+
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**thread_id** | **String** |  | [required] |
+**new_comment** | [**NewComment**](NewComment.md) |  | [required] |
+
+### Return type
+
+[**crate::models::Comment**](comment.md)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## comment_delete
+
+> comment_delete(comment_id)
+
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**comment_id** | **String** |  | [required] |
+
+### Return type
+
+ (empty response body)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: Not defined
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## comment_get
+
+> crate::models::Comment comment_get(comment_id)
+
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**comment_id** | **String** |  | [required] |
+
+### Return type
+
+[**crate::models::Comment**](comment.md)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## comment_update
+
+> crate::models::Comment comment_update(comment_id, update_comment)
+
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**comment_id** | **String** |  | [required] |
+**update_comment** | [**UpdateComment**](UpdateComment.md) |  | [required] |
+
+### Return type
+
+[**crate::models::Comment**](comment.md)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 
 ## convert_notebook_to_template
@@ -1261,6 +1385,180 @@ Name | Type | Description  | Required | Notes
 ### HTTP request headers
 
 - **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## thread_create
+
+> crate::models::Thread thread_create(notebook_id, new_thread)
+
+
+Create a new comment thread
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**notebook_id** | **String** | ID of the notebook | [required] |
+**new_thread** | [**NewThread**](NewThread.md) |  | [required] |
+
+### Return type
+
+[**crate::models::Thread**](thread.md)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## thread_delete
+
+> thread_delete(thread_id)
+
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**thread_id** | **String** |  | [required] |
+
+### Return type
+
+ (empty response body)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: Not defined
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## thread_get
+
+> crate::models::Thread thread_get(thread_id)
+
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**thread_id** | **String** |  | [required] |
+
+### Return type
+
+[**crate::models::Thread**](thread.md)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## thread_reopen
+
+> crate::models::Thread thread_reopen(thread_id)
+
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**thread_id** | **String** |  | [required] |
+
+### Return type
+
+[**crate::models::Thread**](thread.md)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## thread_resolve
+
+> crate::models::Thread thread_resolve(thread_id)
+
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**thread_id** | **String** |  | [required] |
+
+### Return type
+
+[**crate::models::Thread**](thread.md)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## threads_list
+
+> Vec<crate::models::ThreadSummary> threads_list(notebook_id, status)
+
+
+List the threads in the given notebook
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**notebook_id** | **String** | ID of the notebook | [required] |
+**status** | Option<[**crate::models::ThreadStatus**](.md)> |  |  |
+
+### Return type
+
+[**Vec<crate::models::ThreadSummary>**](threadSummary.md)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
 - **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)

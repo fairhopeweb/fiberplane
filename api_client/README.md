@@ -24,6 +24,10 @@ All URIs are relative to *https://fiberplane.com*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------
+*DefaultApi* | [**comment_create**](docs/DefaultApi.md#comment_create) | **POST** /api/threads/{threadId}/comments | 
+*DefaultApi* | [**comment_delete**](docs/DefaultApi.md#comment_delete) | **DELETE** /api/comments/{commentId} | 
+*DefaultApi* | [**comment_get**](docs/DefaultApi.md#comment_get) | **GET** /api/comments/{commentId} | 
+*DefaultApi* | [**comment_update**](docs/DefaultApi.md#comment_update) | **PATCH** /api/comments/{commentId} | 
 *DefaultApi* | [**convert_notebook_to_template**](docs/DefaultApi.md#convert_notebook_to_template) | **GET** /api/notebooks/{id}/template.jsonnet | 
 *DefaultApi* | [**delete_file**](docs/DefaultApi.md#delete_file) | **DELETE** /api/files/{notebookId}/{fileId} | 
 *DefaultApi* | [**delete_notebook**](docs/DefaultApi.md#delete_notebook) | **DELETE** /api/notebooks/{id} | 
@@ -65,6 +69,12 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**template_get**](docs/DefaultApi.md#template_get) | **GET** /api/templates/{templateId} | 
 *DefaultApi* | [**template_list**](docs/DefaultApi.md#template_list) | **GET** /api/templates | 
 *DefaultApi* | [**template_update**](docs/DefaultApi.md#template_update) | **PATCH** /api/templates/{templateId} | 
+*DefaultApi* | [**thread_create**](docs/DefaultApi.md#thread_create) | **POST** /api/notebooks/{notebookId}/threads | 
+*DefaultApi* | [**thread_delete**](docs/DefaultApi.md#thread_delete) | **DELETE** /api/threads/{threadId} | 
+*DefaultApi* | [**thread_get**](docs/DefaultApi.md#thread_get) | **GET** /api/threads/{threadId} | 
+*DefaultApi* | [**thread_reopen**](docs/DefaultApi.md#thread_reopen) | **POST** /api/threads/{threadId}/reopen | 
+*DefaultApi* | [**thread_resolve**](docs/DefaultApi.md#thread_resolve) | **POST** /api/threads/{threadId}/resolve | 
+*DefaultApi* | [**threads_list**](docs/DefaultApi.md#threads_list) | **GET** /api/notebooks/{notebookId}/threads | 
 *DefaultApi* | [**token_create**](docs/DefaultApi.md#token_create) | **POST** /api/tokens | 
 *DefaultApi* | [**token_delete**](docs/DefaultApi.md#token_delete) | **DELETE** /api/tokens/{id} | 
 *DefaultApi* | [**token_list**](docs/DefaultApi.md#token_list) | **GET** /api/tokens | 
@@ -88,6 +98,9 @@ Class | Method | HTTP request | Description
  - [CellType](docs/CellType.md)
  - [CheckboxCell](docs/CheckboxCell.md)
  - [CodeCell](docs/CodeCell.md)
+ - [Comment](docs/Comment.md)
+ - [CommentThreadItem](docs/CommentThreadItem.md)
+ - [CommentThreadItemAllOf](docs/CommentThreadItemAllOf.md)
  - [CreatedBy](docs/CreatedBy.md)
  - [DataSource](docs/DataSource.md)
  - [DataSourceAndProxySummary](docs/DataSourceAndProxySummary.md)
@@ -120,12 +133,14 @@ Class | Method | HTTP request | Description
  - [LokiDataSource](docs/LokiDataSource.md)
  - [MentionAnnotation](docs/MentionAnnotation.md)
  - [Metric](docs/Metric.md)
+ - [NewComment](docs/NewComment.md)
  - [NewEvent](docs/NewEvent.md)
  - [NewNotebook](docs/NewNotebook.md)
  - [NewOrgDataSource](docs/NewOrgDataSource.md)
  - [NewPinnedNotebook](docs/NewPinnedNotebook.md)
  - [NewProxy](docs/NewProxy.md)
  - [NewTemplate](docs/NewTemplate.md)
+ - [NewThread](docs/NewThread.md)
  - [NewToken](docs/NewToken.md)
  - [NewTrigger](docs/NewTrigger.md)
  - [Notebook](docs/Notebook.md)
@@ -157,6 +172,7 @@ Class | Method | HTTP request | Description
  - [StartLinkAnnotation](docs/StartLinkAnnotation.md)
  - [StartStrikethroughAnnotation](docs/StartStrikethroughAnnotation.md)
  - [StartUnderlineAnnotation](docs/StartUnderlineAnnotation.md)
+ - [StatusChangeThreadItem](docs/StatusChangeThreadItem.md)
  - [StringTemplateParameter](docs/StringTemplateParameter.md)
  - [TableCell](docs/TableCell.md)
  - [Template](docs/Template.md)
@@ -164,14 +180,21 @@ Class | Method | HTTP request | Description
  - [TemplateParameterType](docs/TemplateParameterType.md)
  - [TemplateSummary](docs/TemplateSummary.md)
  - [TextCell](docs/TextCell.md)
+ - [Thread](docs/Thread.md)
+ - [ThreadItem](docs/ThreadItem.md)
+ - [ThreadItemType](docs/ThreadItemType.md)
+ - [ThreadStatus](docs/ThreadStatus.md)
+ - [ThreadSummary](docs/ThreadSummary.md)
  - [TimeRange](docs/TimeRange.md)
  - [Token](docs/Token.md)
  - [TokenSummary](docs/TokenSummary.md)
  - [Trigger](docs/Trigger.md)
  - [TriggerInvokeResponse](docs/TriggerInvokeResponse.md)
  - [UnknownTemplateParameter](docs/UnknownTemplateParameter.md)
+ - [UpdateComment](docs/UpdateComment.md)
  - [UpdateTemplate](docs/UpdateTemplate.md)
  - [User](docs/User.md)
+ - [UserSummary](docs/UserSummary.md)
  - [UserType](docs/UserType.md)
 
 
