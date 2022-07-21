@@ -26,6 +26,18 @@ pub enum ThreadItem {
         #[serde(rename = "updatedAt")]
         updated_at: String,
     },
+    #[serde(rename = "comment_delete")]
+    CommentDeleteThreadItem {
+        #[serde(rename = "id")]
+        id: String,
+        #[serde(rename = "createdBy")]
+        created_by: Box<crate::models::UserSummary>,
+        /// Timestamp when the original comment was created
+        #[serde(rename = "createdAt")]
+        created_at: String,
+        #[serde(rename = "deletedAt")]
+        deleted_at: String,
+    },
     #[serde(rename = "status_change")]
     StatusChangeThreadItem {
         #[serde(rename = "id")]

@@ -13,6 +13,7 @@ docs/CellType.md
 docs/CheckboxCell.md
 docs/CodeCell.md
 docs/Comment.md
+docs/CommentDeleteThreadItem.md
 docs/CommentThreadItem.md
 docs/CommentThreadItemAllOf.md
 docs/CreatedBy.md
@@ -127,6 +128,7 @@ src/models/cell_type.rs
 src/models/checkbox_cell.rs
 src/models/code_cell.rs
 src/models/comment.rs
+src/models/comment_delete_thread_item.rs
 src/models/comment_thread_item.rs
 src/models/comment_thread_item_all_of.rs
 src/models/created_by.rs

@@ -99,6 +99,7 @@ Class | Method | HTTP request | Description
  - [CheckboxCell](docs/CheckboxCell.md)
  - [CodeCell](docs/CodeCell.md)
  - [Comment](docs/Comment.md)
+ - [CommentDeleteThreadItem](docs/CommentDeleteThreadItem.md)
  - [CommentThreadItem](docs/CommentThreadItem.md)
  - [CommentThreadItemAllOf](docs/CommentThreadItemAllOf.md)
  - [CreatedBy](docs/CreatedBy.md)

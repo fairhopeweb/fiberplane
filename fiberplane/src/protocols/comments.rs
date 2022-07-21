@@ -40,7 +40,7 @@ pub struct ThreadSummary {
 pub enum ThreadItem {
     Comment(Comment),
     StatusChange(ThreadStatusChange),
-    CommentDeleted(CommentDeleted),
+    CommentDelete(CommentDelete),
 }
 
 impl ThreadItem {
@@ -48,7 +48,7 @@ impl ThreadItem {
         match self {
             ThreadItem::Comment(item) => &item.id,
             ThreadItem::StatusChange(item) => &item.id,
-            ThreadItem::CommentDeleted(item) => &item.id,
+            ThreadItem::CommentDelete(item) => &item.id,
         }
     }
 
@@ -56,7 +56,7 @@ impl ThreadItem {
         match self {
             ThreadItem::Comment(item) => &item.created_at,
             ThreadItem::StatusChange(item) => &item.created_at,
-            ThreadItem::CommentDeleted(item) => &item.created_at,
+            ThreadItem::CommentDelete(item) => &item.created_at,
         }
     }
 }
@@ -72,10 +72,12 @@ pub struct ThreadStatusChange {
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[serde(rename_all = "camelCase")]
-pub struct CommentDeleted {
+pub struct CommentDelete {
     pub id: String,
     pub created_by: UserSummary,
+    /// Timestamp when the original comment was created
     pub created_at: OffsetDateTime,
+    pub deleted_at: OffsetDateTime,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]

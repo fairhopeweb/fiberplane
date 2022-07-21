@@ -20,6 +20,8 @@ pub mod code_cell;
 pub use self::code_cell::CodeCell;
 pub mod comment;
 pub use self::comment::Comment;
+pub mod comment_delete_thread_item;
+pub use self::comment_delete_thread_item::CommentDeleteThreadItem;
 pub mod comment_thread_item;
 pub use self::comment_thread_item::CommentThreadItem;
 pub mod comment_thread_item_all_of;

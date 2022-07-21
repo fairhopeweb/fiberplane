@@ -15,6 +15,8 @@ pub enum ThreadItemType {
     Comment,
     #[serde(rename = "status_change")]
     StatusChange,
+    #[serde(rename = "comment_delete")]
+    CommentDelete,
 }
 
 impl ToString for ThreadItemType {
@@ -22,6 +24,7 @@ impl ToString for ThreadItemType {
         match self {
             Self::Comment => String::from("comment"),
             Self::StatusChange => String::from("status_change"),
+            Self::CommentDelete => String::from("comment_delete"),
         }
     }
 }
