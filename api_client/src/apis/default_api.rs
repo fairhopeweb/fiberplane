@@ -608,14 +608,14 @@ pub async fn comment_update(
 /// Convert the notebook to a Template
 pub async fn convert_notebook_to_template(
     configuration: &configuration::Configuration,
-    id: &str,
+    notebook_id: &str,
 ) -> Result<String, Error<ConvertNotebookToTemplateError>> {
     let local_var_client = &configuration.client;
 
     let local_var_uri_str = format!(
-        "{}/api/notebooks/{id}/template.jsonnet",
+        "{}/api/notebooks/{notebookId}/template.jsonnet",
         configuration.base_path,
-        id = crate::apis::urlencode(id)
+        notebookId = crate::apis::urlencode(notebook_id)
     );
     let mut local_var_req_builder =
         local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
@@ -695,14 +695,14 @@ pub async fn delete_file(
 
 pub async fn delete_notebook(
     configuration: &configuration::Configuration,
-    id: &str,
+    notebook_id: &str,
 ) -> Result<(), Error<DeleteNotebookError>> {
     let local_var_client = &configuration.client;
 
     let local_var_uri_str = format!(
-        "{}/api/notebooks/{id}",
+        "{}/api/notebooks/{notebookId}",
         configuration.base_path,
-        id = crate::apis::urlencode(id)
+        notebookId = crate::apis::urlencode(notebook_id)
     );
     let mut local_var_req_builder =
         local_var_client.request(reqwest::Method::DELETE, local_var_uri_str.as_str());
@@ -978,14 +978,14 @@ pub async fn get_file(
 /// Fetch a single notebook
 pub async fn get_notebook(
     configuration: &configuration::Configuration,
-    id: &str,
+    notebook_id: &str,
 ) -> Result<crate::models::Notebook, Error<GetNotebookError>> {
     let local_var_client = &configuration.client;
 
     let local_var_uri_str = format!(
-        "{}/api/notebooks/{id}",
+        "{}/api/notebooks/{notebookId}",
         configuration.base_path,
-        id = crate::apis::urlencode(id)
+        notebookId = crate::apis::urlencode(notebook_id)
     );
     let mut local_var_req_builder =
         local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
@@ -1316,15 +1316,15 @@ pub async fn notebook_cell_replace_text(
 /// Append the given cells to the notebook
 pub async fn notebook_cells_append(
     configuration: &configuration::Configuration,
-    id: &str,
+    notebook_id: &str,
     cell: Vec<crate::models::Cell>,
 ) -> Result<Vec<crate::models::Cell>, Error<NotebookCellsAppendError>> {
     let local_var_client = &configuration.client;
 
     let local_var_uri_str = format!(
-        "{}/api/notebooks/{id}/cells",
+        "{}/api/notebooks/{notebookId}/cells",
         configuration.base_path,
-        id = crate::apis::urlencode(id)
+        notebookId = crate::apis::urlencode(notebook_id)
     );
     let mut local_var_req_builder =
         local_var_client.request(reqwest::Method::POST, local_var_uri_str.as_str());
@@ -1608,15 +1608,15 @@ pub async fn org_user_list_current(
 /// Modifies individual properties of a single notebook
 pub async fn patch_notebook(
     configuration: &configuration::Configuration,
-    id: &str,
+    notebook_id: &str,
     notebook_patch: crate::models::NotebookPatch,
 ) -> Result<(), Error<PatchNotebookError>> {
     let local_var_client = &configuration.client;
 
     let local_var_uri_str = format!(
-        "{}/api/notebooks/{id}",
+        "{}/api/notebooks/{notebookId}",
         configuration.base_path,
-        id = crate::apis::urlencode(id)
+        notebookId = crate::apis::urlencode(notebook_id)
     );
     let mut local_var_req_builder =
         local_var_client.request(reqwest::Method::PATCH, local_var_uri_str.as_str());

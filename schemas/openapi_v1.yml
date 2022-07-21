@@ -1707,6 +1707,13 @@ components:
       schema:
         type: integer
       required: false
+    notebookId:
+      in: path
+      name: notebookId
+      required: true
+      schema:
+        type: string
+        format: base64uuid
     threadId:
       in: path
       name: threadId
@@ -1770,14 +1777,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/notebook"
-  /api/notebooks/{id}:
+  /api/notebooks/{notebookId}:
     parameters:
-      - name: id
-        in: path
-        description: ID of the notebook
-        required: true
-        schema:
-          type: string
+      - $ref: "#/components/parameters/notebookId"
     get:
       operationId: get_notebook
       description: "Fetch a single notebook"
@@ -1806,14 +1808,9 @@ paths:
       responses:
         "200":
           description: OK
-  /api/notebooks/{id}/template.jsonnet:
+  /api/notebooks/{notebookId}/template.jsonnet:
     parameters:
-      - name: id
-        in: path
-        description: ID of the notebook
-        required: true
-        schema:
-          type: string
+      - $ref: "#/components/parameters/notebookId"
     get:
       operationId: convert_notebook_to_template
       description: Convert the notebook to a Template
@@ -1824,14 +1821,9 @@ paths:
               schema:
                 type: string
           description: OK
-  /api/notebooks/{id}/cells:
+  /api/notebooks/{notebookId}/cells:
     parameters:
-      - name: id
-        in: path
-        description: ID of the notebook
-        required: true
-        schema:
-          type: string
+      - $ref: "#/components/parameters/notebookId"
     post:
       operationId: notebook_cells_append
       description: Append the given cells to the notebook
@@ -1855,12 +1847,7 @@ paths:
                   $ref: "#/components/schemas/cell"
   /api/notebooks/{notebookId}/cells/{cellId}/append:
     parameters:
-      - name: notebookId
-        in: path
-        description: ID of the notebook
-        required: true
-        schema:
-          type: string
+      - $ref: "#/components/parameters/notebookId"
       - name: cellId
         in: path
         description: ID of the notebook cell
@@ -1886,12 +1873,7 @@ paths:
                 $ref: "#/components/schemas/cell"
   /api/notebooks/{notebookId}/cells/{cellId}/replaceText:
     parameters:
-      - name: notebookId
-        in: path
-        description: ID of the notebook
-        required: true
-        schema:
-          type: string
+      - $ref: "#/components/parameters/notebookId"
       - name: cellId
         in: path
         description: ID of the notebook cell
@@ -1916,12 +1898,7 @@ paths:
                 $ref: "#/components/schemas/cell"
   /api/notebooks/{notebookId}/threads:
     parameters:
-      - name: notebookId
-        in: path
-        description: ID of the notebook
-        required: true
-        schema:
-          type: string
+      - $ref: "#/components/parameters/notebookId"
     post:
       operationId: thread_create
       description: Create a new comment thread
@@ -1972,12 +1949,7 @@ paths:
                 $ref: "#/components/schemas/orgDataSource"
   /api/files/{notebookId}:
     parameters:
-      - name: notebookId
-        in: path
-        description: ID of the notebook
-        required: true
-        schema:
-          type: string
+      - $ref: "#/components/parameters/notebookId"
     post:
       operationId: file_upload
       description: "upload a file"
@@ -1997,12 +1969,7 @@ paths:
                 $ref: "#/components/schemas/fileSummary"
   /api/files/{notebookId}/{fileId}:
     parameters:
-      - name: notebookId
-        in: path
-        description: ID of the notebook
-        required: true
-        schema:
-          type: string
+      - $ref: "#/components/parameters/notebookId"
       - name: fileId
         in: path
         description: ID of the file
@@ -2094,12 +2061,7 @@ paths:
           description: OK
   /api/pinnednotebooks/{notebookId}:
     parameters:
-      - name: notebookId
-        in: path
-        description: ID of the notebook
-        required: true
-        schema:
-          type: string
+      - $ref: "#/components/parameters/notebookId"
     delete:
       operationId: pinned_notebook_delete
       responses:

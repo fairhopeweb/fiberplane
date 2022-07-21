@@ -8,15 +8,15 @@ Method | HTTP request | Description
 [**comment_delete**](DefaultApi.md#comment_delete) | **DELETE** /api/comments/{commentId} | 
 [**comment_get**](DefaultApi.md#comment_get) | **GET** /api/comments/{commentId} | 
 [**comment_update**](DefaultApi.md#comment_update) | **PATCH** /api/comments/{commentId} | 
-[**convert_notebook_to_template**](DefaultApi.md#convert_notebook_to_template) | **GET** /api/notebooks/{id}/template.jsonnet | 
+[**convert_notebook_to_template**](DefaultApi.md#convert_notebook_to_template) | **GET** /api/notebooks/{notebookId}/template.jsonnet | 
 [**delete_file**](DefaultApi.md#delete_file) | **DELETE** /api/files/{notebookId}/{fileId} | 
-[**delete_notebook**](DefaultApi.md#delete_notebook) | **DELETE** /api/notebooks/{id} | 
+[**delete_notebook**](DefaultApi.md#delete_notebook) | **DELETE** /api/notebooks/{notebookId} | 
 [**event_create**](DefaultApi.md#event_create) | **POST** /api/events | 
 [**event_delete**](DefaultApi.md#event_delete) | **DELETE** /api/events/{id} | 
 [**event_list**](DefaultApi.md#event_list) | **GET** /api/events | 
 [**file_upload**](DefaultApi.md#file_upload) | **POST** /api/files/{notebookId} | 
 [**get_file**](DefaultApi.md#get_file) | **GET** /api/files/{notebookId}/{fileId} | 
-[**get_notebook**](DefaultApi.md#get_notebook) | **GET** /api/notebooks/{id} | 
+[**get_notebook**](DefaultApi.md#get_notebook) | **GET** /api/notebooks/{notebookId} | 
 [**get_profile**](DefaultApi.md#get_profile) | **GET** /api/profile | 
 [**get_profile_picture**](DefaultApi.md#get_profile_picture) | **GET** /api/profile/picture | 
 [**label_keys_list**](DefaultApi.md#label_keys_list) | **GET** /api/labels/keys | 
@@ -24,14 +24,14 @@ Method | HTTP request | Description
 [**logout**](DefaultApi.md#logout) | **POST** /api/logout | 
 [**notebook_cell_append_text**](DefaultApi.md#notebook_cell_append_text) | **POST** /api/notebooks/{notebookId}/cells/{cellId}/append | 
 [**notebook_cell_replace_text**](DefaultApi.md#notebook_cell_replace_text) | **POST** /api/notebooks/{notebookId}/cells/{cellId}/replaceText | 
-[**notebook_cells_append**](DefaultApi.md#notebook_cells_append) | **POST** /api/notebooks/{id}/cells | 
+[**notebook_cells_append**](DefaultApi.md#notebook_cells_append) | **POST** /api/notebooks/{notebookId}/cells | 
 [**notebook_create**](DefaultApi.md#notebook_create) | **POST** /api/notebooks | 
 [**notebook_list**](DefaultApi.md#notebook_list) | **GET** /api/notebooks | 
 [**notebook_search**](DefaultApi.md#notebook_search) | **POST** /api/search/notebooks | 
 [**oidc_authorize_google**](DefaultApi.md#oidc_authorize_google) | **GET** /api/oidc/authorize/google | 
 [**org_data_source_create**](DefaultApi.md#org_data_source_create) | **POST** /api/datasources | 
 [**org_user_list_current**](DefaultApi.md#org_user_list_current) | **GET** /api/organizations/current/users | 
-[**patch_notebook**](DefaultApi.md#patch_notebook) | **PATCH** /api/notebooks/{id} | 
+[**patch_notebook**](DefaultApi.md#patch_notebook) | **PATCH** /api/notebooks/{notebookId} | 
 [**pinned_notebook_create**](DefaultApi.md#pinned_notebook_create) | **POST** /api/pinnednotebooks | 
 [**pinned_notebook_delete**](DefaultApi.md#pinned_notebook_delete) | **DELETE** /api/pinnednotebooks/{notebookId} | 
 [**pinned_notebook_list**](DefaultApi.md#pinned_notebook_list) | **GET** /api/pinnednotebooks | 
@@ -183,7 +183,7 @@ Name | Type | Description  | Required | Notes
 
 ## convert_notebook_to_template
 
-> String convert_notebook_to_template(id)
+> String convert_notebook_to_template(notebook_id)
 
 
 Convert the notebook to a Template
@@ -193,7 +193,7 @@ Convert the notebook to a Template
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**id** | **String** | ID of the notebook | [required] |
+**notebook_id** | **String** |  | [required] |
 
 ### Return type
 
@@ -223,7 +223,7 @@ Delete a file
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**notebook_id** | **String** | ID of the notebook | [required] |
+**notebook_id** | **String** |  | [required] |
 **file_id** | **String** | ID of the file | [required] |
 
 ### Return type
@@ -244,7 +244,7 @@ Name | Type | Description  | Required | Notes
 
 ## delete_notebook
 
-> delete_notebook(id)
+> delete_notebook(notebook_id)
 
 
 ### Parameters
@@ -252,7 +252,7 @@ Name | Type | Description  | Required | Notes
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**id** | **String** | ID of the notebook | [required] |
+**notebook_id** | **String** |  | [required] |
 
 ### Return type
 
@@ -378,7 +378,7 @@ upload a file
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**notebook_id** | **String** | ID of the notebook | [required] |
+**notebook_id** | **String** |  | [required] |
 **file** | **std::path::PathBuf** |  | [required] |
 
 ### Return type
@@ -409,7 +409,7 @@ Get a file
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**notebook_id** | **String** | ID of the notebook | [required] |
+**notebook_id** | **String** |  | [required] |
 **file_id** | **String** | ID of the file | [required] |
 
 ### Return type
@@ -430,7 +430,7 @@ No authorization required
 
 ## get_notebook
 
-> crate::models::Notebook get_notebook(id)
+> crate::models::Notebook get_notebook(notebook_id)
 
 
 Fetch a single notebook
@@ -440,7 +440,7 @@ Fetch a single notebook
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**id** | **String** | ID of the notebook | [required] |
+**notebook_id** | **String** |  | [required] |
 
 ### Return type
 
@@ -612,7 +612,7 @@ Append the given text and optional formatting to the specified cell
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**notebook_id** | **String** | ID of the notebook | [required] |
+**notebook_id** | **String** |  | [required] |
 **cell_id** | **String** | ID of the notebook cell | [required] |
 **cell_append_text** | [**CellAppendText**](CellAppendText.md) | Content and optional formatting to append | [required] |
 
@@ -644,7 +644,7 @@ Replace some text and formatting in the specified cell
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**notebook_id** | **String** | ID of the notebook | [required] |
+**notebook_id** | **String** |  | [required] |
 **cell_id** | **String** | ID of the notebook cell | [required] |
 **cell_replace_text** | [**CellReplaceText**](CellReplaceText.md) |  | [required] |
 
@@ -666,7 +666,7 @@ Name | Type | Description  | Required | Notes
 
 ## notebook_cells_append
 
-> Vec<crate::models::Cell> notebook_cells_append(id, cell)
+> Vec<crate::models::Cell> notebook_cells_append(notebook_id, cell)
 
 
 Append the given cells to the notebook
@@ -676,7 +676,7 @@ Append the given cells to the notebook
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**id** | **String** | ID of the notebook | [required] |
+**notebook_id** | **String** |  | [required] |
 **cell** | [**Vec<crate::models::Cell>**](cell.md) | Cells to append | [required] |
 
 ### Return type
@@ -872,7 +872,7 @@ This endpoint does not need any parameter.
 
 ## patch_notebook
 
-> patch_notebook(id, notebook_patch)
+> patch_notebook(notebook_id, notebook_patch)
 
 
 Modifies individual properties of a single notebook
@@ -882,7 +882,7 @@ Modifies individual properties of a single notebook
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**id** | **String** | ID of the notebook | [required] |
+**notebook_id** | **String** |  | [required] |
 **notebook_patch** | [**NotebookPatch**](NotebookPatch.md) | updated properties | [required] |
 
 ### Return type
@@ -941,7 +941,7 @@ Name | Type | Description  | Required | Notes
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**notebook_id** | **String** | ID of the notebook | [required] |
+**notebook_id** | **String** |  | [required] |
 
 ### Return type
 
@@ -1402,7 +1402,7 @@ Create a new comment thread
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**notebook_id** | **String** | ID of the notebook | [required] |
+**notebook_id** | **String** |  | [required] |
 **new_thread** | [**NewThread**](NewThread.md) |  | [required] |
 
 ### Return type
@@ -1545,7 +1545,7 @@ List the threads in the given notebook
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**notebook_id** | **String** | ID of the notebook | [required] |
+**notebook_id** | **String** |  | [required] |
 **status** | Option<[**crate::models::ThreadStatus**](.md)> |  |  |
 
 ### Return type
