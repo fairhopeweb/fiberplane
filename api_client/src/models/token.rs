@@ -10,12 +10,26 @@
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct Token {
+    #[serde(rename = "id")]
+    pub id: String,
+    #[serde(rename = "title")]
+    pub title: String,
     #[serde(rename = "token")]
     pub token: String,
+    #[serde(rename = "createdAt")]
+    pub created_at: String,
+    #[serde(rename = "expiresAt", skip_serializing_if = "Option::is_none")]
+    pub expires_at: Option<String>,
 }
 
 impl Token {
-    pub fn new(token: String) -> Token {
-        Token { token }
+    pub fn new(id: String, title: String, token: String, created_at: String) -> Token {
+        Token {
+            id,
+            title,
+            token,
+            created_at,
+            expires_at: None,
+        }
     }
 }

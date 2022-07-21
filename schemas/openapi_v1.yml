@@ -1455,10 +1455,25 @@ components:
     token:
       type: object
       required:
+        - "id"
+        - "title"
         - "token"
+        - "createdAt"
       properties:
+        id:
+          type: string
+          format: base64uuid
+        title:
+          type: string
         token:
           type: string
+          format: password
+        createdAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
     tokenSummary:
       type: object
       required:
