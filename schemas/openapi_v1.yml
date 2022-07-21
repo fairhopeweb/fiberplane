@@ -2680,3 +2680,23 @@ paths:
       responses:
         "200":
           description: OK
+  /api/queries/{datasource_type}/suggestions:
+      parameters:
+        - name: datasource_type
+          in: path
+          description: The type of the datasource
+          required: true
+          schema:
+            $ref: "#/components/schemas/dataSourceType"
+      get:
+        operationId: suggest_query
+        description: Retrieve query suggestions for a given datasource type
+        responses:
+          "200":
+            description: OK
+            content:
+              application/json:
+                schema:
+                  type: array
+                  items:
+                    type: string

@@ -41,6 +41,7 @@ Method | HTTP request | Description
 [**proxy_get**](DefaultApi.md#proxy_get) | **GET** /api/proxies/{proxyId} | 
 [**proxy_list**](DefaultApi.md#proxy_list) | **GET** /api/proxies | 
 [**proxy_relay**](DefaultApi.md#proxy_relay) | **POST** /api/proxies/{proxyId}/relay | 
+[**suggest_query**](DefaultApi.md#suggest_query) | **GET** /api/queries/{datasource_type}/suggestions | 
 [**template_create**](DefaultApi.md#template_create) | **POST** /api/templates | 
 [**template_delete**](DefaultApi.md#template_delete) | **DELETE** /api/templates/{templateId} | 
 [**template_example_expand**](DefaultApi.md#template_example_expand) | **POST** /api/templates/examples/{templateId}/expand | 
@@ -1155,6 +1156,36 @@ Name | Type | Description  | Required | Notes
 
 - **Content-Type**: Not defined
 - **Accept**: Not defined
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## suggest_query
+
+> Vec<String> suggest_query(datasource_type)
+
+
+Retrieve query suggestions for a given datasource type
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**datasource_type** | [**crate::models::DataSourceType**](.md) | The type of the datasource | [required] |
+
+### Return type
+
+**Vec<String>**
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 

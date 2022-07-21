@@ -14,13 +14,13 @@ docker run --rm `
             -o /local/api_client `
             --skip-validate-spec
 
-# Git patches don't apply if we're not in the base directory of the project (where .git lives): https://stackoverflow.com/a/67790361/11494565
-Set-Location $root_dir
-git apply -v ".\schemas\patches\json_query_parameter.patch"
-
 $api_client_dir = Join-Path $root_dir "api_client";
 Set-Location $api_client_dir
 cargo fmt
+
+# Git patches don't apply if we're not in the base directory of the project (where .git lives): https://stackoverflow.com/a/67790361/11494565
+Set-Location $root_dir
+git apply -v .\schemas\patches\*.patch
 
 # At the end of the script, get back to the directory that we started in
 Set-Location $start_dir

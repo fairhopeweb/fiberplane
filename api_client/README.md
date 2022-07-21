@@ -61,6 +61,7 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**proxy_get**](docs/DefaultApi.md#proxy_get) | **GET** /api/proxies/{proxyId} | 
 *DefaultApi* | [**proxy_list**](docs/DefaultApi.md#proxy_list) | **GET** /api/proxies | 
 *DefaultApi* | [**proxy_relay**](docs/DefaultApi.md#proxy_relay) | **POST** /api/proxies/{proxyId}/relay | 
+*DefaultApi* | [**suggest_query**](docs/DefaultApi.md#suggest_query) | **GET** /api/queries/{datasource_type}/suggestions | 
 *DefaultApi* | [**template_create**](docs/DefaultApi.md#template_create) | **POST** /api/templates | 
 *DefaultApi* | [**template_delete**](docs/DefaultApi.md#template_delete) | **DELETE** /api/templates/{templateId} | 
 *DefaultApi* | [**template_example_expand**](docs/DefaultApi.md#template_example_expand) | **POST** /api/templates/examples/{templateId}/expand | 
