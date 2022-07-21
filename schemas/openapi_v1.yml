@@ -787,20 +787,16 @@ components:
       required:
         - metric
         - point
-        - pointType
       properties:
         metric:
           $ref: "#/components/schemas/metric"
         point:
           $ref: "#/components/schemas/point"
-        pointType:
-          $ref: "#/components/schemas/pointType"
     series:
       type: object
       required:
         - metric
         - points
-        - pointType
         - visible
       properties:
         metric:
@@ -809,8 +805,6 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/point"
-        pointType:
-          $ref: "#/components/schemas/pointType"
         visible:
           type: boolean
     metric:
@@ -837,12 +831,6 @@ components:
         value:
           type: number
           format: double
-    pointType:
-      deprecated: true
-      type: string
-      enum:
-        - f64
-        - string
     notebookDataSource:
       oneOf:
         - $ref: "#/components/schemas/inlineDataSource"

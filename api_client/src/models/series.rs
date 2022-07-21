@@ -14,8 +14,6 @@ pub struct Series {
     pub metric: Box<crate::models::Metric>,
     #[serde(rename = "points")]
     pub points: Vec<crate::models::Point>,
-    #[serde(rename = "pointType")]
-    pub point_type: crate::models::PointType,
     #[serde(rename = "visible")]
     pub visible: bool,
 }
@@ -24,13 +22,11 @@ impl Series {
     pub fn new(
         metric: crate::models::Metric,
         points: Vec<crate::models::Point>,
-        point_type: crate::models::PointType,
         visible: bool,
     ) -> Series {
         Series {
             metric: Box::new(metric),
             points,
-            point_type,
             visible,
         }
     }

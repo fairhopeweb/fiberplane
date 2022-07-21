@@ -14,20 +14,13 @@ pub struct Instant {
     pub metric: Box<crate::models::Metric>,
     #[serde(rename = "point")]
     pub point: Box<crate::models::Point>,
-    #[serde(rename = "pointType")]
-    pub point_type: crate::models::PointType,
 }
 
 impl Instant {
-    pub fn new(
-        metric: crate::models::Metric,
-        point: crate::models::Point,
-        point_type: crate::models::PointType,
-    ) -> Instant {
+    pub fn new(metric: crate::models::Metric, point: crate::models::Point) -> Instant {
         Instant {
             metric: Box::new(metric),
             point: Box::new(point),
-            point_type,
         }
     }
 }

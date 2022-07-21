@@ -154,7 +154,6 @@ Class | Method | HTTP request | Description
  - [ObjectTemplateParameter](docs/ObjectTemplateParameter.md)
  - [OrgDataSource](docs/OrgDataSource.md)
  - [Point](docs/Point.md)
- - [PointType](docs/PointType.md)
  - [PrometheusCell](docs/PrometheusCell.md)
  - [PrometheusDataSource](docs/PrometheusDataSource.md)
  - [ProviderCell](docs/ProviderCell.md)

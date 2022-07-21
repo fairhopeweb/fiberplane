@@ -69,7 +69,6 @@ docs/NumberTemplateParameter.md
 docs/ObjectTemplateParameter.md
 docs/OrgDataSource.md
 docs/Point.md
-docs/PointType.md
 docs/PrometheusCell.md
 docs/PrometheusDataSource.md
 docs/ProviderCell.md
@@ -184,7 +183,6 @@ src/models/number_template_parameter.rs
 src/models/object_template_parameter.rs
 src/models/org_data_source.rs
 src/models/point.rs
-src/models/point_type.rs
 src/models/prometheus_cell.rs
 src/models/prometheus_data_source.rs
 src/models/provider_cell.rs

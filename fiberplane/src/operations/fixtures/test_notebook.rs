@@ -55,16 +55,16 @@ pub static TEST_NOTEBOOK: Lazy<Notebook> = Lazy::new(|| {
             let mut data = BTreeMap::new();
             data.insert(
                 "c6".to_owned(),
-                vec![Instant::new_f64(
-                    Metric {
+                vec![Instant {
+                    metric: Metric {
                         name: "go_memstats_alloc_bytes".to_owned(),
                         labels: HashMap::new(),
                     },
-                    Point {
+                    point: Point {
                         timestamp: 100.0,
                         value: 1337.0,
                     },
-                )],
+                }],
             );
 
             TableCell {
@@ -102,12 +102,12 @@ pub static TEST_NOTEBOOK: Lazy<Notebook> = Lazy::new(|| {
             let mut data = BTreeMap::new();
             data.insert(
                 "c4".to_owned(),
-                vec![Series::new_f64(
-                    Metric {
+                vec![Series {
+                    metric: Metric {
                         name: "sourced from c4".to_owned(),
                         labels: HashMap::new(),
                     },
-                    vec![
+                    points: vec![
                         Point {
                             timestamp: 50.0,
                             value: 1.0,
@@ -117,17 +117,17 @@ pub static TEST_NOTEBOOK: Lazy<Notebook> = Lazy::new(|| {
                             value: 2.0,
                         },
                     ],
-                    true,
-                )],
+                    visible: true,
+                }],
             );
             data.insert(
                 "c6".to_owned(),
-                vec![Series::new_f64(
-                    Metric {
+                vec![Series {
+                    metric: Metric {
                         name: "sourced from c6".to_owned(),
                         labels: HashMap::new(),
                     },
-                    vec![
+                    points: vec![
                         Point {
                             timestamp: 50.0,
                             value: 1337.0,
@@ -137,8 +137,8 @@ pub static TEST_NOTEBOOK: Lazy<Notebook> = Lazy::new(|| {
                             value: 1337.0,
                         },
                     ],
-                    true,
-                )],
+                    visible: true,
+                }],
             );
 
             GraphCell {

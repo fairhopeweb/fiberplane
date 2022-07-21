@@ -740,7 +740,7 @@ pub struct GraphCell {
     pub time_range: Option<TimeRange>,
     pub title: String,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub data: Option<BTreeMap<String, Vec<Series<f64>>>>,
+    pub data: Option<BTreeMap<String, Vec<Series>>>,
 }
 
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Eq, Serialize, Serializable)]
@@ -905,7 +905,7 @@ pub struct TableCell {
     pub title: String,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub data: Option<BTreeMap<String, Vec<Instant<f64>>>>,
+    pub data: Option<BTreeMap<String, Vec<Instant>>>,
 }
 
 fn default_title() -> String {
@@ -1063,21 +1063,9 @@ pub struct Metric {
     rust_plugin_module = "fiberplane::protocols::core",
     rust_wasmer_runtime_module = "fiberplane::protocols::core"
 )]
-pub struct Point<T> {
+pub struct Point {
     pub timestamp: Timestamp,
-    pub value: T,
-}
-
-#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
-#[deprecated(note = "see FP-676: https://linear.app/fiberplane/issue/FP-676/deprecate-point-type")]
-#[fp(
-    rust_plugin_module = "fiberplane::protocols::core",
-    rust_wasmer_runtime_module = "fiberplane::protocols::core"
-)]
-#[serde(rename_all = "snake_case")]
-pub enum PointType {
-    F64,
-    String,
+    pub value: f64,
 }
 
 /// A single data-point in time, with meta-data about the metric it was taken from.
@@ -1087,29 +1075,9 @@ pub enum PointType {
     rust_wasmer_runtime_module = "fiberplane::protocols::core"
 )]
 #[serde(rename_all = "camelCase")]
-pub struct Instant<T>
-where
-    T: Serializable,
-{
+pub struct Instant {
     pub metric: Metric,
-    pub point: Point<T>,
-    point_type: PointType,
-}
-
-impl<T: Serializable> Instant<T> {
-    pub fn point_type(&self) -> PointType {
-        self.point_type
-    }
-}
-
-impl Instant<f64> {
-    pub fn new_f64(metric: Metric, point: Point<f64>) -> Self {
-        Self {
-            metric,
-            point,
-            point_type: PointType::F64,
-        }
-    }
+    pub point: Point,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
@@ -1134,31 +1102,10 @@ pub struct LogRecord {
     rust_wasmer_runtime_module = "fiberplane::protocols::core"
 )]
 #[serde(rename_all = "camelCase")]
-pub struct Series<T>
-where
-    T: Serializable,
-{
+pub struct Series {
     pub metric: Metric,
-    pub points: Vec<Point<T>>,
-    point_type: PointType,
+    pub points: Vec<Point>,
     pub visible: bool,
-}
-
-impl<T: Serializable> Series<T> {
-    pub fn point_type(&self) -> PointType {
-        self.point_type
-    }
-}
-
-impl Series<f64> {
-    pub fn new_f64(metric: Metric, points: Vec<Point<f64>>, visible: bool) -> Self {
-        Self {
-            metric,
-            points,
-            point_type: PointType::F64,
-            visible,
-        }
-    }
 }
 
 /// NotebookDataSource represents the way a data-source can be embedded in a

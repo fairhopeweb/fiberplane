@@ -130,8 +130,6 @@ pub mod org_data_source;
 pub use self::org_data_source::OrgDataSource;
 pub mod point;
 pub use self::point::Point;
-pub mod point_type;
-pub use self::point_type::PointType;
 pub mod prometheus_cell;
 pub use self::prometheus_cell::PrometheusCell;
 pub mod prometheus_data_source;
