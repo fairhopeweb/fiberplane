@@ -1,6 +1,6 @@
 use super::{
     formatting::{translate, AnnotationWithOffset, Formatting},
-    providers::ProviderResponse,
+    providers::StoredProviderResponse,
 };
 use crate::{markdown::formatting_from_markdown, text_util::char_count};
 use fp_bindgen::prelude::Serializable;
@@ -842,7 +842,7 @@ pub struct ProviderCell {
 
     /// Optional response data from the provider.
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub response: Option<ProviderResponse>,
+    pub response: Option<StoredProviderResponse>,
 
     /// Optional list of generated output cells.
     #[serde(default)]
