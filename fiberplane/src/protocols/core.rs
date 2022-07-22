@@ -1105,7 +1105,12 @@ pub struct LogRecord {
 pub struct Series {
     pub metric: Metric,
     pub points: Vec<Point>,
+    #[serde(default = "default_visible")]
     pub visible: bool,
+}
+
+fn default_visible() -> bool {
+    true
 }
 
 /// NotebookDataSource represents the way a data-source can be embedded in a
