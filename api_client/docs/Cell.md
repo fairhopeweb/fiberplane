@@ -12,6 +12,7 @@ Name | Type | Description | Notes
 **level** | Option<**i32**> |  | [optional]
 **read_only** | Option<**bool**> |  | [optional]
 **syntax** | Option<**String**> |  | [optional]
+**thread_id** | **String** |  | 
 **graph_type** | **String** |  | 
 **stacking_type** | **String** |  | 
 **source_ids** | **Vec<String>** |  | 

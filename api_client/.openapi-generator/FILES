@@ -23,6 +23,7 @@ docs/DataSourceConnectionStatus.md
 docs/DataSourceSummary.md
 docs/DataSourceType.md
 docs/DefaultApi.md
+docs/DiscussionCell.md
 docs/DividerCell.md
 docs/ElasticsearchCell.md
 docs/ElasticsearchDataSource.md
@@ -136,6 +137,7 @@ src/models/data_source_and_proxy_summary.rs
 src/models/data_source_connection_status.rs
 src/models/data_source_summary.rs
 src/models/data_source_type.rs
+src/models/discussion_cell.rs
 src/models/divider_cell.rs
 src/models/elasticsearch_cell.rs
 src/models/elasticsearch_data_source.rs

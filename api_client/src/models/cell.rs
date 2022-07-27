@@ -37,6 +37,15 @@ pub enum Cell {
         #[serde(rename = "syntax", skip_serializing_if = "Option::is_none")]
         syntax: Option<String>,
     },
+    #[serde(rename = "discussion")]
+    DiscussionCell {
+        #[serde(rename = "id")]
+        id: String,
+        #[serde(rename = "readOnly", skip_serializing_if = "Option::is_none")]
+        read_only: Option<bool>,
+        #[serde(rename = "threadId")]
+        thread_id: String,
+    },
     #[serde(rename = "divider")]
     DividerCell {
         #[serde(rename = "id")]

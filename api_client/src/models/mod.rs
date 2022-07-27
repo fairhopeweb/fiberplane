@@ -38,6 +38,8 @@ pub mod data_source_summary;
 pub use self::data_source_summary::DataSourceSummary;
 pub mod data_source_type;
 pub use self::data_source_type::DataSourceType;
+pub mod discussion_cell;
+pub use self::discussion_cell::DiscussionCell;
 pub mod divider_cell;
 pub use self::divider_cell::DividerCell;
 pub mod elasticsearch_cell;

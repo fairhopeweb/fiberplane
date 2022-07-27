@@ -109,6 +109,7 @@ Class | Method | HTTP request | Description
  - [DataSourceConnectionStatus](docs/DataSourceConnectionStatus.md)
  - [DataSourceSummary](docs/DataSourceSummary.md)
  - [DataSourceType](docs/DataSourceType.md)
+ - [DiscussionCell](docs/DiscussionCell.md)
  - [DividerCell](docs/DividerCell.md)
  - [ElasticsearchCell](docs/ElasticsearchCell.md)
  - [ElasticsearchDataSource](docs/ElasticsearchDataSource.md)

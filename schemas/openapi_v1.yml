@@ -50,6 +50,7 @@ components:
       oneOf:
         - $ref: "#/components/schemas/checkboxCell"
         - $ref: "#/components/schemas/codeCell"
+        - $ref: "#/components/schemas/discussionCell"
         - $ref: "#/components/schemas/dividerCell"
         - $ref: "#/components/schemas/elasticsearchCell"
         - $ref: "#/components/schemas/graphCell"
@@ -67,6 +68,7 @@ components:
         mapping:
           checkbox: "#/components/schemas/checkboxCell"
           code: "#/components/schemas/codeCell"
+          discussion: "#/components/schemas/discussionCell"
           divider: "#/components/schemas/dividerCell"
           elasticsearch: "#/components/schemas/elasticsearchCell"
           graph: "#/components/schemas/graphCell"
@@ -84,6 +86,7 @@ components:
       enum:
         - checkbox
         - code
+        - discussion
         - divider
         - elasticsearch
         - graph
@@ -135,6 +138,21 @@ components:
         readOnly:
           type: boolean
         syntax:
+          type: string
+    discussionCell:
+      type: object
+      required:
+        - type
+        - id
+        - threadId
+      properties:
+        type:
+          $ref: "#/components/schemas/cellType"
+        id:
+          type: string
+        readOnly:
+          type: boolean
+        threadId:
           type: string
     dividerCell:
       type: object
@@ -2696,22 +2714,22 @@ paths:
         "200":
           description: OK
   /api/queries/{datasource_type}/suggestions:
-      parameters:
-        - name: datasource_type
-          in: path
-          description: The type of the datasource
-          required: true
-          schema:
-            $ref: "#/components/schemas/dataSourceType"
-      get:
-        operationId: suggest_query
-        description: Retrieve query suggestions for a given datasource type
-        responses:
-          "200":
-            description: OK
-            content:
-              application/json:
-                schema:
-                  type: array
-                  items:
-                    type: string
+    parameters:
+      - name: datasource_type
+        in: path
+        description: The type of the datasource
+        required: true
+        schema:
+          $ref: "#/components/schemas/dataSourceType"
+    get:
+      operationId: suggest_query
+      description: Retrieve query suggestions for a given datasource type
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: string
