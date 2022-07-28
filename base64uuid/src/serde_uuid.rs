@@ -32,7 +32,11 @@ use uuid::Uuid;
 /// }
 /// ```
 pub fn serialize<S: Serializer>(uuid: &Uuid, serializer: S) -> Result<S::Ok, S::Error> {
-    serializer.serialize_str(&encode_base64(uuid.as_bytes()))
+    if serializer.is_human_readable() {
+        serializer.serialize_str(&encode_base64(uuid.as_bytes()))
+    } else {
+        serializer.serialize_bytes(uuid.as_bytes())
+    }
 }
 
 /// Deserializes [Base64Uuid](crate::Base64Uuid) as [Uuid](uuid:Uuid) without the need of manually converting.
@@ -60,7 +64,11 @@ pub fn serialize<S: Serializer>(uuid: &Uuid, serializer: S) -> Result<S::Ok, S::
 /// }
 /// ```
 pub fn deserialize<'de, D: Deserializer<'de>>(deserializer: D) -> Result<Uuid, D::Error> {
-    deserializer.deserialize_str(UuidVisitor)
+    if deserializer.is_human_readable() {
+        deserializer.deserialize_str(UuidVisitor)
+    } else {
+        deserializer.deserialize_bytes(UuidVisitor)
+    }
 }
 
 struct UuidVisitor;
@@ -79,6 +87,13 @@ impl<'de> Visitor<'de> for UuidVisitor {
         Ok(Base64Uuid::parse_str(v)
             .map_err(|_| Error::invalid_value(Unexpected::Str(v), &self))?
             .into_uuid())
+    }
+
+    fn visit_bytes<E>(self, v: &[u8]) -> Result<Self::Value, E>
+    where
+        E: Error,
+    {
+        Uuid::from_slice(v).map_err(|_| Error::invalid_value(Unexpected::Bytes(v), &self))
     }
 }
 
@@ -166,9 +181,13 @@ pub mod option {
         where
             D: Deserializer<'de>,
         {
-            deserializer
-                .deserialize_str(super::UuidVisitor)
-                .map(Option::Some)
+            let result = if deserializer.is_human_readable() {
+                deserializer.deserialize_str(super::UuidVisitor)
+            } else {
+                deserializer.deserialize_bytes(super::UuidVisitor)
+            };
+
+            result.map(Option::Some)
         }
 
         fn visit_none<E>(self) -> Result<Self::Value, E>
@@ -181,6 +200,7 @@ pub mod option {
 
     #[cfg(test)]
     mod tests {
+        use crate::Base64Uuid;
         use serde::{Deserialize, Serialize};
         use uuid::Uuid;
 
@@ -220,6 +240,16 @@ pub mod option {
                     serde_json::from_str(&test.input).expect("unable to deserialize");
                 assert_eq!(sample_struct.id, test.expected_id);
             }
+        }
+
+        #[test]
+        fn non_human_readable() {
+            let uuid = Base64Uuid::parse_str("7104331f-f989-414d-9aa8-6fdf1df30d88").unwrap();
+            let serialized = rmp_serde::to_vec(&Some(uuid)).unwrap();
+            assert_eq!(serialized, rmp_serde::to_vec(&Some(uuid.0)).unwrap());
+
+            let deserialized: Option<Base64Uuid> = rmp_serde::from_slice(&serialized).unwrap();
+            assert_eq!(deserialized, Some(uuid));
         }
     }
 }

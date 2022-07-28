@@ -3,11 +3,21 @@ name = "base64uuid"
 version = "0.1.0"
 edition = "2021"
 
+[features]
+default = ["creation"]
+creation = ["uuid/v4"]
+
 [dependencies]
 base64 = "0.13.0"
+fp-bindgen = { fp-bindgen = "2.0.1", optional = true }
 serde = { version = "1.0.133", features = ["derive"] }
-uuid = { version = "1", features = ["v4"] }
+# Currently, sqlx does not export the macros without picking a runtime
+# `runtime-tokio-rustls` can be removed once https://github.com/launchbadge/sqlx/issues/1627 is resolved
+sqlx = { version = "0.6", features = ["macros", "runtime-tokio-rustls"], default-features = false, optional = true }
 thiserror = "1.0.30"
+uuid = { version = "1" }
 
 [dev-dependencies]
+rmp-serde = "1.1.0"
 serde_json = "1.0.74"
+uuid = { version = "1", features = ["serde"] }
