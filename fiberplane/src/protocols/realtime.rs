@@ -31,6 +31,9 @@ pub enum ClientRealtimeMessage {
     DebugRequest(DebugRequestMessage),
 
     FocusInfo(FocusInfoMessage),
+
+    /// User started typing a comment.
+    UserTypingComment(UserTypingCommentClientMessage),
 }
 
 impl ClientRealtimeMessage {
@@ -44,6 +47,7 @@ impl ClientRealtimeMessage {
             ApplyOperationBatch(msg) => &msg.op_id,
             DebugRequest(msg) => &msg.op_id,
             FocusInfo(msg) => &msg.op_id,
+            UserTypingComment(msg) => &msg.op_id,
         }
     }
 }
@@ -95,6 +99,9 @@ pub enum ServerRealtimeMessage {
 
     /// A comment thread was deleted
     ThreadDeleted(ThreadDeletedMessage),
+
+    /// A user started typing a comment
+    UserTypingComment(UserTypingCommentServerMessage),
 }
 
 #[derive(Clone, Deserialize, PartialEq, Eq, Serialize, Serializable)]
@@ -449,6 +456,18 @@ pub struct FocusInfoMessage {
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(rename_all = "camelCase")]
+pub struct UserTypingCommentClientMessage {
+    pub notebook_id: String,
+    pub thread_id: String,
+
+    /// Operation ID. Empty if the user has not provided a op_id.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub op_id: Option<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
+#[serde(rename_all = "camelCase")]
 pub struct SubscriberChangedFocusMessage {
     /// ID of the session.
     pub session_id: String,
@@ -711,6 +730,15 @@ pub struct ThreadItemUpdatedMessage {
 pub struct ThreadDeletedMessage {
     pub notebook_id: String,
     pub thread_id: String,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
+#[serde(rename_all = "camelCase")]
+pub struct UserTypingCommentServerMessage {
+    pub notebook_id: String,
+    pub thread_id: String,
+    pub user_id: String,
 }
 
 #[cfg(test)]
