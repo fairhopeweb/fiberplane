@@ -8,7 +8,7 @@ Name | Type | Description | Notes
 **id** | **String** |  | 
 **intent** | **String** |  | 
 **query_data** | Option<**String**> |  | [optional]
-**response** | Option<[**crate::models::ProviderResponse**](providerResponse.md)> |  | [optional]
+**response** | Option<[**crate::models::EncodedBlob**](encodedBlob.md)> |  | [optional]
 **output** | Option<[**Vec<crate::models::Cell>**](cell.md)> |  | [optional]
 **title** | Option<**String**> |  | [optional]
 **formatting** | Option<[**Vec<crate::models::Annotation>**](annotation.md)> |  | [optional]

@@ -13,6 +13,7 @@ crate-type = ["lib"]
 fixtures = []
 
 [dependencies]
+base64 = "0.13"
 clap = { version = "3", features = ["derive"] }
 fp-bindgen = { version = "2", features = ["time-compat"] }
 # fp-bindgen = { path = "../fp-bindgen/fp-bindgen", features = ["time-compat"] }

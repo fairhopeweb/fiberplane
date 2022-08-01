@@ -19,7 +19,7 @@ pub struct ProviderCell {
     #[serde(rename = "queryData", skip_serializing_if = "Option::is_none")]
     pub query_data: Option<String>,
     #[serde(rename = "response", skip_serializing_if = "Option::is_none")]
-    pub response: Option<Box<crate::models::ProviderResponse>>,
+    pub response: Option<Box<crate::models::EncodedBlob>>,
     #[serde(rename = "output", skip_serializing_if = "Option::is_none")]
     pub output: Option<Vec<crate::models::Cell>>,
     #[serde(rename = "title", skip_serializing_if = "Option::is_none")]

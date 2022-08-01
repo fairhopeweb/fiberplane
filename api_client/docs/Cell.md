@@ -30,7 +30,7 @@ Name | Type | Description | Notes
 **start_number** | Option<**i32**> |  | [optional]
 **intent** | **String** |  | 
 **query_data** | Option<**String**> |  | [optional]
-**response** | Option<[**crate::models::ProviderResponse**](providerResponse.md)> |  | [optional]
+**response** | Option<[**crate::models::EncodedBlob**](encodedBlob.md)> |  | [optional]
 **output** | Option<[**Vec<crate::models::Cell>**](cell.md)> |  | [optional]
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

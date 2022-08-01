@@ -176,7 +176,7 @@ pub enum Cell {
         #[serde(rename = "queryData", skip_serializing_if = "Option::is_none")]
         query_data: Option<String>,
         #[serde(rename = "response", skip_serializing_if = "Option::is_none")]
-        response: Option<Box<crate::models::ProviderResponse>>,
+        response: Option<Box<crate::models::EncodedBlob>>,
         #[serde(rename = "output", skip_serializing_if = "Option::is_none")]
         output: Option<Vec<crate::models::Cell>>,
         #[serde(rename = "title", skip_serializing_if = "Option::is_none")]

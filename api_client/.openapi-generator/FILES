@@ -27,6 +27,7 @@ docs/DiscussionCell.md
 docs/DividerCell.md
 docs/ElasticsearchCell.md
 docs/ElasticsearchDataSource.md
+docs/EncodedBlob.md
 docs/EndBoldAnnotation.md
 docs/EndCodeAnnotation.md
 docs/EndHighlightAnnotation.md
@@ -73,7 +74,6 @@ docs/Point.md
 docs/PrometheusCell.md
 docs/PrometheusDataSource.md
 docs/ProviderCell.md
-docs/ProviderResponse.md
 docs/Proxy.md
 docs/ProxyConnectionStatus.md
 docs/ProxyDataSource.md
@@ -141,6 +141,7 @@ src/models/discussion_cell.rs
 src/models/divider_cell.rs
 src/models/elasticsearch_cell.rs
 src/models/elasticsearch_data_source.rs
+src/models/encoded_blob.rs
 src/models/end_bold_annotation.rs
 src/models/end_code_annotation.rs
 src/models/end_highlight_annotation.rs
@@ -188,7 +189,6 @@ src/models/point.rs
 src/models/prometheus_cell.rs
 src/models/prometheus_data_source.rs
 src/models/provider_cell.rs
-src/models/provider_response.rs
 src/models/proxy.rs
 src/models/proxy_connection_status.rs
 src/models/proxy_data_source.rs
