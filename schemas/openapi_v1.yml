@@ -283,6 +283,8 @@ components:
         - type
         - id
         - intent
+        - output
+        - title
       properties:
         type:
           $ref: "#/components/schemas/cellType"
@@ -900,6 +902,7 @@ components:
         - $ref: "#/components/schemas/elasticsearchDataSource"
         - $ref: "#/components/schemas/lokiDataSource"
         - $ref: "#/components/schemas/proxyDataSource"
+        - $ref: "#/components/schemas/sentryDataSource"
       discriminator:
         propertyName: type
         mapping:
@@ -907,6 +910,7 @@ components:
           elasticsearch: "#/components/schemas/elasticsearchDataSource"
           loki: "#/components/schemas/lokiDataSource"
           proxy: "#/components/schemas/proxyDataSource"
+          sentry: "#/components/schemas/sentryDataSource"
     dataSourceType:
       type: string
       enum:
@@ -914,6 +918,7 @@ components:
         - elasticsearch
         - loki
         - proxy
+        - sentry
     prometheusDataSource:
       type: object
       required:
@@ -971,6 +976,22 @@ components:
         dataSourceName:
           type: string
         dataSourceType:
+          $ref: "#/components/schemas/dataSourceType"
+    sentryDataSource:
+      type: object
+      required:
+        - "organizationSlug"
+        - "projectSlug"
+        - "type"
+        - "token"
+      properties:
+        organizationSlug:
+          type: string
+        projectSlug:
+          type: string
+        token:
+          type: string
+        type:
           $ref: "#/components/schemas/dataSourceType"
     fileSummary:
       type: object

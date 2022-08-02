@@ -39,4 +39,13 @@ pub enum DataSource {
         #[serde(rename = "dataSourceType")]
         data_source_type: crate::models::DataSourceType,
     },
+    #[serde(rename = "sentry")]
+    SentryDataSource {
+        #[serde(rename = "organizationSlug")]
+        organization_slug: String,
+        #[serde(rename = "projectSlug")]
+        project_slug: String,
+        #[serde(rename = "token")]
+        token: String,
+    },
 }

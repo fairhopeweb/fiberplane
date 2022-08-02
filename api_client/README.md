@@ -165,6 +165,7 @@ Class | Method | HTTP request | Description
  - [ProxyDataSource](docs/ProxyDataSource.md)
  - [ProxySummary](docs/ProxySummary.md)
  - [QueryType](docs/QueryType.md)
+ - [SentryDataSource](docs/SentryDataSource.md)
  - [Series](docs/Series.md)
  - [SeriesQuery](docs/SeriesQuery.md)
  - [StartBoldAnnotation](docs/StartBoldAnnotation.md)

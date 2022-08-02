@@ -79,6 +79,7 @@ docs/ProxyConnectionStatus.md
 docs/ProxyDataSource.md
 docs/ProxySummary.md
 docs/QueryType.md
+docs/SentryDataSource.md
 docs/Series.md
 docs/SeriesQuery.md
 docs/StartBoldAnnotation.md
@@ -194,6 +195,7 @@ src/models/proxy_connection_status.rs
 src/models/proxy_data_source.rs
 src/models/proxy_summary.rs
 src/models/query_type.rs
+src/models/sentry_data_source.rs
 src/models/series.rs
 src/models/series_query.rs
 src/models/start_bold_annotation.rs

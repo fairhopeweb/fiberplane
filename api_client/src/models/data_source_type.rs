@@ -19,6 +19,8 @@ pub enum DataSourceType {
     Loki,
     #[serde(rename = "proxy")]
     Proxy,
+    #[serde(rename = "sentry")]
+    Sentry,
 }
 
 impl ToString for DataSourceType {
@@ -28,6 +30,7 @@ impl ToString for DataSourceType {
             Self::Elasticsearch => String::from("elasticsearch"),
             Self::Loki => String::from("loki"),
             Self::Proxy => String::from("proxy"),
+            Self::Sentry => String::from("sentry"),
         }
     }
 }

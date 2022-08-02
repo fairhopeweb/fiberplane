@@ -20,10 +20,10 @@ pub struct ProviderCell {
     pub query_data: Option<String>,
     #[serde(rename = "response", skip_serializing_if = "Option::is_none")]
     pub response: Option<Box<crate::models::EncodedBlob>>,
-    #[serde(rename = "output", skip_serializing_if = "Option::is_none")]
-    pub output: Option<Vec<crate::models::Cell>>,
-    #[serde(rename = "title", skip_serializing_if = "Option::is_none")]
-    pub title: Option<String>,
+    #[serde(rename = "output")]
+    pub output: Vec<crate::models::Cell>,
+    #[serde(rename = "title")]
+    pub title: String,
     #[serde(rename = "formatting", skip_serializing_if = "Option::is_none")]
     pub formatting: Option<Vec<crate::models::Annotation>>,
     #[serde(rename = "readOnly", skip_serializing_if = "Option::is_none")]
@@ -31,15 +31,21 @@ pub struct ProviderCell {
 }
 
 impl ProviderCell {
-    pub fn new(_type: crate::models::CellType, id: String, intent: String) -> ProviderCell {
+    pub fn new(
+        _type: crate::models::CellType,
+        id: String,
+        intent: String,
+        output: Vec<crate::models::Cell>,
+        title: String,
+    ) -> ProviderCell {
         ProviderCell {
             _type,
             id,
             intent,
             query_data: None,
             response: None,
-            output: None,
-            title: None,
+            output,
+            title,
             formatting: None,
             read_only: None,
         }

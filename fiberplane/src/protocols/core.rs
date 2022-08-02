@@ -831,8 +831,8 @@ pub struct ProviderCell {
     /// See: https://www.notion.so/fiberplane/RFC-45-Provider-Protocol-2-0-Revised-4ec85a0233924b2db0010d8cdae75e16#c8ed5dfbfd764e6bbd5c5b79333f9d6e
     pub intent: String,
 
-    /// Query data encoded as "<mime-type>,<data>", where the MIME type is
-    /// either "application/x-www-form-urlencoded" or "multipart/form-data".
+    /// Query data encoded as `"<mime-type>,<data>"`, where the MIME type is
+    /// either `"application/x-www-form-urlencoded"` or `"multipart/form-data"`.
     /// This is used for storing data for the Query Builder.
     ///
     /// Note: The format follows the specification for data URLs, without the
@@ -1180,6 +1180,7 @@ pub enum DataSource {
     Proxy(ProxyDataSource),
     Elasticsearch(ElasticsearchDataSource),
     Loki(LokiDataSource),
+    Sentry(SentryDataSource),
 }
 
 impl DataSource {
@@ -1189,6 +1190,7 @@ impl DataSource {
             DataSource::Proxy(_) => DataSourceType::Proxy,
             DataSource::Elasticsearch(_) => DataSourceType::Elasticsearch,
             DataSource::Loki(_) => DataSourceType::Loki,
+            DataSource::Sentry(_) => DataSourceType::Sentry,
         }
     }
 }
@@ -1212,6 +1214,7 @@ pub enum DataSourceType {
     Proxy,
     Elasticsearch,
     Loki,
+    Sentry,
 }
 
 impl From<&DataSourceType> for &'static str {
@@ -1221,6 +1224,7 @@ impl From<&DataSourceType> for &'static str {
             DataSourceType::Proxy => "proxy",
             DataSourceType::Elasticsearch => "elasticsearch",
             DataSourceType::Loki => "loki",
+            DataSourceType::Sentry => "sentry",
         }
     }
 }
@@ -1309,6 +1313,18 @@ pub struct ProxyDataSource {
 
     /// Provider type
     pub data_source_type: DataSourceType,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
+#[serde(rename_all = "camelCase")]
+pub struct SentryDataSource {
+    pub token: String,
+    pub organization_slug: String,
+    pub project_slug: String,
 }
 
 /// Labels that are associated with a Notebook.

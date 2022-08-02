@@ -11,6 +11,9 @@ Name | Type | Description | Notes
 **proxy_id** | **String** |  | 
 **data_source_name** | **String** |  | 
 **data_source_type** | [**crate::models::DataSourceType**](dataSourceType.md) |  | 
+**organization_slug** | **String** |  | 
+**project_slug** | **String** |  | 
+**token** | **String** |  | 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

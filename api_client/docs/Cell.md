@@ -31,7 +31,7 @@ Name | Type | Description | Notes
 **intent** | **String** |  | 
 **query_data** | Option<**String**> |  | [optional]
 **response** | Option<[**crate::models::EncodedBlob**](encodedBlob.md)> |  | [optional]
-**output** | Option<[**Vec<crate::models::Cell>**](cell.md)> |  | [optional]
+**output** | [**Vec<crate::models::Cell>**](cell.md) |  | 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

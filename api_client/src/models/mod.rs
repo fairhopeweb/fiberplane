@@ -150,6 +150,8 @@ pub mod proxy_summary;
 pub use self::proxy_summary::ProxySummary;
 pub mod query_type;
 pub use self::query_type::QueryType;
+pub mod sentry_data_source;
+pub use self::sentry_data_source::SentryDataSource;
 pub mod series;
 pub use self::series::Series;
 pub mod series_query;
