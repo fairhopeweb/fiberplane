@@ -122,6 +122,7 @@ Class | Method | HTTP request | Description
  - [EndStrikethroughAnnotation](docs/EndStrikethroughAnnotation.md)
  - [EndUnderlineAnnotation](docs/EndUnderlineAnnotation.md)
  - [Event](docs/Event.md)
+ - [ExpandedIndex](docs/ExpandedIndex.md)
  - [FileSummary](docs/FileSummary.md)
  - [GraphCell](docs/GraphCell.md)
  - [HeadingCell](docs/HeadingCell.md)

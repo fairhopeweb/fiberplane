@@ -28,6 +28,9 @@ Name | Type | Description | Notes
 **preview** | Option<**String**> |  | [optional]
 **list_type** | **String** |  | 
 **start_number** | Option<**i32**> |  | [optional]
+**hide_similar_values** | Option<**bool**> |  | [optional]
+**display_fields** | Option<**Vec<String>**> |  | [optional]
+**expanded_indices** | Option<[**Vec<crate::models::ExpandedIndex>**](expandedIndex.md)> |  | [optional]
 **intent** | **String** |  | 
 **query_data** | Option<**String**> |  | [optional]
 **response** | Option<[**crate::models::EncodedBlob**](encodedBlob.md)> |  | [optional]

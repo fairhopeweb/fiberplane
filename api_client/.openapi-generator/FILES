@@ -36,6 +36,7 @@ docs/EndLinkAnnotation.md
 docs/EndStrikethroughAnnotation.md
 docs/EndUnderlineAnnotation.md
 docs/Event.md
+docs/ExpandedIndex.md
 docs/FileSummary.md
 docs/GraphCell.md
 docs/HeadingCell.md
@@ -151,6 +152,7 @@ src/models/end_link_annotation.rs
 src/models/end_strikethrough_annotation.rs
 src/models/end_underline_annotation.rs
 src/models/event.rs
+src/models/expanded_index.rs
 src/models/file_summary.rs
 src/models/graph_cell.rs
 src/models/heading_cell.rs

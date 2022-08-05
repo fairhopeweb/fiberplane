@@ -24,6 +24,12 @@ pub struct LogCell {
     pub formatting: Option<Vec<crate::models::Annotation>>,
     #[serde(rename = "timeRange", skip_serializing_if = "Option::is_none")]
     pub time_range: Option<Box<crate::models::TimeRange>>,
+    #[serde(rename = "hideSimilarValues", skip_serializing_if = "Option::is_none")]
+    pub hide_similar_values: Option<bool>,
+    #[serde(rename = "displayFields", skip_serializing_if = "Option::is_none")]
+    pub display_fields: Option<Vec<String>>,
+    #[serde(rename = "expandedIndices", skip_serializing_if = "Option::is_none")]
+    pub expanded_indices: Option<Vec<crate::models::ExpandedIndex>>,
     #[serde(rename = "data", skip_serializing_if = "Option::is_none")]
     pub data: Option<::std::collections::HashMap<String, Vec<crate::models::LogRecord>>>,
 }
@@ -43,6 +49,9 @@ impl LogCell {
             title,
             formatting: None,
             time_range: None,
+            hide_similar_values: None,
+            display_fields: None,
+            expanded_indices: None,
             data: None,
         }
     }

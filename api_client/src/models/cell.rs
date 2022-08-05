@@ -146,6 +146,12 @@ pub enum Cell {
         formatting: Option<Vec<crate::models::Annotation>>,
         #[serde(rename = "timeRange", skip_serializing_if = "Option::is_none")]
         time_range: Option<Box<crate::models::TimeRange>>,
+        #[serde(rename = "hideSimilarValues", skip_serializing_if = "Option::is_none")]
+        hide_similar_values: Option<bool>,
+        #[serde(rename = "displayFields", skip_serializing_if = "Option::is_none")]
+        display_fields: Option<Vec<String>>,
+        #[serde(rename = "expandedIndices", skip_serializing_if = "Option::is_none")]
+        expanded_indices: Option<Vec<crate::models::ExpandedIndex>>,
         #[serde(rename = "data", skip_serializing_if = "Option::is_none")]
         data: Option<::std::collections::HashMap<String, Vec<crate::models::LogRecord>>>,
     },

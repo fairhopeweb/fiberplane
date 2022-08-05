@@ -64,6 +64,8 @@ pub mod end_underline_annotation;
 pub use self::end_underline_annotation::EndUnderlineAnnotation;
 pub mod event;
 pub use self::event::Event;
+pub mod expanded_index;
+pub use self::expanded_index::ExpandedIndex;
 pub mod file_summary;
 pub use self::file_summary::FileSummary;
 pub mod graph_cell;

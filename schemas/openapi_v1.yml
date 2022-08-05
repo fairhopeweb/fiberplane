@@ -398,12 +398,33 @@ components:
           $ref: "#/components/schemas/formatting"
         timeRange:
           $ref: "#/components/schemas/timeRange"
+        hideSimilarValues:
+          type: boolean
+        displayFields:
+          type: array
+          items:
+            type: string
+        expandedIndices:
+          type: array
+          items:
+            $ref: "#/components/schemas/expandedIndex"
         data:
           type: object
           additionalProperties:
             type: array
             items:
               $ref: "#/components/schemas/logRecord"
+    expandedIndex:
+      type: object
+      required:
+        - key
+        - index
+      properties:
+        key:
+          type: string
+        index:
+          type: number
+          format: int32
     textCell:
       type: object
       required:

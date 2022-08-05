@@ -1290,6 +1290,9 @@ fn create_update_cell_test_cases(test_cases: &mut Vec<OperationTestCase>) {
             from: 50.0,
             to: 150.0,
         }),
+        display_fields: None,
+        hide_similar_values: None,
+        expanded_indices: None,
     });
 
     test_cases.push(OperationTestCase {

@@ -493,6 +493,8 @@ impl Cell {
                 formatting: Some(vec![]),
                 time_range: cell.time_range.clone(),
                 source_ids: cell.source_ids.clone(),
+                display_fields: cell.display_fields.clone(),
+                expanded_indices: cell.expanded_indices.clone(),
                 ..*cell
             }),
             Cell::Provider(cell) => Cell::Provider(ProviderCell {
@@ -555,6 +557,8 @@ impl Cell {
                 source_ids: cell.source_ids.clone(),
                 time_range: cell.time_range.clone(),
                 title: text.to_owned(),
+                display_fields: cell.display_fields.clone(),
+                expanded_indices: cell.expanded_indices.clone(),
                 ..*cell
             }),
             Cell::Heading(cell) => Cell::Heading(HeadingCell {
@@ -781,6 +785,28 @@ pub struct LogCell {
     pub data: Option<BTreeMap<String, Vec<LogRecord>>>,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub time_range: Option<TimeRange>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub display_fields: Option<Vec<String>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub hide_similar_values: Option<bool>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub expanded_indices: Option<Vec<ExpandedIndex>>,
+}
+
+/// A single expanded row of log records, as identified by [key] and [index]
+/// pointing into the source data of the LogCell.
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
+#[serde(rename_all = "camelCase")]
+pub struct ExpandedIndex {
+    pub key: String,
+    pub index: i32,
 }
 
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Eq, Serialize, Serializable)]
