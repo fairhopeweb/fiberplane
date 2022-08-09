@@ -10,7 +10,9 @@ pub struct Thread {
     pub items: Vec<ThreadItem>,
     pub status: ThreadStatus,
     pub created_by: UserSummary,
+    #[serde(with = "time::serde::rfc3339")]
     pub created_at: OffsetDateTime,
+    #[serde(with = "time::serde::rfc3339")]
     pub updated_at: OffsetDateTime,
 }
 
@@ -31,7 +33,9 @@ pub struct ThreadSummary {
     pub recent_items: Vec<ThreadItem>,
     pub status: ThreadStatus,
     pub created_by: UserSummary,
+    #[serde(with = "time::serde::rfc3339")]
     pub created_at: OffsetDateTime,
+    #[serde(with = "time::serde::rfc3339")]
     pub updated_at: OffsetDateTime,
 }
 
@@ -67,6 +71,7 @@ pub struct ThreadStatusChange {
     pub id: String,
     pub status: ThreadStatus,
     pub created_by: UserSummary,
+    #[serde(with = "time::serde::rfc3339")]
     pub created_at: OffsetDateTime,
 }
 
@@ -76,7 +81,9 @@ pub struct CommentDelete {
     pub id: String,
     pub created_by: UserSummary,
     /// Timestamp when the original comment was created
+    #[serde(with = "time::serde::rfc3339")]
     pub created_at: OffsetDateTime,
+    #[serde(with = "time::serde::rfc3339")]
     pub deleted_at: OffsetDateTime,
 }
 
@@ -87,7 +94,9 @@ pub struct Comment {
     pub created_by: UserSummary,
     pub content: String, // limit of 2048 characters
     pub formatting: Formatting,
+    #[serde(with = "time::serde::rfc3339")]
     pub created_at: OffsetDateTime,
+    #[serde(with = "time::serde::rfc3339")]
     pub updated_at: OffsetDateTime,
 }
 
