@@ -13,11 +13,6 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: setup-git-credentials
-      uses: fusion-engineering/setup-git-credentials@v2.0.6
-      with:
-        credentials: "https://fiberplanebot:${{ secrets.PRIVATE_GITHUB_TOKEN }}@github.com/"
-
     - id: branch
       name: Export branch
       run: echo "::set-output name=branch::${GITHUB_HEAD_REF:-${GITHUB_REF##refs/heads/}}"
@@ -39,6 +34,17 @@ jobs:
         override: true
         components: rustfmt, clippy
 
+    - name: Setup Go (for Jsonnet tools)
+      uses: actions/setup-go@v2
+      with:
+        go-version: '1.17'
+
+    - name: Install Jsonnet tools
+      run: |
+        export GO111MODULE=on
+        go install github.com/google/go-jsonnet/cmd/jsonnetfmt@latest
+        go install github.com/google/go-jsonnet/cmd/jsonnet-lint@latest
+
     - name: Check format
       run: cargo fmt -- --check
 
@@ -55,3 +61,27 @@ jobs:
 
     - name: Run tests
       run: cargo test --verbose
+
+    - name: Lint Jsonnet
+      working-directory: templates
+      run: jsonnet-lint fiberplane.libsonnet
+
+    - name: Check Jsonnet format
+      working-directory: templates
+      run: |
+        jsonnetfmt -i fiberplane.libsonnet
+        if ! git diff --quiet fiberplane.libsonnet ; then
+          echo "::error file=fiberplane.libsonnet::Bad Jsonnet format. Run jsonnetfmt -i fiberplane.libsonnet or use one of the editor extensions to format it automatically: https://jsonnet.org/learning/tools.html";
+          git diff;
+          exit 1;
+        fi
+
+    - name: Verify template docs
+      working-directory: templates
+      run: |
+        docker run --rm -v $PWD:$PWD node:17 npx -y jsdoc-to-markdown -c $PWD/jsdoc.json $PWD/fiberplane.libsonnet > docs/template_api.md
+        if ! git diff --quiet docs/template_api.md ; then
+          echo "::error file=docs/template_api.md::Out of date documentation, did you forgot to regenerate it?";
+          git diff;
+          exit 1;
+        fi

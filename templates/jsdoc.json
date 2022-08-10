@@ -1,0 +1,12 @@
+{
+    "source": {
+        "includePattern": ".+\\.(lib|j)sonnet$"
+    },
+    "plugins": [
+        "plugins/markdown",
+        "plugins/commentsOnly"
+    ],
+    "markdown": {
+        "idInHeadings": true
+    }
+}

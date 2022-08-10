@@ -4,5 +4,6 @@ members = [
     "base64uuid",
     "fiberplane",
     "markdown",
+    "templates",
     "time_util",
 ]
