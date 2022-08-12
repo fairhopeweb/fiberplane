@@ -4,6 +4,7 @@ use serde::{Deserialize, Serialize};
 use time::OffsetDateTime;
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::comments")]
 #[serde(rename_all = "camelCase")]
 pub struct Thread {
     pub id: String,
@@ -17,6 +18,7 @@ pub struct Thread {
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::comments")]
 #[serde(rename_all = "snake_case")]
 pub enum ThreadStatus {
     Open,
@@ -24,6 +26,7 @@ pub enum ThreadStatus {
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::comments")]
 #[serde(rename_all = "camelCase")]
 pub struct ThreadSummary {
     pub id: String,
@@ -40,6 +43,7 @@ pub struct ThreadSummary {
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::comments")]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum ThreadItem {
     Comment(Comment),
@@ -66,6 +70,7 @@ impl ThreadItem {
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::comments")]
 #[serde(rename_all = "camelCase")]
 pub struct ThreadStatusChange {
     pub id: String,
@@ -76,6 +81,7 @@ pub struct ThreadStatusChange {
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::comments")]
 #[serde(rename_all = "camelCase")]
 pub struct CommentDelete {
     pub id: String,
@@ -88,6 +94,7 @@ pub struct CommentDelete {
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::comments")]
 #[serde(rename_all = "camelCase")]
 pub struct Comment {
     pub id: String,
@@ -101,6 +108,7 @@ pub struct Comment {
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::comments")]
 #[serde(rename_all = "camelCase")]
 pub struct UserSummary {
     pub id: String,
