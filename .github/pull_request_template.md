@@ -13,8 +13,9 @@ indicate they don't apply.
 
 - [ ] The changes have been tested to be backwards compatible.
 - [ ] The OpenAPI schema and generated client have been updated.
-- [ ] PR for Templates is ready and reviewed: (please link)
 - [ ] PR for API is ready and reviewed: (please link)
 - [ ] PR for Studio is ready and reviewed: (please link)
+- [ ] PR for CLI is ready and reviewed: (please link)
+- [ ] PR for Proxy is ready and reviewed: (please link)
 
 After merging, please merge related PRs ASAP, so others don't get blocked.

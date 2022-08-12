@@ -1,0 +1,21 @@
+name: Check OpenAPI client
+
+on:
+  push:
+    branches: [ '*' ]
+    paths: [ 'schemas' ]
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Verify generated API client
+      run: |
+        ./scripts/generate_api_client.sh
+        if ! git diff --quiet ; then
+          echo "::error file=schemas/openapi_v1.yml::The OpenAPI client is out of date. Please run scripts/generate_api_client.sh and commit the results";
+          git diff;
+          exit 1;
+        fi
