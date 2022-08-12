@@ -1,0 +1,11 @@
+[package]
+name = "provider-protocol"
+version = "2.0.0"
+authors = ["Fiberplane <info@fiberplane.com>"]
+edition = "2018"
+
+[dependencies]
+fiberplane = { path = "../fiberplane" }
+fp-bindgen = { version = "2", features = ["generators", "serde-bytes-compat"] }
+rmpv = "1.0"
+serde_bytes = "0.11"

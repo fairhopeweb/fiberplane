@@ -4,6 +4,10 @@ members = [
     "base64uuid",
     "fiberplane",
     "markdown",
+    "provider-protocol",
+    "provider-protocol/fp-provider-bindings",
+    "provider-protocol/fp-provider-runtime",
+    "providers/*",
     "templates",
     "time_util",
 ]
