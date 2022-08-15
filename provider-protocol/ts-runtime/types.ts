@@ -249,6 +249,15 @@ export type EncodedBlob = {
 
 export type Error =
     | { type: "unsupported_request" }
+    | {
+        type: "validation_error";
+
+        /**
+         * List of errors, so all fields that failed validation can
+         * be highlighted at once.
+         */
+        errors: Array<ValidationError>;
+    }
     | { type: "http"; error: HttpRequestError }
     | { type: "data"; message: string }
     | { type: "deserialization"; message: string }
@@ -903,7 +912,8 @@ export type TextField = {
 };
 
 /**
- * A range in time from a given timestamp (inclusive) up to another timestamp (exclusive).
+ * A range in time from a given timestamp (inclusive) up to another timestamp
+ * (exclusive).
  */
 export type TimeRange = {
     from: Timestamp;
@@ -911,3 +921,15 @@ export type TimeRange = {
 };
 
 export type Timestamp = number;
+
+export type ValidationError = {
+    /**
+     * Refers to a field from the query schema.
+     */
+    fieldName: string;
+
+    /**
+     * Description of why the validation failed.
+     */
+    message: string;
+};

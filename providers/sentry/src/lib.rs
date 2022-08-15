@@ -4,17 +4,16 @@ mod sentry;
 use config::SentryConfig;
 use fiberplane::text_util::char_count;
 use fp_provider_bindings::*;
+use futures::future;
 use sentry::*;
 use serde_bytes::ByteBuf;
 use std::collections::HashMap;
-use time::{format_description::well_known::Rfc3339, OffsetDateTime};
 
 const OVERVIEW_QUERY_TYPE: &str = "x-issues-overview";
 const ISSUE_QUERY_TYPE: &str = "x-issue-details";
 const STATUS_QUERY_TYPE: &str = "status";
 
-const OVERVIEW_MIME_TYPE: &str = "application/vnd.fiberplane.x-sentry/events+json";
-const ISSUE_MIME_TYPE: &str = "application/vnd.fiberplane.x-sentry/issue+json";
+const CELLS_MIME_TYPE: &str = "application/vnd.fiberplane.cells+msgpack";
 const STATUS_MIME_TYPE: &str = "text/plain";
 const QUERY_DATA_MIME_TYPE: &str = "application/x-www-form-urlencoded";
 
@@ -42,19 +41,19 @@ async fn get_supported_query_types(_config: rmpv::Value) -> Vec<SupportedQueryTy
                     required: true,
                 }),
             ],
-            mime_types: vec![OVERVIEW_MIME_TYPE.to_owned()],
+            mime_types: vec![CELLS_MIME_TYPE.to_owned()],
         },
         SupportedQueryType {
             query_type: ISSUE_QUERY_TYPE.to_owned(),
-            schema: vec![QueryField::Number(NumberField {
+            schema: vec![QueryField::Text(TextField {
                 name: ISSUE_ID_NAME.to_owned(),
                 label: "Sentry issue ID".to_owned(),
+                multiline: false,
+                prerequisites: Vec::new(),
                 required: true,
-                max: None,
-                min: None,
-                step: None,
+                supports_highlighting: false,
             })],
-            mime_types: vec![ISSUE_MIME_TYPE.to_owned()],
+            mime_types: vec![CELLS_MIME_TYPE.to_owned()],
         },
         SupportedQueryType {
             query_type: STATUS_QUERY_TYPE.to_owned(),
@@ -93,66 +92,6 @@ async fn invoke2(request: ProviderRequest) -> Result<Blob, Error> {
     }
 }
 
-#[fp_export_impl(fp_provider_bindings)]
-fn create_cells(query_type: String, response: Blob) -> Result<Vec<Cell>, Error> {
-    match query_type.as_str() {
-        OVERVIEW_QUERY_TYPE => create_overview_cells(response),
-        ISSUE_QUERY_TYPE => create_issue_cells(response),
-        _ => {
-            log(format!(
-                "sentry provider cannot create cells for query type: {:?}",
-                &query_type
-            ));
-            Err(Error::UnsupportedRequest)
-        }
-    }
-}
-
-fn create_overview_cells(response: Blob) -> Result<Vec<Cell>, Error> {
-    if response.mime_type != OVERVIEW_MIME_TYPE {
-        log(format!(
-            "sentry provider cannot overview cells for MIME type: {:?}",
-            &response.mime_type
-        ));
-        return Err(Error::UnsupportedRequest);
-    }
-
-    let issues: Vec<SentryIssue> =
-        serde_json::from_slice(response.data.as_ref()).map_err(|err| Error::Deserialization {
-            message: format!("Cannot parse Sentry overview issues: {err}"),
-        })?;
-
-    let cells: Vec<_> = issues
-        .into_iter()
-        .map(|issue| {
-            let id = issue.id;
-            let issue_url = format!("provider:sentry,{ISSUE_QUERY_TYPE}?issue={id}");
-            let issue_link_text = format!("Issue {id}: {}", issue.title);
-            let content = format!("{issue_link_text}\nLast reported: {}", issue.last_seen);
-            let formatting = vec![
-                AnnotationWithOffset {
-                    annotation: Annotation::StartLink { url: issue_url },
-                    offset: 0,
-                },
-                AnnotationWithOffset {
-                    annotation: Annotation::EndLink,
-                    offset: char_count(&issue_link_text),
-                },
-            ];
-
-            Cell::ListItem(ListItemCell {
-                id,
-                content,
-                formatting: Some(formatting),
-                list_type: ListType::Unordered,
-                ..Default::default()
-            })
-        })
-        .collect();
-
-    Ok(cells)
-}
-
 async fn query_issues_overview(query_data: Blob, config: SentryConfig) -> Result<Blob, Error> {
     let query = get_overview_query(&query_data)?;
     let url = format!(
@@ -172,27 +111,17 @@ async fn query_issues_overview(query_data: Blob, config: SentryConfig) -> Result
     })
     .await;
     match result {
-        Ok(response) => convert_response(&response.body),
+        Ok(response) => {
+            let issues = serde_json::from_slice(response.body.as_slice()).map_err(|err| {
+                Error::Deserialization {
+                    message: format!("Cannot parse Sentry response: {err}"),
+                }
+            })?;
+
+            serialize_cells(create_overview_cells(issues)?)
+        }
         Err(error) => Err(Error::Http { error }),
     }
-}
-
-fn convert_response(response: &ByteBuf) -> Result<Blob, Error> {
-    let issues: Vec<SentryIssue> =
-        serde_json::from_slice(response.as_slice()).map_err(|err| Error::Deserialization {
-            message: format!("Cannot parse Sentry response: {err}"),
-        })?;
-
-    let response = Blob {
-        data: ByteBuf::from(
-            serde_json::to_vec(&issues).map_err(|err| Error::Deserialization {
-                message: format!("Cannot parse Sentry response: {err}"),
-            })?,
-        ),
-        mime_type: OVERVIEW_MIME_TYPE.to_owned(),
-    };
-
-    Ok(response)
 }
 
 fn get_overview_query(query_data: &Blob) -> Result<String, Error> {
@@ -225,18 +154,217 @@ fn get_overview_query(query_data: &Blob) -> Result<String, Error> {
     Ok(query)
 }
 
-async fn query_issue_details(_query_data: Blob, _config: SentryConfig) -> Result<Blob, Error> {
-    todo!("Querying issue details not yet implemented")
+fn create_overview_cells(issues: Vec<SentryIssue>) -> Result<Vec<Cell>, Error> {
+    let cells: Vec<_> = issues
+        .into_iter()
+        .map(|issue| {
+            let id = issue.id;
+            let issue_url = format!("provider:sentry,{ISSUE_QUERY_TYPE}?issue={id}");
+            let issue_link_text = format!("Issue {id}: {}", issue.title);
+            let content = format!("{issue_link_text}\nLast reported: {}", issue.last_seen);
+            let formatting = vec![
+                AnnotationWithOffset {
+                    annotation: Annotation::StartLink { url: issue_url },
+                    offset: 0,
+                },
+                AnnotationWithOffset {
+                    annotation: Annotation::EndLink,
+                    offset: char_count(&issue_link_text),
+                },
+            ];
+
+            Cell::ListItem(ListItemCell {
+                id,
+                content,
+                formatting: Some(formatting),
+                list_type: ListType::Unordered,
+                ..Default::default()
+            })
+        })
+        .collect();
+
+    Ok(cells)
 }
 
-fn create_issue_cells(_response: Blob) -> Result<Vec<Cell>, Error> {
-    todo!("Creating issue cells not yet implemented")
-}
+async fn query_issue_details(query_data: Blob, config: SentryConfig) -> Result<Blob, Error> {
+    let issue_id = get_issue_id(&query_data)?;
+    let issue_url = format!("https://sentry.io/api/0/issues/{issue_id}/");
+    let event_url = format!("{issue_url}events/latest/");
 
-#[allow(dead_code)]
-fn iso_time_to_f64(timestamp: &str) -> f64 {
-    match OffsetDateTime::parse(timestamp, &Rfc3339) {
-        Ok(time) => time.unix_timestamp_nanos() as f64 / 1_000_000_000.0,
-        Err(_) => f64::NAN,
+    let headers = HashMap::from([(
+        "Authorization".to_owned(),
+        format!("Bearer {}", config.token),
+    )]);
+
+    let issue_result = make_http_request(HttpRequest {
+        body: None,
+        headers: Some(headers.clone()),
+        method: HttpRequestMethod::Get,
+        url: issue_url,
+    });
+    let event_result = make_http_request(HttpRequest {
+        body: None,
+        headers: Some(headers),
+        method: HttpRequestMethod::Get,
+        url: event_url,
+    });
+
+    match future::join(issue_result, event_result).await {
+        (Ok(issue_response), Ok(event_response)) => {
+            let issue: SentryIssue = serde_json::from_slice(issue_response.body.as_slice())
+                .map_err(|err| Error::Deserialization {
+                    message: format!("Cannot parse Sentry issue: {err}"),
+                })?;
+
+            let event: SentryEvent = serde_json::from_slice(event_response.body.as_slice())
+                .map_err(|err| Error::Deserialization {
+                    message: format!("Cannot parse Sentry event: {err}"),
+                })?;
+
+            // TODO: We need to query the values for the tags separately:
+            // let tag_keys = issue
+            //     .tags
+            //     .iter()
+            //     .map(|tag| {
+            //         format!(
+            //             "key={}",
+            //             percent_encode(tag.key.as_bytes(), NON_ALPHANUMERIC)
+            //         )
+            //     })
+            //     .collect::<Vec<_>>()
+            //     .join("&");
+            // let url = format!("https://sentry.io/api/0/issues/{issue_id}/tags/?{tag_keys}");
+
+            serialize_cells(create_issue_cells(issue, event, config)?)
+        }
+        (Err(error), _) | (_, Err(error)) => Err(Error::Http { error }),
     }
+}
+
+fn get_issue_id(query_data: &Blob) -> Result<String, Error> {
+    if query_data.mime_type != QUERY_DATA_MIME_TYPE {
+        return Err(Error::UnsupportedRequest);
+    }
+
+    for (key, value) in form_urlencoded::parse(&query_data.data) {
+        match key.as_ref() {
+            ISSUE_ID_NAME if !value.is_empty() => return Ok(value.into()),
+            _ => {}
+        }
+    }
+    Err(Error::ValidationError {
+        errors: vec![ValidationError {
+            field_name: ISSUE_ID_NAME.to_owned(),
+            message: "No issue ID given".to_owned(),
+        }],
+    })
+}
+
+fn create_issue_cells(
+    issue: SentryIssue,
+    event: SentryEvent,
+    config: SentryConfig,
+) -> Result<Vec<Cell>, Error> {
+    let mut cells = vec![Cell::Heading(HeadingCell {
+        id: "heading".to_owned(),
+        heading_type: HeadingType::H3,
+        content: format!("Issue {}: {}", issue.id, issue.title),
+        formatting: Some(Formatting::default()),
+        ..Default::default()
+    })];
+
+    cells.push(Cell::Text(TextCell {
+        id: "tags".to_owned(),
+        content: "Tags: TODO".to_owned(),
+        formatting: Some(Formatting::default()),
+        ..Default::default()
+    }));
+
+    let stacktrace = event
+        .entries
+        .iter()
+        .find_map(|entry| match entry {
+            SentryEventEntry::Exception { data } => Some(data),
+            _ => None,
+        })
+        .and_then(|exception_data| exception_data.values.first())
+        .and_then(|exception| exception.stacktrace.as_ref());
+    if let Some(stacktrace) = stacktrace {
+        let frames: Vec<_> = stacktrace
+            .frames
+            .iter()
+            .map(|frame| {
+                match (
+                    frame.filename.as_ref(),
+                    frame.function.as_ref(),
+                    frame.line_no,
+                    frame.col_no,
+                ) {
+                    (Some(filename), Some(function), Some(line_no), Some(col_no))
+                        if line_no != 0 =>
+                    {
+                        format!("{filename}: {function} at line {line_no}:{col_no}")
+                    }
+                    (Some(filename), Some(function), _, _) => {
+                        format!("{filename}: {function}")
+                    }
+                    (Some(filename), _, Some(line_no), Some(col_no)) if line_no != 0 => {
+                        format!("{filename} at line {line_no}:{col_no}")
+                    }
+                    _ => "(unknown)".to_owned(),
+                }
+            })
+            .collect();
+
+        cells.push(Cell::Code(CodeCell {
+            id: "stacktrace".to_owned(),
+            content: format!("Stack trace:\n{}", frames.join("\n")),
+            ..Default::default()
+        }));
+    }
+
+    cells.push(Cell::Text(TextCell {
+        id: "reported".to_owned(),
+        content: format!("Reported: {}", issue.first_seen),
+        formatting: Some(vec![
+            AnnotationWithOffset {
+                annotation: Annotation::StartBold,
+                offset: 0,
+            },
+            AnnotationWithOffset {
+                annotation: Annotation::EndBold,
+                offset: 9,
+            },
+        ]),
+        ..Default::default()
+    }));
+
+    let breadcrumbs_url = format!(
+        "https://sentry.io/organizations/{}/issues/{}/#breadcrumbs",
+        config.organization_slug, issue.id
+    );
+    cells.push(Cell::Text(TextCell {
+        id: "breadcrumbs".to_owned(),
+        content: format!("Breadcrumbs: {breadcrumbs_url}"),
+        formatting: Some(vec![AnnotationWithOffset {
+            annotation: Annotation::StartLink {
+                url: breadcrumbs_url,
+            },
+            offset: 13,
+        }]),
+        ..Default::default()
+    }));
+
+    Ok(cells)
+}
+
+fn serialize_cells(cells: Vec<Cell>) -> Result<Blob, Error> {
+    let data = ByteBuf::from(rmp_serde::to_vec_named(&cells).map_err(|err| Error::Data {
+        message: format!("Cannot serialize cells: {err}"),
+    })?);
+
+    Ok(Blob {
+        data,
+        mime_type: CELLS_MIME_TYPE.to_owned(),
+    })
 }

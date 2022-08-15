@@ -6,6 +6,11 @@ use fp_bindgen::prelude::Serializable;
 #[allow(dead_code)]
 pub enum Error {
     UnsupportedRequest,
+    ValidationError {
+        /// List of errors, so all fields that failed validation can
+        /// be highlighted at once.
+        errors: Vec<ValidationError>,
+    },
     #[fp(rename_all = "camelCase")]
     Http {
         error: HttpRequestError,
@@ -26,4 +31,14 @@ pub enum Error {
     Other {
         message: String,
     },
+}
+
+#[derive(Debug, Serializable)]
+#[fp(rename_all = "camelCase")]
+#[allow(dead_code)]
+pub struct ValidationError {
+    /// Refers to a field from the query schema.
+    field_name: String,
+    /// Description of why the validation failed.
+    message: String,
 }

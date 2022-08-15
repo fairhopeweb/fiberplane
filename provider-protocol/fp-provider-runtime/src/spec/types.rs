@@ -29,7 +29,6 @@ pub use fiberplane::protocols::core::Series;
 pub use fiberplane::protocols::core::StackingType;
 pub use fiberplane::protocols::core::TableCell;
 pub use fiberplane::protocols::core::TextCell;
-pub use fiberplane::protocols::core::TimeRange;
 pub use fiberplane::protocols::formatting::Annotation;
 pub use fiberplane::protocols::formatting::AnnotationWithOffset;
 pub use fiberplane::protocols::formatting::Mention;
@@ -124,6 +123,11 @@ pub struct DiscussionCell {
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Error {
     UnsupportedRequest,
+    ValidationError {
+        /// List of errors, so all fields that failed validation can
+        /// be highlighted at once.
+        errors: Vec<ValidationError>,
+    },
     #[serde(rename_all = "camelCase")]
     Http {
         error: HttpRequestError,
@@ -505,4 +509,23 @@ pub struct TextField {
     pub supports_highlighting: bool,
 }
 
+/// A range in time from a given timestamp (inclusive) up to another timestamp
+/// (exclusive).
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TimeRange {
+    pub from: Timestamp,
+    pub to: Timestamp,
+}
+
 pub type Timestamp = f64;
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct ValidationError {
+    /// Refers to a field from the query schema.
+    pub field_name: String,
+
+    /// Description of why the validation failed.
+    pub message: String,
+}
