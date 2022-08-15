@@ -10,7 +10,7 @@ crate-type = ["cdylib"]
 [dependencies]
 form_urlencoded = "1"
 fiberplane = { path = "../../fiberplane" }
-fp-provider-bindings = { path = "../../provider-protocol/fp-provider-bindings" }
+fp-provider-bindings = { path = "../../fp-provider-protocol/fp-provider-bindings" }
 futures = "0.3"
 rmp-serde = "1"
 rmpv = { version = "1.0.0", features = ["with-serde"] }

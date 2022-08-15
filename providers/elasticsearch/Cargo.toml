@@ -10,7 +10,7 @@ crate-type = ["cdylib"]
 [dependencies]
 elasticsearch-dsl = "0.1"
 fiberplane = { path = "../../fiberplane" }
-fp-provider-bindings = { path = "../../provider-protocol/fp-provider-bindings" }
+fp-provider-bindings = { path = "../../fp-provider-protocol/fp-provider-bindings" }
 hex = "0.4.3"
 rmpv = { version = "1.0.0", features = ["with-serde"] }
 serde = { version = "1", features = ["derive"] }

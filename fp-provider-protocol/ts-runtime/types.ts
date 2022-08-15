@@ -912,8 +912,7 @@ export type TextField = {
 };
 
 /**
- * A range in time from a given timestamp (inclusive) up to another timestamp
- * (exclusive).
+ * A range in time from a given timestamp (inclusive) up to another timestamp (exclusive).
  */
 export type TimeRange = {
     from: Timestamp;

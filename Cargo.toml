@@ -1,13 +1,13 @@
 [workspace]
 members = [
-    "api_client",
     "base64uuid",
     "fiberplane",
-    "markdown",
-    "provider-protocol",
-    "provider-protocol/fp-provider-bindings",
-    "provider-protocol/fp-provider-runtime",
+    "fp-api-client",
+    "fp-markdown",
+    "fp-provider-protocol",
+    "fp-provider-protocol/fp-provider-bindings",
+    "fp-provider-protocol/fp-provider-runtime",
+    "fp-templates",
     "providers/*",
-    "templates",
     "time_util",
 ]
