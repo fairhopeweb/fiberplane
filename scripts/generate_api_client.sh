@@ -10,10 +10,10 @@ docker run --rm \
             -i /local/schemas/openapi_v1.yml \
             -p packageName=fp-api-client \
             -g rust \
-            -o /local/api_client \
+            -o /local/fp-api-client \
             --skip-validate-spec
 
-cd "$SCRIPT_DIR/../api_client"
+cd "$SCRIPT_DIR/../fp-api-client"
 cargo fmt
 
 # Git patches don't apply if we're not in the base directory of the project (where .git lives): https://stackoverflow.com/a/67790361/11494565

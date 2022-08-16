@@ -1,7 +1,7 @@
-diff --git a/api_client/src/apis/default_api.rs b/api_client/src/apis/default_api.rs
+diff --git a/fp-api-client/src/apis/default_api.rs b/fp-api-client/src/apis/default_api.rs
 index 53a7d45..15f791d 100644
---- a/api_client/src/apis/default_api.rs
-+++ b/api_client/src/apis/default_api.rs
+--- a/fp-api-client/src/apis/default_api.rs
++++ b/fp-api-client/src/apis/default_api.rs
 @@ -2042,7 +2042,7 @@ pub async fn suggest_query(
      let local_var_uri_str = format!(
          "{}/api/queries/{datasource_type}/suggestions",

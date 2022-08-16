@@ -9,13 +9,13 @@ the correct code and instead generates a `.to_string()`, which is not available 
 Thus we manually edit the OpenAPI generated code to call Serde so it can handle the conversion for us.
 
 ---
- api_client/src/apis/default_api.rs | 2 +-
+ fp-api-client/src/apis/default_api.rs | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/api_client/src/apis/default_api.rs b/api_client/src/apis/default_api.rs
+diff --git a/fp-api-client/src/apis/default_api.rs b/fp-api-client/src/apis/default_api.rs
 index 53a7d45..f570ad2 100644
---- a/api_client/src/apis/default_api.rs
-+++ b/api_client/src/apis/default_api.rs
+--- a/fp-api-client/src/apis/default_api.rs
++++ b/fp-api-client/src/apis/default_api.rs
 @@ -848,7 +848,7 @@ pub async fn event_list(
          local_var_req_builder.query(&[("occurrence_time_end", &occurrence_time_end.to_string())]);
      if let Some(ref local_var_str) = labels {

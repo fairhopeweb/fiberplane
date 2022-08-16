@@ -11,10 +11,10 @@ docker run --rm `
             -i /local/schemas/openapi_v1.yml `
             -p packageName=fp-api-client `
             -g rust `
-            -o /local/api_client `
+            -o /local/fp-api-client `
             --skip-validate-spec
 
-$api_client_dir = Join-Path $root_dir "api_client";
+$api_client_dir = Join-Path $root_dir "fp-api-client";
 Set-Location $api_client_dir
 cargo fmt
 

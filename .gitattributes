@@ -1,4 +1,4 @@
-api_client/** linguist-generated
+fp-api-client/** linguist-generated
 provider-protocol/fp-provider-runtime/src/spec/bindings.rs linguist-generated
 provider-protocol/fp-provider-runtime/src/spec/types.rs linguist-generated
 provider-protocol/fp-provider-bindings/** linguist-generated
