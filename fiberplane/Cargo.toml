@@ -14,8 +14,9 @@ fixtures = []
 
 [dependencies]
 base64 = "0.13"
+bytes = "1"
 clap = { version = "3", features = ["derive"] }
-fp-bindgen = { version = "2", features = ["time-compat"] }
+fp-bindgen = { version = "2", features = ["bytes-compat", "time-compat"] }
 # fp-bindgen = { path = "../fp-bindgen/fp-bindgen", features = ["time-compat"] }
 lazy_static = "1.4"
 once_cell = "1.8"
@@ -29,7 +30,6 @@ time = { version = "0.3", features = [
     "serde-human-readable",
     "serde-well-known",
 ] }
-serde_bytes = "0.11"
 strum = "0.24"
 strum_macros = "0.24"
 

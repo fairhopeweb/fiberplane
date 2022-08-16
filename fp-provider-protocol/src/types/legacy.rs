@@ -1,7 +1,7 @@
 use super::{error::Error, Timestamp};
+use bytes::Bytes;
 use fiberplane::protocols::core::{Instant, Series};
 use fp_bindgen::prelude::Serializable;
-use serde_bytes::ByteBuf;
 use std::collections::HashMap;
 
 /// Legacy `ProviderRequest` from the Provider 1.0 protocol.
@@ -48,7 +48,7 @@ pub struct ProxyRequest {
     pub data_source_name: String,
 
     /// Request data to send to the proxy
-    pub request: ByteBuf,
+    pub request: Bytes,
 }
 
 /// A range in time from a given timestamp (inclusive) up to another timestamp
@@ -117,6 +117,6 @@ pub struct LegacyLogRecord {
     pub resource: HashMap<String, String>,
     // TODO these should really be [u8; 16], but arrays are
     // not currently supported by fp-bindgen
-    pub trace_id: Option<ByteBuf>,
-    pub span_id: Option<ByteBuf>,
+    pub trace_id: Option<Bytes>,
+    pub span_id: Option<Bytes>,
 }

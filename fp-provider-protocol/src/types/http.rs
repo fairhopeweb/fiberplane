@@ -1,5 +1,5 @@
+use bytes::Bytes;
 use fp_bindgen::prelude::*;
-use serde_bytes::ByteBuf;
 use std::collections::HashMap;
 
 /// HTTP request options.
@@ -9,7 +9,7 @@ pub struct HttpRequest {
     pub url: String,
     pub method: HttpRequestMethod,
     pub headers: Option<HashMap<String, String>>,
-    pub body: Option<ByteBuf>,
+    pub body: Option<Bytes>,
 }
 
 /// Possible errors that may happen during an HTTP request.
@@ -25,7 +25,7 @@ pub enum HttpRequestError {
     #[fp(rename_all = "camelCase")]
     ServerError {
         status_code: u16,
-        response: ByteBuf,
+        response: Bytes,
     },
     #[fp(rename_all = "camelCase")]
     Other {
@@ -50,7 +50,7 @@ pub enum HttpRequestMethod {
 #[derive(Serializable, Debug)]
 #[fp(rename_all = "camelCase")]
 pub struct HttpResponse {
-    pub body: ByteBuf,
+    pub body: Bytes,
     pub headers: HashMap<String, String>,
     pub status_code: u16,
 }

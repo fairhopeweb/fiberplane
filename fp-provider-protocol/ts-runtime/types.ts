@@ -50,7 +50,7 @@ export type Blob = {
     /**
      * Raw data.
      */
-    data: ArrayBuffer;
+    data: Uint8Array;
 
     /**
      * MIME type to use for interpreting the raw data.
@@ -347,7 +347,7 @@ export type HttpRequest = {
     url: string;
     method: HttpRequestMethod;
     headers?: Record<string, string>;
-    body?: ArrayBuffer;
+    body?: Uint8Array;
 };
 
 /**
@@ -359,7 +359,7 @@ export type HttpRequestError =
     | { type: "connection_refused" }
     | { type: "timeout" }
     | { type: "response_too_big" }
-    | { type: "server_error"; statusCode: number; response: ArrayBuffer }
+    | { type: "server_error"; statusCode: number; response: Uint8Array }
     | { type: "other"; reason: string };
 
 /**
@@ -375,7 +375,7 @@ export type HttpRequestMethod =
  * Response to an HTTP request.
  */
 export type HttpResponse = {
-    body: ArrayBuffer;
+    body: Uint8Array;
     headers: Record<string, string>;
     statusCode: number;
 };
@@ -450,8 +450,8 @@ export type LegacyLogRecord = {
     body: string;
     attributes: Record<string, string>;
     resource: Record<string, string>;
-    traceId?: ArrayBuffer;
-    spanId?: ArrayBuffer;
+    traceId?: Uint8Array;
+    spanId?: Uint8Array;
 };
 
 /**
@@ -695,7 +695,7 @@ export type ProxyRequest = {
     /**
      * Request data to send to the proxy
      */
-    request: ArrayBuffer;
+    request: Uint8Array;
 };
 
 export type QueryField =
@@ -912,7 +912,8 @@ export type TextField = {
 };
 
 /**
- * A range in time from a given timestamp (inclusive) up to another timestamp (exclusive).
+ * A range in time from a given timestamp (inclusive) up to another timestamp
+ * (exclusive).
  */
 export type TimeRange = {
     from: Timestamp;

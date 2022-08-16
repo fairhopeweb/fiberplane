@@ -29,7 +29,6 @@ pub use fiberplane::protocols::core::Series;
 pub use fiberplane::protocols::core::StackingType;
 pub use fiberplane::protocols::core::TableCell;
 pub use fiberplane::protocols::core::TextCell;
-pub use fiberplane::protocols::core::TimeRange;
 pub use fiberplane::protocols::formatting::Annotation;
 pub use fiberplane::protocols::formatting::AnnotationWithOffset;
 pub use fiberplane::protocols::formatting::Mention;
@@ -182,7 +181,7 @@ pub struct HttpRequest {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub headers: Option<HashMap<String, String>>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub body: Option<serde_bytes::ByteBuf>,
+    pub body: Option<bytes::Bytes>,
 }
 
 /// Possible errors that may happen during an HTTP request.
@@ -197,7 +196,7 @@ pub enum HttpRequestError {
     #[serde(rename_all = "camelCase")]
     ServerError {
         status_code: u16,
-        response: serde_bytes::ByteBuf,
+        response: bytes::Bytes,
     },
     #[serde(rename_all = "camelCase")]
     Other {
@@ -219,7 +218,7 @@ pub enum HttpRequestMethod {
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct HttpResponse {
-    pub body: serde_bytes::ByteBuf,
+    pub body: bytes::Bytes,
     pub headers: HashMap<String, String>,
     pub status_code: u16,
 }
@@ -251,9 +250,9 @@ pub struct LegacyLogRecord {
     pub attributes: HashMap<String, String>,
     pub resource: HashMap<String, String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub trace_id: Option<serde_bytes::ByteBuf>,
+    pub trace_id: Option<bytes::Bytes>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub span_id: Option<serde_bytes::ByteBuf>,
+    pub span_id: Option<bytes::Bytes>,
 }
 
 /// Legacy `ProviderRequest` from the Provider 1.0 protocol.
@@ -366,7 +365,7 @@ pub struct ProxyRequest {
     pub data_source_name: String,
 
     /// Request data to send to the proxy
-    pub request: serde_bytes::ByteBuf,
+    pub request: bytes::Bytes,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -508,6 +507,15 @@ pub struct TextField {
     /// Whether the provider implements syntax highlighting for this field.
     /// See `highlight_field()` in the protocol definition.
     pub supports_highlighting: bool,
+}
+
+/// A range in time from a given timestamp (inclusive) up to another timestamp
+/// (exclusive).
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TimeRange {
+    pub from: Timestamp,
+    pub to: Timestamp,
 }
 
 pub type Timestamp = f64;

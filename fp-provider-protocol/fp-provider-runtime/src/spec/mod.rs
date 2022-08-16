@@ -1,6 +1,5 @@
 use rand::Rng;
 use reqwest::Url;
-use serde_bytes::ByteBuf;
 use std::collections::HashMap;
 use std::time::{SystemTime, UNIX_EPOCH};
 use tracing::{debug, error, instrument, trace};
@@ -41,7 +40,7 @@ pub async fn make_http_request(req: HttpRequest) -> Result<HttpResponse, HttpReq
         HttpRequestMethod::Post => client.post(url),
     };
     if let Some(body) = req.body {
-        builder = builder.body(body.into_vec());
+        builder = builder.body(body);
     }
     if let Some(headers) = req.headers {
         for (key, value) in headers.iter() {
@@ -91,12 +90,12 @@ pub async fn make_http_request(req: HttpRequest) -> Result<HttpResponse, HttpReq
     match status_code {
         _ if body.len() > MAX_HTTP_RESPONSE_SIZE => Err(HttpRequestError::ResponseTooBig),
         200..=299 => Ok(HttpResponse {
-            body: ByteBuf::from(body),
+            body: body.into(),
             headers,
             status_code,
         }),
         _ => Err(HttpRequestError::ServerError {
-            response: ByteBuf::from(body),
+            response: body.into(),
             status_code,
         }),
     }

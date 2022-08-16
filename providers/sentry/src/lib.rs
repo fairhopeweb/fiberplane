@@ -6,7 +6,6 @@ use fiberplane::text_util::char_count;
 use fp_provider_bindings::*;
 use futures::future;
 use sentry::*;
-use serde_bytes::ByteBuf;
 use std::collections::HashMap;
 
 const OVERVIEW_QUERY_TYPE: &str = "x-issues-overview";
@@ -80,7 +79,7 @@ async fn invoke2(request: ProviderRequest) -> Result<Blob, Error> {
         ISSUE_QUERY_TYPE => query_issue_details(request.query_data, config).await,
         STATUS_QUERY_TYPE => Ok(Blob {
             mime_type: STATUS_MIME_TYPE.to_owned(),
-            data: ByteBuf::from("ok"),
+            data: "ok".into(),
         }),
         _ => {
             log(format!(
@@ -112,7 +111,7 @@ async fn query_issues_overview(query_data: Blob, config: SentryConfig) -> Result
     .await;
     match result {
         Ok(response) => {
-            let issues = serde_json::from_slice(response.body.as_slice()).map_err(|err| {
+            let issues = serde_json::from_slice(response.body.as_ref()).map_err(|err| {
                 Error::Deserialization {
                     message: format!("Cannot parse Sentry response: {err}"),
                 }
@@ -211,14 +210,18 @@ async fn query_issue_details(query_data: Blob, config: SentryConfig) -> Result<B
 
     match future::join(issue_result, event_result).await {
         (Ok(issue_response), Ok(event_response)) => {
-            let issue: SentryIssue = serde_json::from_slice(issue_response.body.as_slice())
-                .map_err(|err| Error::Deserialization {
-                    message: format!("Cannot parse Sentry issue: {err}"),
+            let issue: SentryIssue =
+                serde_json::from_slice(issue_response.body.as_ref()).map_err(|err| {
+                    Error::Deserialization {
+                        message: format!("Cannot parse Sentry issue: {err}"),
+                    }
                 })?;
 
-            let event: SentryEvent = serde_json::from_slice(event_response.body.as_slice())
-                .map_err(|err| Error::Deserialization {
-                    message: format!("Cannot parse Sentry event: {err}"),
+            let event: SentryEvent =
+                serde_json::from_slice(event_response.body.as_ref()).map_err(|err| {
+                    Error::Deserialization {
+                        message: format!("Cannot parse Sentry event: {err}"),
+                    }
                 })?;
 
             // TODO: We need to query the values for the tags separately:
@@ -359,12 +362,12 @@ fn create_issue_cells(
 }
 
 fn serialize_cells(cells: Vec<Cell>) -> Result<Blob, Error> {
-    let data = ByteBuf::from(rmp_serde::to_vec_named(&cells).map_err(|err| Error::Data {
+    let data = rmp_serde::to_vec_named(&cells).map_err(|err| Error::Data {
         message: format!("Cannot serialize cells: {err}"),
-    })?);
+    })?;
 
     Ok(Blob {
-        data,
+        data: data.into(),
         mime_type: CELLS_MIME_TYPE.to_owned(),
     })
 }

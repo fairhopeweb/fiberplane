@@ -1,9 +1,9 @@
 use std::convert::TryFrom;
 
 use base64::DecodeError;
+use bytes::Bytes;
 use fp_bindgen::prelude::Serializable;
 use serde::{Deserialize, Serialize};
-use serde_bytes::ByteBuf;
 
 /// Binary blob for passing data in arbitrary encodings.
 ///
@@ -22,7 +22,7 @@ use serde_bytes::ByteBuf;
 #[serde(rename_all = "camelCase")]
 pub struct Blob {
     /// Raw data.
-    pub data: ByteBuf,
+    pub data: Bytes,
 
     /// MIME type to use for interpreting the raw data.
     ///
@@ -39,7 +39,7 @@ impl TryFrom<EncodedBlob> for Blob {
 
     fn try_from(blob: EncodedBlob) -> Result<Self, Self::Error> {
         Ok(Self {
-            data: ByteBuf::from(base64::decode(&blob.data)?),
+            data: base64::decode(&blob.data)?.into(),
             mime_type: blob.mime_type,
         })
     }

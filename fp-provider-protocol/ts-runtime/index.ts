@@ -20,7 +20,7 @@ export type Imports = {
 
 export type Exports = {
     createCells?: (queryType: string, response: types.Blob) => types.Result<Array<types.Cell>, types.Error>;
-    extractData?: (response: types.Blob, mimeType: string, query: string | null) => types.Result<ArrayBuffer, types.Error>;
+    extractData?: (response: types.Blob, mimeType: string, query: string | null) => types.Result<Uint8Array, types.Error>;
     getSupportedQueryTypes?: (config: any) => Promise<Array<types.SupportedQueryType>>;
     invoke?: (request: types.LegacyProviderRequest, config: any) => Promise<types.LegacyProviderResponse>;
     invoke2?: (request: types.ProviderRequest) => Promise<types.Result<types.Blob, types.Error>>;
@@ -83,8 +83,13 @@ export async function createRuntime(
     function parseObject<T>(fatPtr: FatPtr): T {
         const [ptr, len] = fromFatPtr(fatPtr);
         const buffer = new Uint8Array(memory.buffer, ptr, len);
-        const object = decode(buffer) as unknown as T;
+        // Without creating a copy of the memory, we risk corruption of any
+        // embedded `Uint8Array` objects returned from `decode()` after `free()`
+        // has been called :(
+        const copy = new Uint8Array(len);
+        copy.set(buffer);
         free(fatPtr);
+        const object = decode(copy) as unknown as T;
         return object;
     }
 
@@ -202,7 +207,7 @@ export async function createRuntime(
                 const response_ptr = serializeObject(response);
                 const mime_type_ptr = serializeObject(mimeType);
                 const query_ptr = serializeObject(query);
-                return parseObject<types.Result<ArrayBuffer, types.Error>>(export_fn(response_ptr, mime_type_ptr, query_ptr));
+                return parseObject<types.Result<Uint8Array, types.Error>>(export_fn(response_ptr, mime_type_ptr, query_ptr));
             };
         })(),
         getSupportedQueryTypes: (() => {

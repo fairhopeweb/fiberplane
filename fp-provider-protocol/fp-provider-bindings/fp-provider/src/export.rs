@@ -31,7 +31,7 @@ pub fn create_cells(query_type: String, response: Blob) -> Result<Vec<Cell>, Err
 /// is no query string and the MIME type is an exact match. This elision
 /// should not change the outcome.
 #[fp_bindgen_support::fp_export_signature]
-pub fn extract_data(response: Blob, mime_type: String, query: Option<String>) -> Result<serde_bytes::ByteBuf, Error>;
+pub fn extract_data(response: Blob, mime_type: String, query: Option<String>) -> Result<bytes::Bytes, Error>;
 
 /// Returns the query types supported by this provider.
 /// This function allows Studio to know upfront which formats will be

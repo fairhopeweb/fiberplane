@@ -1,8 +1,8 @@
 mod types;
 
+use bytes::Bytes;
 use fiberplane::protocols::{blobs::Blob, core::Cell};
 use fp_bindgen::{prelude::*, types::CargoDependency};
-use serde_bytes::ByteBuf;
 use std::collections::{BTreeMap, BTreeSet};
 use types::*;
 
@@ -66,12 +66,19 @@ fp_export! {
     /// means Studio should be allowed to elide calls to this function if there
     /// is no query string and the MIME type is an exact match. This elision
     /// should not change the outcome.
-    fn extract_data(response: Blob, mime_type: String, query: Option<String>) -> Result<ByteBuf, Error>;
+    fn extract_data(response: Blob, mime_type: String, query: Option<String>) -> Result<Bytes, Error>;
 }
 
 fn main() {
     {
         let dependencies = BTreeMap::from([
+            (
+                "bytes",
+                CargoDependency {
+                    version: Some("1"),
+                    ..Default::default()
+                },
+            ),
             (
                 "fiberplane",
                 fp_bindgen::types::CargoDependency {
@@ -84,13 +91,6 @@ fn main() {
                 CargoDependency {
                     version: Some("1.0.0"),
                     features: BTreeSet::from(["with-serde"]),
-                    ..Default::default()
-                },
-            ),
-            (
-                "serde_bytes",
-                CargoDependency {
-                    version: Some("0.11"),
                     ..Default::default()
                 },
             ),

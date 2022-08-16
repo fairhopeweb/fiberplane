@@ -5,10 +5,10 @@ authors = ["Fiberplane <info@fiberplane.com>"]
 edition = "2018"
 
 [dependencies]
+bytes = { version = "1", features = ["serde"] }
 fiberplane = { path = "../../fiberplane" }
-fp-bindgen-support = { version = "2.0.1", features = ["async", "guest"] }
+fp-bindgen-support = { version = "2.1.0", features = ["async", "guest"] }
 once_cell = { version = "1.4" }
 rmp-serde = { version = "1.0" }
 rmpv = { version = "1.0.0", features = ["with-serde"] }
 serde = { version = "1.0", features = ["derive"] }
-serde_bytes = { version = "0.11" }

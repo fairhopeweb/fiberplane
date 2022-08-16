@@ -7,7 +7,6 @@ use fp_provider_bindings::{
 };
 use rmpv::ext::from_value;
 use serde::{Deserialize, Serialize};
-use serde_bytes::ByteBuf;
 use serde_json::{Map, Value};
 use std::{cmp::Ordering, collections::HashMap, str::FromStr};
 use time::{format_description::well_known::Rfc3339, OffsetDateTime};
@@ -112,11 +111,13 @@ async fn fetch_logs(
     url.set_query(Some(&format!("q={}", &query_string)));
 
     let request = HttpRequest {
-        body: Some(ByteBuf::from(serde_json::to_vec(&body).map_err(|e| {
-            Error::Data {
-                message: format!("Error serializing query: {:?}", e),
-            }
-        })?)),
+        body: Some(
+            serde_json::to_vec(&body)
+                .map_err(|e| Error::Data {
+                    message: format!("Error serializing query: {:?}", e),
+                })?
+                .into(),
+        ),
         headers: Some(headers),
         method: HttpRequestMethod::Post,
         url: url.to_string(),
@@ -178,7 +179,7 @@ fn parse_hit(
     let mut parse_id = |key: &str| {
         if let Some((key, val)) = flattened_fields.remove_entry(key) {
             if let Ok(bytes) = hex::decode(val.to_string().replace("-", "")) {
-                Some(ByteBuf::from(bytes))
+                Some(bytes.into())
             } else {
                 log(format!("unable to decode ID as hex in log: {}", val));
                 // Put the value back if we were unable to parse it

@@ -77,7 +77,9 @@ impl Runtime {
         let function = instance
             .exports
             .get_native_function::<(FatPtr, FatPtr), FatPtr>("__fp_gen_create_cells")
-            .map_err(|_| InvocationError::FunctionNotExported)?;
+            .map_err(|_| {
+                InvocationError::FunctionNotExported("__fp_gen_create_cells".to_owned())
+            })?;
         let result = function.call(query_type.to_abi(), response.to_abi())?;
         let result = import_from_guest_raw(&env, result);
         Ok(result)
@@ -101,7 +103,7 @@ impl Runtime {
         response: Blob,
         mime_type: String,
         query: Option<String>,
-    ) -> Result<Result<serde_bytes::ByteBuf, Error>, InvocationError> {
+    ) -> Result<Result<bytes::Bytes, Error>, InvocationError> {
         let response = serialize_to_vec(&response);
         let mime_type = serialize_to_vec(&mime_type);
         let query = serialize_to_vec(&query);
@@ -125,7 +127,9 @@ impl Runtime {
         let function = instance
             .exports
             .get_native_function::<(FatPtr, FatPtr, FatPtr), FatPtr>("__fp_gen_extract_data")
-            .map_err(|_| InvocationError::FunctionNotExported)?;
+            .map_err(|_| {
+                InvocationError::FunctionNotExported("__fp_gen_extract_data".to_owned())
+            })?;
         let result = function.call(response.to_abi(), mime_type.to_abi(), query.to_abi())?;
         let result = import_from_guest_raw(&env, result);
         Ok(result)
@@ -157,7 +161,11 @@ impl Runtime {
         let function = instance
             .exports
             .get_native_function::<FatPtr, FatPtr>("__fp_gen_get_supported_query_types")
-            .map_err(|_| InvocationError::FunctionNotExported)?;
+            .map_err(|_| {
+                InvocationError::FunctionNotExported(
+                    "__fp_gen_get_supported_query_types".to_owned(),
+                )
+            })?;
         let result = function.call(config.to_abi())?;
         let result = ModuleRawFuture::new(env.clone(), result).await;
         Ok(result)
@@ -190,7 +198,7 @@ impl Runtime {
         let function = instance
             .exports
             .get_native_function::<(FatPtr, FatPtr), FatPtr>("__fp_gen_invoke")
-            .map_err(|_| InvocationError::FunctionNotExported)?;
+            .map_err(|_| InvocationError::FunctionNotExported("__fp_gen_invoke".to_owned()))?;
         let result = function.call(request.to_abi(), config.to_abi())?;
         let result = ModuleRawFuture::new(env.clone(), result).await;
         Ok(result)
@@ -216,7 +224,7 @@ impl Runtime {
         let function = instance
             .exports
             .get_native_function::<FatPtr, FatPtr>("__fp_gen_invoke2")
-            .map_err(|_| InvocationError::FunctionNotExported)?;
+            .map_err(|_| InvocationError::FunctionNotExported("__fp_gen_invoke2".to_owned()))?;
         let result = function.call(request.to_abi())?;
         let result = ModuleRawFuture::new(env.clone(), result).await;
         Ok(result)
