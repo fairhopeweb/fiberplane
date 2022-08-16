@@ -461,6 +461,7 @@ pub(crate) fn transform_replace_text_operation(
                     // Adjust the offset to account for the previous replacement:
                     Some(Operation::ReplaceText(ReplaceTextOperation {
                         cell_id: successor.cell_id.clone(),
+                        field: successor.field.clone(),
                         offset: successor.offset + char_count(&predecessor.new_text)
                             - char_count(&predecessor.old_text),
                         new_text: successor.new_text.clone(),

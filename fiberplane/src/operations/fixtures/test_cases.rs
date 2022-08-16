@@ -505,6 +505,7 @@ fn create_replace_text_test_cases(test_cases: &mut Vec<OperationTestCase>) {
     test_cases.push(OperationTestCase {
         operation: Operation::ReplaceText(ReplaceTextOperation {
             cell_id: "c3".to_owned(),
+            field: None,
             offset: 5,
             new_text: "replaced".to_owned(),
             new_formatting: Some(vec![
@@ -528,6 +529,7 @@ fn create_replace_text_test_cases(test_cases: &mut Vec<OperationTestCase>) {
     test_cases.push(OperationTestCase {
         operation: Operation::ReplaceText(ReplaceTextOperation {
             cell_id: "c3".to_owned(),
+            field: None,
             offset: 18,
             new_text: "nonsense".to_owned(),
             new_formatting: Some(vec![
@@ -551,6 +553,7 @@ fn create_replace_text_test_cases(test_cases: &mut Vec<OperationTestCase>) {
     test_cases.push(OperationTestCase {
         operation: Operation::ReplaceText(ReplaceTextOperation {
             cell_id: "c3".to_owned(),
+            field: None,
             offset: 17,
             new_text: "_".to_owned(),
             new_formatting: None,
@@ -565,6 +568,7 @@ fn create_replace_text_test_cases(test_cases: &mut Vec<OperationTestCase>) {
     test_cases.push(OperationTestCase {
         operation: Operation::ReplaceText(ReplaceTextOperation {
             cell_id: "c3".to_owned(),
+            field: None,
             offset: 5,
             new_text: "replacement".to_owned(),
             new_formatting: Some(vec![
@@ -588,6 +592,7 @@ fn create_replace_text_test_cases(test_cases: &mut Vec<OperationTestCase>) {
     test_cases.push(OperationTestCase {
         operation: Operation::ReplaceText(ReplaceTextOperation {
             cell_id: "c2".to_owned(),
+            field: None,
             offset: 0,
             new_text: "Unl".to_owned(),
             new_formatting: None,
@@ -603,6 +608,7 @@ fn create_replace_text_test_cases(test_cases: &mut Vec<OperationTestCase>) {
     test_cases.push(OperationTestCase {
         operation: Operation::ReplaceText(ReplaceTextOperation {
             cell_id: "c4".to_owned(),
+            field: None,
             offset: 4,
             new_text: "".to_owned(),
             new_formatting: None,
@@ -616,6 +622,7 @@ fn create_replace_text_test_cases(test_cases: &mut Vec<OperationTestCase>) {
     test_cases.push(OperationTestCase {
         operation: Operation::ReplaceText(ReplaceTextOperation {
             cell_id: "c4".to_owned(),
+            field: None,
             offset: 18,
             new_text: "count".to_owned(),
             new_formatting: None,
@@ -630,6 +637,7 @@ fn create_replace_text_test_cases(test_cases: &mut Vec<OperationTestCase>) {
     test_cases.push(OperationTestCase {
         operation: Operation::ReplaceText(ReplaceTextOperation {
             cell_id: "c4".to_owned(),
+            field: None,
             offset: 0,
             new_text: "".to_owned(),
             new_formatting: None,
@@ -644,6 +652,7 @@ fn create_replace_text_test_cases(test_cases: &mut Vec<OperationTestCase>) {
     test_cases.push(OperationTestCase {
         operation: Operation::ReplaceText(ReplaceTextOperation {
             cell_id: "c8".to_owned(),
+            field: None,
             offset: 17,
             new_text: "s".to_owned(),
             new_formatting: None,
@@ -674,6 +683,7 @@ fn create_replace_text_test_cases(test_cases: &mut Vec<OperationTestCase>) {
     test_cases.push(OperationTestCase {
         operation: Operation::ReplaceText(ReplaceTextOperation {
             cell_id: "c8".to_owned(),
+            field: None,
             offset: 17,
             new_text: "ing".to_owned(),
             new_formatting: None,
@@ -703,6 +713,7 @@ fn create_replace_text_test_cases(test_cases: &mut Vec<OperationTestCase>) {
     test_cases.push(OperationTestCase {
         operation: Operation::ReplaceText(ReplaceTextOperation {
             cell_id: "c8".to_owned(),
+            field: None,
             offset: 7,
             new_text: "".to_owned(),
             new_formatting: None,

@@ -56,6 +56,7 @@ fn invert_replace_cells_operation(operation: &ReplaceCellsOperation) -> Operatio
 fn invert_replace_text_operation(operation: &ReplaceTextOperation) -> Operation {
     Operation::ReplaceText(ReplaceTextOperation {
         cell_id: operation.cell_id.clone(),
+        field: operation.field.clone(),
         offset: operation.offset,
         old_text: operation.new_text.clone(),
         old_formatting: operation.new_formatting.clone(),

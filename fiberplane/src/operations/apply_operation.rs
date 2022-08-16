@@ -49,6 +49,16 @@ pub trait ApplyOperationState {
         self.cell_with_index(id).map(|c| c.cell)
     }
 
+    /// Returns the text for the cell with the given ID with an optional field.
+    fn cell_text_and_formatting(
+        &self,
+        id: &str,
+        field: Option<&str>,
+    ) -> Option<(&str, Option<&Formatting>)> {
+        self.cell(id)
+            .and_then(|cell| cell.text().map(|text| (text, cell.formatting())))
+    }
+
     /// Returns a cell by ID, plus the index of that cell in the notebook.
     ///
     /// May return `None` if the cell exists, but was considered not relevant for the operation.
@@ -372,19 +382,17 @@ fn apply_replace_text_operation(
     state: &dyn ApplyOperationState,
     operation: &ReplaceTextOperation,
 ) -> Result<Vec<Change>, Error> {
-    let cell = state
-        .cell(&operation.cell_id)
-        .ok_or_else(|| Error::CellNotFound(operation.cell_id.clone()))?;
-    let text = cell
-        .text()
+    let (text, formatting) = state
+        .cell_text_and_formatting(&operation.cell_id, operation.field.as_deref())
         .ok_or_else(|| Error::NoTextCell(operation.cell_id.clone()))?;
 
     let old_text_len = char_count(&operation.old_text);
     Ok(vec![Change::UpdateCellText(UpdateCellTextChange {
         cell_id: operation.cell_id.clone(),
+        field: operation.field.clone(),
         text: replace_text(text, &operation.new_text, operation.offset, old_text_len),
         formatting: Some(replace_formatting(
-            cell.formatting(),
+            formatting,
             operation.old_formatting.as_ref(),
             operation.new_formatting.as_ref(),
             operation.offset,

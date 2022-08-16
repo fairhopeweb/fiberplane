@@ -75,6 +75,9 @@ pub struct UpdateCellTextChange {
     /// ID of the cell we're updating.
     pub cell_id: String,
 
+    /// Optional cell field that we're updating.
+    pub field: Option<String>,
+
     /// The new text string to store.
     pub text: String,
 

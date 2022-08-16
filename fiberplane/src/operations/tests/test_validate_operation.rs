@@ -171,6 +171,7 @@ pub fn test_invalid_replace_text_operations() {
                 new_formatting: Some(Vec::new()),
                 old_text: "introductory".to_owned(),
                 old_formatting: None,
+                field: None,
             })
         ),
         Err(RejectReason::CellNotFound {
@@ -188,6 +189,7 @@ pub fn test_invalid_replace_text_operations() {
                 new_formatting: Some(Vec::new()),
                 old_text: "INTRODUCTORY".to_owned(),
                 old_formatting: None,
+                field: None,
             })
         ),
         Err(RejectReason::InconsistentState)

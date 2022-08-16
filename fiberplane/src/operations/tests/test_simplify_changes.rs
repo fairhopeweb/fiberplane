@@ -188,11 +188,13 @@ pub fn test_simplify_update_text_changes() {
             cell_id: "test_cell".to_owned(),
             text: "1".to_owned(),
             formatting: None,
+            field: None,
         }),
         Change::UpdateCellText(UpdateCellTextChange {
             cell_id: "test_cell".to_owned(),
             text: "2".to_owned(),
             formatting: None,
+            field: None,
         }),
     ];
 
@@ -203,7 +205,52 @@ pub fn test_simplify_update_text_changes() {
             cell_id: "test_cell".to_owned(),
             text: "2".to_owned(),
             formatting: None,
+            field: None,
         })]
+    );
+}
+
+#[test]
+pub fn test_simplify_update_text_changes_in_separate_fields() {
+    let changes = vec![
+        Change::UpdateCellText(UpdateCellTextChange {
+            cell_id: "test_cell".to_owned(),
+            text: "1".to_owned(),
+            formatting: None,
+            field: Some("a".to_owned()),
+        }),
+        Change::UpdateCellText(UpdateCellTextChange {
+            cell_id: "test_cell".to_owned(),
+            text: "2".to_owned(),
+            formatting: None,
+            field: Some("b".to_owned()),
+        }),
+        Change::UpdateCellText(UpdateCellTextChange {
+            cell_id: "test_cell".to_owned(),
+            text: "3".to_owned(),
+            formatting: None,
+            field: Some("b".to_owned()),
+        }),
+    ];
+
+    // Changes to the same field should be merged,
+    // while separate fields are preserved:
+    assert_eq!(
+        simplify_changes(changes),
+        vec![
+            Change::UpdateCellText(UpdateCellTextChange {
+                cell_id: "test_cell".to_owned(),
+                text: "1".to_owned(),
+                formatting: None,
+                field: Some("a".to_owned()),
+            }),
+            Change::UpdateCellText(UpdateCellTextChange {
+                cell_id: "test_cell".to_owned(),
+                text: "3".to_owned(),
+                formatting: None,
+                field: Some("b".to_owned()),
+            }),
+        ]
     );
 }
 
@@ -221,6 +268,7 @@ pub fn test_simplify_update_and_update_text_changes() {
             cell_id: "test_cell".to_owned(),
             text: "2".to_owned(),
             formatting: None,
+            field: None,
         }),
     ];
 
@@ -242,6 +290,7 @@ pub fn test_simplify_update_and_update_text_changes() {
             cell_id: "test_cell".to_owned(),
             text: "1".to_owned(),
             formatting: None,
+            field: None,
         }),
         Change::UpdateCell(UpdateCellChange {
             cell: Cell::Text(TextCell {

@@ -635,8 +635,8 @@ impl NotebookFocus {
     pub fn focus_position(&self) -> Option<&FocusPosition> {
         match self {
             Self::None => None,
-            Self::Collapsed(position) => Some(&position),
-            Self::Selection { focus, .. } => Some(&focus),
+            Self::Collapsed(position) => Some(position),
+            Self::Selection { focus, .. } => Some(focus),
         }
     }
 

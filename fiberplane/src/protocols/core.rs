@@ -871,8 +871,8 @@ pub struct ProviderCell {
     pub response: Option<EncodedBlob>,
 
     /// Optional list of generated output cells.
-    #[serde(default)]
-    pub output: Vec<Cell>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub output: Option<Vec<Cell>>,
 
     /// Optional title to assign the cell.
     #[serde(default)]

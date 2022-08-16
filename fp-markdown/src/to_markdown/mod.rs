@@ -129,7 +129,9 @@ impl<'a> NotebookConverter<'a> {
                         self.events.push(End(Tag::Paragraph));
                     }
 
-                    self.convert_cells(notebook_id, cell.output);
+                    if let Some(output) = cell.output {
+                        self.convert_cells(notebook_id, output);
+                    }
                 }
                 Cell::Text(cell) => {
                     self.events.push(Start(Tag::Paragraph));

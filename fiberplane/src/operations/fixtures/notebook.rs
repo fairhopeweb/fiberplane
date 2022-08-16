@@ -52,8 +52,9 @@ impl Notebook {
             }),
             UpdateCellText(UpdateCellTextChange {
                 cell_id,
-                text,
+                field,
                 formatting,
+                text,
             }) => self.with_updated_cells(|cells| {
                 if let Some(index) = cells.iter().position(|cell| cell.id() == cell_id) {
                     cells[index] =

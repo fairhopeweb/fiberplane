@@ -17,6 +17,7 @@ enum CellChangeState {
     },
     TextUpdated {
         cell_id: String,
+        field: Option<String>,
         text: String,
         formatting: Option<Formatting>,
     },
@@ -46,10 +47,12 @@ impl CellChangeState {
             })),
             Self::TextUpdated {
                 cell_id,
+                field,
                 text,
                 formatting,
             } => Some(Change::UpdateCellText(UpdateCellTextChange {
                 cell_id,
+                field,
                 text,
                 formatting,
             })),
@@ -139,20 +142,19 @@ pub fn simplify_changes(changes: Vec<Change>) -> Vec<Change> {
                             Moved { cell_id, index: _ } => Moved { cell_id, index },
                             TextUpdated {
                                 cell_id,
+                                field,
                                 text,
                                 formatting,
                             } => {
                                 simplified_changes.push(Change::UpdateCellText(
                                     UpdateCellTextChange {
                                         cell_id: cell_id.clone(),
+                                        field,
                                         text,
                                         formatting,
                                     },
                                 ));
-                                Moved {
-                                    cell_id: cell_id.clone(),
-                                    index,
-                                }
+                                Moved { cell_id, index }
                             }
                         };
                     } else {
@@ -200,22 +202,32 @@ pub fn simplify_changes(changes: Vec<Change>) -> Vec<Change> {
             }
             Change::UpdateCellText(UpdateCellTextChange {
                 cell_id,
-                text,
+                field,
                 formatting,
+                text,
             }) => {
                 if current_cell_state.cell_id() == Some(&cell_id) {
                     current_cell_state = match current_cell_state {
                         None => TextUpdated {
                             cell_id,
+                            field,
                             text,
                             formatting,
                         },
                         Inserted { cell, index } => Inserted {
-                            cell: cell.with_text(&text),
+                            cell: if let Some(formatting) = formatting {
+                                cell.with_rich_text(&text, formatting)
+                            } else {
+                                cell.with_text(&text)
+                            },
                             index,
                         },
                         Updated { cell } => Updated {
-                            cell: cell.with_text(&text),
+                            cell: if let Some(formatting) = formatting {
+                                cell.with_rich_text(&text, formatting)
+                            } else {
+                                cell.with_text(&text)
+                            },
                         },
                         Moved { cell_id, index } => {
                             simplified_changes.push(Change::MoveCells(MoveCellsChange {
@@ -224,15 +236,34 @@ pub fn simplify_changes(changes: Vec<Change>) -> Vec<Change> {
                             }));
                             TextUpdated {
                                 cell_id,
+                                field,
                                 text,
                                 formatting,
                             }
                         }
-                        TextUpdated { .. } => TextUpdated {
-                            cell_id,
-                            text,
-                            formatting,
-                        },
+                        TextUpdated {
+                            cell_id: current_cell_id,
+                            field: current_field,
+                            text: current_text,
+                            formatting: current_formatting,
+                        } => {
+                            if field != current_field {
+                                simplified_changes.push(Change::UpdateCellText(
+                                    UpdateCellTextChange {
+                                        cell_id: current_cell_id,
+                                        field: current_field,
+                                        text: current_text,
+                                        formatting: current_formatting,
+                                    },
+                                ));
+                            }
+                            TextUpdated {
+                                cell_id,
+                                field,
+                                text,
+                                formatting,
+                            }
+                        }
                     };
                 } else {
                     if let Some(change) = current_cell_state.into_change() {
@@ -241,6 +272,7 @@ pub fn simplify_changes(changes: Vec<Change>) -> Vec<Change> {
 
                     current_cell_state = TextUpdated {
                         cell_id,
+                        field,
                         text,
                         formatting,
                     };
@@ -257,7 +289,7 @@ pub fn simplify_changes(changes: Vec<Change>) -> Vec<Change> {
     // PASS 2:
     let mut i = 0;
     while i < simplified_changes.len() {
-        // We skip the change if it's an update that is superseded by another update:
+        // We skip the change if it's an update that is followed by another that will supersede it:
         let skip_change = match &simplified_changes[i] {
             Change::UpdateCell(update_change) => simplified_changes.iter().skip(i + 1).any(|change| {
                 matches!(change, Change::UpdateCell(other) if other.cell.id() == update_change.cell.id()) ||
@@ -265,7 +297,7 @@ pub fn simplify_changes(changes: Vec<Change>) -> Vec<Change> {
             }),
             Change::UpdateCellText(update_change) => simplified_changes.iter().skip(i + 1).any(|change| {
                 matches!(change, Change::UpdateCell(other) if other.cell.id() == update_change.cell_id) ||
-                matches!(change, Change::UpdateCellText(other) if other.cell_id == update_change.cell_id) ||
+                matches!(change, Change::UpdateCellText(other) if other.cell_id == update_change.cell_id && other.field == update_change.field) ||
                 matches!(change, Change::DeleteCell(other) if other.cell_id == update_change.cell_id)
             }),
             _ => false
