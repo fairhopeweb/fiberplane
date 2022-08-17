@@ -30,6 +30,7 @@ pub enum ThreadStatus {
 #[serde(rename_all = "camelCase")]
 pub struct ThreadSummary {
     pub id: String,
+    pub item_count: u32,
     pub first_item: Option<ThreadItem>,
     /// These are sorted in chronological order so the last one is the most recent.
     #[serde(default)]

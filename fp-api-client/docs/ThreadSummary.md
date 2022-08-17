@@ -5,6 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **id** | **String** |  | 
+**item_count** | **i32** |  | 
 **first_item** | Option<[**crate::models::ThreadItem**](threadItem.md)> |  | [optional]
 **recent_items** | Option<[**Vec<crate::models::ThreadItem>**](threadItem.md)> | Most recent thread items, sorted in chronological order | [optional]
 **status** | [**crate::models::ThreadStatus**](threadStatus.md) |  | 

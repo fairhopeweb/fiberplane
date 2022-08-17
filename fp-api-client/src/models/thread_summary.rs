@@ -12,6 +12,8 @@
 pub struct ThreadSummary {
     #[serde(rename = "id")]
     pub id: String,
+    #[serde(rename = "itemCount")]
+    pub item_count: i32,
     #[serde(rename = "firstItem", skip_serializing_if = "Option::is_none")]
     pub first_item: Option<Box<crate::models::ThreadItem>>,
     /// Most recent thread items, sorted in chronological order
@@ -30,6 +32,7 @@ pub struct ThreadSummary {
 impl ThreadSummary {
     pub fn new(
         id: String,
+        item_count: i32,
         status: crate::models::ThreadStatus,
         created_by: crate::models::UserSummary,
         created_at: String,
@@ -37,6 +40,7 @@ impl ThreadSummary {
     ) -> ThreadSummary {
         ThreadSummary {
             id,
+            item_count,
             first_item: None,
             recent_items: None,
             status,
