@@ -1,10 +1,12 @@
 mod config;
+mod percent_encode;
 mod sentry;
 
 use config::SentryConfig;
 use fiberplane::text_util::char_count;
 use fp_provider_bindings::*;
 use futures::future;
+use percent_encode::encode_uri_component;
 use sentry::*;
 use std::collections::HashMap;
 
@@ -95,7 +97,9 @@ async fn query_issues_overview(query_data: Blob, config: SentryConfig) -> Result
     let query = get_overview_query(&query_data)?;
     let url = format!(
         "https://sentry.io/api/0/projects/{}/{}/issues/?query={}",
-        config.organization_slug, config.project_slug, query
+        encode_uri_component(&config.organization_slug),
+        encode_uri_component(&config.project_slug),
+        encode_uri_component(&query)
     );
     let headers = HashMap::from([(
         "Authorization".to_owned(),
@@ -186,7 +190,7 @@ fn create_overview_cells(issues: Vec<SentryIssue>) -> Result<Vec<Cell>, Error> {
 }
 
 async fn query_issue_details(query_data: Blob, config: SentryConfig) -> Result<Blob, Error> {
-    let issue_id = get_issue_id(&query_data)?;
+    let issue_id = encode_uri_component(&get_issue_id(&query_data)?);
     let issue_url = format!("https://sentry.io/api/0/issues/{issue_id}/");
     let event_url = format!("{issue_url}events/latest/");
 

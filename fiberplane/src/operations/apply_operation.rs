@@ -2,9 +2,10 @@ use super::utils::is_annotation_included_in_formatting;
 use crate::{
     operations::{changes::*, error::*},
     protocols::{core::*, formatting::*, operations::*},
+    query_data::get_query_field,
     text_util::{char_count, char_slice, char_slice_from},
 };
-use std::cmp::Ordering;
+use std::{borrow::Cow, cmp::Ordering};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct CellRefWithIndex<'a> {
@@ -54,9 +55,9 @@ pub trait ApplyOperationState {
         &self,
         id: &str,
         field: Option<&str>,
-    ) -> Option<(&str, Option<&Formatting>)> {
+    ) -> Option<(Cow<str>, Option<&Formatting>)> {
         self.cell(id)
-            .and_then(|cell| cell.text().map(|text| (text, cell.formatting())))
+            .and_then(|cell| text_and_formatting_for_cell_and_field(cell, field))
     }
 
     /// Returns a cell by ID, plus the index of that cell in the notebook.
@@ -390,7 +391,7 @@ fn apply_replace_text_operation(
     Ok(vec![Change::UpdateCellText(UpdateCellTextChange {
         cell_id: operation.cell_id.clone(),
         field: operation.field.clone(),
-        text: replace_text(text, &operation.new_text, operation.offset, old_text_len),
+        text: replace_text(&text, &operation.new_text, operation.offset, old_text_len),
         formatting: Some(replace_formatting(
             formatting,
             operation.old_formatting.as_ref(),
@@ -479,6 +480,24 @@ fn apply_remove_label_operation(
     vec![Change::RemoveLabel(RemoveLabelChange {
         label: operation.label.clone(),
     })]
+}
+
+/// Returns the text and formatting for the given cell and the optional field.
+///
+/// This handles cell-specific logic for retrieving content out of fields.
+pub fn text_and_formatting_for_cell_and_field<'a, 'b>(
+    cell: &'a Cell,
+    field: Option<&'b str>,
+) -> Option<(Cow<'a, str>, Option<&'a Formatting>)> {
+    match (cell, field) {
+        (Cell::Provider(cell), Some(field)) => Some(cell.query_data.as_ref().map_or_else(
+            || (Cow::Borrowed(""), None),
+            |query_data| (get_query_field(query_data, field), None),
+        )),
+        (cell, _) => cell
+            .text()
+            .map(|text| (Cow::Borrowed(text), cell.formatting())),
+    }
 }
 
 /// Performs a formatting replacement within the given `formatting`. The

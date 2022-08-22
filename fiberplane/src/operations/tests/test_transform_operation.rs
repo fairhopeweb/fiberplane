@@ -115,7 +115,7 @@ pub fn test_transform_operation() -> Result<(), Error> {
         .collect();
 
     // Verify the amount of permutations, to make sure we don't accidentally skip any:
-    assert_eq!(testable_permutations.len(), 988);
+    assert_eq!(testable_permutations.len(), 1137);
 
     for (i, (operation1, operation2)) in testable_permutations.iter().enumerate() {
         let progress = format!(

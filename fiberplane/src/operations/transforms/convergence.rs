@@ -1,4 +1,8 @@
-use crate::{protocols::operations::*, text_util::char_count};
+use crate::{
+    protocols::{core::Cell, operations::*},
+    query_data::get_query_field,
+    text_util::char_count,
+};
 
 pub(crate) fn moves_converge(move1: &MoveCellsOperation, move2: &MoveCellsOperation) -> bool {
     let move1_len = move1.cell_ids.len();
@@ -136,6 +140,10 @@ pub(crate) fn replace_cells_and_replace_text_converge(
     cells_op: &ReplaceCellsOperation,
     text_op: &ReplaceTextOperation,
 ) -> bool {
+    if let Some(field) = text_op.field.as_ref() {
+        return replace_cells_and_replace_text_field_converge(cells_op, text_op, field);
+    }
+
     if let Some(index) = cells_op
         .old_cells
         .iter()
@@ -174,13 +182,52 @@ pub(crate) fn replace_cells_and_replace_text_converge(
     }
 }
 
+fn replace_cells_and_replace_text_field_converge(
+    cells_op: &ReplaceCellsOperation,
+    text_op: &ReplaceTextOperation,
+    field_name: &str,
+) -> bool {
+    // When a field is being updated, the only way for the operations to
+    // converge is if the cells don't overlap, or the field was not touched.
+    if let Some(old_cell) = cells_op
+        .old_cells
+        .iter()
+        .chain(cells_op.old_referencing_cells.iter())
+        .find(|cell| cell.id() == text_op.cell_id)
+    {
+        // If the cell was replaced, we can only verify the field was not
+        // touched if it was a field inside a ProviderCell:
+        cells_op
+            .new_cells
+            .iter()
+            .chain(cells_op.new_referencing_cells.iter())
+            .find(|new_cell| new_cell.id() == old_cell.id())
+            .map(|new_cell| match (&new_cell.cell, &old_cell.cell) {
+                (Cell::Provider(new_cell), Cell::Provider(old_cell)) => {
+                    match (new_cell.query_data.as_ref(), old_cell.query_data.as_ref()) {
+                        (Some(new_query_data), Some(old_query_data)) => {
+                            get_query_field(new_query_data, field_name)
+                                == get_query_field(old_query_data, field_name)
+                        }
+                        (None, None) => true,
+                        _ => false,
+                    }
+                }
+                _ => false,
+            })
+            .unwrap_or_default()
+    } else {
+        true // No overlap in cells.
+    }
+}
+
 #[cfg(test)]
 pub(crate) fn replace_texts_converge(
     op1: &ReplaceTextOperation,
     op2: &ReplaceTextOperation,
 ) -> bool {
     // Replacements in different cells always converge:
-    if op1.cell_id != op2.cell_id {
+    if op1.cell_id != op2.cell_id || op1.field != op2.field {
         return true;
     }
 

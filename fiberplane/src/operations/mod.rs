@@ -15,7 +15,8 @@ pub mod fixtures;
 mod tests;
 
 pub use apply_operation::{
-    apply_operation, replace_formatting, replace_text, ApplyOperationState, CellRefWithIndex,
+    apply_operation, replace_formatting, replace_text, text_and_formatting_for_cell_and_field,
+    ApplyOperationState, CellRefWithIndex,
 };
 pub use changes::*;
 pub use error::*;

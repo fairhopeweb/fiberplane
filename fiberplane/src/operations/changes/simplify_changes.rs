@@ -215,19 +215,11 @@ pub fn simplify_changes(changes: Vec<Change>) -> Vec<Change> {
                             formatting,
                         },
                         Inserted { cell, index } => Inserted {
-                            cell: if let Some(formatting) = formatting {
-                                cell.with_rich_text(&text, formatting)
-                            } else {
-                                cell.with_text(&text)
-                            },
+                            cell: cell.with_text_for_field(&text, formatting, field.as_deref()),
                             index,
                         },
                         Updated { cell } => Updated {
-                            cell: if let Some(formatting) = formatting {
-                                cell.with_rich_text(&text, formatting)
-                            } else {
-                                cell.with_text(&text)
-                            },
+                            cell: cell.with_text_for_field(&text, formatting, field.as_deref()),
                         },
                         Moved { cell_id, index } => {
                             simplified_changes.push(Change::MoveCells(MoveCellsChange {

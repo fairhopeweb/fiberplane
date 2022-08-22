@@ -2,7 +2,11 @@ use super::{
     blobs::EncodedBlob,
     formatting::{translate, AnnotationWithOffset, Formatting},
 };
-use crate::{markdown::formatting_from_markdown, text_util::char_count};
+use crate::{
+    markdown::formatting_from_markdown,
+    query_data::{has_query_data, set_query_field, unset_query_field},
+    text_util::char_count,
+};
 use fp_bindgen::prelude::Serializable;
 use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
@@ -599,6 +603,36 @@ impl Cell {
         }
     }
 
+    /// Returns a copy of the cell with the text for the given field replaced by
+    /// the given text and optional formatting.
+    ///
+    /// If no field is given, the text is applied to the cell's main text field,
+    /// similar to `with_text()` or `with_rich_text()`, depending on whether any
+    /// formatting is given.
+    ///
+    /// **Warning:** For cell types that have text, but which do not support
+    ///              rich-text, any given formatting will be dropped silently.
+    #[must_use]
+    pub fn with_text_for_field(
+        &self,
+        text: &str,
+        formatting: Option<Formatting>,
+        field: Option<&str>,
+    ) -> Self {
+        match (self, field) {
+            (Cell::Provider(cell), Some(field)) => {
+                Cell::Provider(cell.with_query_field(field, text))
+            }
+            (cell, _) => {
+                if let Some(formatting) = formatting {
+                    cell.with_rich_text(text, formatting)
+                } else {
+                    cell.with_text(text)
+                }
+            }
+        }
+    }
+
     pub fn id_mut(&mut self) -> &mut String {
         match self {
             Cell::Checkbox(cell) => &mut cell.id,
@@ -798,7 +832,7 @@ pub struct LogCell {
 
 /// A single expanded row of log records, as identified by [key] and [index]
 /// pointing into the source data of the LogCell.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize, Serializable)]
 #[fp(
     rust_plugin_module = "fiberplane::protocols::core",
     rust_wasmer_runtime_module = "fiberplane::protocols::core"
@@ -884,6 +918,29 @@ pub struct ProviderCell {
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub read_only: Option<bool>,
+}
+
+impl ProviderCell {
+    /// Returns a clone of the provider cell, with the query data updated for
+    /// the given query field.
+    ///
+    /// Unsets the query field if the value is empty.
+    pub fn with_query_field(&self, field_name: &str, value: &str) -> Self {
+        let query_data = self.query_data.as_deref().unwrap_or_default();
+        let query_data = if value.is_empty() {
+            unset_query_field(query_data, field_name)
+        } else {
+            set_query_field(query_data, field_name, value)
+        };
+        Self {
+            query_data: if has_query_data(&query_data) {
+                Some(query_data)
+            } else {
+                None
+            },
+            ..self.clone()
+        }
+    }
 }
 
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Eq, Serialize, Serializable)]
@@ -992,7 +1049,7 @@ pub struct ImageCell {
     pub url: Option<String>,
 }
 
-#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::core")]
 #[serde(rename_all = "camelCase")]
 pub struct DiscussionCell {

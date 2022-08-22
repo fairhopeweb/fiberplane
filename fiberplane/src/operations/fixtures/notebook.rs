@@ -3,10 +3,7 @@ use crate::{
         apply_operation, changes::*, error::*, notebook::Notebook, relevant_cell_ids_for_operation,
         ApplyOperationState, CellRefWithIndex, TransformOperationState,
     },
-    protocols::{
-        core::{Cell, Label, NotebookDataSource},
-        operations::*,
-    },
+    protocols::{core::*, operations::*},
 };
 use std::collections::BTreeMap;
 
@@ -58,7 +55,7 @@ impl Notebook {
             }) => self.with_updated_cells(|cells| {
                 if let Some(index) = cells.iter().position(|cell| cell.id() == cell_id) {
                     cells[index] =
-                        cells[index].with_rich_text(&text, formatting.unwrap_or_default());
+                        cells[index].with_text_for_field(&text, formatting, field.as_deref());
                 }
             }),
             UpdateNotebookTimeRange(UpdateNotebookTimeRangeChange { time_range }) => {

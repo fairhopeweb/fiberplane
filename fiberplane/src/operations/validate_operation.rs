@@ -334,28 +334,28 @@ fn validate_replace_text_operation(
     state: &dyn ApplyOperationState,
     operation: &ReplaceTextOperation,
 ) -> Result<(), RejectReason> {
-    if let Some(cell) = state.cell(&operation.cell_id) {
-        if let Some(text) = cell.text() {
-            let current_text_at_offset = char_slice(
-                text,
-                operation.offset as usize,
-                (operation.offset + char_count(&operation.old_text)) as usize,
-            );
-            if operation.old_text != current_text_at_offset {
-                return Err(RejectReason::InconsistentState);
-            }
+    if let Some((text, _)) =
+        state.cell_text_and_formatting(&operation.cell_id, operation.field.as_deref())
+    {
+        let current_text_at_offset = char_slice(
+            &text,
+            operation.offset as usize,
+            (operation.offset + char_count(&operation.old_text)) as usize,
+        );
+        if operation.old_text == current_text_at_offset {
+            Ok(())
         } else {
-            return Err(RejectReason::NoTextCell {
-                cell_id: operation.cell_id.clone(),
-            });
+            Err(RejectReason::InconsistentState)
         }
-    } else {
-        return Err(RejectReason::CellNotFound {
+    } else if state.cell(&operation.cell_id).is_some() {
+        Err(RejectReason::NoTextCell {
             cell_id: operation.cell_id.clone(),
-        });
+        })
+    } else {
+        Err(RejectReason::CellNotFound {
+            cell_id: operation.cell_id.clone(),
+        })
     }
-
-    Ok(())
 }
 
 fn validate_update_notebook_time_range(

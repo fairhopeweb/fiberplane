@@ -232,6 +232,16 @@ pub static TEST_NOTEBOOK: Lazy<Notebook> = Lazy::new(|| {
             ]),
             read_only: None,
         }),
+        Cell::Provider(ProviderCell {
+            id: "c14".to_owned(),
+            formatting: Some(Vec::new()),
+            intent: "sentry;my-data-source,x-error-details".to_owned(),
+            output: None,
+            query_data: Some("application/x-www-form-urlencoded,trace_id=123".to_owned()),
+            read_only: None,
+            response: None,
+            title: "".to_owned(),
+        }),
     ];
 
     let mut data_sources = BTreeMap::new();

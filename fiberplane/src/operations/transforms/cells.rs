@@ -1,11 +1,16 @@
-use std::cmp::Ordering;
+use std::{borrow::Cow, cmp::Ordering};
 
 use super::{
     convergence::*,
     get_cell_index_changes::{get_cell_index_changes, CellIndexChange, CellIndexPriority},
     TransformOperationState,
 };
-use crate::{operations::error::*, protocols::operations::*, text_util::char_count};
+use crate::{
+    operations::{error::*, replace_text},
+    protocols::{core::*, operations::*},
+    query_data::get_query_field,
+    text_util::char_count,
+};
 
 pub(crate) fn transform_move_cells_operation(
     _: &dyn TransformOperationState,
@@ -382,6 +387,10 @@ fn transform_replace_cells_after_replace_text(
         return None;
     }
 
+    if let Some(field) = predecessor.field.as_ref() {
+        return transform_replace_cells_after_replace_text_field(successor, predecessor, field);
+    }
+
     let operation = match (successor.split_offset, successor.old_cells.first()) {
         (Some(split_offset), Some(first_old_cell))
             if first_old_cell.id() == predecessor.cell_id && predecessor.offset < split_offset =>
@@ -400,6 +409,96 @@ fn transform_replace_cells_after_replace_text(
     Some(Operation::ReplaceCells(operation))
 }
 
+fn transform_replace_cells_after_replace_text_field(
+    successor: &ReplaceCellsOperation,
+    predecessor: &ReplaceTextOperation,
+    field_name: &str,
+) -> Option<Operation> {
+    let old_cell = successor
+        .old_cells
+        .iter()
+        .chain(successor.old_referencing_cells.iter())
+        .find(|cell| cell.id() == predecessor.cell_id);
+    let new_cell = successor
+        .new_cells
+        .iter()
+        .chain(successor.new_referencing_cells.iter())
+        .find(|cell| cell.id() == predecessor.cell_id);
+
+    let operation = match (old_cell, new_cell) {
+        (
+            Some(CellWithIndex {
+                cell: Cell::Provider(old_cell),
+                index: old_index,
+            }),
+            Some(CellWithIndex {
+                cell: Cell::Provider(new_cell),
+                index: new_index,
+            }),
+        ) => {
+            let map_old_cell = |cell: &CellWithIndex| match &cell.cell {
+                Cell::Provider(cell) if cell.id == old_cell.id => {
+                    let text = cell.query_data.as_ref().map_or_else(
+                        || Cow::Borrowed(""),
+                        |query_data| get_query_field(query_data, field_name),
+                    );
+                    let updated_text = replace_text(
+                        &text,
+                        &predecessor.new_text,
+                        predecessor.offset,
+                        char_count(&predecessor.old_text),
+                    );
+                    CellWithIndex {
+                        cell: Cell::Provider(cell.with_query_field(field_name, &updated_text)),
+                        index: *old_index,
+                    }
+                }
+                _ => cell.clone(),
+            };
+
+            let map_new_cell = |cell: &CellWithIndex| match &cell.cell {
+                Cell::Provider(cell) if cell.id == new_cell.id => {
+                    let text = cell.query_data.as_ref().map_or_else(
+                        || Cow::Borrowed(""),
+                        |query_data| get_query_field(query_data, field_name),
+                    );
+                    let updated_text = replace_text(
+                        &text,
+                        &predecessor.new_text,
+                        predecessor.offset,
+                        char_count(&predecessor.old_text),
+                    );
+                    CellWithIndex {
+                        cell: Cell::Provider(cell.with_query_field(field_name, &updated_text)),
+                        index: *new_index,
+                    }
+                }
+                _ => cell.clone(),
+            };
+
+            ReplaceCellsOperation {
+                old_cells: successor.old_cells.iter().map(map_old_cell).collect(),
+                old_referencing_cells: successor
+                    .old_referencing_cells
+                    .iter()
+                    .map(map_old_cell)
+                    .collect(),
+                new_cells: successor.new_cells.iter().map(map_new_cell).collect(),
+                new_referencing_cells: successor
+                    .new_referencing_cells
+                    .iter()
+                    .map(map_new_cell)
+                    .collect(),
+                ..successor.clone()
+            }
+        }
+        (None, None) => successor.clone(),
+        _ => return None,
+    };
+
+    Some(Operation::ReplaceCells(operation))
+}
+
 pub(crate) fn transform_replace_text_operation(
     _: &dyn TransformOperationState,
     successor: &ReplaceTextOperation,
@@ -408,8 +507,12 @@ pub(crate) fn transform_replace_text_operation(
     let operation = match predecessor {
         Operation::ReplaceCells(predecessor) => {
             if replace_cells_and_replace_text_converge(predecessor, successor) {
-                match (predecessor.merge_offset, predecessor.old_cells.last()) {
-                    (Some(merge_offset), Some(last_old_cell))
+                match (
+                    predecessor.merge_offset,
+                    predecessor.old_cells.last(),
+                    successor.field.as_ref(),
+                ) {
+                    (Some(merge_offset), Some(last_old_cell), None)
                         if last_old_cell.id() == successor.cell_id
                             && successor.offset >= merge_offset =>
                     {
@@ -435,8 +538,10 @@ pub(crate) fn transform_replace_text_operation(
             }
         }
         Operation::ReplaceText(predecessor) => {
-            let ordering = if predecessor.cell_id != successor.cell_id {
-                // We are slightly abused the `Ordering` enum here, but the
+            let ordering = if predecessor.cell_id != successor.cell_id
+                || predecessor.field != successor.field
+            {
+                // We are slightly abusing the `Ordering` enum here, but the
                 // result for mismatching cell IDs is the same as when the
                 // successor comes *before* the predecessor.
                 Ordering::Less

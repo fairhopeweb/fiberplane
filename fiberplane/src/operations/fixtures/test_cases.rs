@@ -2,6 +2,7 @@ use super::test_notebook::TEST_NOTEBOOK;
 use crate::{
     operations::Notebook,
     protocols::{
+        blobs::Blob,
         core::*,
         formatting::{Annotation, AnnotationWithOffset, Formatting},
         operations::*,
@@ -25,6 +26,7 @@ pub static TEST_CASES: Lazy<Vec<OperationTestCase>> = Lazy::new(|| {
     create_move_cells_test_cases(&mut test_cases);
     create_remove_cells_test_cases(&mut test_cases);
     create_replace_text_test_cases(&mut test_cases);
+    create_replace_text_field_test_cases(&mut test_cases);
     create_split_cell_test_cases(&mut test_cases);
     create_split_and_merge_cell_test_cases(&mut test_cases);
     create_toggle_formatting_test_cases(&mut test_cases);
@@ -499,6 +501,40 @@ fn create_remove_cells_test_cases(test_cases: &mut Vec<OperationTestCase>) {
             cells.remove(4);
         }),
     });
+
+    // Update the output in a provider cell:
+    let updated_provider_cell = Cell::Provider(ProviderCell {
+        id: "c14".to_owned(),
+        formatting: Some(Vec::new()),
+        intent: "sentry;my-data-source,x-error-details".to_owned(),
+        output: Some(vec![Cell::Text(TextCell {
+            id: "c14/output".to_owned(),
+            content: "A-OK".to_owned(),
+            ..Default::default()
+        })]),
+        query_data: Some("application/x-www-form-urlencoded,trace_id=123".to_owned()),
+        read_only: None,
+        response: Some(
+            Blob {
+                data: "ok".into(),
+                mime_type: "text/plain".to_owned(),
+            }
+            .into(),
+        ),
+        title: "".to_owned(),
+    });
+    test_cases.push(OperationTestCase {
+        operation: Operation::ReplaceCells(ReplaceCellsOperation {
+            old_cells: vec![TEST_NOTEBOOK.clone_cell_with_index_by_id(updated_provider_cell.id())],
+            new_cells: vec![CellWithIndex {
+                cell: updated_provider_cell.clone(),
+                index: 13,
+            }],
+            ..Default::default()
+        }),
+        expected_apply_operation_result: TEST_NOTEBOOK
+            .with_updated_cells(|cells| cells[13] = updated_provider_cell),
+    });
 }
 
 fn create_replace_text_test_cases(test_cases: &mut Vec<OperationTestCase>) {
@@ -789,6 +825,58 @@ fn create_replace_text_test_cases(test_cases: &mut Vec<OperationTestCase>) {
             cells[9] = cells[9].with_source_ids(vec!["c6".to_owned()]);
         }),
     })
+}
+
+fn create_replace_text_field_test_cases(test_cases: &mut Vec<OperationTestCase>) {
+    test_cases.push(OperationTestCase {
+        operation: Operation::ReplaceText(ReplaceTextOperation {
+            cell_id: "c14".to_owned(),
+            field: Some("trace_id".to_owned()),
+            offset: 0,
+            new_text: "456".to_owned(),
+            new_formatting: None,
+            old_text: "123".to_owned(),
+            old_formatting: None,
+        }),
+        expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
+            cells[13] = Cell::Provider(ProviderCell {
+                id: "c14".to_owned(),
+                formatting: Some(Vec::new()),
+                intent: "sentry;my-data-source,x-error-details".to_owned(),
+                output: None,
+                query_data: Some("application/x-www-form-urlencoded,trace_id=456".to_owned()),
+                read_only: None,
+                response: None,
+                title: "".to_owned(),
+            })
+        }),
+    });
+
+    test_cases.push(OperationTestCase {
+        operation: Operation::ReplaceText(ReplaceTextOperation {
+            cell_id: "c14".to_owned(),
+            field: Some("other_field".to_owned()),
+            offset: 0,
+            new_text: "test".to_owned(),
+            new_formatting: None,
+            old_text: "".to_owned(),
+            old_formatting: None,
+        }),
+        expected_apply_operation_result: TEST_NOTEBOOK.with_updated_cells(|cells| {
+            cells[13] = Cell::Provider(ProviderCell {
+                id: "c14".to_owned(),
+                formatting: Some(Vec::new()),
+                intent: "sentry;my-data-source,x-error-details".to_owned(),
+                output: None,
+                query_data: Some(
+                    "application/x-www-form-urlencoded,other_field=test&trace_id=123".to_owned(),
+                ),
+                read_only: None,
+                response: None,
+                title: "".to_owned(),
+            })
+        }),
+    });
 }
 
 fn create_split_cell_test_cases(test_cases: &mut Vec<OperationTestCase>) {
