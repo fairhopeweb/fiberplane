@@ -1,4 +1,4 @@
-use crate::protocols::comments::{Thread, ThreadItem};
+use crate::protocols::comments::{Thread, ThreadItem, UserSummary};
 use crate::protocols::core::{LabelValidationError, UserType};
 use crate::protocols::operations::Operation;
 use fp_bindgen::prelude::*;
@@ -738,7 +738,9 @@ pub struct ThreadDeletedMessage {
 pub struct UserTypingCommentServerMessage {
     pub notebook_id: String,
     pub thread_id: String,
-    pub user_id: String,
+    pub user: UserSummary,
+    #[serde(with = "time::serde::rfc3339")]
+    pub updated_at: OffsetDateTime,
 }
 
 #[cfg(test)]
