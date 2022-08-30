@@ -108,7 +108,6 @@ pub struct ActiveFormatting {
     pub highlight: bool,
     pub italics: bool,
     pub link: Option<String>,
-    pub mention: Option<Mention>,
     pub strikethrough: bool,
     pub underline: bool,
 }
@@ -153,11 +152,6 @@ impl ActiveFormatting {
                 Annotation::EndLink
             });
         }
-        if self.mention != reference.mention {
-            if let Some(mention) = self.mention.as_ref() {
-                annotations.push(Annotation::Mention(mention.clone()))
-            }
-        }
         if self.strikethrough != reference.strikethrough {
             annotations.push(if self.strikethrough {
                 Annotation::StartStrikethrough
@@ -188,7 +182,7 @@ impl ActiveFormatting {
             Annotation::EndItalics => !self.italics,
             Annotation::StartLink { .. } => self.link.is_some(),
             Annotation::EndLink => self.link.is_none(),
-            Annotation::Mention(_) => self.mention.is_some(),
+            Annotation::Mention(_) => false,
             Annotation::StartStrikethrough => self.strikethrough,
             Annotation::EndStrikethrough => !self.strikethrough,
             Annotation::StartUnderline => self.underline,
