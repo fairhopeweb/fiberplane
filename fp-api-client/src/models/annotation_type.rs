@@ -33,6 +33,8 @@ pub enum AnnotationType {
     EndLink,
     #[serde(rename = "mention")]
     Mention,
+    #[serde(rename = "timestamp")]
+    Timestamp,
     #[serde(rename = "start_strikethrough")]
     StartStrikethrough,
     #[serde(rename = "end_strikethrough")]
@@ -57,6 +59,7 @@ impl ToString for AnnotationType {
             Self::StartLink => String::from("start_link"),
             Self::EndLink => String::from("end_link"),
             Self::Mention => String::from("mention"),
+            Self::Timestamp => String::from("timestamp"),
             Self::StartStrikethrough => String::from("start_strikethrough"),
             Self::EndStrikethrough => String::from("end_strikethrough"),
             Self::StartUnderline => String::from("start_underline"),

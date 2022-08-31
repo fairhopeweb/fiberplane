@@ -200,6 +200,8 @@ pub mod thread_summary;
 pub use self::thread_summary::ThreadSummary;
 pub mod time_range;
 pub use self::time_range::TimeRange;
+pub mod timestamp_annotation;
+pub use self::timestamp_annotation::TimestampAnnotation;
 pub mod token;
 pub use self::token::Token;
 pub mod token_summary;

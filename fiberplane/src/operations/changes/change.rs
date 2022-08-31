@@ -68,7 +68,7 @@ pub struct UpdateCellChange {
 /// must be updated.
 ///
 /// Optionally updates the formatting as well.
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::operations")]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateCellTextChange {

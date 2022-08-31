@@ -698,7 +698,7 @@ impl Default for NotebookFocus {
     }
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(rename_all = "camelCase")]
 pub struct ThreadAddedMessage {
@@ -706,7 +706,7 @@ pub struct ThreadAddedMessage {
     pub thread: Thread,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(rename_all = "camelCase")]
 pub struct ThreadItemAddedMessage {
@@ -715,7 +715,7 @@ pub struct ThreadItemAddedMessage {
     pub thread_item: ThreadItem,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(rename_all = "camelCase")]
 pub struct ThreadItemUpdatedMessage {

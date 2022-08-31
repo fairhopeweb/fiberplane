@@ -92,4 +92,11 @@ pub enum Annotation {
         #[serde(rename = "offset")]
         offset: i32,
     },
+    #[serde(rename = "timestamp")]
+    TimestampAnnotation {
+        #[serde(rename = "offset")]
+        offset: i32,
+        #[serde(rename = "timestamp")]
+        timestamp: f64,
+    },
 }

@@ -200,7 +200,7 @@ impl ReplaceCellsOperation {
 }
 
 /// Replaces the part of the content in any content type cell or the title of a graph cell.
-#[derive(Clone, Debug, Default, Deserialize, PartialEq, Eq, Serialize, Serializable)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::operations")]
 #[serde(rename_all = "camelCase")]
 pub struct ReplaceTextOperation {

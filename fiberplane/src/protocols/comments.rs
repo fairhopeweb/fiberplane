@@ -3,7 +3,7 @@ use fp_bindgen::prelude::Serializable;
 use serde::{Deserialize, Serialize};
 use time::OffsetDateTime;
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::comments")]
 #[serde(rename_all = "camelCase")]
 pub struct Thread {
@@ -25,7 +25,7 @@ pub enum ThreadStatus {
     Resolved,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::comments")]
 #[serde(rename_all = "camelCase")]
 pub struct ThreadSummary {
@@ -43,7 +43,7 @@ pub struct ThreadSummary {
     pub updated_at: OffsetDateTime,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::comments")]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum ThreadItem {
@@ -94,7 +94,7 @@ pub struct CommentDelete {
     pub deleted_at: OffsetDateTime,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::comments")]
 #[serde(rename_all = "camelCase")]
 pub struct Comment {

@@ -190,6 +190,7 @@ Class | Method | HTTP request | Description
  - [ThreadStatus](docs/ThreadStatus.md)
  - [ThreadSummary](docs/ThreadSummary.md)
  - [TimeRange](docs/TimeRange.md)
+ - [TimestampAnnotation](docs/TimestampAnnotation.md)
  - [Token](docs/Token.md)
  - [TokenSummary](docs/TokenSummary.md)
  - [Trigger](docs/Trigger.md)
