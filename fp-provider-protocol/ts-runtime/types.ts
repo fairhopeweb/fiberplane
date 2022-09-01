@@ -21,6 +21,7 @@ export type Annotation =
     | { type: "start_link"; url: string }
     | { type: "end_link" }
     | { type: "mention" } & Mention
+    | { type: "timestamp"; timestamp: Timestamp }
     | { type: "start_strikethrough" }
     | { type: "end_strikethrough" }
     | { type: "start_underline" }
@@ -634,7 +635,7 @@ export type ProviderCell = {
     /**
      * Optional list of generated output cells.
      */
-    output: Array<Cell>;
+    output?: Array<Cell>;
 
     /**
      * Optional title to assign the cell.
