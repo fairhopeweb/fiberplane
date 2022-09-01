@@ -156,19 +156,19 @@ async fn check_status(url: &str) -> Result<(), Error> {
         message: format!("Invalid prometheus URL: {:?}", e),
     })?;
 
-    // Append path
-    {
-        let mut path_segments = url.path_segments_mut().map_err(|_| Error::Config {
+    // Send a fake query to the query endpoint to check if we can connect to the Prometheus instance
+    // We should get a 200 response even though it won't return any data
+    url.path_segments_mut()
+        .map_err(|_| Error::Config {
             message: "Invalid prometheus URL: cannot-be-a-base".to_string(),
-        })?;
-        path_segments
-            .push("api")
-            .push("v1")
-            .push("status")
-            .push("buildinfo");
-    }
+        })?
+        .push("api")
+        .push("v1")
+        .push("query");
+    url.query_pairs_mut()
+        .append_pair("query", "fiberplane_check_status");
 
-    let _ = make_http_request(HttpRequest {
+    make_http_request(HttpRequest {
         body: None,
         headers: None,
         method: HttpRequestMethod::Get,
@@ -177,8 +177,6 @@ async fn check_status(url: &str) -> Result<(), Error> {
     .await
     .map_err(|error| Error::Http { error })?;
 
-    // At this point we don't care to validate the info LOKI sends back
-    // We just care it responded with 200 OK
     Ok(())
 }
 
