@@ -278,9 +278,6 @@ fn format_content(content: &str, formatting: Option<Formatting>) -> String {
                         end_annotations += 1;
                     }
                     Annotation::Mention(mention) => output.push_str(&format!("@{}", mention.name)),
-                    Annotation::Timestamp { timestamp } => {
-                        output.push_str(&format!("@{}", timestamp))
-                    }
                 }
             }
             // If the content ends with plain text, make sure to add it to the output

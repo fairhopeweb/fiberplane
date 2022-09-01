@@ -253,11 +253,6 @@ impl<'a> NotebookConverter<'a> {
                         );
                     }
                 }
-                Annotation::Timestamp { timestamp } => {
-                    self.events.push(Start(Tag::Strong));
-                    self.text(timestamp.to_string());
-                    self.events.push(End(Tag::Strong));
-                }
                 // Mentions are turned into bold text
                 Annotation::Mention(mention) => {
                     self.events.push(Start(Tag::Strong));

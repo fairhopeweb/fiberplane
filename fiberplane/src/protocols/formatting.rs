@@ -1,4 +1,3 @@
-use crate::protocols::core::Timestamp;
 use fp_bindgen::prelude::Serializable;
 use serde::{Deserialize, Serialize};
 
@@ -12,7 +11,7 @@ pub type Formatting = Vec<AnnotationWithOffset>;
 /// Newtype representing `(offset, Annotation)` tuples.
 ///
 /// Used inside the `Formatting` vector.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(
     rust_plugin_module = "fiberplane::protocols::formatting",
     rust_wasmer_runtime_module = "fiberplane::protocols::formatting"
@@ -41,7 +40,7 @@ impl AnnotationWithOffset {
 /// A rich-text annotation.
 ///
 /// Annotations are typically found inside a `Formatting` vector.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(
     rust_plugin_module = "fiberplane::protocols::formatting",
     rust_wasmer_runtime_module = "fiberplane::protocols::formatting"
@@ -62,9 +61,6 @@ pub enum Annotation {
     },
     EndLink,
     Mention(Mention),
-    Timestamp {
-        timestamp: Timestamp,
-    },
     StartStrikethrough,
     EndStrikethrough,
     StartUnderline,
@@ -90,7 +86,6 @@ impl Annotation {
             Annotation::StartLink { .. } => Some(Annotation::EndLink),
             Annotation::EndLink => None,
             Annotation::Mention(_) => None,
-            Annotation::Timestamp { .. } => None,
             Annotation::StartStrikethrough => Some(Annotation::EndStrikethrough),
             Annotation::EndStrikethrough => Some(Annotation::StartStrikethrough),
             Annotation::StartUnderline => Some(Annotation::EndUnderline),
@@ -188,7 +183,6 @@ impl ActiveFormatting {
             Annotation::StartLink { .. } => self.link.is_some(),
             Annotation::EndLink => self.link.is_none(),
             Annotation::Mention(_) => false,
-            Annotation::Timestamp { .. } => false,
             Annotation::StartStrikethrough => self.strikethrough,
             Annotation::EndStrikethrough => !self.strikethrough,
             Annotation::StartUnderline => self.underline,

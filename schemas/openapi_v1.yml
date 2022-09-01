@@ -609,7 +609,6 @@ components:
         - $ref: "#/components/schemas/startLinkAnnotation"
         - $ref: "#/components/schemas/endLinkAnnotation"
         - $ref: "#/components/schemas/mentionAnnotation"
-        - $ref: "#/components/schemas/timestampAnnotation"
         - $ref: "#/components/schemas/startStrikethroughAnnotation"
         - $ref: "#/components/schemas/endStrikethroughAnnotation"
         - $ref: "#/components/schemas/startUnderlineAnnotation"
@@ -628,7 +627,6 @@ components:
           start_link: "#/components/schemas/startLinkAnnotation"
           end_link: "#/components/schemas/endLinkAnnotation"
           mention: "#/components/schemas/mentionAnnotation"
-          timestamp: "#/components/schemas/timestampAnnotation"
           start_strikethrough: "#/components/schemas/startStrikethroughAnnotation"
           end_strikethrough: "#/components/schemas/endStrikethroughAnnotation"
           start_underline: "#/components/schemas/startUnderlineAnnotation"
@@ -647,7 +645,6 @@ components:
         - start_link
         - end_link
         - mention
-        - timestamp
         - start_strikethrough
         - end_strikethrough
         - start_underline
@@ -782,20 +779,6 @@ components:
           type: "string"
         userId:
           type: "string"
-    timestampAnnotation:
-      type: object
-      required:
-        - type
-        - offset
-        - timestamp
-      properties:
-        type:
-          $ref: "#/components/schemas/annotationType"
-        offset:
-          type: integer
-          format: int32
-        timestamp:
-          type: double
     startStrikethroughAnnotation:
       type: object
       required:

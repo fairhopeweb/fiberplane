@@ -710,7 +710,7 @@ impl Cell {
     }
 }
 
-#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(
     rust_plugin_module = "fiberplane::protocols::core",
     rust_wasmer_runtime_module = "fiberplane::protocols::core"
@@ -781,7 +781,7 @@ pub struct GraphCell {
     pub data: Option<BTreeMap<String, Vec<Series>>>,
 }
 
-#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(
     rust_plugin_module = "fiberplane::protocols::core",
     rust_wasmer_runtime_module = "fiberplane::protocols::core"
@@ -843,7 +843,7 @@ pub struct ExpandedIndex {
     pub index: i32,
 }
 
-#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(
     rust_plugin_module = "fiberplane::protocols::core",
     rust_wasmer_runtime_module = "fiberplane::protocols::core"
@@ -995,7 +995,7 @@ fn default_title() -> String {
     "".to_string()
 }
 
-#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(
     rust_plugin_module = "fiberplane::protocols::core",
     rust_wasmer_runtime_module = "fiberplane::protocols::core"
