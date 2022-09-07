@@ -1,4 +1,6 @@
 use fiberplane::protocols::core::{DividerCell, TextCell};
+use fiberplane::protocols::formatting::Mention;
+use time::OffsetDateTime;
 
 use super::*;
 
@@ -87,6 +89,39 @@ fn format_unclosed() {
     }];
     let actual = format_content(content, Some(formatting));
     assert_eq!(actual, "['some normal, ', fmt.bold(['some bold'])]");
+}
+
+#[test]
+fn format_mention() {
+    let content = "hi @Bob Bobsen mention";
+    let formatting = vec![AnnotationWithOffset {
+        annotation: Annotation::Mention(Mention {
+            name: "Bob Bobsen".to_string(),
+            user_id: "1234".to_string(),
+        }),
+        offset: 3,
+    }];
+    let actual = format_content(content, Some(formatting));
+    assert_eq!(
+        actual,
+        "['hi ', fmt.mention('Bob Bobsen', '1234'), ' mention']"
+    );
+}
+
+#[test]
+fn format_timestamp() {
+    let content = "hi 2020-01-01T00:00:00Z timestamp";
+    let formatting = vec![AnnotationWithOffset {
+        annotation: Annotation::Timestamp {
+            timestamp: OffsetDateTime::parse("2020-01-01T00:00:00Z", &Rfc3339).unwrap(),
+        },
+        offset: 3,
+    }];
+    let actual = format_content(content, Some(formatting));
+    assert_eq!(
+        actual,
+        "['hi ', fmt.timestamp('2020-01-01T00:00:00Z'), ' timestamp']"
+    );
 }
 
 #[test]

@@ -1,5 +1,6 @@
 use fp_bindgen::prelude::Serializable;
 use serde::{Deserialize, Serialize};
+use time::OffsetDateTime;
 
 /// Formatting to be applied in order to turn plain-text into rich-text.
 ///
@@ -61,6 +62,10 @@ pub enum Annotation {
     },
     EndLink,
     Mention(Mention),
+    Timestamp {
+        #[serde(with = "time::serde::rfc3339")]
+        timestamp: OffsetDateTime,
+    },
     StartStrikethrough,
     EndStrikethrough,
     StartUnderline,
@@ -86,6 +91,7 @@ impl Annotation {
             Annotation::StartLink { .. } => Some(Annotation::EndLink),
             Annotation::EndLink => None,
             Annotation::Mention(_) => None,
+            Annotation::Timestamp { .. } => None,
             Annotation::StartStrikethrough => Some(Annotation::EndStrikethrough),
             Annotation::EndStrikethrough => Some(Annotation::StartStrikethrough),
             Annotation::StartUnderline => Some(Annotation::EndUnderline),
@@ -183,6 +189,7 @@ impl ActiveFormatting {
             Annotation::StartLink { .. } => self.link.is_some(),
             Annotation::EndLink => self.link.is_none(),
             Annotation::Mention(_) => false,
+            Annotation::Timestamp { .. } => false,
             Annotation::StartStrikethrough => self.strikethrough,
             Annotation::EndStrikethrough => !self.strikethrough,
             Annotation::StartUnderline => self.underline,

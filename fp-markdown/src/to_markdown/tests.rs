@@ -1,6 +1,8 @@
 use super::*;
 use fiberplane::protocols::core::*;
+use fiberplane::protocols::formatting::Annotation::Timestamp;
 use fiberplane::protocols::formatting::{Annotation, AnnotationWithOffset, Mention};
+use time::OffsetDateTime;
 
 #[test]
 fn title() {
@@ -91,6 +93,24 @@ fn mentions() {
         )]),
     );
     assert_eq!(converter.into_markdown(), "Some **@mention**");
+}
+
+#[test]
+fn timestamps() {
+    let mut converter = NotebookConverter::new();
+    converter.convert_formatted_text(
+        "Some 2020-01-01T00:00:00Z timestamp".to_string(),
+        Some(vec![AnnotationWithOffset::new(
+            5,
+            Timestamp {
+                timestamp: OffsetDateTime::parse("2020-01-01T00:00:00Z", &Rfc3339).unwrap(),
+            },
+        )]),
+    );
+    assert_eq!(
+        converter.into_markdown(),
+        "Some **2020-01-01T00:00:00Z** timestamp"
+    );
 }
 
 #[test]

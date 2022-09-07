@@ -164,6 +164,36 @@ local formattedContent(content='') =
      * @returns {format.FormattedContent}
      */
     link(content, url):: addContentAndFormatting(self, content, 'link', url=validate.string('url', url)),
+    /**
+     * Add a mention
+     *
+     * @function format.FormattedContent#mention
+     * @param {string} userName - The username to mention
+     * @param {string} userId - The ID of the user to mention
+     * @returns {format.FormattedContent}
+     */
+    mention(userName, userId):: self {
+      content+: '@' + userId,
+      formatting+: [{
+        type: 'mention',
+        name: userName,
+        userId: userId
+      }],
+    },
+    /**
+     * Add a timestamp
+     *
+     * @function format.FormattedContent#timestamp
+     * @param {string} timestamp - The RFC3339-formatted timestamp to add
+     * @returns {format.FormattedContent}
+     */
+    timestamp(timestamp):: self {
+      content+: timestamp,
+      formatting+: [{
+        type: 'timestamp',
+        timestamp: timestamp,
+      }],
+    },
   };
   addContent(fc, content);
 

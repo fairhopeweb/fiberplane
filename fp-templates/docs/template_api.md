@@ -537,6 +537,8 @@ fp.cell.text(fp.format.raw('hello ').bold('world ').italics('!'))
         * [.strikethrough(content)](#format.FormattedContent+strikethrough) ⇒ [<code>FormattedContent</code>](#format.FormattedContent)
         * [.underline(content)](#format.FormattedContent+underline) ⇒ [<code>FormattedContent</code>](#format.FormattedContent)
         * [.link(content, url)](#format.FormattedContent+link) ⇒ [<code>FormattedContent</code>](#format.FormattedContent)
+        * [.mention(userName, userId)](#format.FormattedContent+mention) ⇒ [<code>FormattedContent</code>](#format.FormattedContent)
+        * [.timestamp(timestamp)](#format.FormattedContent+timestamp) ⇒ [<code>FormattedContent</code>](#format.FormattedContent)
     * [.raw(content)](#format.raw) ⇒ [<code>FormattedContent</code>](#format.FormattedContent)
     * [.bold(content)](#format.bold) ⇒ [<code>FormattedContent</code>](#format.FormattedContent)
     * [.code(content)](#format.code) ⇒ [<code>FormattedContent</code>](#format.FormattedContent)
@@ -562,6 +564,8 @@ fp.cell.text(fp.format.raw('hello ').bold('world ').italics('!'))
     * [.strikethrough(content)](#format.FormattedContent+strikethrough) ⇒ [<code>FormattedContent</code>](#format.FormattedContent)
     * [.underline(content)](#format.FormattedContent+underline) ⇒ [<code>FormattedContent</code>](#format.FormattedContent)
     * [.link(content, url)](#format.FormattedContent+link) ⇒ [<code>FormattedContent</code>](#format.FormattedContent)
+    * [.mention(userName, userId)](#format.FormattedContent+mention) ⇒ [<code>FormattedContent</code>](#format.FormattedContent)
+    * [.timestamp(timestamp)](#format.FormattedContent+timestamp) ⇒ [<code>FormattedContent</code>](#format.FormattedContent)
 
 <a name="format.FormattedContent+raw"></a>
 
@@ -652,6 +656,29 @@ Note that if this is added inside a formatting helper, the outer formatting will
 | --- | --- | --- |
 | content | <code>string</code> \| [<code>FormattedContent</code>](#format.FormattedContent) \| <code>Array.&lt;(string\|format.FormattedContent)&gt;</code> | <p>The content to add</p> |
 | url | <code>string</code> | <p>The URL of the link</p> |
+
+<a name="format.FormattedContent+mention"></a>
+
+#### formattedContent.mention(userName, userId) ⇒ [<code>FormattedContent</code>](#format.FormattedContent)
+<p>Add a mention</p>
+
+**Kind**: instance method of [<code>FormattedContent</code>](#format.FormattedContent)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| userName | <code>string</code> | <p>The username to mention</p> |
+| userId | <code>string</code> | <p>The ID of the user to mention</p> |
+
+<a name="format.FormattedContent+timestamp"></a>
+
+#### formattedContent.timestamp(timestamp) ⇒ [<code>FormattedContent</code>](#format.FormattedContent)
+<p>Add a timestamp</p>
+
+**Kind**: instance method of [<code>FormattedContent</code>](#format.FormattedContent)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| timestamp | <code>string</code> | <p>The RFC3339-formatted timestamp to add</p> |
 
 <a name="format.raw"></a>
 

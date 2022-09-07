@@ -8,6 +8,7 @@ use fiberplane::protocols::{
 use lazy_static::lazy_static;
 use regex::Regex;
 use std::collections::BTreeSet;
+use time::format_description::well_known::Rfc3339;
 
 mod code_writer;
 mod escape_string;
@@ -277,7 +278,21 @@ fn format_content(content: &str, formatting: Option<Formatting>) -> String {
                         finish_enclosure(&mut output, "]), ");
                         end_annotations += 1;
                     }
-                    Annotation::Mention(mention) => output.push_str(&format!("@{}", mention.name)),
+                    Annotation::Mention(mention) => {
+                        output.push_str(&format!(
+                            "fmt.mention('{}', '{}'), ",
+                            mention.name, mention.user_id
+                        ));
+                        // Adding + 1 to the mention length to account for the @ sign
+                        index += mention.name.len() + 1;
+                    }
+                    Annotation::Timestamp { timestamp } => {
+                        let formatted = timestamp
+                            .format(&Rfc3339)
+                            .expect("Invalid timestamp format");
+                        output.push_str(&format!("fmt.timestamp('{}'), ", formatted));
+                        index += formatted.len();
+                    }
                 }
             }
             // If the content ends with plain text, make sure to add it to the output

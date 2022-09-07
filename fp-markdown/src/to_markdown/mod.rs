@@ -4,6 +4,7 @@ use pulldown_cmark::Event::{self, *};
 use pulldown_cmark::{CodeBlockKind, CowStr, HeadingLevel, LinkType, Tag};
 use pulldown_cmark_to_cmark::{cmark_with_options, Options};
 use std::cmp::Ordering;
+use time::format_description::well_known::Rfc3339;
 use tracing::warn;
 
 #[cfg(test)]
@@ -260,6 +261,17 @@ impl<'a> NotebookConverter<'a> {
                     let mention_length = mention.name.chars().count() + 1;
                     current_offset += mention_length;
                     self.text(content.take(mention_length).collect::<String>());
+                    self.events.push(End(Tag::Strong));
+                }
+                // Timestamps are turned into bold text and formatted as RFC-3339
+                Annotation::Timestamp { timestamp } => {
+                    self.events.push(Start(Tag::Strong));
+                    let formatted = timestamp
+                        .format(&Rfc3339)
+                        .expect("Could not format timestamp as RFC-3339");
+                    let length = formatted.chars().count();
+                    current_offset += length;
+                    self.text(content.take(length).collect::<String>());
                     self.events.push(End(Tag::Strong));
                 }
                 // Code is unusual because we need to include the content in the event

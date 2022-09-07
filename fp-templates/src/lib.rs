@@ -1,3 +1,4 @@
+#[cfg(feature = "convert")]
 mod convert;
 #[cfg(feature = "examples")]
 pub mod examples;

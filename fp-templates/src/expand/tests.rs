@@ -3,10 +3,13 @@ use fiberplane::protocols::core::{
     Cell, DataSource, InlineDataSource, Label, ListItemCell, ListType, NotebookDataSource,
     PrometheusDataSource, TextCell,
 };
-use fiberplane::protocols::formatting::{Annotation, AnnotationWithOffset};
+use fiberplane::protocols::formatting::Annotation::Timestamp;
+use fiberplane::protocols::formatting::{Annotation, AnnotationWithOffset, Mention};
 use serde_json::{json, Map};
 use std::collections::HashMap;
 use std::iter::FromIterator;
+use time::format_description::well_known::Rfc3339;
+use time::OffsetDateTime;
 
 #[test]
 fn expands_without_top_level_function() {
@@ -380,6 +383,8 @@ fn formatting_basic() {
             fp.cell.text(fmt.link('Fiberplane', 'https://fiberplane.com')),
             fp.cell.text(fmt.strikethrough('some strikethrough text')),
             fp.cell.text(fmt.underline('some underlined text')),
+            fp.cell.text(fmt.mention('Bob Bobsen', 'Bob')),
+            fp.cell.text(fmt.timestamp('2020-01-01T00:00:00Z')),
         ])";
     let notebook = expand_template(template, EMPTY_ARGS).unwrap();
     let cells: Vec<TextCell> = notebook
@@ -393,7 +398,7 @@ fn formatting_basic() {
             }
         })
         .collect();
-    assert_eq!(cells.len(), 7);
+    assert_eq!(cells.len(), 9);
 
     assert_eq!(cells[0].content, "some bold text");
     assert_eq!(
@@ -494,6 +499,29 @@ fn formatting_basic() {
                 offset: 20,
             },
         ]
+    );
+
+    assert_eq!(cells[7].content, "@Bob");
+    assert_eq!(
+        cells[7].formatting.as_ref().unwrap(),
+        &[AnnotationWithOffset {
+            annotation: Annotation::Mention(Mention {
+                name: "Bob Bobsen".to_owned(),
+                user_id: "Bob".to_owned(),
+            }),
+            offset: 0,
+        }]
+    );
+
+    assert_eq!(cells[8].content, "2020-01-01T00:00:00Z");
+    assert_eq!(
+        cells[8].formatting.as_ref().unwrap(),
+        &[AnnotationWithOffset {
+            annotation: Timestamp {
+                timestamp: OffsetDateTime::parse("2020-01-01T00:00:00Z", &Rfc3339).unwrap()
+            },
+            offset: 0,
+        }]
     );
 }
 
