@@ -3,7 +3,7 @@ name: Check Jsonnet
 on:
   push:
     branches: [ '*' ]
-    paths: [ 'templates/**/*.libsonnet' ]
+    paths: [ '**/*.libsonnet' ]
 
 jobs:
   verify:
