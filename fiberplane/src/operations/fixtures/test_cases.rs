@@ -1380,18 +1380,14 @@ fn create_update_cell_test_cases(test_cases: &mut Vec<OperationTestCase>) {
 
     let updated_cell5: Cell = Cell::Log(LogCell {
         id: "c11".to_owned(),
-        formatting: None,
         title: "Logs".to_owned(),
         source_ids: vec!["c10".to_owned()],
-        data: None,
         read_only: Some(true),
         time_range: Some(TimeRange {
             from: 50.0,
             to: 150.0,
         }),
-        display_fields: None,
-        hide_similar_values: None,
-        expanded_indices: None,
+        ..Default::default()
     });
 
     test_cases.push(OperationTestCase {

@@ -163,18 +163,13 @@ pub static TEST_NOTEBOOK: Lazy<Notebook> = Lazy::new(|| {
         }),
         Cell::Log(LogCell {
             id: "c11".to_owned(),
-            formatting: None,
             title: "Logs".to_owned(),
             source_ids: vec!["c10".to_owned()],
-            data: None,
-            read_only: None,
-            display_fields: None,
-            hide_similar_values: None,
-            expanded_indices: None,
             time_range: Some(TimeRange {
                 from: 50.0,
                 to: 150.0,
             }),
+            ..Default::default()
         }),
         Cell::Text(TextCell {
             id: "c12".to_owned(),

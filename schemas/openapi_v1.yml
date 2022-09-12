@@ -407,14 +407,26 @@ components:
         expandedIndices:
           type: array
           items:
-            $ref: "#/components/schemas/expandedIndex"
+            $ref: "#/components/schemas/logRecordIndex"
+        visibilityFilter:
+          type:
+            $ref: "#/components/schemas/logCellVisibility"
+
+        selected_indices:
+          type: array
+          items:
+            $ref: "#/components/schemas/logRecordIndex"
+        highlighted_indices:
+          type: array
+          items:
+            $ref: "#/components/schemas/logRecordIndex"
         data:
           type: object
           additionalProperties:
             type: array
             items:
               $ref: "#/components/schemas/logRecord"
-    expandedIndex:
+    logRecordIndex:
       type: object
       required:
         - key
@@ -575,6 +587,12 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/label"
+    logCellVisibility:
+      type: string
+      enum:
+        - all
+        - selected
+        - highlighted
     notebookVisibility:
       type: string
       enum:

@@ -12,7 +12,6 @@ pub use fiberplane::protocols::core::DiscussionCell;
 pub use fiberplane::protocols::core::DividerCell;
 pub use fiberplane::protocols::core::ElasticsearchCell;
 pub use fiberplane::protocols::blobs::EncodedBlob;
-pub use fiberplane::protocols::core::ExpandedIndex;
 pub use fiberplane::protocols::core::GraphCell;
 pub use fiberplane::protocols::core::GraphType;
 pub use fiberplane::protocols::core::HeadingCell;
@@ -23,6 +22,8 @@ pub use fiberplane::protocols::core::ListItemCell;
 pub use fiberplane::protocols::core::ListType;
 pub use fiberplane::protocols::core::LogCell;
 pub use fiberplane::protocols::core::LogRecord;
+pub use fiberplane::protocols::core::LogRecordIndex;
+pub use fiberplane::protocols::core::LogVisibilityFilter;
 pub use fiberplane::protocols::core::LokiCell;
 pub use fiberplane::protocols::formatting::Mention;
 pub use fiberplane::protocols::core::Metric;
@@ -33,6 +34,7 @@ pub use fiberplane::protocols::core::Series;
 pub use fiberplane::protocols::core::StackingType;
 pub use fiberplane::protocols::core::TableCell;
 pub use fiberplane::protocols::core::TextCell;
+pub use fiberplane::protocols::core::TimeRange;
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -474,15 +476,6 @@ pub struct TextField {
     /// Whether the provider implements syntax highlighting for this field.
     /// See `highlight_field()` in the protocol definition.
     pub supports_highlighting: bool,
-}
-
-/// A range in time from a given timestamp (inclusive) up to another timestamp
-/// (exclusive).
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct TimeRange {
-    pub from: Timestamp,
-    pub to: Timestamp,
 }
 
 pub type Timestamp = f64;

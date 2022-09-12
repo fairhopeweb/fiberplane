@@ -499,6 +499,9 @@ impl Cell {
                 source_ids: cell.source_ids.clone(),
                 display_fields: cell.display_fields.clone(),
                 expanded_indices: cell.expanded_indices.clone(),
+                selected_indices: cell.selected_indices.clone(),
+                highlighted_indices: cell.highlighted_indices.clone(),
+                visibility_filter: cell.visibility_filter.clone(),
                 ..*cell
             }),
             Cell::Provider(cell) => Cell::Provider(ProviderCell {
@@ -563,6 +566,9 @@ impl Cell {
                 title: text.to_owned(),
                 display_fields: cell.display_fields.clone(),
                 expanded_indices: cell.expanded_indices.clone(),
+                selected_indices: cell.selected_indices.clone(),
+                highlighted_indices: cell.highlighted_indices.clone(),
+                visibility_filter: cell.visibility_filter.clone(),
                 ..*cell
             }),
             Cell::Heading(cell) => Cell::Heading(HeadingCell {
@@ -798,7 +804,7 @@ pub struct HeadingCell {
     pub read_only: Option<bool>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(
     rust_plugin_module = "fiberplane::protocols::core",
     rust_wasmer_runtime_module = "fiberplane::protocols::core"
@@ -827,7 +833,28 @@ pub struct LogCell {
     pub hide_similar_values: Option<bool>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub expanded_indices: Option<Vec<ExpandedIndex>>,
+    pub expanded_indices: Option<Vec<LogRecordIndex>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub visibility_filter: Option<LogVisibilityFilter>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub selected_indices: Option<Vec<LogRecordIndex>>,
+
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub highlighted_indices: Option<Vec<LogRecordIndex>>,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
+#[serde(rename_all = "snake_case")]
+pub enum LogVisibilityFilter {
+    All,
+    Selected,
+    Highlighted,
 }
 
 /// A single expanded row of log records, as identified by [key] and [index]
@@ -838,7 +865,7 @@ pub struct LogCell {
     rust_wasmer_runtime_module = "fiberplane::protocols::core"
 )]
 #[serde(rename_all = "camelCase")]
-pub struct ExpandedIndex {
+pub struct LogRecordIndex {
     pub key: String,
     pub index: i32,
 }

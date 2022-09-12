@@ -151,7 +151,16 @@ pub enum Cell {
         #[serde(rename = "displayFields", skip_serializing_if = "Option::is_none")]
         display_fields: Option<Vec<String>>,
         #[serde(rename = "expandedIndices", skip_serializing_if = "Option::is_none")]
-        expanded_indices: Option<Vec<crate::models::ExpandedIndex>>,
+        expanded_indices: Option<Vec<crate::models::LogRecordIndex>>,
+        #[serde(rename = "visibilityFilter", skip_serializing_if = "Option::is_none")]
+        visibility_filter: Option<serde_json::Value>,
+        #[serde(rename = "selected_indices", skip_serializing_if = "Option::is_none")]
+        selected_indices: Option<Vec<crate::models::LogRecordIndex>>,
+        #[serde(
+            rename = "highlighted_indices",
+            skip_serializing_if = "Option::is_none"
+        )]
+        highlighted_indices: Option<Vec<crate::models::LogRecordIndex>>,
         #[serde(rename = "data", skip_serializing_if = "Option::is_none")]
         data: Option<::std::collections::HashMap<String, Vec<crate::models::LogRecord>>>,
     },

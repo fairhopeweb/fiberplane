@@ -21,7 +21,7 @@ export type Annotation =
     | { type: "start_link"; url: string }
     | { type: "end_link" }
     | { type: "mention" } & Mention
-    | { type: "timestamp"; timestamp: Timestamp }
+    | { type: "timestamp"; timestamp: string }
     | { type: "start_strikethrough" }
     | { type: "end_strikethrough" }
     | { type: "start_underline" }
@@ -266,15 +266,6 @@ export type Error =
     | { type: "other"; message: string };
 
 /**
- * A single expanded row of log records, as identified by [key] and [index]
- * pointing into the source data of the LogCell.
- */
-export type ExpandedIndex = {
-    key: string;
-    index: number;
-};
-
-/**
  * Defines a field that allows files to be uploaded as part of the query data.
  *
  * Note that query data that includes files will be encoded as
@@ -516,7 +507,10 @@ export type LogCell = {
     timeRange?: TimeRange;
     displayFields?: Array<string>;
     hideSimilarValues?: boolean;
-    expandedIndices?: Array<ExpandedIndex>;
+    expandedIndices?: Array<LogRecordIndex>;
+    visibilityFilter?: LogVisibilityFilter;
+    selectedIndices?: Array<LogRecordIndex>;
+    highlightedIndices?: Array<LogRecordIndex>;
 };
 
 export type LogRecord = {
@@ -527,6 +521,20 @@ export type LogRecord = {
     traceId?: string;
     spanId?: string;
 };
+
+/**
+ * A single expanded row of log records, as identified by [key] and [index]
+ * pointing into the source data of the LogCell.
+ */
+export type LogRecordIndex = {
+    key: string;
+    index: number;
+};
+
+export type LogVisibilityFilter =
+    | "all"
+    | "selected"
+    | "highlighted";
 
 export type LokiCell = {
     id: string;
@@ -913,8 +921,7 @@ export type TextField = {
 };
 
 /**
- * A range in time from a given timestamp (inclusive) up to another timestamp
- * (exclusive).
+ * A range in time from a given timestamp (inclusive) up to another timestamp (exclusive).
  */
 export type TimeRange = {
     from: Timestamp;

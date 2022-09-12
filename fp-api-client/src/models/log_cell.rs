@@ -29,7 +29,16 @@ pub struct LogCell {
     #[serde(rename = "displayFields", skip_serializing_if = "Option::is_none")]
     pub display_fields: Option<Vec<String>>,
     #[serde(rename = "expandedIndices", skip_serializing_if = "Option::is_none")]
-    pub expanded_indices: Option<Vec<crate::models::ExpandedIndex>>,
+    pub expanded_indices: Option<Vec<crate::models::LogRecordIndex>>,
+    #[serde(rename = "visibilityFilter", skip_serializing_if = "Option::is_none")]
+    pub visibility_filter: Option<serde_json::Value>,
+    #[serde(rename = "selected_indices", skip_serializing_if = "Option::is_none")]
+    pub selected_indices: Option<Vec<crate::models::LogRecordIndex>>,
+    #[serde(
+        rename = "highlighted_indices",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub highlighted_indices: Option<Vec<crate::models::LogRecordIndex>>,
     #[serde(rename = "data", skip_serializing_if = "Option::is_none")]
     pub data: Option<::std::collections::HashMap<String, Vec<crate::models::LogRecord>>>,
 }
@@ -52,6 +61,9 @@ impl LogCell {
             hide_similar_values: None,
             display_fields: None,
             expanded_indices: None,
+            visibility_filter: None,
+            selected_indices: None,
+            highlighted_indices: None,
             data: None,
         }
     }

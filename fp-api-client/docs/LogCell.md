@@ -13,7 +13,10 @@ Name | Type | Description | Notes
 **time_range** | Option<[**crate::models::TimeRange**](timeRange.md)> |  | [optional]
 **hide_similar_values** | Option<**bool**> |  | [optional]
 **display_fields** | Option<**Vec<String>**> |  | [optional]
-**expanded_indices** | Option<[**Vec<crate::models::ExpandedIndex>**](expandedIndex.md)> |  | [optional]
+**expanded_indices** | Option<[**Vec<crate::models::LogRecordIndex>**](logRecordIndex.md)> |  | [optional]
+**visibility_filter** | Option<[**serde_json::Value**](.md)> |  | [optional]
+**selected_indices** | Option<[**Vec<crate::models::LogRecordIndex>**](logRecordIndex.md)> |  | [optional]
+**highlighted_indices** | Option<[**Vec<crate::models::LogRecordIndex>**](logRecordIndex.md)> |  | [optional]
 **data** | Option<[**::std::collections::HashMap<String, Vec<crate::models::LogRecord>>**](array.md)> |  | [optional]
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

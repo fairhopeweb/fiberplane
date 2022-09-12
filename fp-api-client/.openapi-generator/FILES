@@ -36,7 +36,6 @@ docs/EndLinkAnnotation.md
 docs/EndStrikethroughAnnotation.md
 docs/EndUnderlineAnnotation.md
 docs/Event.md
-docs/ExpandedIndex.md
 docs/FileSummary.md
 docs/GraphCell.md
 docs/HeadingCell.md
@@ -47,7 +46,9 @@ docs/InstantQuery.md
 docs/Label.md
 docs/ListItemCell.md
 docs/LogCell.md
+docs/LogCellVisibility.md
 docs/LogRecord.md
+docs/LogRecordIndex.md
 docs/LokiCell.md
 docs/LokiDataSource.md
 docs/MentionAnnotation.md
@@ -152,7 +153,6 @@ src/models/end_link_annotation.rs
 src/models/end_strikethrough_annotation.rs
 src/models/end_underline_annotation.rs
 src/models/event.rs
-src/models/expanded_index.rs
 src/models/file_summary.rs
 src/models/graph_cell.rs
 src/models/heading_cell.rs
@@ -163,7 +163,9 @@ src/models/instant_query.rs
 src/models/label.rs
 src/models/list_item_cell.rs
 src/models/log_cell.rs
+src/models/log_cell_visibility.rs
 src/models/log_record.rs
+src/models/log_record_index.rs
 src/models/loki_cell.rs
 src/models/loki_data_source.rs
 src/models/mention_annotation.rs

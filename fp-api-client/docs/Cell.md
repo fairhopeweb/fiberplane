@@ -30,7 +30,10 @@ Name | Type | Description | Notes
 **start_number** | Option<**i32**> |  | [optional]
 **hide_similar_values** | Option<**bool**> |  | [optional]
 **display_fields** | Option<**Vec<String>**> |  | [optional]
-**expanded_indices** | Option<[**Vec<crate::models::ExpandedIndex>**](expandedIndex.md)> |  | [optional]
+**expanded_indices** | Option<[**Vec<crate::models::LogRecordIndex>**](logRecordIndex.md)> |  | [optional]
+**visibility_filter** | Option<[**serde_json::Value**](.md)> |  | [optional]
+**selected_indices** | Option<[**Vec<crate::models::LogRecordIndex>**](logRecordIndex.md)> |  | [optional]
+**highlighted_indices** | Option<[**Vec<crate::models::LogRecordIndex>**](logRecordIndex.md)> |  | [optional]
 **intent** | **String** |  | 
 **query_data** | Option<**String**> |  | [optional]
 **response** | Option<[**crate::models::EncodedBlob**](encodedBlob.md)> |  | [optional]
