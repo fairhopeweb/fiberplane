@@ -20,6 +20,7 @@ impl Serializable for Base64Uuid {
                     path: None,
                     version: None,
                     features: Default::default(),
+                    default_features: None,
                 },
             )]),
             serde_attrs: Default::default(),
