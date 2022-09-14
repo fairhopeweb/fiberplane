@@ -2,6 +2,8 @@
 
 SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 
+rm -r "$SCRIPT_DIR/../fp-api-client"
+
 docker run --rm \
     -v "$(dirname $SCRIPT_DIR):/local" \
     -u "$(id -u ${USER}):$(id -g ${USER})" \

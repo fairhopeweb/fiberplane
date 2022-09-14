@@ -31,7 +31,7 @@ pub struct LogCell {
     #[serde(rename = "expandedIndices", skip_serializing_if = "Option::is_none")]
     pub expanded_indices: Option<Vec<crate::models::LogRecordIndex>>,
     #[serde(rename = "visibilityFilter", skip_serializing_if = "Option::is_none")]
-    pub visibility_filter: Option<serde_json::Value>,
+    pub visibility_filter: Option<crate::models::LogCellVisibility>,
     #[serde(rename = "selected_indices", skip_serializing_if = "Option::is_none")]
     pub selected_indices: Option<Vec<crate::models::LogRecordIndex>>,
     #[serde(

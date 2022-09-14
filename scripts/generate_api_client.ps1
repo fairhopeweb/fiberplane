@@ -3,6 +3,9 @@
 $start_dir = Get-Location;
 $script_path = ($PSScriptRoot);
 $root_dir = (Get-Item $script_path ).parent.FullName;
+$api_client_dir = Join-Path $root_dir "fp-api-client";
+
+Remove-Item $api_client_dir -Recurse
 
 docker run --rm `
     -v "${root_dir}:/local" `
@@ -14,7 +17,6 @@ docker run --rm `
             -o /local/fp-api-client `
             --skip-validate-spec
 
-$api_client_dir = Join-Path $root_dir "fp-api-client";
 Set-Location $api_client_dir
 cargo fmt
 

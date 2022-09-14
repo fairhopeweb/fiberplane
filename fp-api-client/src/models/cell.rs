@@ -153,7 +153,7 @@ pub enum Cell {
         #[serde(rename = "expandedIndices", skip_serializing_if = "Option::is_none")]
         expanded_indices: Option<Vec<crate::models::LogRecordIndex>>,
         #[serde(rename = "visibilityFilter", skip_serializing_if = "Option::is_none")]
-        visibility_filter: Option<serde_json::Value>,
+        visibility_filter: Option<crate::models::LogCellVisibility>,
         #[serde(rename = "selected_indices", skip_serializing_if = "Option::is_none")]
         selected_indices: Option<Vec<crate::models::LogRecordIndex>>,
         #[serde(

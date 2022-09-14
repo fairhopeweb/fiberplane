@@ -409,9 +409,7 @@ components:
           items:
             $ref: "#/components/schemas/logRecordIndex"
         visibilityFilter:
-          type:
-            $ref: "#/components/schemas/logCellVisibility"
-
+          $ref: "#/components/schemas/logCellVisibility"
         selected_indices:
           type: array
           items:
@@ -1128,36 +1126,6 @@ components:
       enum:
         - connected
         - error
-    queryType:
-      oneOf:
-        - $ref: "#/components/schemas/seriesQuery"
-        - $ref: "#/components/schemas/instantQuery"
-      discriminator:
-        propertyName: type
-        mapping:
-          series: "#/components/schemas/seriesQuery"
-          instant: "#/components/schemas/instantQuery"
-    seriesQuery:
-      type: object
-      required:
-        - type
-        - timeRange
-      properties:
-        type:
-          type: string
-        timeRange:
-          $ref: "#/components/schemas/timeRange"
-    instantQuery:
-      type: object
-      required:
-        - type
-        - time
-      properties:
-        type:
-          type: string
-        time:
-          type: number
-          format: double
     dataSourceSummary:
       type: object
       required:

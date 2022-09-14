@@ -1,4 +1,5 @@
 .gitignore
+.openapi-generator-ignore
 .travis.yml
 Cargo.toml
 README.md
@@ -42,7 +43,6 @@ docs/HeadingCell.md
 docs/ImageCell.md
 docs/InlineDataSource.md
 docs/Instant.md
-docs/InstantQuery.md
 docs/Label.md
 docs/ListItemCell.md
 docs/LogCell.md
@@ -80,10 +80,8 @@ docs/Proxy.md
 docs/ProxyConnectionStatus.md
 docs/ProxyDataSource.md
 docs/ProxySummary.md
-docs/QueryType.md
 docs/SentryDataSource.md
 docs/Series.md
-docs/SeriesQuery.md
 docs/StartBoldAnnotation.md
 docs/StartCodeAnnotation.md
 docs/StartHighlightAnnotation.md
@@ -159,7 +157,6 @@ src/models/heading_cell.rs
 src/models/image_cell.rs
 src/models/inline_data_source.rs
 src/models/instant.rs
-src/models/instant_query.rs
 src/models/label.rs
 src/models/list_item_cell.rs
 src/models/log_cell.rs
@@ -198,10 +195,8 @@ src/models/proxy.rs
 src/models/proxy_connection_status.rs
 src/models/proxy_data_source.rs
 src/models/proxy_summary.rs
-src/models/query_type.rs
 src/models/sentry_data_source.rs
 src/models/series.rs
-src/models/series_query.rs
 src/models/start_bold_annotation.rs
 src/models/start_code_annotation.rs
 src/models/start_highlight_annotation.rs

@@ -14,7 +14,7 @@ Name | Type | Description | Notes
 **hide_similar_values** | Option<**bool**> |  | [optional]
 **display_fields** | Option<**Vec<String>**> |  | [optional]
 **expanded_indices** | Option<[**Vec<crate::models::LogRecordIndex>**](logRecordIndex.md)> |  | [optional]
-**visibility_filter** | Option<[**serde_json::Value**](.md)> |  | [optional]
+**visibility_filter** | Option<[**crate::models::LogCellVisibility**](logCellVisibility.md)> |  | [optional]
 **selected_indices** | Option<[**Vec<crate::models::LogRecordIndex>**](logRecordIndex.md)> |  | [optional]
 **highlighted_indices** | Option<[**Vec<crate::models::LogRecordIndex>**](logRecordIndex.md)> |  | [optional]
 **data** | Option<[**::std::collections::HashMap<String, Vec<crate::models::LogRecord>>**](array.md)> |  | [optional]
