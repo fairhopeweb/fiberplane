@@ -177,7 +177,7 @@ local formattedContent(content='') =
       formatting+: [{
         type: 'mention',
         name: userName,
-        userId: userId
+        userId: userId,
       }],
     },
     /**
@@ -399,16 +399,20 @@ local notebook = {
      * @returns {notebook.Notebook}
      */
     addCell(cell)::
-      local cellId = self._nextCellId;
-      // Remove all null values and add the id field as a string
-      local cellWithId = std.prune(cell) + {
-        id: cellId + '',
-      };
-      self {
-        _nextCellId: cellId + 1,
-        // Append the cell to the cells array
-        cells+: [cellWithId],
-      },
+      if std.isObject(cell) then
+        local cellId = self._nextCellId;
+        // Remove all null values and add the id field as a string
+        local cellWithId = std.prune(cell) + {
+          id: cellId + '',
+        };
+        self {
+          _nextCellId: cellId + 1,
+          // Append the cell to the cells array
+          cells+: [cellWithId],
+        }
+      else if std.type(cell) == null then
+        self
+      else error 'Cell must be an object',
 
     /**
      * Add an array of cells to the notebook.
