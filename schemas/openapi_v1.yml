@@ -629,6 +629,7 @@ components:
         - $ref: "#/components/schemas/endStrikethroughAnnotation"
         - $ref: "#/components/schemas/startUnderlineAnnotation"
         - $ref: "#/components/schemas/endUnderlineAnnotation"
+        - $ref: "#/components/schemas/labelAnnotation"
       discriminator:
         propertyName: type
         mapping:
@@ -647,6 +648,7 @@ components:
           end_strikethrough: "#/components/schemas/endStrikethroughAnnotation"
           start_underline: "#/components/schemas/startUnderlineAnnotation"
           end_underline: "#/components/schemas/endUnderlineAnnotation"
+          label: "#/components/schemas/labelAnnotation"
     annotationType:
       type: string
       enum:
@@ -839,6 +841,22 @@ components:
         offset:
           type: integer
           format: int32
+    labelAnnotation:
+      type: object
+      required:
+        - type
+        - offset
+        - key
+      properties:
+        type:
+          $ref: "#/components/schemas/annotationType"
+        offset:
+          type: integer
+          format: int32
+        key:
+          type: "string"
+        value:
+          type: "string"
     instant:
       type: object
       required:

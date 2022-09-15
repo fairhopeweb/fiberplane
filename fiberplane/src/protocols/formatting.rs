@@ -1,3 +1,4 @@
+use crate::protocols::core::Label;
 use fp_bindgen::prelude::Serializable;
 use serde::{Deserialize, Serialize};
 use time::OffsetDateTime;
@@ -70,6 +71,7 @@ pub enum Annotation {
     EndStrikethrough,
     StartUnderline,
     EndUnderline,
+    Label(Label),
 }
 
 impl Annotation {
@@ -96,6 +98,7 @@ impl Annotation {
             Annotation::EndStrikethrough => Some(Annotation::StartStrikethrough),
             Annotation::StartUnderline => Some(Annotation::EndUnderline),
             Annotation::EndUnderline => Some(Annotation::StartUnderline),
+            Annotation::Label(_) => None,
         }
     }
 }
@@ -116,6 +119,7 @@ pub struct ActiveFormatting {
     pub link: Option<String>,
     pub strikethrough: bool,
     pub underline: bool,
+    pub label: Option<Label>,
 }
 
 impl ActiveFormatting {
@@ -172,6 +176,11 @@ impl ActiveFormatting {
                 Annotation::EndUnderline
             });
         }
+        if self.label != reference.label {
+            if let Some(label) = self.label.as_ref() {
+                annotations.push(Annotation::Label(label.clone()))
+            }
+        }
         annotations
     }
 
@@ -194,6 +203,7 @@ impl ActiveFormatting {
             Annotation::EndStrikethrough => !self.strikethrough,
             Annotation::StartUnderline => self.underline,
             Annotation::EndUnderline => !self.underline,
+            Annotation::Label(_) => self.label.is_some(),
         }
     }
 }

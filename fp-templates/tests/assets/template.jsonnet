@@ -23,7 +23,7 @@ function(incidentName)
     },
   )
   .addCells([
-    c.text(fmt.raw("Let's ").italics('debug').raw(' this ').bold('incident!')),
+    c.text(fmt.raw("Let's ").italics('debug').raw(' this ').bold('incident!').raw(' ').label('foo', 'bar').raw(' ').label('baz')),
     c.heading.h2('TODOs:', readOnly=true),
     c.checkbox('Investigate'),
     c.code('// Some code to run

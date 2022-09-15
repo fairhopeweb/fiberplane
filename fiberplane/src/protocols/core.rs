@@ -11,7 +11,7 @@ use fp_bindgen::prelude::Serializable;
 use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, HashMap};
-use std::fmt::{self, Display};
+use std::fmt::{self, Display, Formatter};
 use std::str::FromStr;
 use thiserror::Error;
 use time::OffsetDateTime;
@@ -1532,6 +1532,16 @@ impl Label {
             if !LABEL_NAME_VALUE_RE.is_match(value) {
                 return Err(LabelValidationError::ValueInvalidCharacters);
             }
+        }
+        Ok(())
+    }
+}
+
+impl Display for Label {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        f.write_str(&self.key)?;
+        if !self.value.is_empty() {
+            f.write_str(&format!(":{}", &self.value))?;
         }
         Ok(())
     }

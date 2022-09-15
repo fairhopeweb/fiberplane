@@ -46,6 +46,15 @@ pub enum Annotation {
         #[serde(rename = "offset")]
         offset: i32,
     },
+    #[serde(rename = "label")]
+    LabelAnnotation {
+        #[serde(rename = "offset")]
+        offset: i32,
+        #[serde(rename = "key")]
+        key: String,
+        #[serde(rename = "value", skip_serializing_if = "Option::is_none")]
+        value: Option<String>,
+    },
     #[serde(rename = "mention")]
     MentionAnnotation {
         #[serde(rename = "offset")]

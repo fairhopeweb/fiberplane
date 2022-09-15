@@ -44,6 +44,7 @@ docs/ImageCell.md
 docs/InlineDataSource.md
 docs/Instant.md
 docs/Label.md
+docs/LabelAnnotation.md
 docs/ListItemCell.md
 docs/LogCell.md
 docs/LogCellVisibility.md
@@ -158,6 +159,7 @@ src/models/image_cell.rs
 src/models/inline_data_source.rs
 src/models/instant.rs
 src/models/label.rs
+src/models/label_annotation.rs
 src/models/list_item_cell.rs
 src/models/log_cell.rs
 src/models/log_cell_visibility.rs

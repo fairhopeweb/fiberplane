@@ -385,6 +385,8 @@ fn formatting_basic() {
             fp.cell.text(fmt.underline('some underlined text')),
             fp.cell.text(fmt.mention('Bob Bobsen', 'Bob')),
             fp.cell.text(fmt.timestamp('2020-01-01T00:00:00Z')),
+            fp.cell.text(fmt.label('foo', 'bar')),
+            fp.cell.text(fmt.label('foo')),
         ])";
     let notebook = expand_template(template, EMPTY_ARGS).unwrap();
     let cells: Vec<TextCell> = notebook
@@ -398,7 +400,7 @@ fn formatting_basic() {
             }
         })
         .collect();
-    assert_eq!(cells.len(), 9);
+    assert_eq!(cells.len(), 11);
 
     assert_eq!(cells[0].content, "some bold text");
     assert_eq!(
@@ -520,6 +522,30 @@ fn formatting_basic() {
             annotation: Timestamp {
                 timestamp: OffsetDateTime::parse("2020-01-01T00:00:00Z", &Rfc3339).unwrap()
             },
+            offset: 0,
+        }]
+    );
+
+    assert_eq!(cells[9].content, "foo:bar");
+    assert_eq!(
+        cells[9].formatting.as_ref().unwrap(),
+        &[AnnotationWithOffset {
+            annotation: Annotation::Label(Label {
+                key: "foo".to_owned(),
+                value: "bar".to_owned(),
+            }),
+            offset: 0,
+        }]
+    );
+
+    assert_eq!(cells[10].content, "foo");
+    assert_eq!(
+        cells[10].formatting.as_ref().unwrap(),
+        &[AnnotationWithOffset {
+            annotation: Annotation::Label(Label {
+                key: "foo".to_owned(),
+                value: "".to_owned(),
+            }),
             offset: 0,
         }]
     );

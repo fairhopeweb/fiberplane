@@ -293,6 +293,14 @@ fn format_content(content: &str, formatting: Option<Formatting>) -> String {
                         output.push_str(&format!("fmt.timestamp('{}'), ", formatted));
                         index += formatted.len();
                     }
+                    Annotation::Label(label) => {
+                        let args = match label.value.is_empty() {
+                            true => format!("'{}'", label.key.to_string()),
+                            false => format!("'{}', '{}'", label.key, label.value),
+                        };
+                        output.push_str(&format!("fmt.label({}), ", args));
+                        index += label.to_string().len();
+                    }
                 }
             }
             // If the content ends with plain text, make sure to add it to the output

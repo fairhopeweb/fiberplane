@@ -94,6 +94,17 @@ local formattedContent(content='') =
     else
       addContent(fc, content);
 
+  local addLabelContent(fc, key, value=null) =
+    fc {
+      content+: key + if std.length(value) > 0 then ':' + value else '',
+      formatting+: [{
+        type: 'label',
+        offset: std.length(fc.content),
+        key: key,
+        value: value,
+      }],
+    };
+
   local fc = {
     content: '',
     formatting: [],
@@ -194,6 +205,15 @@ local formattedContent(content='') =
         timestamp: timestamp,
       }],
     },
+    /**
+     * Add a label
+     *
+     * @function format.FormattedContent#label
+     * @param {string} key - The label's key
+     * @param {string} url - The label's value (optional)
+     * @returns {format.FormattedContent}
+     */
+    label(key, value=''):: addLabelContent(self, key, value),
   };
   addContent(fc, content);
 

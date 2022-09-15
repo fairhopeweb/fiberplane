@@ -318,6 +318,14 @@ impl<'a> NotebookConverter<'a> {
                 }
                 // These are handled in the start annotation
                 Annotation::EndCode | Annotation::EndHighlight => {}
+                // Labels are turned into bold text
+                Annotation::Label(label) => {
+                    self.events.push(Start(Tag::Strong));
+                    let label_length = label.to_string().len();
+                    current_offset += label_length;
+                    self.text(content.take(label_length).collect::<String>());
+                    self.events.push(End(Tag::Strong));
+                }
             }
         }
 

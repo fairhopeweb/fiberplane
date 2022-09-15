@@ -46,7 +46,7 @@ lazy_static! {
         cells: vec![
             Cell::Text(TextCell {
                 id: "1".to_string(),
-                content: "Let's debug this incident!".to_string(),
+                content: "Let's debug this incident! foo:bar baz".to_string(),
                 formatting: Some(vec![
                     AnnotationWithOffset {
                         annotation: Annotation::StartItalics,
@@ -63,6 +63,20 @@ lazy_static! {
                     AnnotationWithOffset {
                         annotation: Annotation::EndBold,
                         offset: 26
+                    },
+                    AnnotationWithOffset {
+                        annotation: Annotation::Label(Label {
+                            key: "foo".to_string(),
+                            value: "bar".to_string()
+                        }),
+                        offset: 27
+                    },
+                    AnnotationWithOffset {
+                        annotation: Annotation::Label(Label {
+                            key: "baz".to_string(),
+                            value: "".to_string()
+                        }),
+                        offset: 35
                     }
                 ]),
                 ..Default::default()

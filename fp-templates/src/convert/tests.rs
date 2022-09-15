@@ -1,4 +1,4 @@
-use fiberplane::protocols::core::{DividerCell, TextCell};
+use fiberplane::protocols::core::{DividerCell, Label, TextCell};
 use fiberplane::protocols::formatting::Mention;
 use time::OffsetDateTime;
 
@@ -122,6 +122,20 @@ fn format_timestamp() {
         actual,
         "['hi ', fmt.timestamp('2020-01-01T00:00:00Z'), ' timestamp']"
     );
+}
+
+#[test]
+fn format_label() {
+    let content = "hi foo:bar label";
+    let formatting = vec![AnnotationWithOffset {
+        annotation: Annotation::Label(Label {
+            key: "foo".to_string(),
+            value: "bar".to_string(),
+        }),
+        offset: 3,
+    }];
+    let actual = format_content(content, Some(formatting));
+    assert_eq!(actual, "['hi ', fmt.label('foo', 'bar'), ' label']");
 }
 
 #[test]

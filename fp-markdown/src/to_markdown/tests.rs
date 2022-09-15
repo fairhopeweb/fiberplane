@@ -114,6 +114,22 @@ fn timestamps() {
 }
 
 #[test]
+fn labels() {
+    let mut converter = NotebookConverter::new();
+    converter.convert_formatted_text(
+        "Some foo:bar".to_string(),
+        Some(vec![AnnotationWithOffset::new(
+            5,
+            Annotation::Label(Label {
+                key: "foo".to_string(),
+                value: "bar".to_string(),
+            }),
+        )]),
+    );
+    assert_eq!(converter.into_markdown(), "Some **foo:bar**");
+}
+
+#[test]
 fn links() {
     let mut converter = NotebookConverter::new();
     converter.convert_formatted_text(

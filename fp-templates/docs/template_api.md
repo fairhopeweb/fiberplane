@@ -539,6 +539,7 @@ fp.cell.text(fp.format.raw('hello ').bold('world ').italics('!'))
         * [.link(content, url)](#format.FormattedContent+link) ⇒ [<code>FormattedContent</code>](#format.FormattedContent)
         * [.mention(userName, userId)](#format.FormattedContent+mention) ⇒ [<code>FormattedContent</code>](#format.FormattedContent)
         * [.timestamp(timestamp)](#format.FormattedContent+timestamp) ⇒ [<code>FormattedContent</code>](#format.FormattedContent)
+        * [.label(key, url)](#format.FormattedContent+label) ⇒ [<code>FormattedContent</code>](#format.FormattedContent)
     * [.raw(content)](#format.raw) ⇒ [<code>FormattedContent</code>](#format.FormattedContent)
     * [.bold(content)](#format.bold) ⇒ [<code>FormattedContent</code>](#format.FormattedContent)
     * [.code(content)](#format.code) ⇒ [<code>FormattedContent</code>](#format.FormattedContent)
@@ -566,6 +567,7 @@ fp.cell.text(fp.format.raw('hello ').bold('world ').italics('!'))
     * [.link(content, url)](#format.FormattedContent+link) ⇒ [<code>FormattedContent</code>](#format.FormattedContent)
     * [.mention(userName, userId)](#format.FormattedContent+mention) ⇒ [<code>FormattedContent</code>](#format.FormattedContent)
     * [.timestamp(timestamp)](#format.FormattedContent+timestamp) ⇒ [<code>FormattedContent</code>](#format.FormattedContent)
+    * [.label(key, url)](#format.FormattedContent+label) ⇒ [<code>FormattedContent</code>](#format.FormattedContent)
 
 <a name="format.FormattedContent+raw"></a>
 
@@ -679,6 +681,18 @@ Note that if this is added inside a formatting helper, the outer formatting will
 | Param | Type | Description |
 | --- | --- | --- |
 | timestamp | <code>string</code> | <p>The RFC3339-formatted timestamp to add</p> |
+
+<a name="format.FormattedContent+label"></a>
+
+#### formattedContent.label(key, url) ⇒ [<code>FormattedContent</code>](#format.FormattedContent)
+<p>Add a label</p>
+
+**Kind**: instance method of [<code>FormattedContent</code>](#format.FormattedContent)  
+
+| Param | Type | Description |
+| --- | --- | --- |
+| key | <code>string</code> | <p>The label's key</p> |
+| url | <code>string</code> | <p>The label's value (optional)</p> |
 
 <a name="format.raw"></a>
 
