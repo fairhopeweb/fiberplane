@@ -8,7 +8,7 @@ use fp_provider_bindings::*;
 use futures::future;
 use percent_encode::encode_uri_component;
 use sentry::*;
-use std::collections::HashMap;
+use std::{collections::HashMap, fmt::Write};
 
 const OVERVIEW_QUERY_TYPE: &str = "x-issues-overview";
 const ISSUE_QUERY_TYPE: &str = "x-issue-details";
@@ -23,7 +23,7 @@ const TIME_RANGE_PARAM_NAME: &str = "time_range";
 const ISSUE_ID_NAME: &str = "issue";
 
 #[fp_export_impl(fp_provider_bindings)]
-async fn get_supported_query_types(_config: rmpv::Value) -> Vec<SupportedQueryType> {
+async fn get_supported_query_types(_config: ProviderConfig) -> Vec<SupportedQueryType> {
     vec![
         SupportedQueryType {
             query_type: OVERVIEW_QUERY_TYPE.to_owned(),
@@ -67,12 +67,12 @@ async fn get_supported_query_types(_config: rmpv::Value) -> Vec<SupportedQueryTy
 #[fp_export_impl(fp_provider_bindings)]
 async fn invoke2(request: ProviderRequest) -> Result<Blob, Error> {
     log(format!(
-        "sentry provider invoked with request: {:?}",
-        request
+        "Sentry provider invoked for query type \"{}\" and query data \"{:?}\"",
+        request.query_type, request.query_data
     ));
 
     let config: SentryConfig =
-        rmpv::ext::from_value(request.config).map_err(|err| Error::Config {
+        serde_json::from_value(request.config).map_err(|err| Error::Config {
             message: format!("Error parsing config: {:?}", err),
         })?;
 
@@ -83,13 +83,7 @@ async fn invoke2(request: ProviderRequest) -> Result<Blob, Error> {
             mime_type: STATUS_MIME_TYPE.to_owned(),
             data: "ok".into(),
         }),
-        _ => {
-            log(format!(
-                "sentry provider received unsupported query type: {:?}",
-                &request.query_type
-            ));
-            Err(Error::UnsupportedRequest)
-        }
+        _ => Err(Error::UnsupportedRequest),
     }
 }
 
@@ -106,25 +100,20 @@ async fn query_issues_overview(query_data: Blob, config: SentryConfig) -> Result
         format!("Bearer {}", config.token),
     )]);
 
-    let result = make_http_request(HttpRequest {
+    let response = make_http_request(HttpRequest {
         body: None,
         headers: Some(headers),
         method: HttpRequestMethod::Get,
         url,
     })
-    .await;
-    match result {
-        Ok(response) => {
-            let issues = serde_json::from_slice(response.body.as_ref()).map_err(|err| {
-                Error::Deserialization {
-                    message: format!("Cannot parse Sentry response: {err}"),
-                }
-            })?;
+    .await?;
 
-            serialize_cells(create_overview_cells(issues)?)
-        }
-        Err(error) => Err(Error::Http { error }),
-    }
+    let issues =
+        serde_json::from_slice(response.body.as_ref()).map_err(|err| Error::Deserialization {
+            message: format!("Cannot parse Sentry response: {err}"),
+        })?;
+
+    serialize_cells(create_overview_cells(issues)?)
 }
 
 fn get_overview_query(query_data: &Blob) -> Result<String, Error> {
@@ -148,7 +137,11 @@ fn get_overview_query(query_data: &Blob) -> Result<String, Error> {
                 }
 
                 if let Some((from, to)) = value.split_once(' ') {
-                    query.push_str(&format!("timestamp:>={from} timestamp:<{to}"));
+                    write!(&mut query, "timestamp:>={from} timestamp:<{to}").map_err(|error| {
+                        Error::Data {
+                            message: format!("Could not write query string: {error}"),
+                        }
+                    })?;
                 }
             }
             _ => {}
@@ -212,40 +205,36 @@ async fn query_issue_details(query_data: Blob, config: SentryConfig) -> Result<B
         url: event_url,
     });
 
-    match future::join(issue_result, event_result).await {
-        (Ok(issue_response), Ok(event_response)) => {
-            let issue: SentryIssue =
-                serde_json::from_slice(issue_response.body.as_ref()).map_err(|err| {
-                    Error::Deserialization {
-                        message: format!("Cannot parse Sentry issue: {err}"),
-                    }
-                })?;
+    let (issue_response, event_response) = future::join(issue_result, event_result).await;
+    let issue: SentryIssue =
+        serde_json::from_slice(issue_response?.body.as_ref()).map_err(|err| {
+            Error::Deserialization {
+                message: format!("Cannot parse Sentry issue: {err}"),
+            }
+        })?;
 
-            let event: SentryEvent =
-                serde_json::from_slice(event_response.body.as_ref()).map_err(|err| {
-                    Error::Deserialization {
-                        message: format!("Cannot parse Sentry event: {err}"),
-                    }
-                })?;
+    let event: SentryEvent =
+        serde_json::from_slice(event_response?.body.as_ref()).map_err(|err| {
+            Error::Deserialization {
+                message: format!("Cannot parse Sentry event: {err}"),
+            }
+        })?;
 
-            // TODO: We need to query the values for the tags separately:
-            // let tag_keys = issue
-            //     .tags
-            //     .iter()
-            //     .map(|tag| {
-            //         format!(
-            //             "key={}",
-            //             percent_encode(tag.key.as_bytes(), NON_ALPHANUMERIC)
-            //         )
-            //     })
-            //     .collect::<Vec<_>>()
-            //     .join("&");
-            // let url = format!("https://sentry.io/api/0/issues/{issue_id}/tags/?{tag_keys}");
+    // TODO: We need to query the values for the tags separately:
+    // let tag_keys = issue
+    //     .tags
+    //     .iter()
+    //     .map(|tag| {
+    //         format!(
+    //             "key={}",
+    //             percent_encode(tag.key.as_bytes(), NON_ALPHANUMERIC)
+    //         )
+    //     })
+    //     .collect::<Vec<_>>()
+    //     .join("&");
+    // let url = format!("https://sentry.io/api/0/issues/{issue_id}/tags/?{tag_keys}");
 
-            serialize_cells(create_issue_cells(issue, event, config)?)
-        }
-        (Err(error), _) | (_, Err(error)) => Err(Error::Http { error }),
-    }
+    serialize_cells(create_issue_cells(issue, event, config)?)
 }
 
 fn get_issue_id(query_data: &Blob) -> Result<String, Error> {
@@ -366,12 +355,8 @@ fn create_issue_cells(
 }
 
 fn serialize_cells(cells: Vec<Cell>) -> Result<Blob, Error> {
-    let data = rmp_serde::to_vec_named(&cells).map_err(|err| Error::Data {
-        message: format!("Cannot serialize cells: {err}"),
-    })?;
-
     Ok(Blob {
-        data: data.into(),
+        data: rmp_serde::to_vec_named(&cells)?.into(),
         mime_type: CELLS_MIME_TYPE.to_owned(),
     })
 }

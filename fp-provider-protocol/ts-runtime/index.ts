@@ -21,8 +21,8 @@ export type Imports = {
 export type Exports = {
     createCells?: (queryType: string, response: types.Blob) => types.Result<Array<types.Cell>, types.Error>;
     extractData?: (response: types.Blob, mimeType: string, query: string | null) => types.Result<Uint8Array, types.Error>;
-    getSupportedQueryTypes?: (config: any) => Promise<Array<types.SupportedQueryType>>;
-    invoke?: (request: types.LegacyProviderRequest, config: any) => Promise<types.LegacyProviderResponse>;
+    getSupportedQueryTypes?: (config: types.ProviderConfig) => Promise<Array<types.SupportedQueryType>>;
+    invoke?: (request: types.LegacyProviderRequest, config: types.ProviderConfig) => Promise<types.LegacyProviderResponse>;
     invoke2?: (request: types.ProviderRequest) => Promise<types.Result<types.Blob, types.Error>>;
     createCellsRaw?: (queryType: Uint8Array, response: Uint8Array) => Uint8Array;
     extractDataRaw?: (response: Uint8Array, mimeType: Uint8Array, query: Uint8Array) => Uint8Array;
@@ -214,7 +214,7 @@ export async function createRuntime(
             const export_fn = instance.exports.__fp_gen_get_supported_query_types as any;
             if (!export_fn) return;
 
-            return (config: any) => {
+            return (config: types.ProviderConfig) => {
                 const config_ptr = serializeObject(config);
                 return promiseFromPtr(export_fn(config_ptr)).then((ptr) => parseObject<Array<types.SupportedQueryType>>(ptr));
             };
@@ -223,7 +223,7 @@ export async function createRuntime(
             const export_fn = instance.exports.__fp_gen_invoke as any;
             if (!export_fn) return;
 
-            return (request: types.LegacyProviderRequest, config: any) => {
+            return (request: types.LegacyProviderRequest, config: types.ProviderConfig) => {
                 const request_ptr = serializeObject(request);
                 const config_ptr = serializeObject(config);
                 return promiseFromPtr(export_fn(request_ptr, config_ptr)).then((ptr) => parseObject<types.LegacyProviderResponse>(ptr));

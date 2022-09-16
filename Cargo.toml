@@ -11,3 +11,6 @@ members = [
     "providers/*",
     "time_util",
 ]
+
+[patch.crates-io]
+#fp-bindgen = { path = "../fp-bindgen/fp-bindgen" }

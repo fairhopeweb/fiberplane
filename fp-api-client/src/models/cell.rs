@@ -66,22 +66,14 @@ pub enum Cell {
     GraphCell {
         #[serde(rename = "id")]
         id: String,
+        #[serde(rename = "dataLinks")]
+        data_links: Vec<String>,
         #[serde(rename = "graphType")]
         graph_type: GraphType,
-        #[serde(rename = "stackingType")]
-        stacking_type: StackingType,
         #[serde(rename = "readOnly", skip_serializing_if = "Option::is_none")]
         read_only: Option<bool>,
-        #[serde(rename = "sourceIds")]
-        source_ids: Vec<String>,
-        #[serde(rename = "timeRange", skip_serializing_if = "Option::is_none")]
-        time_range: Option<Box<crate::models::TimeRange>>,
-        #[serde(rename = "title")]
-        title: String,
-        #[serde(rename = "formatting", skip_serializing_if = "Option::is_none")]
-        formatting: Option<Vec<crate::models::Annotation>>,
-        #[serde(rename = "data", skip_serializing_if = "Option::is_none")]
-        data: Option<::std::collections::HashMap<String, Vec<crate::models::Series>>>,
+        #[serde(rename = "stackingType")]
+        stacking_type: StackingType,
     },
     #[serde(rename = "heading")]
     HeadingCell {
@@ -173,15 +165,6 @@ pub enum Cell {
         #[serde(rename = "readOnly", skip_serializing_if = "Option::is_none")]
         read_only: Option<bool>,
     },
-    #[serde(rename = "prometheus")]
-    PrometheusCell {
-        #[serde(rename = "id")]
-        id: String,
-        #[serde(rename = "content")]
-        content: String,
-        #[serde(rename = "readOnly", skip_serializing_if = "Option::is_none")]
-        read_only: Option<bool>,
-    },
     #[serde(rename = "provider")]
     ProviderCell {
         #[serde(rename = "id")]
@@ -207,14 +190,8 @@ pub enum Cell {
         id: String,
         #[serde(rename = "readOnly", skip_serializing_if = "Option::is_none")]
         read_only: Option<bool>,
-        #[serde(rename = "sourceIds")]
-        source_ids: Vec<String>,
-        #[serde(rename = "title")]
-        title: String,
-        #[serde(rename = "formatting", skip_serializing_if = "Option::is_none")]
-        formatting: Option<Vec<crate::models::Annotation>>,
-        #[serde(rename = "data", skip_serializing_if = "Option::is_none")]
-        data: Option<::std::collections::HashMap<String, Vec<crate::models::Instant>>>,
+        #[serde(rename = "rows")]
+        rows: Box<crate::models::TableRow>,
     },
     #[serde(rename = "text")]
     TextCell {

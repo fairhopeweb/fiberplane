@@ -122,7 +122,6 @@ impl<'a> NotebookConverter<'a> {
                     self.end_all_lists();
                 }
                 Cell::Loki(cell) => self.convert_code_block(cell.content),
-                Cell::Prometheus(cell) => self.convert_code_block(cell.content),
                 Cell::Provider(cell) => {
                     if !cell.title.is_empty() {
                         self.events.push(Start(Tag::Paragraph));

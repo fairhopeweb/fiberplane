@@ -1,10 +1,12 @@
 use bytes::Bytes;
 use fp_bindgen::prelude::*;
+use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 
 /// HTTP request options.
-#[derive(Serializable, Debug)]
-#[fp(rename_all = "camelCase")]
+#[derive(Clone, Debug, Deserialize, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::providers")]
+#[serde(rename_all = "camelCase")]
 pub struct HttpRequest {
     pub url: String,
     pub method: HttpRequestMethod,
@@ -13,9 +15,9 @@ pub struct HttpRequest {
 }
 
 /// Possible errors that may happen during an HTTP request.
-#[derive(Serializable, Debug)]
-#[fp(tag = "type", rename_all = "snake_case")]
-#[allow(dead_code)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::providers")]
+#[serde(tag = "type", rename_all = "snake_case")]
 pub enum HttpRequestError {
     Offline,
     NoRoute,
@@ -36,9 +38,9 @@ pub enum HttpRequestError {
 /// HTTP request method.
 // Note: we use SCREAMING_SNAKE_CASE here because this is
 // effectively a constant
-#[derive(Serializable, Debug)]
-#[fp(rename_all = "SCREAMING_SNAKE_CASE")]
-#[allow(unused)]
+#[derive(Clone, Debug, Deserialize, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::providers")]
+#[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum HttpRequestMethod {
     Delete,
     Get,
@@ -47,8 +49,9 @@ pub enum HttpRequestMethod {
 }
 
 /// Response to an HTTP request.
-#[derive(Serializable, Debug)]
-#[fp(rename_all = "camelCase")]
+#[derive(Clone, Debug, Deserialize, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::providers")]
+#[serde(rename_all = "camelCase")]
 pub struct HttpResponse {
     pub body: Bytes,
     pub headers: HashMap<String, String>,

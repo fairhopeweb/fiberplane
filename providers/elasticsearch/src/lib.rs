@@ -1,11 +1,10 @@
 use elasticsearch_dsl::{Hit, SearchResponse};
-use fiberplane::protocols::core::ElasticsearchDataSource;
+use fiberplane::protocols::{core::ElasticsearchDataSource, providers::ProviderConfig};
 use fp_provider_bindings::{
     fp_export_impl, log, make_http_request, Error, HttpRequest, HttpRequestMethod,
     LegacyLogRecord as LogRecord, LegacyProviderRequest as ProviderRequest,
     LegacyProviderResponse as ProviderResponse, QueryLogs,
 };
-use rmpv::ext::from_value;
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 use std::{cmp::Ordering, collections::HashMap, str::FromStr};
@@ -38,8 +37,8 @@ struct Document {
 }
 
 #[fp_export_impl(fp_provider_bindings)]
-async fn invoke(request: ProviderRequest, config: rmpv::Value) -> ProviderResponse {
-    let config: ElasticsearchDataSource = match from_value(config) {
+async fn invoke(request: ProviderRequest, config: ProviderConfig) -> ProviderResponse {
+    let config: ElasticsearchDataSource = match serde_json::from_value(config) {
         Ok(config) => config,
         Err(err) => {
             return ProviderResponse::Error {
@@ -124,10 +123,7 @@ async fn fetch_logs(
     };
 
     // Parse response
-    let response = make_http_request(request)
-        .await
-        .map_err(|error| Error::Http { error })?
-        .body;
+    let response = make_http_request(request).await?.body;
     let response: SearchResponse<Document, Document> =
         serde_json::from_slice(&response).map_err(|e| Error::Data {
             message: format!("Error parsing ElasticSearch response: {:?}", e),
@@ -178,7 +174,7 @@ fn parse_hit(
     // Parse the trace ID and span ID from hex if they exist
     let mut parse_id = |key: &str| {
         if let Some((key, val)) = flattened_fields.remove_entry(key) {
-            if let Ok(bytes) = hex::decode(val.to_string().replace("-", "")) {
+            if let Ok(bytes) = hex::decode(val.to_string().replace('-', "")) {
                 Some(bytes.into())
             } else {
                 log(format!("unable to decode ID as hex in log: {}", val));
@@ -293,9 +289,7 @@ async fn check_status(config: ElasticsearchDataSource) -> Result<(), Error> {
         url: url.to_string(),
     };
 
-    let _ = make_http_request(request)
-        .await
-        .map_err(|error| Error::Http { error })?;
+    let _ = make_http_request(request).await?;
 
     // At this point we don't care to validate the info LOKI sends back
     // We just care it responded with 200 OK

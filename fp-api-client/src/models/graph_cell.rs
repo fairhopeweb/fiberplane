@@ -14,44 +14,31 @@ pub struct GraphCell {
     pub _type: crate::models::CellType,
     #[serde(rename = "id")]
     pub id: String,
+    #[serde(rename = "dataLinks")]
+    pub data_links: Vec<String>,
     #[serde(rename = "graphType")]
     pub graph_type: GraphType,
-    #[serde(rename = "stackingType")]
-    pub stacking_type: StackingType,
     #[serde(rename = "readOnly", skip_serializing_if = "Option::is_none")]
     pub read_only: Option<bool>,
-    #[serde(rename = "sourceIds")]
-    pub source_ids: Vec<String>,
-    #[serde(rename = "timeRange", skip_serializing_if = "Option::is_none")]
-    pub time_range: Option<Box<crate::models::TimeRange>>,
-    #[serde(rename = "title")]
-    pub title: String,
-    #[serde(rename = "formatting", skip_serializing_if = "Option::is_none")]
-    pub formatting: Option<Vec<crate::models::Annotation>>,
-    #[serde(rename = "data", skip_serializing_if = "Option::is_none")]
-    pub data: Option<::std::collections::HashMap<String, Vec<crate::models::Series>>>,
+    #[serde(rename = "stackingType")]
+    pub stacking_type: StackingType,
 }
 
 impl GraphCell {
     pub fn new(
         _type: crate::models::CellType,
         id: String,
+        data_links: Vec<String>,
         graph_type: GraphType,
         stacking_type: StackingType,
-        source_ids: Vec<String>,
-        title: String,
     ) -> GraphCell {
         GraphCell {
             _type,
             id,
+            data_links,
             graph_type,
-            stacking_type,
             read_only: None,
-            source_ids,
-            time_range: None,
-            title,
-            formatting: None,
-            data: None,
+            stacking_type,
         }
     }
 }

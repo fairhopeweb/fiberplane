@@ -1,10 +1,9 @@
-use fiberplane::protocols::core::LokiDataSource;
+use fiberplane::protocols::{core::LokiDataSource, providers::ProviderConfig};
 use fp_provider_bindings::{
     fp_export_impl, make_http_request, Error, HttpRequest, HttpRequestMethod,
     LegacyLogRecord as LogRecord, LegacyProviderRequest as ProviderRequest,
     LegacyProviderResponse as ProviderResponse, QueryLogs, Timestamp,
 };
-use rmpv::ext::from_value;
 use serde::Deserialize;
 use std::{collections::HashMap, str::FromStr};
 use url::Url;
@@ -12,8 +11,8 @@ use url::Url;
 const CONVERSION_FACTOR: f64 = 1e9;
 
 #[fp_export_impl(fp_provider_bindings)]
-async fn invoke(request: ProviderRequest, config: rmpv::Value) -> ProviderResponse {
-    let config: LokiDataSource = match from_value(config) {
+async fn invoke(request: ProviderRequest, config: ProviderConfig) -> ProviderResponse {
+    let config: LokiDataSource = match serde_json::from_value(config) {
         Ok(config) => config,
         Err(err) => {
             return ProviderResponse::Error {
@@ -190,9 +189,7 @@ async fn check_status(config: LokiDataSource) -> Result<(), Error> {
         url: url.to_string(),
     };
 
-    let _ = make_http_request(request)
-        .await
-        .map_err(|error| Error::Http { error })?;
+    let _ = make_http_request(request).await?;
 
     // At this point we don't care to validate the info LOKI sends back
     // We just care it responded with 200 OK

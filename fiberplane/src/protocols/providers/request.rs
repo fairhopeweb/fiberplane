@@ -1,10 +1,12 @@
-use fiberplane::protocols::blobs::Blob;
+use crate::protocols::blobs::Blob;
 use fp_bindgen::prelude::Serializable;
-use rmpv::Value;
+use serde::{Deserialize, Serialize};
 
-#[non_exhaustive]
-#[derive(Debug, Serializable)]
-#[fp(rename_all = "camelCase")]
+pub type ProviderConfig = serde_json::Value;
+
+#[derive(Debug, Deserialize, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::providers")]
+#[serde(rename_all = "camelCase")]
 pub struct ProviderRequest {
     /// Query type that is part of the
     /// [Intent](https://www.notion.so/fiberplane/RFC-45-Provider-Protocol-2-0-Revised-4ec85a0233924b2db0010d8cdae75e16#c8ed5dfbfd764e6bbd5c5b79333f9d6e)
@@ -19,11 +21,11 @@ pub struct ProviderRequest {
     pub query_data: Blob,
 
     /// Configuration for the data source.
-    pub config: Value,
+    pub config: ProviderConfig,
 
     /// Optional response from a previous invocation.
     /// May be used for implementing things like filtering without additional
     /// server roundtrip.
-    #[fp(default, skip_serializing_if = "Option::is_none")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub previous_response: Option<Blob>,
 }

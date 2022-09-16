@@ -133,7 +133,7 @@ impl Runtime {
     /// be selected for certain use cases.
     pub async fn get_supported_query_types(
         &self,
-        config: rmpv::Value,
+        config: ProviderConfig,
     ) -> Result<Vec<SupportedQueryType>, InvocationError> {
         let config = serialize_to_vec(&config);
         let result = self.get_supported_query_types_raw(config);
@@ -167,7 +167,7 @@ impl Runtime {
     pub async fn invoke(
         &self,
         request: LegacyProviderRequest,
-        config: rmpv::Value,
+        config: ProviderConfig,
     ) -> Result<LegacyProviderResponse, InvocationError> {
         let request = serialize_to_vec(&request);
         let config = serialize_to_vec(&config);

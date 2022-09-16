@@ -1,8 +1,8 @@
 use assert_json_diff::{assert_json_eq, assert_json_include};
 use fiberplane::protocols::core::{
     Cell, CheckboxCell, CodeCell, DataSource, DataSourceType, ElasticsearchDataSource, HeadingCell,
-    HeadingType, ImageCell, InlineDataSource, Label, ListItemCell, ListType, NewNotebook,
-    NotebookDataSource, PrometheusCell, PrometheusDataSource, ProxyDataSource, TextCell, TimeRange,
+    HeadingType, ImageCell, InlineDataSource, Label, ListItemCell, ListType, LokiCell,
+    LokiDataSource, NewNotebook, NotebookDataSource, ProxyDataSource, TextCell, TimeRange,
 };
 use fiberplane::protocols::formatting::{Annotation, AnnotationWithOffset};
 use fp_templates::{
@@ -35,10 +35,10 @@ lazy_static! {
                 })
             ),
             (
-                "direct prometheus".to_string(),
+                "direct loki".to_string(),
                 NotebookDataSource::Inline(InlineDataSource {
-                    data_source: DataSource::Prometheus(PrometheusDataSource {
-                        url: "https://prometheus.dev.fiberplane.io".to_string()
+                    data_source: DataSource::Loki(LokiDataSource {
+                        url: "https://loki.dev.fiberplane.io".to_string()
                     })
                 })
             ),
@@ -118,9 +118,9 @@ let b = \"c\";"
                 heading_type: HeadingType::H2,
                 read_only: Some(true),
             }),
-            Cell::Prometheus(PrometheusCell {
+            Cell::Loki(LokiCell {
                 id: "8".to_string(),
-                content: "prometheus query".to_string(),
+                content: "loki query".to_string(),
                 read_only: None,
             }),
             Cell::ListItem(ListItemCell {

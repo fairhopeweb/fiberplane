@@ -59,7 +59,6 @@ components:
         - $ref: "#/components/schemas/listItemCell"
         - $ref: "#/components/schemas/logCell"
         - $ref: "#/components/schemas/lokiCell"
-        - $ref: "#/components/schemas/prometheusCell"
         - $ref: "#/components/schemas/providerCell"
         - $ref: "#/components/schemas/tableCell"
         - $ref: "#/components/schemas/textCell"
@@ -77,7 +76,6 @@ components:
           list_item: "#/components/schemas/listItemCell"
           log: "#/components/schemas/logCell"
           loki: "#/components/schemas/lokiCell"
-          prometheus: "#/components/schemas/prometheusCell"
           provider: "#/components/schemas/providerCell"
           table: "#/components/schemas/tableCell"
           text: "#/components/schemas/textCell"
@@ -95,7 +93,6 @@ components:
         - list_item
         - log
         - loki
-        - prometheus
         - provider
         - table
         - text
@@ -171,44 +168,31 @@ components:
       required:
         - type
         - id
+        - dataLinks
         - graphType
         - stackingType
-        - sourceIds
-        - title
       properties:
         type:
           $ref: "#/components/schemas/cellType"
         id:
           type: string
+        dataLinks:
+          type: array
+          items:
+            type: string
         graphType:
           type: string
           enum:
             - bar
             - line
+        readOnly:
+          type: boolean
         stackingType:
           type: string
           enum:
             - none
             - stacked
             - percentage
-        readOnly:
-          type: boolean
-        sourceIds:
-          type: array
-          items:
-            type: string
-        timeRange:
-          $ref: "#/components/schemas/timeRange"
-        title:
-          type: string
-        formatting:
-          $ref: "#/components/schemas/formatting"
-        data:
-          type: object
-          additionalProperties:
-            type: array
-            items:
-              $ref: "#/components/schemas/series"
     headingCell:
       type: object
       required:
@@ -262,21 +246,6 @@ components:
         startNumber:
           type: integer
           format: int32
-    prometheusCell:
-      type: object
-      required:
-        - type
-        - id
-        - content
-      properties:
-        type:
-          $ref: "#/components/schemas/cellType"
-        id:
-          type: string
-        content:
-          type: string
-        readOnly:
-          type: boolean
     providerCell:
       type: object
       required:
@@ -351,8 +320,7 @@ components:
       required:
         - type
         - id
-        - sourceIds
-        - title
+        - rows
       properties:
         type:
           $ref: "#/components/schemas/cellType"
@@ -360,20 +328,26 @@ components:
           type: string
         readOnly:
           type: boolean
-        sourceIds:
+        rows:
+          $ref: "#/components/schemas/tableRow"
+    tableRow:
+      type: object
+      required:
+        - cols
+      properties:
+        cols:
           type: array
           items:
-            type: string
-        title:
-          type: string
+            $ref: "#/components/schemas/tableColumn"
+    tableColumn:
+      type: object
+      required:
+        - text
+      properties:
         formatting:
           $ref: "#/components/schemas/formatting"
-        data:
-          type: object
-          additionalProperties:
-            type: array
-            items:
-              $ref: "#/components/schemas/instant"
+        text:
+          type: string
     logCell:
       type: object
       required:
@@ -857,55 +831,6 @@ components:
           type: "string"
         value:
           type: "string"
-    instant:
-      type: object
-      required:
-        - metric
-        - point
-      properties:
-        metric:
-          $ref: "#/components/schemas/metric"
-        point:
-          $ref: "#/components/schemas/point"
-    series:
-      type: object
-      required:
-        - metric
-        - points
-        - visible
-      properties:
-        metric:
-          $ref: "#/components/schemas/metric"
-        points:
-          type: array
-          items:
-            $ref: "#/components/schemas/point"
-        visible:
-          type: boolean
-    metric:
-      type: object
-      required:
-        - name
-        - labels
-      properties:
-        name:
-          type: string
-        labels:
-          type: object
-          additionalProperties:
-            type: string
-    point:
-      type: object
-      required:
-        - timestamp
-        - value
-      properties:
-        timestamp:
-          type: number
-          format: double
-        value:
-          type: number
-          format: double
     notebookDataSource:
       oneOf:
         - $ref: "#/components/schemas/inlineDataSource"

@@ -16,10 +16,10 @@ function(incidentName)
     },
   )
   .addDirectDataSource(
-    name='direct prometheus',
-    type='prometheus',
+    name='direct loki',
+    type='loki',
     config={
-      url: 'https://prometheus.dev.fiberplane.io'
+      url: 'https://loki.dev.fiberplane.io'
     },
   )
   .addCells([
@@ -32,7 +32,7 @@ let b = "c";'),
     c.checkbox('Resolve'),
     c.checkbox('Profit'),
     c.heading.h2('Hypotheses', readOnly=true),
-    c.prometheus('prometheus query'),
+    c.loki('loki query'),
     c.list.ordered([
       'Step 1',
       c.code('Some code'),

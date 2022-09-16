@@ -101,7 +101,7 @@ pub fn test_invalid_replace_cells_operations() {
                         index: 3,
                     },
                     CellWithIndex {
-                        cell: Cell::Prometheus(PrometheusCell {
+                        cell: Cell::Loki(LokiCell {
                             id: "s1".to_owned(),
                             content: "memstats_alloc_bytes".to_owned(),
                             read_only: None,
@@ -132,7 +132,7 @@ pub fn test_invalid_replace_cells_operations() {
                         index: 3,
                     },
                     CellWithIndex {
-                        cell: Cell::Prometheus(PrometheusCell {
+                        cell: Cell::Loki(LokiCell {
                             id: "s1".to_owned(),
                             content: "memstats_alloc_bytes".to_owned(),
                             read_only: None,

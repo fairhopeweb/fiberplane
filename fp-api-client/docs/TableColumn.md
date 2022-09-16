@@ -1,13 +1,11 @@
-# PrometheusCell
+# TableColumn
 
 ## Properties
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**_type** | [**crate::models::CellType**](cellType.md) |  | 
-**id** | **String** |  | 
-**content** | **String** |  | 
-**read_only** | Option<**bool**> |  | [optional]
+**formatting** | Option<[**Vec<crate::models::Annotation>**](annotation.md)> |  | [optional]
+**text** | **String** |  | 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)
 

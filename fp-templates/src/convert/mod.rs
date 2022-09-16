@@ -7,7 +7,7 @@ use fiberplane::protocols::{
 };
 use lazy_static::lazy_static;
 use regex::Regex;
-use std::collections::BTreeSet;
+use std::{collections::BTreeSet, fmt::Write};
 use time::format_description::well_known::Rfc3339;
 
 mod code_writer;
@@ -142,6 +142,10 @@ fn print_cell(writer: &mut CodeWriter, cell: Cell) {
             ("code", cell.read_only)
         }
         Cell::Divider(cell) => ("divider", cell.read_only),
+        Cell::Elasticsearch(cell) => {
+            args.push(("content", escape_string(&cell.content)));
+            ("elasticsearch", cell.read_only)
+        }
         Cell::Heading(cell) => {
             let heading_type = match cell.heading_type {
                 HeadingType::H1 => "h1",
@@ -150,6 +154,12 @@ fn print_cell(writer: &mut CodeWriter, cell: Cell) {
             };
             args.push(("content", format_content(&cell.content, cell.formatting)));
             (heading_type, cell.read_only)
+        }
+        Cell::Image(cell) => {
+            if let Some(url) = &cell.url {
+                args.push(("url", escape_string(url)));
+            }
+            ("image", cell.read_only)
         }
         Cell::ListItem(cell) => {
             let function_name = match cell.list_type {
@@ -165,26 +175,20 @@ fn print_cell(writer: &mut CodeWriter, cell: Cell) {
             }
             (function_name, cell.read_only)
         }
-        Cell::Prometheus(cell) => {
+        Cell::Loki(cell) => {
             args.push(("content", escape_string(&cell.content)));
-            ("prometheus", cell.read_only)
-        }
-        Cell::Elasticsearch(cell) => {
-            args.push(("content", escape_string(&cell.content)));
-            ("elasticsearch", cell.read_only)
+            ("loki", cell.read_only)
         }
         Cell::Text(cell) => {
             args.push(("content", format_content(&cell.content, cell.formatting)));
             ("text", cell.read_only)
         }
-        Cell::Image(cell) => {
-            if let Some(url) = &cell.url {
-                args.push(("url", escape_string(url)));
-            }
-            ("image", cell.read_only)
-        }
-        // Ignore other cell types
-        _ => return,
+        // Ignored cell types:
+        Cell::Discussion(_)
+        | Cell::Graph(_)
+        | Cell::Log(_)
+        | Cell::Provider(_)
+        | Cell::Table(_) => return,
     };
 
     // Only print the read only property if it's true
@@ -279,10 +283,12 @@ fn format_content(content: &str, formatting: Option<Formatting>) -> String {
                         end_annotations += 1;
                     }
                     Annotation::Mention(mention) => {
-                        output.push_str(&format!(
+                        write!(
+                            output,
                             "fmt.mention('{}', '{}'), ",
                             mention.name, mention.user_id
-                        ));
+                        )
+                        .expect("Cannot write mention instruction");
                         // Adding + 1 to the mention length to account for the @ sign
                         index += mention.name.len() + 1;
                     }
@@ -290,7 +296,8 @@ fn format_content(content: &str, formatting: Option<Formatting>) -> String {
                         let formatted = timestamp
                             .format(&Rfc3339)
                             .expect("Invalid timestamp format");
-                        output.push_str(&format!("fmt.timestamp('{}'), ", formatted));
+                        write!(output, "fmt.timestamp('{}'), ", formatted)
+                            .expect("Cannot write timestamp instruction");
                         index += formatted.len();
                     }
                     Annotation::Label(label) => {

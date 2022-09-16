@@ -45,6 +45,17 @@ impl TryFrom<EncodedBlob> for Blob {
     }
 }
 
+impl TryFrom<&EncodedBlob> for Blob {
+    type Error = DecodeError;
+
+    fn try_from(blob: &EncodedBlob) -> Result<Self, Self::Error> {
+        Ok(Self {
+            data: base64::decode(&blob.data)?.into(),
+            mime_type: blob.mime_type.clone(),
+        })
+    }
+}
+
 /// base64-encoded version of [Blob].
 #[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize, Serializable)]
 #[fp(
@@ -67,6 +78,15 @@ impl From<Blob> for EncodedBlob {
         Self {
             data: base64::encode(blob.data.as_ref()),
             mime_type: blob.mime_type,
+        }
+    }
+}
+
+impl From<&Blob> for EncodedBlob {
+    fn from(blob: &Blob) -> Self {
+        Self {
+            data: base64::encode(blob.data.as_ref()),
+            mime_type: blob.mime_type.clone(),
         }
     }
 }

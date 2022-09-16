@@ -38,11 +38,11 @@ pub fn extract_data(response: Blob, mime_type: String, query: Option<String>) ->
 /// supported, and which providers (and their query types) are eligible to
 /// be selected for certain use cases.
 #[fp_bindgen_support::fp_export_signature]
-pub async fn get_supported_query_types(config: rmpv::Value) -> Vec<SupportedQueryType>;
+pub async fn get_supported_query_types(config: ProviderConfig) -> Vec<SupportedQueryType>;
 
 /// Legacy invoke function.
 #[fp_bindgen_support::fp_export_signature]
-pub async fn invoke(request: LegacyProviderRequest, config: rmpv::Value) -> LegacyProviderResponse;
+pub async fn invoke(request: LegacyProviderRequest, config: ProviderConfig) -> LegacyProviderResponse;
 
 /// Invokes the provider to perform a data request.
 #[fp_bindgen_support::fp_export_signature]

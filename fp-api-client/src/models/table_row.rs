@@ -9,15 +9,13 @@
  */
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct Metric {
-    #[serde(rename = "name")]
-    pub name: String,
-    #[serde(rename = "labels")]
-    pub labels: ::std::collections::HashMap<String, String>,
+pub struct TableRow {
+    #[serde(rename = "cols")]
+    pub cols: Vec<crate::models::TableColumn>,
 }
 
-impl Metric {
-    pub fn new(name: String, labels: ::std::collections::HashMap<String, String>) -> Metric {
-        Metric { name, labels }
+impl TableRow {
+    pub fn new(cols: Vec<crate::models::TableColumn>) -> TableRow {
+        TableRow { cols }
     }
 }

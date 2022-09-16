@@ -1,10 +1,14 @@
-mod types;
+mod legacy;
 
 use bytes::Bytes;
-use fiberplane::protocols::{blobs::Blob, core::Cell};
+use fiberplane::protocols::{
+    blobs::Blob,
+    core::{Cell, Timestamp},
+    providers::*,
+};
 use fp_bindgen::{prelude::*, types::CargoDependency};
+use legacy::*;
 use std::collections::{BTreeMap, BTreeSet};
-use types::*;
 
 fp_import! {
     /// Logs a message to the (development) console.
@@ -22,6 +26,7 @@ fp_import! {
 
 fp_export! {
     type Formatting = Vec<AnnotationWithOffset>;
+    type ProviderConfig = Value;
     type QuerySchema = Vec<QueryField>;
     type Timestamp = f64;
 
@@ -29,10 +34,10 @@ fp_export! {
     /// This function allows Studio to know upfront which formats will be
     /// supported, and which providers (and their query types) are eligible to
     /// be selected for certain use cases.
-    async fn get_supported_query_types(config: Value) -> Vec<SupportedQueryType>;
+    async fn get_supported_query_types(config: ProviderConfig) -> Vec<SupportedQueryType>;
 
     /// Legacy invoke function.
-    async fn invoke(request: LegacyProviderRequest, config: Value) -> LegacyProviderResponse;
+    async fn invoke(request: LegacyProviderRequest, config: ProviderConfig) -> LegacyProviderResponse;
 
     /// Invokes the provider to perform a data request.
     async fn invoke2(request: ProviderRequest) -> Result<Blob, Error>;

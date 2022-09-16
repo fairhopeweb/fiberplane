@@ -10,5 +10,4 @@ crate-type = ["cdylib"]
 [dependencies]
 fp-provider-bindings = { path = "../../fp-provider-protocol/fp-provider-bindings" }
 rmp-serde = "1.0.0"
-rmpv = "1.0"
 urlencoding = "2"

@@ -33,8 +33,6 @@ pub enum CellType {
     Log,
     #[serde(rename = "loki")]
     Loki,
-    #[serde(rename = "prometheus")]
-    Prometheus,
     #[serde(rename = "provider")]
     Provider,
     #[serde(rename = "table")]
@@ -57,7 +55,6 @@ impl ToString for CellType {
             Self::ListItem => String::from("list_item"),
             Self::Log => String::from("log"),
             Self::Loki => String::from("loki"),
-            Self::Prometheus => String::from("prometheus"),
             Self::Provider => String::from("provider"),
             Self::Table => String::from("table"),
             Self::Text => String::from("text"),

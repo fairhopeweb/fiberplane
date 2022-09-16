@@ -4,7 +4,7 @@ use fp_provider_bindings::{
 use std::collections::HashMap;
 
 #[fp_export_impl(fp_provider_bindings)]
-async fn invoke(request: ProviderRequest, _config: rmpv::Value) -> ProviderResponse {
+async fn invoke(request: ProviderRequest, _config: ProviderConfig) -> ProviderResponse {
     match request {
         ProviderRequest::Proxy(request) => proxy_request(request).await,
         _ => ProviderResponse::Error {

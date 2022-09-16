@@ -99,7 +99,6 @@ export type Cell =
     | { type: "list_item" } & ListItemCell
     | { type: "log" } & LogCell
     | { type: "loki" } & LokiCell
-    | { type: "prometheus" } & PrometheusCell
     | { type: "provider" } & ProviderCell
     | { type: "table" } & TableCell
     | { type: "text" } & TextCell;
@@ -299,16 +298,12 @@ export type GraphCell = {
     id: string;
 
     /**
-     * Optional formatting to be applied to the cell's title.
+     * Links to the data to render in the graph.
      */
-    formatting?: Formatting;
+    dataLinks: Array<string>;
     graphType: GraphType;
-    stackingType: StackingType;
     readOnly?: boolean;
-    sourceIds: Array<string>;
-    timeRange?: TimeRange;
-    title: string;
-    data?: Record<string, Array<Series>>;
+    stackingType: StackingType;
 };
 
 export type GraphType =
@@ -401,14 +396,6 @@ export type ImageCell = {
 };
 
 /**
- * A single data-point in time, with meta-data about the metric it was taken from.
- */
-export type Instant = {
-    metric: Metric;
-    point: Point;
-};
-
-/**
  * Defines a field that allows labels to be selected.
  */
 export type LabelField = {
@@ -450,14 +437,7 @@ export type LegacyLogRecord = {
  * Legacy `ProviderRequest` from the Provider 1.0 protocol.
  */
 export type LegacyProviderRequest =
-    | { type: "instant" } & QueryInstant
-    | { type: "series" } & QueryTimeRange
     | { type: "proxy" } & ProxyRequest
-    /**
-     * Requests a list of auto-suggestions. Note that these are
-     * context-unaware.
-     */
-    | { type: "auto_suggest" }
     | { type: "logs" } & QueryLogs
     /**
      * Check data source status, any issue will be returned as `Error`
@@ -469,9 +449,6 @@ export type LegacyProviderRequest =
  */
 export type LegacyProviderResponse =
     | { type: "error"; error: Error }
-    | { type: "instant"; instants: Array<Instant> }
-    | { type: "series"; series: Array<Series> }
-    | { type: "auto_suggest"; suggestions: Array<Suggestion> }
     | { type: "log_records"; logRecords: Array<LegacyLogRecord> }
     | { type: "status_ok" };
 
@@ -558,11 +535,6 @@ export type Mention = {
     userId: string;
 };
 
-export type Metric = {
-    name: string;
-    labels: Record<string, string>;
-};
-
 /**
  * Defines a field that allows labels to be selected.
  *
@@ -602,17 +574,6 @@ export type NumberField = {
      * If omitted, `step` defaults to "1", meaning only integers are allowed.
      */
     step?: string;
-};
-
-export type Point = {
-    timestamp: Timestamp;
-    value: number;
-};
-
-export type PrometheusCell = {
-    id: string;
-    content: string;
-    readOnly?: boolean;
 };
 
 export type ProviderCell = {
@@ -657,6 +618,8 @@ export type ProviderCell = {
     readOnly?: boolean;
 };
 
+export type ProviderConfig = any;
+
 export type ProviderRequest = {
     /**
      * Query type that is part of the
@@ -677,7 +640,7 @@ export type ProviderRequest = {
     /**
      * Configuration for the data source.
      */
-    config: any;
+    config: ProviderConfig;
 
     /**
      * Optional response from a previous invocation.
@@ -719,11 +682,6 @@ export type QueryField =
     | { type: "select" } & SelectField
     | { type: "text" } & TextField;
 
-export type QueryInstant = {
-    query: string;
-    timestamp: Timestamp;
-};
-
 export type QueryLogs = {
     query: string;
     limit?: number;
@@ -731,11 +689,6 @@ export type QueryLogs = {
 };
 
 export type QuerySchema = Array<QueryField>;
-
-export type QueryTimeRange = {
-    query: string;
-    timeRange: TimeRange;
-};
 
 /**
  * A result that can be either successful (`Ok`) or represent an error (`Err`).
@@ -792,31 +745,10 @@ export type SelectField = {
     required: boolean;
 };
 
-/**
- * A series of data-points in time, with meta-data about the metric it was taken from.
- */
-export type Series = {
-    metric: Metric;
-    points: Array<Point>;
-    visible: boolean;
-};
-
 export type StackingType =
     | "none"
     | "stacked"
     | "percentage";
-
-export type Suggestion = {
-    /**
-     * Suggested text.
-     */
-    text: string;
-
-    /**
-     * Optional description to go along with this suggestion.
-     */
-    description?: string;
-};
 
 /**
  * Defines which query types are supported by a provider.
@@ -856,14 +788,23 @@ export type SupportedQueryType = {
 export type TableCell = {
     id: string;
     readOnly?: boolean;
-    sourceIds: Array<string>;
 
     /**
-     * Optional formatting to be applied to the cell's title.
+     * The rows that make up the content of the table.
      */
+    rows: Array<TableRow>;
+};
+
+export type TableColumn = {
     formatting?: Formatting;
-    title: string;
-    data?: Record<string, Array<Instant>>;
+    text: string;
+};
+
+export type TableRow = {
+    /**
+     * The columns that make up the content of this table row.
+     */
+    cols: Array<TableColumn>;
 };
 
 export type TextCell = {
@@ -921,7 +862,8 @@ export type TextField = {
 };
 
 /**
- * A range in time from a given timestamp (inclusive) up to another timestamp (exclusive).
+ * A range in time from a given timestamp (inclusive) up to another timestamp
+ * (exclusive).
  */
 export type TimeRange = {
     from: Timestamp;

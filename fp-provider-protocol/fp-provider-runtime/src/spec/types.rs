@@ -14,7 +14,6 @@ pub use fiberplane::protocols::core::GraphType;
 pub use fiberplane::protocols::core::HeadingCell;
 pub use fiberplane::protocols::core::HeadingType;
 pub use fiberplane::protocols::core::ImageCell;
-pub use fiberplane::protocols::core::Instant;
 pub use fiberplane::protocols::core::ListItemCell;
 pub use fiberplane::protocols::core::ListType;
 pub use fiberplane::protocols::core::LogCell;
@@ -22,15 +21,12 @@ pub use fiberplane::protocols::core::LogRecord;
 pub use fiberplane::protocols::core::LogRecordIndex;
 pub use fiberplane::protocols::core::LogVisibilityFilter;
 pub use fiberplane::protocols::core::LokiCell;
-pub use fiberplane::protocols::core::Metric;
-pub use fiberplane::protocols::core::Point;
-pub use fiberplane::protocols::core::PrometheusCell;
 pub use fiberplane::protocols::core::ProviderCell;
-pub use fiberplane::protocols::core::Series;
 pub use fiberplane::protocols::core::StackingType;
 pub use fiberplane::protocols::core::TableCell;
+pub use fiberplane::protocols::core::TableColumn;
+pub use fiberplane::protocols::core::TableRow;
 pub use fiberplane::protocols::core::TextCell;
-pub use fiberplane::protocols::core::TimeRange;
 pub use fiberplane::protocols::formatting::Annotation;
 pub use fiberplane::protocols::formatting::AnnotationWithOffset;
 pub use fiberplane::protocols::formatting::Mention;
@@ -261,12 +257,7 @@ pub struct LegacyLogRecord {
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum LegacyProviderRequest {
-    Instant(QueryInstant),
-    Series(QueryTimeRange),
     Proxy(ProxyRequest),
-    /// Requests a list of auto-suggestions. Note that these are
-    /// context-unaware.
-    AutoSuggest,
     Logs(QueryLogs),
     /// Check data source status, any issue will be returned as `Error`
     Status,
@@ -279,18 +270,6 @@ pub enum LegacyProviderResponse {
     #[serde(rename_all = "camelCase")]
     Error {
         error: Error,
-    },
-    #[serde(rename_all = "camelCase")]
-    Instant {
-        instants: Vec<Instant>,
-    },
-    #[serde(rename_all = "camelCase")]
-    Series {
-        series: Vec<Series>,
-    },
-    #[serde(rename_all = "camelCase")]
-    AutoSuggest {
-        suggestions: Vec<Suggestion>,
     },
     #[serde(rename_all = "camelCase")]
     LogRecords {
@@ -331,6 +310,8 @@ pub struct NumberField {
     pub step: Option<String>,
 }
 
+pub type ProviderConfig = serde_json::Value;
+
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct ProviderRequest {
@@ -347,7 +328,7 @@ pub struct ProviderRequest {
     pub query_data: Blob,
 
     /// Configuration for the data source.
-    pub config: rmpv::Value,
+    pub config: ProviderConfig,
 
     /// Optional response from a previous invocation.
     /// May be used for implementing things like filtering without additional
@@ -387,13 +368,6 @@ pub enum QueryField {
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
-pub struct QueryInstant {
-    pub query: String,
-    pub timestamp: Timestamp,
-}
-
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-#[serde(rename_all = "camelCase")]
 pub struct QueryLogs {
     pub query: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -402,13 +376,6 @@ pub struct QueryLogs {
 }
 
 pub type QuerySchema = Vec<QueryField>;
-
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct QueryTimeRange {
-    pub query: String,
-    pub time_range: TimeRange,
-}
 
 /// Defines a field that allows selection from a predefined list of options.
 ///
@@ -438,17 +405,6 @@ pub struct SelectField {
 
     /// Whether a value is required.
     pub required: bool,
-}
-
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct Suggestion {
-    /// Suggested text.
-    pub text: String,
-
-    /// Optional description to go along with this suggestion.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub description: Option<String>,
 }
 
 /// Defines which query types are supported by a provider.
@@ -509,6 +465,15 @@ pub struct TextField {
     /// Whether the provider implements syntax highlighting for this field.
     /// See `highlight_field()` in the protocol definition.
     pub supports_highlighting: bool,
+}
+
+/// A range in time from a given timestamp (inclusive) up to another timestamp
+/// (exclusive).
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct TimeRange {
+    pub from: Timestamp,
+    pub to: Timestamp,
 }
 
 pub type Timestamp = f64;

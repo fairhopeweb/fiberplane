@@ -270,7 +270,7 @@ mod tests {
                         index: 2,
                     },
                     CellWithIndex {
-                        cell: Cell::Prometheus(PrometheusCell {
+                        cell: Cell::Loki(LokiCell {
                             id: "c4".to_owned(),
                             content: "go_memstats".to_owned(),
                             read_only: None,
@@ -313,7 +313,7 @@ mod tests {
                         index: 3,
                     },
                     CellWithIndex {
-                        cell: Cell::Prometheus(PrometheusCell {
+                        cell: Cell::Loki(LokiCell {
                             id: "s3".to_owned(),
                             content: "bytes".to_owned(),
                             read_only: None,

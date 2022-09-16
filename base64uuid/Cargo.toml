@@ -9,7 +9,7 @@ creation = ["uuid/v4"]
 
 [dependencies]
 base64 = "0.13.0"
-fp-bindgen = { version = "2.0.1", optional = true }
+fp-bindgen = { version = "2.3", optional = true }
 serde = { version = "1.0.133", features = ["derive"] }
 # Currently, sqlx does not export the macros without picking a runtime
 # `runtime-tokio-rustls` can be removed once https://github.com/launchbadge/sqlx/issues/1627 is resolved

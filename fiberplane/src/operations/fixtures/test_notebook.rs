@@ -4,7 +4,7 @@ use crate::{
     protocols::formatting::{Annotation, AnnotationWithOffset, Formatting},
 };
 use once_cell::sync::Lazy;
-use std::collections::{BTreeMap, HashMap};
+use std::collections::BTreeMap;
 use time::OffsetDateTime;
 
 pub static DEFAULT_TITLE: Lazy<String> = Lazy::new(|| "Test notebook".to_owned());
@@ -30,51 +30,49 @@ pub static TEST_NOTEBOOK: Lazy<Notebook> = Lazy::new(|| {
             formatting: Some(Formatting::default()),
             read_only: None,
         }),
-        Cell::Prometheus(PrometheusCell {
+        Cell::Loki(LokiCell {
             id: "c4".to_owned(),
             content: "go_memstats_alloc_bytes".to_owned(),
             read_only: None,
         }),
         Cell::Graph(GraphCell {
             id: "c5".to_owned(),
-            formatting: Some(Formatting::default()),
+            data_links: Vec::new(),
             graph_type: GraphType::Line,
-            stacking_type: StackingType::None,
-            title: "Still unconnected graph".to_owned(),
-            source_ids: vec![],
-            data: None,
             read_only: None,
-            time_range: None,
+            stacking_type: StackingType::None,
         }),
-        Cell::Prometheus(PrometheusCell {
+        Cell::Provider(ProviderCell {
             id: "c6".to_owned(),
-            content: "go_memstats_alloc_bytes".to_owned(),
-            read_only: Some(true),
-        }),
-        Cell::Table({
-            let mut data = BTreeMap::new();
-            data.insert(
-                "c6".to_owned(),
-                vec![Instant {
-                    metric: Metric {
-                        name: "go_memstats_alloc_bytes".to_owned(),
-                        labels: HashMap::new(),
-                    },
-                    point: Point {
-                        timestamp: 100.0,
-                        value: 1337.0,
-                    },
-                }],
-            );
-
-            TableCell {
-                id: "c7".to_owned(),
-                source_ids: vec!["c6".to_owned()],
-                data: Some(data),
-                formatting: Some(Formatting::default()),
-                title: "Table".to_owned(),
+            formatting: Some(Formatting::default()),
+            intent: "prometheus,x-instants".to_owned(),
+            output: Some(vec![Cell::Table(TableCell {
+                id: "c6/table".to_owned(),
                 read_only: None,
-            }
+                rows: vec![TableRow {
+                    cols: vec![
+                        TableColumn {
+                            formatting: None,
+                            text: "go_memstats_alloc_bytes".to_owned(),
+                        },
+                        TableColumn {
+                            formatting: None,
+                            text: "1337.0".to_owned(),
+                        },
+                    ],
+                }],
+            })]),
+            query_data: Some(
+                "application/x-www-form-urlencoded,query=go_memstats_alloc_bytes".to_owned(),
+            ),
+            read_only: Some(true),
+            response: None,
+            title: "Table".to_owned(),
+        }),
+        Cell::Discussion(DiscussionCell {
+            id: "c7".to_owned(),
+            thread_id: "123".to_owned(),
+            read_only: None,
         }),
         Cell::ListItem(ListItemCell {
             id: "c8".to_owned(),
@@ -98,63 +96,29 @@ pub static TEST_NOTEBOOK: Lazy<Notebook> = Lazy::new(|| {
             read_only: Some(true),
             start_number: None,
         }),
-        Cell::Graph({
-            let mut data = BTreeMap::new();
-            data.insert(
-                "c4".to_owned(),
-                vec![Series {
-                    metric: Metric {
-                        name: "sourced from c4".to_owned(),
-                        labels: HashMap::new(),
-                    },
-                    points: vec![
-                        Point {
-                            timestamp: 50.0,
-                            value: 1.0,
-                        },
-                        Point {
-                            timestamp: 100.0,
-                            value: 2.0,
-                        },
-                    ],
-                    visible: true,
-                }],
-            );
-            data.insert(
-                "c6".to_owned(),
-                vec![Series {
-                    metric: Metric {
-                        name: "sourced from c6".to_owned(),
-                        labels: HashMap::new(),
-                    },
-                    points: vec![
-                        Point {
-                            timestamp: 50.0,
-                            value: 1337.0,
-                        },
-                        Point {
-                            timestamp: 100.0,
-                            value: 1337.0,
-                        },
-                    ],
-                    visible: true,
-                }],
-            );
-
-            GraphCell {
-                id: "c9".to_owned(),
-                formatting: None,
+        Cell::Provider(ProviderCell {
+            id: "c9".to_owned(),
+            formatting: None,
+            intent: "prometheus,metrics".to_owned(),
+            output: Some(vec![Cell::Graph(GraphCell {
+                id: "c9/graph".to_owned(),
+                data_links: vec![
+                    "cell-data:application/vnd.fiberplane.metrics,c6".to_owned(),
+                    "cell-data:application/vnd.fiberplane.metrics,c9".to_owned(),
+                ],
                 graph_type: GraphType::Bar,
+                read_only: None,
                 stacking_type: StackingType::None,
-                title: "They call me the crown jewel".to_owned(),
-                source_ids: vec!["c4".to_owned(), "c6".to_owned()],
-                data: Some(data),
-                read_only: Some(true),
-                time_range: Some(TimeRange {
-                    from: 50.0,
-                    to: 150.0,
-                }),
-            }
+            })]),
+            query_data: Some(
+                "application/x-www-form-urlencoded,\
+                    query=go_memstats_alloc_bytes&\
+                    time_range=2022-08-31T11:00:00.000Z+2022-08-31T12:00:00.000Z"
+                    .to_owned(),
+            ),
+            read_only: Some(true),
+            response: None,
+            title: "They call me the crown jewel".to_owned(),
         }),
         Cell::Elasticsearch(ElasticsearchCell {
             id: "c10".to_owned(),
