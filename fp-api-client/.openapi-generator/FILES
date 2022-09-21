@@ -44,6 +44,7 @@ docs/ImageCell.md
 docs/InlineDataSource.md
 docs/Label.md
 docs/LabelAnnotation.md
+docs/LegacyTimeRange.md
 docs/ListItemCell.md
 docs/LogCell.md
 docs/LogCellVisibility.md
@@ -60,6 +61,7 @@ docs/NewPinnedNotebook.md
 docs/NewProxy.md
 docs/NewTemplate.md
 docs/NewThread.md
+docs/NewTimeRange.md
 docs/NewToken.md
 docs/NewTrigger.md
 docs/Notebook.md
@@ -77,6 +79,7 @@ docs/Proxy.md
 docs/ProxyConnectionStatus.md
 docs/ProxyDataSource.md
 docs/ProxySummary.md
+docs/RelativeTimeRange.md
 docs/SentryDataSource.md
 docs/StartBoldAnnotation.md
 docs/StartCodeAnnotation.md
@@ -156,6 +159,7 @@ src/models/image_cell.rs
 src/models/inline_data_source.rs
 src/models/label.rs
 src/models/label_annotation.rs
+src/models/legacy_time_range.rs
 src/models/list_item_cell.rs
 src/models/log_cell.rs
 src/models/log_cell_visibility.rs
@@ -173,6 +177,7 @@ src/models/new_pinned_notebook.rs
 src/models/new_proxy.rs
 src/models/new_template.rs
 src/models/new_thread.rs
+src/models/new_time_range.rs
 src/models/new_token.rs
 src/models/new_trigger.rs
 src/models/notebook.rs
@@ -190,6 +195,7 @@ src/models/proxy.rs
 src/models/proxy_connection_status.rs
 src/models/proxy_data_source.rs
 src/models/proxy_summary.rs
+src/models/relative_time_range.rs
 src/models/sentry_data_source.rs
 src/models/start_bold_annotation.rs
 src/models/start_code_annotation.rs

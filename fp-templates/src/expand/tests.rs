@@ -26,27 +26,6 @@ fn expands_without_top_level_function() {
 }
 
 #[test]
-fn includes_timestamp_by_default() {
-    let template = "{time: std.extVar('UNIX_TIMESTAMP')}";
-    let expander = TemplateExpander::default();
-    // This will panic if the value is not set
-    expander
-        .expand_template_to_string(template, EMPTY_ARGS, false)
-        .unwrap();
-}
-
-#[test]
-fn allows_setting_custom_timestamp() {
-    let template = "{time: std.extVar('UNIX_TIMESTAMP')}";
-    let mut expander = TemplateExpander::default();
-    expander.set_unix_timestamp(0.0);
-    let output = expander
-        .expand_template_to_string(template, EMPTY_ARGS, false)
-        .unwrap();
-    assert_eq!(output, "{\"time\": 0}");
-}
-
-#[test]
 fn includes_data_sources_by_default() {
     let template = "{dataSources: std.extVar('PROXY_DATA_SOURCES')}";
     let expander = TemplateExpander::default();

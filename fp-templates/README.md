@@ -1,4 +1,5 @@
 # Fiberplane Templates
+
 > Programmatically generate Fiberplane Notebooks for repeatable workflows.
 
 ## Overview
@@ -6,6 +7,7 @@
 Fiberplane Templates are built with the [Jsonnet](https://jsonnet.org/) data templating language.
 
 This repository includes:
+
 - Fiberplane [Jsonnet library](./fiberplane.libsonnet) with functions for creating Notebooks ([API Docs](./docs/template_api.md))
 - [Example Templates](./examples) for various use cases (incident response, root cause analysis, etc)
 - Rust library for expanding Templates into Notebooks and for converting existing Notebooks into Templates
@@ -44,7 +46,6 @@ See the [examples](./examples) for more detailed, use case-specific Templates.
 
 See the generated API docs [here](./docs/template_api.md).
 
-
 ## Development
 
 ### VS Code
@@ -53,14 +54,12 @@ If you want to edit Jsonnet files in VS Code, you can use the [Jsonnet NG](https
 
 You should add the following to your VS Code `settings.json` file to edit Template files without it showing errors.
 This includes the Fiberplane Jsonnet library and external variables normally provided by the Template expansion functions.
+
 ```json
 {
-  "jsonnet.libPaths": [
-    "path/to/fiberplane/templates/"
-  ],
+  "jsonnet.libPaths": ["path/to/fiberplane/templates/"],
   "jsonnet.extStrs": {
-    "PROXY_DATA_SOURCES": "[]",
-    "UNIX_TIMESTAMP": "{{.UnixTimestamp}}"
+    "PROXY_DATA_SOURCES": "[]"
   }
 }
 ```
@@ -68,6 +67,7 @@ This includes the Fiberplane Jsonnet library and external variables normally pro
 ### Running Tests
 
 To run the tests (including the examples), run:
+
 ```shell
 cargo test --lib --examples
 ```

@@ -1,15 +1,13 @@
 use super::{config::PrometheusConfig, constants::*, prometheus::*};
 use fiberplane::protocols::providers::{FORM_ENCODED_MIME_TYPE, TIMESERIES_MIME_TYPE};
 use fp_provider_bindings::*;
-use std::{
-    collections::HashMap,
-    time::{Duration, SystemTime},
-};
-use time::{format_description::well_known::Rfc3339, OffsetDateTime};
+use std::{collections::HashMap, time::SystemTime};
+use time::{ext::NumericalDuration, format_description::well_known::Rfc3339, OffsetDateTime};
 
 struct SeriesRequest {
     query: String,
-    time_range: TimeRange,
+    from: f64,
+    to: f64,
 }
 
 #[derive(Clone, Copy)]
@@ -43,17 +41,9 @@ impl StepUnit {
 
 pub async fn query_series(query_data: Blob, config: PrometheusConfig) -> Result<Blob, Error> {
     let request = parse_metrics_request(query_data)?;
-    let step = step_for_range(&request.time_range);
-    let start = to_iso_date(round_to_grid(
-        request.time_range.from,
-        step,
-        RoundToGridEdge::Start,
-    ));
-    let end = to_iso_date(round_to_grid(
-        request.time_range.to,
-        step,
-        RoundToGridEdge::End,
-    ));
+    let step = step_for_range(request.from, request.to);
+    let start = to_iso_date(round_to_grid(request.from, step, RoundToGridEdge::Start));
+    let end = to_iso_date(round_to_grid(request.to, step, RoundToGridEdge::End));
 
     let mut form_data = form_urlencoded::Serializer::new(String::new());
     form_data.append_pair("query", &request.query);
@@ -124,16 +114,15 @@ fn parse_metrics_request(query_data: Blob) -> Result<SeriesRequest, Error> {
     }
 
     let mut query = String::new();
-    let mut time_range = TimeRange { from: 0.0, to: 0.0 };
+    let mut from = 0.0;
+    let mut to = 0.0;
     for (key, value) in form_urlencoded::parse(&query_data.data) {
         match key.as_ref() {
             QUERY_PARAM_NAME => query = value.to_string(),
             TIME_RANGE_PARAM_NAME => {
-                if let Some((from, to)) = value.split_once(' ') {
-                    time_range = TimeRange {
-                        from: from_iso_date(from)?,
-                        to: from_iso_date(to)?,
-                    }
+                if let Some(split) = value.split_once(' ') {
+                    from = from_iso_date(split.0)?;
+                    to = from_iso_date(split.1)?;
                 }
             }
             _ => {}
@@ -147,7 +136,7 @@ fn parse_metrics_request(query_data: Blob) -> Result<SeriesRequest, Error> {
             message: "Please enter a query".to_owned(),
         });
     }
-    if time_range.from == 0.0 || time_range.to == 0.0 {
+    if from == 0.0 || to == 0.0 {
         errors.push(ValidationError {
             field_name: TIME_RANGE_PARAM_NAME.to_owned(),
             message: "Please enter a valid time range".to_owned(),
@@ -158,7 +147,7 @@ fn parse_metrics_request(query_data: Blob) -> Result<SeriesRequest, Error> {
         return Err(Error::ValidationError { errors });
     }
 
-    Ok(SeriesRequest { query, time_range })
+    Ok(SeriesRequest { query, from, to })
 }
 
 enum RoundToGridEdge {
@@ -170,7 +159,7 @@ enum RoundToGridEdge {
 /// This assures that when we scroll a chart forward or backward in time, we
 /// "snap" to the same grid, to avoid the issue of bucket realignment, giving
 /// unexpected jumps in the graph.
-fn round_to_grid(timestamp: Timestamp, step: StepSize, edge: RoundToGridEdge) -> Timestamp {
+fn round_to_grid(timestamp: f64, step: StepSize, edge: RoundToGridEdge) -> f64 {
     let step_seconds = step_to_seconds(step);
     let round = match edge {
         RoundToGridEdge::Start => f64::floor,
@@ -191,8 +180,8 @@ fn step_to_seconds(step: StepSize) -> u32 {
 /// to maintain roughly 30 steps for whatever the duration is, so that for a
 /// duration of one hour, we fetch per 2 minutes, and for a duration of one
 /// minute, we fetch per 2 seconds.
-fn step_for_range(range: &TimeRange) -> StepSize {
-    let mut step = (range.to - range.from) / 30.0;
+fn step_for_range(from: f64, to: f64) -> StepSize {
+    let mut step = (to - from) / 30.0;
     let mut unit = StepUnit::Seconds;
     if step >= 60.0 {
         step /= 60.0;
@@ -209,13 +198,13 @@ fn step_for_range(range: &TimeRange) -> StepSize {
     }
 }
 
-fn from_iso_date(timestamp: &str) -> Result<Timestamp, time::error::Parse> {
+fn from_iso_date(timestamp: &str) -> Result<f64, time::error::Parse> {
     OffsetDateTime::parse(timestamp, &Rfc3339)
         .map(|timestamp| timestamp.unix_timestamp_nanos() as f64 / 1_000_000_000.0)
 }
 
-fn to_iso_date(timestamp: Timestamp) -> String {
-    let time = SystemTime::UNIX_EPOCH + Duration::from_millis((timestamp * 1000.0) as u64);
+fn to_iso_date(timestamp: f64) -> String {
+    let time = SystemTime::UNIX_EPOCH + timestamp.seconds();
     OffsetDateTime::from(time)
         .format(&Rfc3339)
         .expect("Error formatting timestamp as RFC3339 timestamp")

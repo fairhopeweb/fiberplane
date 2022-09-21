@@ -137,7 +137,7 @@ pub enum Cell {
         #[serde(rename = "formatting", skip_serializing_if = "Option::is_none")]
         formatting: Option<Vec<crate::models::Annotation>>,
         #[serde(rename = "timeRange", skip_serializing_if = "Option::is_none")]
-        time_range: Option<Box<crate::models::TimeRange>>,
+        time_range: Option<Box<crate::models::LegacyTimeRange>>,
         #[serde(rename = "hideSimilarValues", skip_serializing_if = "Option::is_none")]
         hide_similar_values: Option<bool>,
         #[serde(rename = "displayFields", skip_serializing_if = "Option::is_none")]

@@ -28,7 +28,9 @@ pub use fiberplane::protocols::providers::HttpRequestError;
 pub use fiberplane::protocols::providers::HttpRequestMethod;
 pub use fiberplane::protocols::providers::HttpResponse;
 pub use fiberplane::protocols::core::ImageCell;
+pub use fiberplane::protocols::core::Label;
 pub use fiberplane::protocols::providers::LabelField;
+pub use fiberplane::protocols::core::LegacyTimeRange;
 pub use fiberplane::protocols::core::ListItemCell;
 pub use fiberplane::protocols::core::ListType;
 pub use fiberplane::protocols::core::LogCell;
@@ -49,6 +51,7 @@ pub use fiberplane::protocols::core::TableColumn;
 pub use fiberplane::protocols::core::TableRow;
 pub use fiberplane::protocols::core::TextCell;
 pub use fiberplane::protocols::providers::TextField;
+pub use fiberplane::protocols::core::Timestamp;
 pub use fiberplane::protocols::providers::ValidationError;
 
 pub type Formatting = Vec<AnnotationWithOffset>;
@@ -57,7 +60,7 @@ pub type Formatting = Vec<AnnotationWithOffset>;
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct LegacyLogRecord {
-    pub timestamp: Timestamp,
+    pub timestamp: LegacyTimestamp,
     pub body: String,
     pub attributes: HashMap<String, String>,
     pub resource: HashMap<String, String>,
@@ -88,6 +91,8 @@ pub enum LegacyProviderResponse {
     StatusOk,
 }
 
+pub type LegacyTimestamp = f64;
+
 pub type ProviderConfig = serde_json::Value;
 
 /// Relays requests for a data-source to a proxy server registered with the API.
@@ -110,18 +115,7 @@ pub struct QueryLogs {
     pub query: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub limit: Option<u32>,
-    pub time_range: TimeRange,
+    pub time_range: LegacyTimeRange,
 }
 
 pub type QuerySchema = Vec<QueryField>;
-
-/// A range in time from a given timestamp (inclusive) up to another timestamp
-/// (exclusive).
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct TimeRange {
-    pub from: Timestamp,
-    pub to: Timestamp,
-}
-
-pub type Timestamp = f64;

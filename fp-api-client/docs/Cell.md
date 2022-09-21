@@ -27,7 +27,7 @@ Name | Type | Description | Notes
 **start_number** | Option<**i32**> |  | [optional]
 **source_ids** | **Vec<String>** |  | 
 **title** | **String** |  | 
-**time_range** | Option<[**crate::models::TimeRange**](timeRange.md)> |  | [optional]
+**time_range** | Option<[**crate::models::LegacyTimeRange**](legacyTimeRange.md)> |  | [optional]
 **hide_similar_values** | Option<**bool**> |  | [optional]
 **display_fields** | Option<**Vec<String>**> |  | [optional]
 **expanded_indices** | Option<[**Vec<crate::models::LogRecordIndex>**](logRecordIndex.md)> |  | [optional]

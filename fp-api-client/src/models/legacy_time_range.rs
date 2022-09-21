@@ -9,15 +9,15 @@
  */
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct TimeRange {
+pub struct LegacyTimeRange {
     #[serde(rename = "from")]
-    pub from: String,
+    pub from: f64,
     #[serde(rename = "to")]
-    pub to: String,
+    pub to: f64,
 }
 
-impl TimeRange {
-    pub fn new(from: String, to: String) -> TimeRange {
-        TimeRange { from, to }
+impl LegacyTimeRange {
+    pub fn new(from: f64, to: f64) -> LegacyTimeRange {
+        LegacyTimeRange { from, to }
     }
 }

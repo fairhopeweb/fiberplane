@@ -10,6 +10,7 @@ use crate::{
     text_util::char_count,
 };
 use once_cell::sync::Lazy;
+use time::macros::datetime;
 
 pub struct OperationTestCase {
     pub operation: Operation,
@@ -1285,7 +1286,7 @@ fn create_update_cell_test_cases(test_cases: &mut Vec<OperationTestCase>) {
         title: "Logs".to_owned(),
         source_ids: vec!["c10".to_owned()],
         read_only: Some(true),
-        time_range: Some(TimeRange {
+        time_range: Some(LegacyTimeRange {
             from: 50.0,
             to: 150.0,
         }),
@@ -1312,8 +1313,8 @@ fn create_update_cell_test_cases(test_cases: &mut Vec<OperationTestCase>) {
 
 fn create_update_notebook_time_range_test_cases(test_cases: &mut Vec<OperationTestCase>) {
     let new_time_range1 = TimeRange {
-        from: 100.0,
-        to: 200.0,
+        from: datetime!(2022-09-19 11:00 UTC).into(),
+        to: datetime!(2022-09-19 12:00 UTC).into(),
     };
 
     test_cases.push(OperationTestCase {
@@ -1331,8 +1332,8 @@ fn create_update_notebook_time_range_test_cases(test_cases: &mut Vec<OperationTe
 
     // Another one to see if they can converge:
     let new_time_range2 = TimeRange {
-        from: 150.0,
-        to: 250.0,
+        from: datetime!(2022-09-19 12:00 UTC).into(),
+        to: datetime!(2022-09-19 13:00 UTC).into(),
     };
 
     test_cases.push(OperationTestCase {

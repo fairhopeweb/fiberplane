@@ -14,6 +14,8 @@ pub use fiberplane::protocols::core::GraphType;
 pub use fiberplane::protocols::core::HeadingCell;
 pub use fiberplane::protocols::core::HeadingType;
 pub use fiberplane::protocols::core::ImageCell;
+pub use fiberplane::protocols::core::Label;
+pub use fiberplane::protocols::core::LegacyTimeRange;
 pub use fiberplane::protocols::core::ListItemCell;
 pub use fiberplane::protocols::core::ListType;
 pub use fiberplane::protocols::core::LogCell;
@@ -27,6 +29,7 @@ pub use fiberplane::protocols::core::TableCell;
 pub use fiberplane::protocols::core::TableColumn;
 pub use fiberplane::protocols::core::TableRow;
 pub use fiberplane::protocols::core::TextCell;
+pub use fiberplane::protocols::core::Timestamp;
 pub use fiberplane::protocols::formatting::Annotation;
 pub use fiberplane::protocols::formatting::AnnotationWithOffset;
 pub use fiberplane::protocols::formatting::Mention;
@@ -243,7 +246,7 @@ pub struct LabelField {
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct LegacyLogRecord {
-    pub timestamp: Timestamp,
+    pub timestamp: LegacyTimestamp,
     pub body: String,
     pub attributes: HashMap<String, String>,
     pub resource: HashMap<String, String>,
@@ -277,6 +280,8 @@ pub enum LegacyProviderResponse {
     },
     StatusOk,
 }
+
+pub type LegacyTimestamp = f64;
 
 /// Defines a field that allows labels to be selected.
 ///
@@ -372,7 +377,7 @@ pub struct QueryLogs {
     pub query: String,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub limit: Option<u32>,
-    pub time_range: TimeRange,
+    pub time_range: LegacyTimeRange,
 }
 
 pub type QuerySchema = Vec<QueryField>;
@@ -466,17 +471,6 @@ pub struct TextField {
     /// See `highlight_field()` in the protocol definition.
     pub supports_highlighting: bool,
 }
-
-/// A range in time from a given timestamp (inclusive) up to another timestamp
-/// (exclusive).
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct TimeRange {
-    pub from: Timestamp,
-    pub to: Timestamp,
-}
-
-pub type Timestamp = f64;
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]

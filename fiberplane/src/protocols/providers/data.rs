@@ -1,30 +1,8 @@
+use crate::protocols::core::Timestamp;
 use fp_bindgen::prelude::Serializable;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use std::{collections::BTreeMap, time::SystemTime};
-use time::OffsetDateTime;
-
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::providers")]
-pub struct OtelTimestamp(#[serde(with = "time::serde::rfc3339")] pub OffsetDateTime);
-
-impl From<OffsetDateTime> for OtelTimestamp {
-    fn from(time: OffsetDateTime) -> Self {
-        Self(time)
-    }
-}
-
-impl From<SystemTime> for OtelTimestamp {
-    fn from(time: SystemTime) -> Self {
-        Self(OffsetDateTime::from(time))
-    }
-}
-
-impl From<OtelTimestamp> for OffsetDateTime {
-    fn from(timestamp: OtelTimestamp) -> Self {
-        timestamp.0
-    }
-}
+use std::collections::BTreeMap;
 
 /// A single event.
 ///
@@ -35,8 +13,8 @@ impl From<OtelTimestamp> for OffsetDateTime {
 #[fp(rust_plugin_module = "fiberplane::protocols::providers")]
 #[serde(rename_all = "camelCase")]
 pub struct Event {
-    pub time: OtelTimestamp,
-    pub end_time: Option<OtelTimestamp>,
+    pub time: Timestamp,
+    pub end_time: Option<Timestamp>,
 
     #[serde(flatten)]
     pub otel: OtelMetadata,
@@ -60,7 +38,7 @@ pub struct Event {
 #[fp(rust_plugin_module = "fiberplane::protocols::providers")]
 #[serde(rename_all = "camelCase")]
 pub struct Metric {
-    pub time: OtelTimestamp,
+    pub time: Timestamp,
 
     #[serde(flatten)]
     pub otel: OtelMetadata,

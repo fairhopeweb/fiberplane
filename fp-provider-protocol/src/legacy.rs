@@ -1,8 +1,10 @@
 #![allow(dead_code)]
 
-use super::Timestamp;
 use bytes::Bytes;
-use fiberplane::protocols::providers::Error;
+use fiberplane::protocols::{
+    core::{LegacyTimeRange, LegacyTimestamp},
+    providers::Error,
+};
 use fp_bindgen::prelude::Serializable;
 use std::collections::HashMap;
 
@@ -31,21 +33,12 @@ pub struct ProxyRequest {
     pub request: Bytes,
 }
 
-/// A range in time from a given timestamp (inclusive) up to another timestamp
-/// (exclusive).
-#[derive(Serializable, Debug)]
-#[fp(rename_all = "camelCase")]
-pub struct TimeRange {
-    pub from: Timestamp,
-    pub to: Timestamp,
-}
-
 #[derive(Serializable, Debug)]
 #[fp(rename_all = "camelCase")]
 pub struct QueryLogs {
     pub query: String,
     pub limit: Option<u32>,
-    pub time_range: TimeRange,
+    pub time_range: LegacyTimeRange,
 }
 
 /// Legacy `ProviderResponse` from the 1.0 protocol.
@@ -68,7 +61,7 @@ pub enum LegacyProviderResponse {
 #[derive(Serializable, Debug)]
 #[fp(rename_all = "camelCase")]
 pub struct LegacyLogRecord {
-    pub timestamp: Timestamp,
+    pub timestamp: LegacyTimestamp,
     pub body: String,
     pub attributes: HashMap<String, String>,
     pub resource: HashMap<String, String>,

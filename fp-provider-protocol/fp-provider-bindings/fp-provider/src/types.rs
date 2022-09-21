@@ -2,16 +2,14 @@
 use serde::{Deserialize, Serialize};
 use std::{collections::BTreeMap, collections::HashMap};
 
-pub use fiberplane::protocols::formatting::Annotation;
-pub use fiberplane::protocols::formatting::AnnotationWithOffset;
 pub use fiberplane::protocols::blobs::Blob;
+pub use fiberplane::protocols::blobs::EncodedBlob;
 pub use fiberplane::protocols::core::Cell;
 pub use fiberplane::protocols::core::CheckboxCell;
 pub use fiberplane::protocols::core::CodeCell;
 pub use fiberplane::protocols::core::DiscussionCell;
 pub use fiberplane::protocols::core::DividerCell;
 pub use fiberplane::protocols::core::ElasticsearchCell;
-pub use fiberplane::protocols::blobs::EncodedBlob;
 pub use fiberplane::protocols::core::ExpandedIndex;
 pub use fiberplane::protocols::core::GraphCell;
 pub use fiberplane::protocols::core::GraphType;
@@ -24,7 +22,6 @@ pub use fiberplane::protocols::core::ListType;
 pub use fiberplane::protocols::core::LogCell;
 pub use fiberplane::protocols::core::LogRecord;
 pub use fiberplane::protocols::core::LokiCell;
-pub use fiberplane::protocols::formatting::Mention;
 pub use fiberplane::protocols::core::Metric;
 pub use fiberplane::protocols::core::Point;
 pub use fiberplane::protocols::core::PrometheusCell;
@@ -34,6 +31,9 @@ pub use fiberplane::protocols::core::StackingType;
 pub use fiberplane::protocols::core::TableCell;
 pub use fiberplane::protocols::core::TextCell;
 pub use fiberplane::protocols::core::TimeRange;
+pub use fiberplane::protocols::formatting::Annotation;
+pub use fiberplane::protocols::formatting::AnnotationWithOffset;
+pub use fiberplane::protocols::formatting::Mention;
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -122,15 +122,25 @@ pub enum Error {
         errors: Vec<ValidationError>,
     },
     #[serde(rename_all = "camelCase")]
-    Http { error: HttpRequestError },
+    Http {
+        error: HttpRequestError,
+    },
     #[serde(rename_all = "camelCase")]
-    Data { message: String },
+    Data {
+        message: String,
+    },
     #[serde(rename_all = "camelCase")]
-    Deserialization { message: String },
+    Deserialization {
+        message: String,
+    },
     #[serde(rename_all = "camelCase")]
-    Config { message: String },
+    Config {
+        message: String,
+    },
     #[serde(rename_all = "camelCase")]
-    Other { message: String },
+    Other {
+        message: String,
+    },
 }
 
 /// Defines a field that allows files to be uploaded as part of the query data.
@@ -177,9 +187,14 @@ pub enum HttpRequestError {
     Timeout,
     ResponseTooBig,
     #[serde(rename_all = "camelCase")]
-    ServerError { status_code: u16, response: serde_bytes::ByteBuf },
+    ServerError {
+        status_code: u16,
+        response: serde_bytes::ByteBuf,
+    },
     #[serde(rename_all = "camelCase")]
-    Other { reason: String },
+    Other {
+        reason: String,
+    },
 }
 
 /// HTTP request method.
@@ -223,7 +238,7 @@ pub struct LabelField {
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct LegacyLogRecord {
-    pub timestamp: Timestamp,
+    pub timestamp: LegacyTimestamp,
     pub body: String,
     pub attributes: HashMap<String, String>,
     pub resource: HashMap<String, String>,
@@ -253,15 +268,25 @@ pub enum LegacyProviderRequest {
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum LegacyProviderResponse {
     #[serde(rename_all = "camelCase")]
-    Error { error: Error },
+    Error {
+        error: Error,
+    },
     #[serde(rename_all = "camelCase")]
-    Instant { instants: Vec<Instant> },
+    Instant {
+        instants: Vec<Instant>,
+    },
     #[serde(rename_all = "camelCase")]
-    Series { series: Vec<Series> },
+    Series {
+        series: Vec<Series>,
+    },
     #[serde(rename_all = "camelCase")]
-    AutoSuggest { suggestions: Vec<Suggestion> },
+    AutoSuggest {
+        suggestions: Vec<Suggestion>,
+    },
     #[serde(rename_all = "camelCase")]
-    LogRecords { log_records: Vec<LegacyLogRecord> },
+    LogRecords {
+        log_records: Vec<LegacyLogRecord>,
+    },
     StatusOk,
 }
 
@@ -355,7 +380,7 @@ pub enum QueryField {
 #[serde(rename_all = "camelCase")]
 pub struct QueryInstant {
     pub query: String,
-    pub timestamp: Timestamp,
+    pub timestamp: LegacyTimestamp,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -476,8 +501,6 @@ pub struct TextField {
     /// See `highlight_field()` in the protocol definition.
     pub supports_highlighting: bool,
 }
-
-pub type Timestamp = f64;
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]

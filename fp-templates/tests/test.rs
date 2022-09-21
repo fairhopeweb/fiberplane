@@ -1,8 +1,8 @@
-use assert_json_diff::{assert_json_eq, assert_json_include};
 use fiberplane::protocols::core::{
     Cell, CheckboxCell, CodeCell, DataSource, DataSourceType, ElasticsearchDataSource, HeadingCell,
     HeadingType, ImageCell, InlineDataSource, Label, ListItemCell, ListType, LokiCell,
-    LokiDataSource, NewNotebook, NotebookDataSource, ProxyDataSource, TextCell, TimeRange,
+    LokiDataSource, NewNotebook, NewTimeRange, NotebookDataSource, ProxyDataSource,
+    RelativeTimeRange, TextCell,
 };
 use fiberplane::protocols::formatting::{Annotation, AnnotationWithOffset};
 use fp_templates::{
@@ -10,6 +10,7 @@ use fp_templates::{
     TemplateParameter, TemplateParameterType, EMPTY_ARGS,
 };
 use lazy_static::lazy_static;
+use pretty_assertions::assert_eq;
 use serde_json::{json, Value};
 use std::collections::BTreeMap;
 use std::collections::HashMap;
@@ -19,10 +20,7 @@ use std::path::PathBuf;
 lazy_static! {
     static ref NOTEBOOK: NewNotebook = NewNotebook {
         title: "Incident: 'API Outage'".to_string(),
-        time_range: TimeRange {
-            from: 1639239669.739,
-            to: 1639239729.0,
-        },
+        time_range: NewTimeRange::Relative(RelativeTimeRange { minutes: -60 }),
         data_sources: BTreeMap::from([
             (
                 "direct elasticsearch".to_string(),
@@ -209,26 +207,15 @@ fn matches_fiberplane_rs() {
     )
     .unwrap();
     let args = HashMap::from([("incidentName", "API Outage")]);
-    let output = expand_template(&template, args).unwrap();
-    println!("{}", serde_json::to_string_pretty(&output).unwrap());
-    assert_json_eq!(output, &*NOTEBOOK);
+    let actual = expand_template(&template, args).unwrap();
+    assert_eq!(actual, *NOTEBOOK);
 }
 
 #[test]
 fn export_notebook_to_template_and_back() {
     let template = notebook_to_template(NOTEBOOK.clone());
-    println!("{}", template);
     let actual = expand_template(template, EMPTY_ARGS).unwrap();
-
-    assert_eq!(actual.time_range.to - actual.time_range.from, 60.0);
-
-    // Ignore the time range here because it's been updated to a range with the
-    // same duration but ending at the moment the notebook was created
-    let mut expected = serde_json::to_value(&*NOTEBOOK).unwrap();
-    if let Some(object) = expected.as_object_mut() {
-        object.remove("timeRange").unwrap();
-    }
-    assert_json_include!(actual: actual, expected: expected);
+    assert_eq!(actual, *NOTEBOOK);
 }
 
 #[test]
@@ -288,10 +275,7 @@ fn mustache_substitution_in_title() {
     let notebook = NewNotebook {
         title: r#"Hello {{personName}}, this is a {{notebookCategory}}"#.to_string(),
         cells: Vec::new(),
-        time_range: TimeRange {
-            from: 0.0,
-            to: 60.0,
-        },
+        time_range: NewTimeRange::Relative(RelativeTimeRange { minutes: -60 }),
         data_sources: BTreeMap::new(),
         labels: Vec::new(),
     };
@@ -327,10 +311,7 @@ fn mustache_substitution_with_formatting() {
             ]),
             read_only: None,
         })],
-        time_range: TimeRange {
-            from: 0.0,
-            to: 60.0,
-        },
+        time_range: NewTimeRange::Relative(RelativeTimeRange { minutes: -60 }),
         data_sources: BTreeMap::new(),
         labels: Vec::new(),
     };
@@ -349,10 +330,7 @@ fn mustache_substitution_to_function_parameters() {
             content: r#"{{greeting}} {{personName}}, great to have you"#.to_string(),
             ..Default::default()
         })],
-        time_range: TimeRange {
-            from: 0.0,
-            to: 60.0,
-        },
+        time_range: NewTimeRange::Relative(RelativeTimeRange { minutes: -60 }),
         data_sources: BTreeMap::new(),
         labels: Vec::new(),
     };

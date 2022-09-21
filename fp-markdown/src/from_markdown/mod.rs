@@ -1,6 +1,6 @@
 use fiberplane::protocols::core::{
     Cell, CheckboxCell, CodeCell, DividerCell, HeadingCell, HeadingType, ImageCell, ListItemCell,
-    ListType, NewNotebook, TextCell,
+    ListType, NewNotebook, NewTimeRange, RelativeTimeRange, TextCell,
 };
 use fiberplane::protocols::formatting::{Annotation, AnnotationWithOffset};
 use fiberplane::text_util::char_count;
@@ -61,7 +61,7 @@ impl<'a> MarkdownConverter<'a> {
             cells: self.parse_cells(),
             data_sources: Default::default(),
             labels: Default::default(),
-            time_range: Default::default(),
+            time_range: NewTimeRange::Relative(RelativeTimeRange { minutes: -60 }),
         }
     }
 

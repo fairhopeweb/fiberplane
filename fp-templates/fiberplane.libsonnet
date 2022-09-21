@@ -26,26 +26,6 @@ local matches(a, b, caseSensitive) =
 local isCell(value) = std.isObject(value) && std.objectHasAll(value, '_class') && value._class == 'CELL';
 local isFormattedContent(value) = std.isObject(value) && std.objectHasAll(value, '_class') && value._class == 'FORMATTED_CONTENT';
 
-// Returns the current time as seconds since the Unix epoch
-// (including fractions of seconds).
-local currentTime() =
-  // This is injected by the Fiberplane template runtime.
-  // If you are running a template using a stock jsonnet tool
-  // and want to use the currentTime function, you must
-  // pass in the time (as seconds since the unix epoch)
-  // as an ext var
-  local time = std.extVar('UNIX_TIMESTAMP');
-  if std.isNumber(time) then
-    time
-  else
-    std.parseJson(time);
-local relativeTimeRange(minutes) =
-  local now = currentTime();
-  {
-    from: now - 60 * validate.number('minutes', minutes),
-    to: now,
-  };
-
 /**
  * @class format.FormattedContent
  * @classdesc A class representing formatted text. Each of the formatting functions can be called as methods to append text with the given formatting.
@@ -234,7 +214,7 @@ local notebook = {
    */
   new(title):: {
     title: validate.string('title', title),
-    timeRange: relativeTimeRange(minutes=60),
+    timeRange: { minutes: -60 },
     dataSources: {},
     labels: [],
     cells: [],
@@ -256,7 +236,7 @@ local notebook = {
      * @returns {notebook.Notebook}
      */
     setTimeRangeRelative(minutes):: self {
-      timeRange+: relativeTimeRange(minutes),
+      timeRange+: { minutes: -validate.number('minutes', minutes) },
     },
 
     /**
@@ -265,14 +245,14 @@ local notebook = {
      * Note: in most cases, you will want to use {@link notebook#setTimeRangeRelative} instead.
      *
      * @function notebook.Notebook#setTimeRangeAbsolute
-     * @param {number} from - Starting timestamp in seconds since the Unix epoch
-     * @param {number} to - Ending timestamp in seconds since the Unix epoch
+     * @param {string} from - ISO 8601/RFC 3339 formatted start timestamp
+     * @param {string} to - ISO 8601/RFC 3339 formatted end timestamp
      * @returns {notebook.Notebook}
      */
     setTimeRangeAbsolute(from, to):: self {
       timeRange+: {
-        from: validate.number('from', from),
-        to: validate.number('to', to),
+        from: validate.string('from', from),
+        to: validate.string('to', to),
       },
     },
 

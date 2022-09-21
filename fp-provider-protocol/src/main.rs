@@ -26,9 +26,9 @@ fp_import! {
 
 fp_export! {
     type Formatting = Vec<AnnotationWithOffset>;
+    type LegacyTimestamp = f64;
     type ProviderConfig = Value;
     type QuerySchema = Vec<QueryField>;
-    type Timestamp = f64;
 
     /// Returns the query types supported by this provider.
     /// This function allows Studio to know upfront which formats will be

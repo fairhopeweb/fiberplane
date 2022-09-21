@@ -5,7 +5,7 @@ local fmt = fp.format;
 function(incidentName)
   fp.notebook
   .new("Incident: '" + incidentName + "'")
-  .setTimeRangeAbsolute(from=1639239669.739, to=1639239729)
+  .setTimeRangeRelative(minutes=60)
   .addDirectDataSource(
     name='direct elasticsearch',
     type='elasticsearch',

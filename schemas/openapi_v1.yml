@@ -33,7 +33,7 @@ components:
         title:
           type: string
         timeRange:
-          $ref: "#/components/schemas/timeRange"
+          $ref: "#/components/schemas/newTimeRange"
         cells:
           type: array
           items:
@@ -371,7 +371,7 @@ components:
         formatting:
           $ref: "#/components/schemas/formatting"
         timeRange:
-          $ref: "#/components/schemas/timeRange"
+          $ref: "#/components/schemas/legacyTimeRange"
         hideSimilarValues:
           type: boolean
         displayFields:
@@ -398,6 +398,18 @@ components:
             type: array
             items:
               $ref: "#/components/schemas/logRecord"
+    legacyTimeRange:
+      type: object
+      required:
+        - from
+        - to
+      properties:
+        from:
+          type: number
+          format: double
+        to:
+          type: number
+          format: double
     logRecordIndex:
       type: object
       required:
@@ -577,11 +589,23 @@ components:
         - to
       properties:
         from:
-          type: number
-          format: double
+          type: string
+          format: date-time
         to:
-          type: number
-          format: double
+          type: string
+          format: date-time
+    newTimeRange:
+      oneOf:
+        - $ref: "#/components/schemas/timeRange"
+        - $ref: "#/components/schemas/relativeTimeRange"
+    relativeTimeRange:
+      type: object
+      required:
+        - relative
+      properties:
+        relative:
+          type: integer
+          format: int32
     formatting:
       type: array
       items:

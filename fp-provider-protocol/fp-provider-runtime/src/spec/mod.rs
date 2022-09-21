@@ -1,7 +1,7 @@
 use rand::Rng;
 use reqwest::Url;
 use std::collections::HashMap;
-use std::time::{SystemTime, UNIX_EPOCH};
+use std::time::SystemTime;
 use tracing::{debug, error, instrument, trace};
 
 mod bindings;
@@ -102,15 +102,7 @@ pub async fn make_http_request(req: HttpRequest) -> Result<HttpResponse, HttpReq
 }
 
 fn now() -> Timestamp {
-    let duration = match SystemTime::now().duration_since(UNIX_EPOCH) {
-        Ok(duration) => duration,
-        Err(_) => {
-            eprintln!("System time is set before epoch! Returning epoch as fallback.");
-            return 0.0;
-        }
-    };
-
-    duration.as_secs() as f64 + duration.subsec_nanos() as f64 * 1e-9
+    Timestamp::from(SystemTime::now())
 }
 
 fn log(message: String) {

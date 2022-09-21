@@ -25,7 +25,8 @@ export type Annotation =
     | { type: "start_strikethrough" }
     | { type: "end_strikethrough" }
     | { type: "start_underline" }
-    | { type: "end_underline" };
+    | { type: "end_underline" }
+    | { type: "label" } & Label;
 
 /**
  * Newtype representing `(offset, Annotation)` tuples.
@@ -396,6 +397,21 @@ export type ImageCell = {
 };
 
 /**
+ * Labels that are associated with a Notebook.
+ */
+export type Label = {
+    /**
+     * The key of the label. Should be unique for a single Notebook.
+     */
+    key: string;
+
+    /**
+     * The value of the label. Can be left empty.
+     */
+    value: string;
+};
+
+/**
  * Defines a field that allows labels to be selected.
  */
 export type LabelField = {
@@ -425,7 +441,7 @@ export type LabelField = {
  * An individual log record
  */
 export type LegacyLogRecord = {
-    timestamp: Timestamp;
+    timestamp: LegacyTimestamp;
     body: string;
     attributes: Record<string, string>;
     resource: Record<string, string>;
@@ -451,6 +467,13 @@ export type LegacyProviderResponse =
     | { type: "error"; error: Error }
     | { type: "log_records"; logRecords: Array<LegacyLogRecord> }
     | { type: "status_ok" };
+
+export type LegacyTimeRange = {
+    from: LegacyTimestamp;
+    to: LegacyTimestamp;
+};
+
+export type LegacyTimestamp = number;
 
 export type ListItemCell = {
     id: string;
@@ -481,7 +504,7 @@ export type LogCell = {
     formatting?: Formatting;
     title: string;
     data?: Record<string, Array<LogRecord>>;
-    timeRange?: TimeRange;
+    timeRange?: LegacyTimeRange;
     displayFields?: Array<string>;
     hideSimilarValues?: boolean;
     expandedIndices?: Array<LogRecordIndex>;
@@ -491,7 +514,7 @@ export type LogCell = {
 };
 
 export type LogRecord = {
-    timestamp: Timestamp;
+    timestamp: LegacyTimestamp;
     body: string;
     attributes: Record<string, string>;
     resource: Record<string, string>;
@@ -685,7 +708,7 @@ export type QueryField =
 export type QueryLogs = {
     query: string;
     limit?: number;
-    timeRange: TimeRange;
+    timeRange: LegacyTimeRange;
 };
 
 export type QuerySchema = Array<QueryField>;
@@ -861,16 +884,7 @@ export type TextField = {
     supportsHighlighting: boolean;
 };
 
-/**
- * A range in time from a given timestamp (inclusive) up to another timestamp
- * (exclusive).
- */
-export type TimeRange = {
-    from: Timestamp;
-    to: Timestamp;
-};
-
-export type Timestamp = number;
+export type Timestamp = string;
 
 export type ValidationError = {
     /**

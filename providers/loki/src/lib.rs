@@ -2,7 +2,7 @@ use fiberplane::protocols::{core::LokiDataSource, providers::ProviderConfig};
 use fp_provider_bindings::{
     fp_export_impl, make_http_request, Error, HttpRequest, HttpRequestMethod,
     LegacyLogRecord as LogRecord, LegacyProviderRequest as ProviderRequest,
-    LegacyProviderResponse as ProviderResponse, QueryLogs, Timestamp,
+    LegacyProviderResponse as ProviderResponse, LegacyTimestamp, QueryLogs,
 };
 use serde::Deserialize;
 use std::{collections::HashMap, str::FromStr};
@@ -148,12 +148,12 @@ async fn fetch_logs(query: QueryLogs, config: LokiDataSource) -> Result<Vec<LogR
 
 fn data_mapper(
     d: &Data,
-) -> impl Iterator<Item = Result<LogRecord, <Timestamp as FromStr>::Err>> + '_ {
+) -> impl Iterator<Item = Result<LogRecord, <LegacyTimestamp as FromStr>::Err>> + '_ {
     let att = &d.labels;
     d.values.iter().map(move |(ts, v)| {
         //convert unix epoch in nanoseconds to unix epoch in seconds
         //https://grafana.com/docs/loki/latest/api/#get-lokiapiv1query_range
-        let timestamp = Timestamp::from_str(ts)? / CONVERSION_FACTOR;
+        let timestamp = LegacyTimestamp::from_str(ts)? / CONVERSION_FACTOR;
         Ok(LogRecord {
             timestamp,
             body: v.clone(),

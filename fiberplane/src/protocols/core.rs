@@ -10,11 +10,17 @@ use crate::{
 use fp_bindgen::prelude::Serializable;
 use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
-use std::collections::{BTreeMap, HashMap};
-use std::fmt::{self, Display, Formatter};
 use std::str::FromStr;
+use std::{
+    collections::{BTreeMap, HashMap},
+    time::SystemTime,
+};
+use std::{
+    fmt::{self, Display, Formatter},
+    ops::Sub,
+};
 use thiserror::Error;
-use time::OffsetDateTime;
+use time::{ext::NumericalDuration, Duration, OffsetDateTime};
 
 /// Validator for the prefix portion of a Label.
 pub static LABEL_PREFIX_RE: Lazy<regex::Regex> = Lazy::new(|| {
@@ -39,7 +45,7 @@ const MAX_LABEL_PREFIX_LENGTH: usize = 253;
 pub struct NewNotebook {
     pub title: String,
     pub cells: Vec<Cell>,
-    pub time_range: TimeRange,
+    pub time_range: NewTimeRange,
 
     #[serde(default)]
     pub data_sources: BTreeMap<String, NotebookDataSource>,
@@ -53,11 +59,46 @@ impl From<Notebook> for NewNotebook {
         NewNotebook {
             title: notebook.title,
             cells: notebook.cells,
-            time_range: notebook.time_range,
+            time_range: notebook.time_range.into(),
             data_sources: notebook.data_sources,
             labels: notebook.labels,
         }
     }
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize, Serializable)]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
+#[serde(untagged)]
+pub enum NewTimeRange {
+    Absolute(TimeRange),
+    Relative(RelativeTimeRange),
+}
+
+impl From<TimeRange> for NewTimeRange {
+    fn from(time_range: TimeRange) -> Self {
+        Self::Absolute(time_range)
+    }
+}
+
+/// A relative time range specified in minutes.
+///
+/// A negative value means the time range starts at the given amount of
+/// `minutes` of to *now*. A positive value (including zero) means the time
+/// range starts now and ends `minutes` from now.
+///
+/// Relative time ranges are expanded to absolute time ranges upon instantiation
+/// of a notebook.
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize, Serializable)]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
+#[serde(rename_all = "camelCase")]
+pub struct RelativeTimeRange {
+    pub minutes: i32,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq, Serializable)]
@@ -736,7 +777,7 @@ pub struct LogCell {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub data: Option<BTreeMap<String, Vec<LogRecord>>>,
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub time_range: Option<TimeRange>,
+    pub time_range: Option<LegacyTimeRange>,
 
     #[serde(skip_serializing_if = "Option::is_none")]
     pub display_fields: Option<Vec<String>>,
@@ -1062,7 +1103,7 @@ impl Default for ListType {
 }
 
 /// A range in time from a given timestamp (inclusive) up to another timestamp (exclusive).
-#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize, Serializable)]
 #[fp(
     rust_plugin_module = "fiberplane::protocols::core",
     rust_wasmer_runtime_module = "fiberplane::protocols::core"
@@ -1072,8 +1113,75 @@ pub struct TimeRange {
     pub to: Timestamp,
 }
 
+impl From<NewTimeRange> for TimeRange {
+    fn from(new_time_range: NewTimeRange) -> Self {
+        match new_time_range {
+            NewTimeRange::Absolute(time_range) => time_range,
+            NewTimeRange::Relative(RelativeTimeRange { minutes }) => {
+                let now = OffsetDateTime::now_utc();
+                if minutes < 0 {
+                    TimeRange {
+                        from: (now + (minutes as i64).minutes()).into(),
+                        to: now.into(),
+                    }
+                } else {
+                    TimeRange {
+                        from: now.into(),
+                        to: (now + (minutes as i64).minutes()).into(),
+                    }
+                }
+            }
+        }
+    }
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize, Serializable)]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
+pub struct Timestamp(#[serde(with = "time::serde::rfc3339")] pub OffsetDateTime);
+
+impl From<OffsetDateTime> for Timestamp {
+    fn from(time: OffsetDateTime) -> Self {
+        Self(time)
+    }
+}
+
+impl From<SystemTime> for Timestamp {
+    fn from(time: SystemTime) -> Self {
+        Self(OffsetDateTime::from(time))
+    }
+}
+
+impl Sub<Timestamp> for Timestamp {
+    type Output = Duration;
+
+    fn sub(self, rhs: Timestamp) -> Self::Output {
+        self.0 - rhs.0
+    }
+}
+
+impl From<Timestamp> for OffsetDateTime {
+    fn from(timestamp: Timestamp) -> Self {
+        timestamp.0
+    }
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
+#[deprecated(note = "Use `TimeRange` instead")]
+pub struct LegacyTimeRange {
+    pub from: LegacyTimestamp,
+    pub to: LegacyTimestamp,
+}
+
 /// Timestamp specified in seconds since the UNIX epoch, with subsecond precision.
-pub type Timestamp = f64;
+#[deprecated(note = "Use `Timestamp` instead")]
+pub type LegacyTimestamp = f64;
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
 #[fp(
@@ -1082,7 +1190,7 @@ pub type Timestamp = f64;
 )]
 #[serde(rename_all = "camelCase")]
 pub struct LogRecord {
-    pub timestamp: Timestamp,
+    pub timestamp: LegacyTimestamp,
     pub body: String,
     pub attributes: HashMap<String, String>,
     pub resource: HashMap<String, String>,

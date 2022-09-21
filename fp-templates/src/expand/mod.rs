@@ -8,14 +8,12 @@ use jrsonnet_types::ValType;
 use serde_json::{Number, Value};
 use std::collections::HashSet;
 use std::path::{Path, PathBuf};
-use std::time::{SystemTime, UNIX_EPOCH};
 use std::{any::Any, convert::AsRef, iter::IntoIterator, rc::Rc};
 
 #[cfg(test)]
 mod tests;
 
 static FIBERPLANE_LIBRARY: &str = include_str!("../../fiberplane.libsonnet");
-static UNIX_TIMESTAMP_EXT_VAR: &str = "UNIX_TIMESTAMP";
 static PROXY_DATA_SOURCES_EXT_VAR: &str = "PROXY_DATA_SOURCES";
 
 /// This can be passed to `expand_template` as the `args` parameter.
@@ -57,20 +55,14 @@ pub fn extract_template_parameters(
 #[derive(Default)]
 pub struct TemplateExpander {
     max_stack: Option<usize>,
-    unix_timestamp: Option<f64>,
     proxy_data_sources: Option<Value>,
     explaining_traces: bool,
 }
 
 impl TemplateExpander {
-    pub fn new(
-        max_stack: Option<usize>,
-        unix_timestamp: Option<f64>,
-        proxy_data_sources: Option<Value>,
-    ) -> Self {
+    pub fn new(max_stack: Option<usize>, proxy_data_sources: Option<Value>) -> Self {
         Self {
             max_stack,
-            unix_timestamp,
             proxy_data_sources,
             ..Default::default()
         }
@@ -80,13 +72,6 @@ impl TemplateExpander {
     /// the problem (defaults to false)
     pub fn set_explaining_traces(&mut self, explaining_traces: bool) {
         self.explaining_traces = explaining_traces;
-    }
-
-    /// Set a custom UNIX timestamp to use for the notebook.
-    ///
-    /// Note: this is mainly to support environments without a system clock.
-    pub fn set_unix_timestamp(&mut self, unix_timestamp: f64) {
-        self.unix_timestamp = Some(unix_timestamp);
     }
 
     /// Set the data sources that are available to the template.
@@ -234,10 +219,6 @@ impl TemplateExpander {
             state.set_max_stack(stack_size);
         }
 
-        // Inject the timestamp
-        let unix_timestamp = self.unix_timestamp.unwrap_or_else(now);
-        state.add_ext_var(UNIX_TIMESTAMP_EXT_VAR.into(), Val::Num(unix_timestamp));
-
         // Inject the data sources as JSON
         let data_sources = if let Some(data_sources) = &self.proxy_data_sources {
             serde_json::to_string(data_sources)?
@@ -317,12 +298,6 @@ impl ImportResolver for YouCanCheckOutAnyLibYouWantButOnlyFiberNet {
     unsafe fn as_any(&self) -> &dyn Any {
         panic!("this resolver can't be used as any")
     }
-}
-
-fn now() -> f64 {
-    let current_time = SystemTime::now();
-    let seconds = current_time.duration_since(UNIX_EPOCH).unwrap();
-    seconds.as_secs_f64()
 }
 
 /// Convert a Jsonnet "Val" into a serde_json::Value

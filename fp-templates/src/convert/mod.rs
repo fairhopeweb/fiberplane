@@ -2,13 +2,13 @@ use self::code_writer::CodeWriter;
 use self::escape_string::escape_string;
 use crate::FIBERPLANE_LIBRARY_PATH;
 use fiberplane::protocols::{
-    core::{Cell, DataSource, HeadingType, ListType, NewNotebook, NotebookDataSource},
+    core::{Cell, DataSource, HeadingType, ListType, NewNotebook, NotebookDataSource, TimeRange},
     formatting::{Annotation, AnnotationWithOffset, Formatting},
 };
 use lazy_static::lazy_static;
 use regex::Regex;
 use std::{collections::BTreeSet, fmt::Write};
-use time::format_description::well_known::Rfc3339;
+use time::{format_description::well_known::Rfc3339, Duration};
 
 mod code_writer;
 mod escape_string;
@@ -29,8 +29,8 @@ pub fn notebook_to_template(notebook: impl Into<NewNotebook>) -> String {
     // the same duration as the notebook's time range, but it
     // will be updated so the "to" value is the time when the
     // template is evaluated.
-    let duration = notebook.time_range.to - notebook.time_range.from;
-    let duration_minutes = (duration / 60.0).round();
+    let time_range = TimeRange::from(notebook.time_range);
+    let duration: Duration = time_range.to - time_range.from;
 
     let mut writer = CodeWriter::new();
 
@@ -78,7 +78,7 @@ pub fn notebook_to_template(notebook: impl Into<NewNotebook>) -> String {
     // Add the time range
     writer.println(format!(
         ".setTimeRangeRelative(minutes={})",
-        duration_minutes
+        (duration.as_seconds_f64() / 60.0).round()
     ));
 
     // Add labels

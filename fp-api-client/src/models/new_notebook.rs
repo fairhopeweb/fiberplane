@@ -13,7 +13,7 @@ pub struct NewNotebook {
     #[serde(rename = "title")]
     pub title: String,
     #[serde(rename = "timeRange")]
-    pub time_range: Box<crate::models::TimeRange>,
+    pub time_range: Box<crate::models::NewTimeRange>,
     #[serde(rename = "cells")]
     pub cells: Vec<crate::models::Cell>,
     #[serde(rename = "dataSources", skip_serializing_if = "Option::is_none")]
@@ -26,7 +26,7 @@ pub struct NewNotebook {
 impl NewNotebook {
     pub fn new(
         title: String,
-        time_range: crate::models::TimeRange,
+        time_range: crate::models::NewTimeRange,
         cells: Vec<crate::models::Cell>,
     ) -> NewNotebook {
         NewNotebook {

@@ -1,5 +1,8 @@
 use super::instants::Instant;
-use fiberplane::protocols::providers::{Metric, OtelMetadata, OtelTimestamp, Timeseries};
+use fiberplane::protocols::{
+    core::Timestamp,
+    providers::{Metric, OtelMetadata, Timeseries},
+};
 use fp_provider_bindings::Error;
 use serde::Deserialize;
 use std::{
@@ -58,7 +61,7 @@ impl PrometheusPoint {
     pub fn to_metric(&self) -> Result<Metric, ParseFloatError> {
         let time = SystemTime::UNIX_EPOCH + Duration::from_millis((self.0 * 1000.0) as u64);
         Ok(Metric {
-            time: OtelTimestamp::from(time),
+            time: Timestamp::from(time),
             value: self.1.parse()?,
             otel: OtelMetadata::default(),
         })

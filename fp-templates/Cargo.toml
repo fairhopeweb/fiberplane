@@ -22,5 +22,5 @@ thiserror = { version = "1.0.30", optional = true }
 time = { version = "0.3.14", optional = true }
 
 [dev-dependencies]
-assert-json-diff = "2.0.1"
 lazy_static = "1.4.0"
+pretty_assertions = "1.3"

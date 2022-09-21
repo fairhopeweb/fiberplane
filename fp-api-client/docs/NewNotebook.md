@@ -5,7 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **title** | **String** |  | 
-**time_range** | [**crate::models::TimeRange**](timeRange.md) |  | 
+**time_range** | [**crate::models::NewTimeRange**](newTimeRange.md) |  | 
 **cells** | [**Vec<crate::models::Cell>**](cell.md) |  | 
 **data_sources** | Option<[**::std::collections::HashMap<String, crate::models::NotebookDataSource>**](notebookDataSource.md)> |  | [optional]
 **labels** | Option<[**Vec<crate::models::Label>**](label.md)> |  | [optional]

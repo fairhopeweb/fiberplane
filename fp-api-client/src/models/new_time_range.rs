@@ -9,15 +9,13 @@
  */
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct TimeRange {
-    #[serde(rename = "from")]
-    pub from: String,
-    #[serde(rename = "to")]
-    pub to: String,
+#[serde(untagged)]
+pub enum NewTimeRange {
+    Absolute(crate::models::TimeRange),
+    Relative(RelativeTimeRange),
 }
 
-impl TimeRange {
-    pub fn new(from: String, to: String) -> TimeRange {
-        TimeRange { from, to }
-    }
+#[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
+pub struct RelativeTimeRange {
+    pub minutes: i32,
 }

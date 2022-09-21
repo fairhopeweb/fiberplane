@@ -9,15 +9,13 @@
  */
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct TimeRange {
-    #[serde(rename = "from")]
-    pub from: String,
-    #[serde(rename = "to")]
-    pub to: String,
+pub struct RelativeTimeRange {
+    #[serde(rename = "relative")]
+    pub relative: i32,
 }
 
-impl TimeRange {
-    pub fn new(from: String, to: String) -> TimeRange {
-        TimeRange { from, to }
+impl RelativeTimeRange {
+    pub fn new(relative: i32) -> RelativeTimeRange {
+        RelativeTimeRange { relative }
     }
 }

@@ -5,7 +5,7 @@ use crate::{
 };
 use once_cell::sync::Lazy;
 use std::collections::BTreeMap;
-use time::OffsetDateTime;
+use time::{macros::datetime, OffsetDateTime};
 
 pub static DEFAULT_TITLE: Lazy<String> = Lazy::new(|| "Test notebook".to_owned());
 pub static TEST_NOTEBOOK: Lazy<Notebook> = Lazy::new(|| {
@@ -129,7 +129,7 @@ pub static TEST_NOTEBOOK: Lazy<Notebook> = Lazy::new(|| {
             id: "c11".to_owned(),
             title: "Logs".to_owned(),
             source_ids: vec!["c10".to_owned()],
-            time_range: Some(TimeRange {
+            time_range: Some(LegacyTimeRange {
                 from: 50.0,
                 to: 150.0,
             }),
@@ -220,8 +220,8 @@ pub static TEST_NOTEBOOK: Lazy<Notebook> = Lazy::new(|| {
         read_only: false,
         revision: 1,
         time_range: TimeRange {
-            from: 0.0,
-            to: 100.0,
+            from: datetime!(2022-09-19 8:00 UTC).into(),
+            to: datetime!(2022-09-19 9:00 UTC).into(),
         },
         title: DEFAULT_TITLE.clone(),
         visibility: NotebookVisibility::Private,
