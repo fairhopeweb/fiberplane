@@ -35,7 +35,9 @@ pub fn notebook_to_template(notebook: impl Into<NewNotebook>) -> String {
     let mut writer = CodeWriter::new();
 
     // Write the preamble
-    writer.println("// For documentation on Fiberplane Templates, see: https://github.com/fiberplane/templates");
+    writer.println(
+        "// For documentation on Fiberplane Templates, see: https://docs.fiberplane.com/templates",
+    );
     writer.println(format!("local fp = import '{}';", FIBERPLANE_LIBRARY_PATH));
     writer.println("local c = fp.cell;");
     writer.println("local fmt = fp.format;");
