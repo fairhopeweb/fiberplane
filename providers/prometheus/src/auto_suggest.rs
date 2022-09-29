@@ -106,7 +106,7 @@ fn extract_identifier(query: &str) -> &str {
     {
         &query[(offset + 1)..]
     } else {
-        ""
+        query.trim()
     }
 }
 
@@ -141,4 +141,17 @@ fn is_number(c: char) -> bool {
 
 fn is_identifier_char(c: char) -> bool {
     is_letter(c) || is_number(c) || c == '_'
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::auto_suggest::extract_identifier;
+
+    #[test]
+    fn test_extract_identifier() {
+        assert_eq!(extract_identifier("hello"), "hello");
+        assert_eq!(extract_identifier("hello foo"), "foo");
+        assert_eq!(extract_identifier("hello!foo"), "foo");
+        assert_eq!(extract_identifier("##@!"), "");
+    }
 }
