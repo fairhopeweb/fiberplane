@@ -16,11 +16,15 @@ pub struct NewNotebook {
     pub time_range: Box<crate::models::NewTimeRange>,
     #[serde(rename = "cells")]
     pub cells: Vec<crate::models::Cell>,
-    #[serde(rename = "dataSources", skip_serializing_if = "Option::is_none")]
-    pub data_sources:
-        Option<::std::collections::HashMap<String, crate::models::NotebookDataSource>>,
     #[serde(rename = "labels", skip_serializing_if = "Option::is_none")]
     pub labels: Option<Vec<crate::models::Label>>,
+    /// This is a mapping from the provider type to the data source selected for that type
+    #[serde(
+        rename = "selectedDataSources",
+        skip_serializing_if = "Option::is_none"
+    )]
+    pub selected_data_sources:
+        Option<::std::collections::HashMap<String, crate::models::SelectedDataSource>>,
 }
 
 impl NewNotebook {
@@ -33,8 +37,8 @@ impl NewNotebook {
             title,
             time_range: Box::new(time_range),
             cells,
-            data_sources: None,
             labels: None,
+            selected_data_sources: None,
         }
     }
 }

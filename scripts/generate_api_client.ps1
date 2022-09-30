@@ -22,7 +22,11 @@ cargo fmt
 
 # Git patches don't apply if we're not in the base directory of the project (where .git lives): https://stackoverflow.com/a/67790361/11494565
 Set-Location $root_dir
-git apply -v .\schemas\patches\*.patch
+$files = Get-ChildItem "schemas\patches\*.patch"
+
+foreach ($file in $files) {
+    git apply -v $file
+}
 
 # At the end of the script, get back to the directory that we started in
 Set-Location $start_dir

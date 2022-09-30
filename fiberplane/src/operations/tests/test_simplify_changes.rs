@@ -1,6 +1,6 @@
-use crate::{
-    operations::*,
-    protocols::{core::*, formatting::Formatting},
+use crate::operations::*;
+use crate::protocols::{
+    core::*, data_sources::SelectedDataSource, formatting::Formatting, names::Name,
 };
 use pretty_assertions::assert_eq;
 
@@ -367,13 +367,12 @@ pub fn test_simplify_complex_changes() {
                 ..Default::default()
             }),
         }),
-        Change::AddDataSource(AddDataSourceChange {
-            data_source: Box::new(NotebookDataSource::Inline(InlineDataSource {
-                data_source: DataSource::Prometheus(PrometheusDataSource {
-                    url: "http://localhost:9090".to_owned(),
-                }),
-            })),
-            name: "test_data_source".to_owned(),
+        Change::SetSelectedDataSource(SetSelectedDataSourceChange {
+            provider_type: "provider-type".to_string(),
+            selected_data_source: Some(SelectedDataSource {
+                name: Name::from_static("data-source"),
+                proxy_name: None,
+            }),
         }),
     ];
 
@@ -391,13 +390,12 @@ pub fn test_simplify_complex_changes() {
             Change::DeleteCell(DeleteCellChange {
                 cell_id: "test_cell2".to_owned(),
             }),
-            Change::AddDataSource(AddDataSourceChange {
-                data_source: Box::new(NotebookDataSource::Inline(InlineDataSource {
-                    data_source: DataSource::Prometheus(PrometheusDataSource {
-                        url: "http://localhost:9090".to_owned(),
-                    }),
-                })),
-                name: "test_data_source".to_owned(),
+            Change::SetSelectedDataSource(SetSelectedDataSourceChange {
+                provider_type: "provider-type".to_string(),
+                selected_data_source: Some(SelectedDataSource {
+                    name: Name::from_static("data-source"),
+                    proxy_name: None,
+                }),
             }),
             Change::UpdateCell(UpdateCellChange {
                 cell: Cell::Text(TextCell {

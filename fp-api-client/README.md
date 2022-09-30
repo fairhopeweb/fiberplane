@@ -28,47 +28,47 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**comment_delete**](docs/DefaultApi.md#comment_delete) | **DELETE** /api/comments/{commentId} | 
 *DefaultApi* | [**comment_get**](docs/DefaultApi.md#comment_get) | **GET** /api/comments/{commentId} | 
 *DefaultApi* | [**comment_update**](docs/DefaultApi.md#comment_update) | **PATCH** /api/comments/{commentId} | 
-*DefaultApi* | [**convert_notebook_to_template**](docs/DefaultApi.md#convert_notebook_to_template) | **GET** /api/notebooks/{notebookId}/template.jsonnet | 
-*DefaultApi* | [**delete_file**](docs/DefaultApi.md#delete_file) | **DELETE** /api/files/{notebookId}/{fileId} | 
-*DefaultApi* | [**delete_notebook**](docs/DefaultApi.md#delete_notebook) | **DELETE** /api/notebooks/{notebookId} | 
-*DefaultApi* | [**event_create**](docs/DefaultApi.md#event_create) | **POST** /api/events | 
-*DefaultApi* | [**event_delete**](docs/DefaultApi.md#event_delete) | **DELETE** /api/events/{id} | 
-*DefaultApi* | [**event_list**](docs/DefaultApi.md#event_list) | **GET** /api/events | 
-*DefaultApi* | [**file_upload**](docs/DefaultApi.md#file_upload) | **POST** /api/files/{notebookId} | 
-*DefaultApi* | [**get_file**](docs/DefaultApi.md#get_file) | **GET** /api/files/{notebookId}/{fileId} | 
-*DefaultApi* | [**get_notebook**](docs/DefaultApi.md#get_notebook) | **GET** /api/notebooks/{notebookId} | 
-*DefaultApi* | [**get_profile**](docs/DefaultApi.md#get_profile) | **GET** /api/profile | 
-*DefaultApi* | [**get_profile_picture**](docs/DefaultApi.md#get_profile_picture) | **GET** /api/profile/picture | 
-*DefaultApi* | [**label_keys_list**](docs/DefaultApi.md#label_keys_list) | **GET** /api/labels/keys | 
-*DefaultApi* | [**label_values_list**](docs/DefaultApi.md#label_values_list) | **GET** /api/labels/values/{label_key} | 
+*DefaultApi* | [**data_source_create**](docs/DefaultApi.md#data_source_create) | **POST** /api/workspaces/{workspace_id}/data_sources | 
+*DefaultApi* | [**data_source_delete**](docs/DefaultApi.md#data_source_delete) | **DELETE** /api/workspaces/{workspace_id}/data_sources/{data_source_name} | 
+*DefaultApi* | [**data_source_get**](docs/DefaultApi.md#data_source_get) | **GET** /api/workspaces/{workspace_id}/data_sources/{data_source_name} | 
+*DefaultApi* | [**data_source_list**](docs/DefaultApi.md#data_source_list) | **GET** /api/workspaces/{workspace_id}/data_sources | 
+*DefaultApi* | [**data_source_update**](docs/DefaultApi.md#data_source_update) | **PATCH** /api/workspaces/{workspace_id}/data_sources/{data_source_name} | 
+*DefaultApi* | [**event_create**](docs/DefaultApi.md#event_create) | **POST** /api/workspaces/{workspace_id}/events | 
+*DefaultApi* | [**event_delete**](docs/DefaultApi.md#event_delete) | **DELETE** /api/events/{event_id} | 
+*DefaultApi* | [**event_list**](docs/DefaultApi.md#event_list) | **GET** /api/workspaces/{workspace_id}/events | 
+*DefaultApi* | [**file_delete**](docs/DefaultApi.md#file_delete) | **DELETE** /api/notebooks/{notebookId}/files/{fileId} | 
+*DefaultApi* | [**file_get**](docs/DefaultApi.md#file_get) | **GET** /api/notebooks/{notebookId}/files/{fileId} | 
+*DefaultApi* | [**file_upload**](docs/DefaultApi.md#file_upload) | **POST** /api/notebooks/{notebookId}/files | 
+*DefaultApi* | [**label_keys_list**](docs/DefaultApi.md#label_keys_list) | **GET** /api/workspaces/{workspace_id}/labels/keys | 
+*DefaultApi* | [**label_values_list**](docs/DefaultApi.md#label_values_list) | **GET** /api/workspaces/{workspace_id}/labels/values/{label_key} | 
 *DefaultApi* | [**logout**](docs/DefaultApi.md#logout) | **POST** /api/logout | 
 *DefaultApi* | [**notebook_cell_append_text**](docs/DefaultApi.md#notebook_cell_append_text) | **POST** /api/notebooks/{notebookId}/cells/{cellId}/append | 
 *DefaultApi* | [**notebook_cell_replace_text**](docs/DefaultApi.md#notebook_cell_replace_text) | **POST** /api/notebooks/{notebookId}/cells/{cellId}/replaceText | 
 *DefaultApi* | [**notebook_cells_append**](docs/DefaultApi.md#notebook_cells_append) | **POST** /api/notebooks/{notebookId}/cells | 
-*DefaultApi* | [**notebook_create**](docs/DefaultApi.md#notebook_create) | **POST** /api/notebooks | 
-*DefaultApi* | [**notebook_list**](docs/DefaultApi.md#notebook_list) | **GET** /api/notebooks | 
-*DefaultApi* | [**notebook_search**](docs/DefaultApi.md#notebook_search) | **POST** /api/search/notebooks | 
+*DefaultApi* | [**notebook_convert_to_template**](docs/DefaultApi.md#notebook_convert_to_template) | **GET** /api/notebooks/{notebookId}/template.jsonnet | 
+*DefaultApi* | [**notebook_create**](docs/DefaultApi.md#notebook_create) | **POST** /api/workspaces/{workspace_id}/notebooks | 
+*DefaultApi* | [**notebook_delete**](docs/DefaultApi.md#notebook_delete) | **DELETE** /api/notebooks/{notebookId} | 
+*DefaultApi* | [**notebook_get**](docs/DefaultApi.md#notebook_get) | **GET** /api/notebooks/{notebookId} | 
+*DefaultApi* | [**notebook_list**](docs/DefaultApi.md#notebook_list) | **GET** /api/workspaces/{workspace_id}/notebooks | 
+*DefaultApi* | [**notebook_search**](docs/DefaultApi.md#notebook_search) | **POST** /api/workspaces/{workspace_id}/search/notebooks | 
+*DefaultApi* | [**notebook_update**](docs/DefaultApi.md#notebook_update) | **PATCH** /api/notebooks/{notebookId} | 
 *DefaultApi* | [**oidc_authorize_google**](docs/DefaultApi.md#oidc_authorize_google) | **GET** /api/oidc/authorize/google | 
-*DefaultApi* | [**org_data_source_create**](docs/DefaultApi.md#org_data_source_create) | **POST** /api/datasources | 
-*DefaultApi* | [**org_user_list_current**](docs/DefaultApi.md#org_user_list_current) | **GET** /api/organizations/current/users | 
-*DefaultApi* | [**patch_notebook**](docs/DefaultApi.md#patch_notebook) | **PATCH** /api/notebooks/{notebookId} | 
 *DefaultApi* | [**pinned_notebook_create**](docs/DefaultApi.md#pinned_notebook_create) | **POST** /api/pinnednotebooks | 
 *DefaultApi* | [**pinned_notebook_delete**](docs/DefaultApi.md#pinned_notebook_delete) | **DELETE** /api/pinnednotebooks/{notebookId} | 
-*DefaultApi* | [**pinned_notebook_list**](docs/DefaultApi.md#pinned_notebook_list) | **GET** /api/pinnednotebooks | 
-*DefaultApi* | [**proxy_create**](docs/DefaultApi.md#proxy_create) | **POST** /api/proxies | 
-*DefaultApi* | [**proxy_data_sources_list**](docs/DefaultApi.md#proxy_data_sources_list) | **GET** /api/proxies/datasources | 
-*DefaultApi* | [**proxy_delete**](docs/DefaultApi.md#proxy_delete) | **DELETE** /api/proxies/{proxyId} | 
-*DefaultApi* | [**proxy_get**](docs/DefaultApi.md#proxy_get) | **GET** /api/proxies/{proxyId} | 
-*DefaultApi* | [**proxy_list**](docs/DefaultApi.md#proxy_list) | **GET** /api/proxies | 
-*DefaultApi* | [**proxy_relay**](docs/DefaultApi.md#proxy_relay) | **POST** /api/proxies/{proxyId}/relay | 
-*DefaultApi* | [**suggest_query**](docs/DefaultApi.md#suggest_query) | **GET** /api/queries/{datasource_type}/suggestions | 
-*DefaultApi* | [**template_create**](docs/DefaultApi.md#template_create) | **POST** /api/templates | 
+*DefaultApi* | [**pinned_notebook_list**](docs/DefaultApi.md#pinned_notebook_list) | **GET** /api/workspaces/{workspace_id}/pinnednotebooks | 
+*DefaultApi* | [**profile_get**](docs/DefaultApi.md#profile_get) | **GET** /api/profile | 
+*DefaultApi* | [**profile_picture_get**](docs/DefaultApi.md#profile_picture_get) | **GET** /api/profile/picture | 
+*DefaultApi* | [**profile_picture_update**](docs/DefaultApi.md#profile_picture_update) | **POST** /api/profile/picture | 
+*DefaultApi* | [**proxy_create**](docs/DefaultApi.md#proxy_create) | **POST** /api/workspaces/{workspace_id}/proxies | 
+*DefaultApi* | [**proxy_delete**](docs/DefaultApi.md#proxy_delete) | **DELETE** /api/workspaces/{workspace_id}/proxies/{proxy_name} | 
+*DefaultApi* | [**proxy_get**](docs/DefaultApi.md#proxy_get) | **GET** /api/workspaces/{workspace_id}/proxies/{proxy_name} | 
+*DefaultApi* | [**proxy_list**](docs/DefaultApi.md#proxy_list) | **GET** /api/workspaces/{workspace_id}/proxies | 
+*DefaultApi* | [**proxy_relay**](docs/DefaultApi.md#proxy_relay) | **POST** /api/workspaces/{workspace_id}/proxies/{proxy_name}/data_sources/{data_source_name}/relay | 
+*DefaultApi* | [**template_create**](docs/DefaultApi.md#template_create) | **POST** /api/workspaces/{workspace_id}/templates | 
 *DefaultApi* | [**template_delete**](docs/DefaultApi.md#template_delete) | **DELETE** /api/templates/{templateId} | 
-*DefaultApi* | [**template_example_expand**](docs/DefaultApi.md#template_example_expand) | **POST** /api/templates/examples/{templateId}/expand | 
-*DefaultApi* | [**template_example_list**](docs/DefaultApi.md#template_example_list) | **GET** /api/templates/examples | 
 *DefaultApi* | [**template_expand**](docs/DefaultApi.md#template_expand) | **POST** /api/templates/{templateId}/expand | 
 *DefaultApi* | [**template_get**](docs/DefaultApi.md#template_get) | **GET** /api/templates/{templateId} | 
-*DefaultApi* | [**template_list**](docs/DefaultApi.md#template_list) | **GET** /api/templates | 
+*DefaultApi* | [**template_list**](docs/DefaultApi.md#template_list) | **GET** /api/workspaces/{workspace_id}/templates | 
 *DefaultApi* | [**template_update**](docs/DefaultApi.md#template_update) | **PATCH** /api/templates/{templateId} | 
 *DefaultApi* | [**thread_create**](docs/DefaultApi.md#thread_create) | **POST** /api/notebooks/{notebookId}/threads | 
 *DefaultApi* | [**thread_delete**](docs/DefaultApi.md#thread_delete) | **DELETE** /api/threads/{threadId} | 
@@ -79,12 +79,24 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**token_create**](docs/DefaultApi.md#token_create) | **POST** /api/tokens | 
 *DefaultApi* | [**token_delete**](docs/DefaultApi.md#token_delete) | **DELETE** /api/tokens/{id} | 
 *DefaultApi* | [**token_list**](docs/DefaultApi.md#token_list) | **GET** /api/tokens | 
-*DefaultApi* | [**trigger_create**](docs/DefaultApi.md#trigger_create) | **POST** /api/triggers | 
+*DefaultApi* | [**trigger_create**](docs/DefaultApi.md#trigger_create) | **POST** /api/workspaces/{workspace_id}/triggers | 
 *DefaultApi* | [**trigger_delete**](docs/DefaultApi.md#trigger_delete) | **DELETE** /api/triggers/{triggerId} | 
 *DefaultApi* | [**trigger_get**](docs/DefaultApi.md#trigger_get) | **GET** /api/triggers/{triggerId} | 
 *DefaultApi* | [**trigger_invoke**](docs/DefaultApi.md#trigger_invoke) | **POST** /api/triggers/{triggerId}/{secretKey} | 
-*DefaultApi* | [**trigger_list**](docs/DefaultApi.md#trigger_list) | **GET** /api/triggers | 
-*DefaultApi* | [**update_profile_picture**](docs/DefaultApi.md#update_profile_picture) | **POST** /api/profile/picture | 
+*DefaultApi* | [**trigger_list**](docs/DefaultApi.md#trigger_list) | **GET** /api/workspaces/{workspace_id}/triggers | 
+*DefaultApi* | [**workspace_create**](docs/DefaultApi.md#workspace_create) | **POST** /api/workspaces | 
+*DefaultApi* | [**workspace_get**](docs/DefaultApi.md#workspace_get) | **GET** /api/workspaces/{workspace_id} | 
+*DefaultApi* | [**workspace_invite**](docs/DefaultApi.md#workspace_invite) | **POST** /api/workspaces/{workspace_id}/invitations | 
+*DefaultApi* | [**workspace_invite_accept**](docs/DefaultApi.md#workspace_invite_accept) | **GET** /api/invitation/{invitation_id}/{invitation_secret}/accept | 
+*DefaultApi* | [**workspace_invite_decline**](docs/DefaultApi.md#workspace_invite_decline) | **GET** /api/invitation/{invitation_id}/{invitation_secret}/decline | 
+*DefaultApi* | [**workspace_invite_get**](docs/DefaultApi.md#workspace_invite_get) | **GET** /api/workspaces/{workspace_id}/invitations | 
+*DefaultApi* | [**workspace_leave**](docs/DefaultApi.md#workspace_leave) | **POST** /api/workspaces/{workspace_id}/leave | 
+*DefaultApi* | [**workspace_list**](docs/DefaultApi.md#workspace_list) | **GET** /api/workspaces | 
+*DefaultApi* | [**workspace_list_users**](docs/DefaultApi.md#workspace_list_users) | **GET** /api/workspaces/{workspace_id}/users | 
+*DefaultApi* | [**workspace_picture_get**](docs/DefaultApi.md#workspace_picture_get) | **GET** /api/workspaces/{workspace_id}/picture | 
+*DefaultApi* | [**workspace_picture_update**](docs/DefaultApi.md#workspace_picture_update) | **POST** /api/workspaces/{workspace_id}/picture | 
+*DefaultApi* | [**workspace_update**](docs/DefaultApi.md#workspace_update) | **PATCH** /api/workspaces/{workspace_id} | 
+*DefaultApi* | [**workspace_user_remove**](docs/DefaultApi.md#workspace_user_remove) | **DELETE** /api/workspaces/{workspace_id}/users/{user_id} | 
 
 
 ## Documentation For Models
@@ -104,15 +116,14 @@ Class | Method | HTTP request | Description
  - [CommentThreadItem](docs/CommentThreadItem.md)
  - [CommentThreadItemAllOf](docs/CommentThreadItemAllOf.md)
  - [CreatedBy](docs/CreatedBy.md)
+ - [CreatedByTrigger](docs/CreatedByTrigger.md)
+ - [CreatedByUnknown](docs/CreatedByUnknown.md)
+ - [CreatedByUser](docs/CreatedByUser.md)
  - [DataSource](docs/DataSource.md)
- - [DataSourceAndProxySummary](docs/DataSourceAndProxySummary.md)
  - [DataSourceConnectionStatus](docs/DataSourceConnectionStatus.md)
- - [DataSourceSummary](docs/DataSourceSummary.md)
- - [DataSourceType](docs/DataSourceType.md)
  - [DiscussionCell](docs/DiscussionCell.md)
  - [DividerCell](docs/DividerCell.md)
  - [ElasticsearchCell](docs/ElasticsearchCell.md)
- - [ElasticsearchDataSource](docs/ElasticsearchDataSource.md)
  - [EncodedBlob](docs/EncodedBlob.md)
  - [EndBoldAnnotation](docs/EndBoldAnnotation.md)
  - [EndCodeAnnotation](docs/EndCodeAnnotation.md)
@@ -126,7 +137,8 @@ Class | Method | HTTP request | Description
  - [GraphCell](docs/GraphCell.md)
  - [HeadingCell](docs/HeadingCell.md)
  - [ImageCell](docs/ImageCell.md)
- - [InlineDataSource](docs/InlineDataSource.md)
+ - [Instant](docs/Instant.md)
+ - [InstantQuery](docs/InstantQuery.md)
  - [Label](docs/Label.md)
  - [LabelAnnotation](docs/LabelAnnotation.md)
  - [LegacyTimeRange](docs/LegacyTimeRange.md)
@@ -136,12 +148,12 @@ Class | Method | HTTP request | Description
  - [LogRecord](docs/LogRecord.md)
  - [LogRecordIndex](docs/LogRecordIndex.md)
  - [LokiCell](docs/LokiCell.md)
- - [LokiDataSource](docs/LokiDataSource.md)
  - [MentionAnnotation](docs/MentionAnnotation.md)
+ - [Metric](docs/Metric.md)
  - [NewComment](docs/NewComment.md)
+ - [NewDataSource](docs/NewDataSource.md)
  - [NewEvent](docs/NewEvent.md)
  - [NewNotebook](docs/NewNotebook.md)
- - [NewOrgDataSource](docs/NewOrgDataSource.md)
  - [NewPinnedNotebook](docs/NewPinnedNotebook.md)
  - [NewProxy](docs/NewProxy.md)
  - [NewTemplate](docs/NewTemplate.md)
@@ -149,23 +161,26 @@ Class | Method | HTTP request | Description
  - [NewTimeRange](docs/NewTimeRange.md)
  - [NewToken](docs/NewToken.md)
  - [NewTrigger](docs/NewTrigger.md)
+ - [NewWorkspace](docs/NewWorkspace.md)
+ - [NewWorkspaceInvite](docs/NewWorkspaceInvite.md)
  - [Notebook](docs/Notebook.md)
- - [NotebookDataSource](docs/NotebookDataSource.md)
  - [NotebookPatch](docs/NotebookPatch.md)
  - [NotebookSearch](docs/NotebookSearch.md)
  - [NotebookSummary](docs/NotebookSummary.md)
  - [NotebookVisibility](docs/NotebookVisibility.md)
  - [NumberTemplateParameter](docs/NumberTemplateParameter.md)
  - [ObjectTemplateParameter](docs/ObjectTemplateParameter.md)
- - [OrgDataSource](docs/OrgDataSource.md)
- - [PrometheusDataSource](docs/PrometheusDataSource.md)
+ - [Point](docs/Point.md)
+ - [Profile](docs/Profile.md)
  - [ProviderCell](docs/ProviderCell.md)
  - [Proxy](docs/Proxy.md)
  - [ProxyConnectionStatus](docs/ProxyConnectionStatus.md)
- - [ProxyDataSource](docs/ProxyDataSource.md)
  - [ProxySummary](docs/ProxySummary.md)
+ - [QueryType](docs/QueryType.md)
  - [RelativeTimeRange](docs/RelativeTimeRange.md)
- - [SentryDataSource](docs/SentryDataSource.md)
+ - [SelectedDataSource](docs/SelectedDataSource.md)
+ - [Series](docs/Series.md)
+ - [SeriesQuery](docs/SeriesQuery.md)
  - [StartBoldAnnotation](docs/StartBoldAnnotation.md)
  - [StartCodeAnnotation](docs/StartCodeAnnotation.md)
  - [StartHighlightAnnotation](docs/StartHighlightAnnotation.md)
@@ -193,12 +208,17 @@ Class | Method | HTTP request | Description
  - [TokenSummary](docs/TokenSummary.md)
  - [Trigger](docs/Trigger.md)
  - [TriggerInvokeResponse](docs/TriggerInvokeResponse.md)
+ - [TriggerSummary](docs/TriggerSummary.md)
  - [UnknownTemplateParameter](docs/UnknownTemplateParameter.md)
  - [UpdateComment](docs/UpdateComment.md)
+ - [UpdateDataSource](docs/UpdateDataSource.md)
  - [UpdateTemplate](docs/UpdateTemplate.md)
+ - [UpdateWorkspace](docs/UpdateWorkspace.md)
  - [User](docs/User.md)
  - [UserSummary](docs/UserSummary.md)
- - [UserType](docs/UserType.md)
+ - [Workspace](docs/Workspace.md)
+ - [WorkspaceInvite](docs/WorkspaceInvite.md)
+ - [WorkspaceInviteResponse](docs/WorkspaceInviteResponse.md)
 
 
 To get access to the crate's generated documentation, use:

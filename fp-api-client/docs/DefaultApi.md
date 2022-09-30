@@ -8,47 +8,47 @@ Method | HTTP request | Description
 [**comment_delete**](DefaultApi.md#comment_delete) | **DELETE** /api/comments/{commentId} | 
 [**comment_get**](DefaultApi.md#comment_get) | **GET** /api/comments/{commentId} | 
 [**comment_update**](DefaultApi.md#comment_update) | **PATCH** /api/comments/{commentId} | 
-[**convert_notebook_to_template**](DefaultApi.md#convert_notebook_to_template) | **GET** /api/notebooks/{notebookId}/template.jsonnet | 
-[**delete_file**](DefaultApi.md#delete_file) | **DELETE** /api/files/{notebookId}/{fileId} | 
-[**delete_notebook**](DefaultApi.md#delete_notebook) | **DELETE** /api/notebooks/{notebookId} | 
-[**event_create**](DefaultApi.md#event_create) | **POST** /api/events | 
-[**event_delete**](DefaultApi.md#event_delete) | **DELETE** /api/events/{id} | 
-[**event_list**](DefaultApi.md#event_list) | **GET** /api/events | 
-[**file_upload**](DefaultApi.md#file_upload) | **POST** /api/files/{notebookId} | 
-[**get_file**](DefaultApi.md#get_file) | **GET** /api/files/{notebookId}/{fileId} | 
-[**get_notebook**](DefaultApi.md#get_notebook) | **GET** /api/notebooks/{notebookId} | 
-[**get_profile**](DefaultApi.md#get_profile) | **GET** /api/profile | 
-[**get_profile_picture**](DefaultApi.md#get_profile_picture) | **GET** /api/profile/picture | 
-[**label_keys_list**](DefaultApi.md#label_keys_list) | **GET** /api/labels/keys | 
-[**label_values_list**](DefaultApi.md#label_values_list) | **GET** /api/labels/values/{label_key} | 
+[**data_source_create**](DefaultApi.md#data_source_create) | **POST** /api/workspaces/{workspace_id}/data_sources | 
+[**data_source_delete**](DefaultApi.md#data_source_delete) | **DELETE** /api/workspaces/{workspace_id}/data_sources/{data_source_name} | 
+[**data_source_get**](DefaultApi.md#data_source_get) | **GET** /api/workspaces/{workspace_id}/data_sources/{data_source_name} | 
+[**data_source_list**](DefaultApi.md#data_source_list) | **GET** /api/workspaces/{workspace_id}/data_sources | 
+[**data_source_update**](DefaultApi.md#data_source_update) | **PATCH** /api/workspaces/{workspace_id}/data_sources/{data_source_name} | 
+[**event_create**](DefaultApi.md#event_create) | **POST** /api/workspaces/{workspace_id}/events | 
+[**event_delete**](DefaultApi.md#event_delete) | **DELETE** /api/events/{event_id} | 
+[**event_list**](DefaultApi.md#event_list) | **GET** /api/workspaces/{workspace_id}/events | 
+[**file_delete**](DefaultApi.md#file_delete) | **DELETE** /api/notebooks/{notebookId}/files/{fileId} | 
+[**file_get**](DefaultApi.md#file_get) | **GET** /api/notebooks/{notebookId}/files/{fileId} | 
+[**file_upload**](DefaultApi.md#file_upload) | **POST** /api/notebooks/{notebookId}/files | 
+[**label_keys_list**](DefaultApi.md#label_keys_list) | **GET** /api/workspaces/{workspace_id}/labels/keys | 
+[**label_values_list**](DefaultApi.md#label_values_list) | **GET** /api/workspaces/{workspace_id}/labels/values/{label_key} | 
 [**logout**](DefaultApi.md#logout) | **POST** /api/logout | 
 [**notebook_cell_append_text**](DefaultApi.md#notebook_cell_append_text) | **POST** /api/notebooks/{notebookId}/cells/{cellId}/append | 
 [**notebook_cell_replace_text**](DefaultApi.md#notebook_cell_replace_text) | **POST** /api/notebooks/{notebookId}/cells/{cellId}/replaceText | 
 [**notebook_cells_append**](DefaultApi.md#notebook_cells_append) | **POST** /api/notebooks/{notebookId}/cells | 
-[**notebook_create**](DefaultApi.md#notebook_create) | **POST** /api/notebooks | 
-[**notebook_list**](DefaultApi.md#notebook_list) | **GET** /api/notebooks | 
-[**notebook_search**](DefaultApi.md#notebook_search) | **POST** /api/search/notebooks | 
+[**notebook_convert_to_template**](DefaultApi.md#notebook_convert_to_template) | **GET** /api/notebooks/{notebookId}/template.jsonnet | 
+[**notebook_create**](DefaultApi.md#notebook_create) | **POST** /api/workspaces/{workspace_id}/notebooks | 
+[**notebook_delete**](DefaultApi.md#notebook_delete) | **DELETE** /api/notebooks/{notebookId} | 
+[**notebook_get**](DefaultApi.md#notebook_get) | **GET** /api/notebooks/{notebookId} | 
+[**notebook_list**](DefaultApi.md#notebook_list) | **GET** /api/workspaces/{workspace_id}/notebooks | 
+[**notebook_search**](DefaultApi.md#notebook_search) | **POST** /api/workspaces/{workspace_id}/search/notebooks | 
+[**notebook_update**](DefaultApi.md#notebook_update) | **PATCH** /api/notebooks/{notebookId} | 
 [**oidc_authorize_google**](DefaultApi.md#oidc_authorize_google) | **GET** /api/oidc/authorize/google | 
-[**org_data_source_create**](DefaultApi.md#org_data_source_create) | **POST** /api/datasources | 
-[**org_user_list_current**](DefaultApi.md#org_user_list_current) | **GET** /api/organizations/current/users | 
-[**patch_notebook**](DefaultApi.md#patch_notebook) | **PATCH** /api/notebooks/{notebookId} | 
 [**pinned_notebook_create**](DefaultApi.md#pinned_notebook_create) | **POST** /api/pinnednotebooks | 
 [**pinned_notebook_delete**](DefaultApi.md#pinned_notebook_delete) | **DELETE** /api/pinnednotebooks/{notebookId} | 
-[**pinned_notebook_list**](DefaultApi.md#pinned_notebook_list) | **GET** /api/pinnednotebooks | 
-[**proxy_create**](DefaultApi.md#proxy_create) | **POST** /api/proxies | 
-[**proxy_data_sources_list**](DefaultApi.md#proxy_data_sources_list) | **GET** /api/proxies/datasources | 
-[**proxy_delete**](DefaultApi.md#proxy_delete) | **DELETE** /api/proxies/{proxyId} | 
-[**proxy_get**](DefaultApi.md#proxy_get) | **GET** /api/proxies/{proxyId} | 
-[**proxy_list**](DefaultApi.md#proxy_list) | **GET** /api/proxies | 
-[**proxy_relay**](DefaultApi.md#proxy_relay) | **POST** /api/proxies/{proxyId}/relay | 
-[**suggest_query**](DefaultApi.md#suggest_query) | **GET** /api/queries/{datasource_type}/suggestions | 
-[**template_create**](DefaultApi.md#template_create) | **POST** /api/templates | 
+[**pinned_notebook_list**](DefaultApi.md#pinned_notebook_list) | **GET** /api/workspaces/{workspace_id}/pinnednotebooks | 
+[**profile_get**](DefaultApi.md#profile_get) | **GET** /api/profile | 
+[**profile_picture_get**](DefaultApi.md#profile_picture_get) | **GET** /api/profile/picture | 
+[**profile_picture_update**](DefaultApi.md#profile_picture_update) | **POST** /api/profile/picture | 
+[**proxy_create**](DefaultApi.md#proxy_create) | **POST** /api/workspaces/{workspace_id}/proxies | 
+[**proxy_delete**](DefaultApi.md#proxy_delete) | **DELETE** /api/workspaces/{workspace_id}/proxies/{proxy_name} | 
+[**proxy_get**](DefaultApi.md#proxy_get) | **GET** /api/workspaces/{workspace_id}/proxies/{proxy_name} | 
+[**proxy_list**](DefaultApi.md#proxy_list) | **GET** /api/workspaces/{workspace_id}/proxies | 
+[**proxy_relay**](DefaultApi.md#proxy_relay) | **POST** /api/workspaces/{workspace_id}/proxies/{proxy_name}/data_sources/{data_source_name}/relay | 
+[**template_create**](DefaultApi.md#template_create) | **POST** /api/workspaces/{workspace_id}/templates | 
 [**template_delete**](DefaultApi.md#template_delete) | **DELETE** /api/templates/{templateId} | 
-[**template_example_expand**](DefaultApi.md#template_example_expand) | **POST** /api/templates/examples/{templateId}/expand | 
-[**template_example_list**](DefaultApi.md#template_example_list) | **GET** /api/templates/examples | 
 [**template_expand**](DefaultApi.md#template_expand) | **POST** /api/templates/{templateId}/expand | 
 [**template_get**](DefaultApi.md#template_get) | **GET** /api/templates/{templateId} | 
-[**template_list**](DefaultApi.md#template_list) | **GET** /api/templates | 
+[**template_list**](DefaultApi.md#template_list) | **GET** /api/workspaces/{workspace_id}/templates | 
 [**template_update**](DefaultApi.md#template_update) | **PATCH** /api/templates/{templateId} | 
 [**thread_create**](DefaultApi.md#thread_create) | **POST** /api/notebooks/{notebookId}/threads | 
 [**thread_delete**](DefaultApi.md#thread_delete) | **DELETE** /api/threads/{threadId} | 
@@ -59,12 +59,24 @@ Method | HTTP request | Description
 [**token_create**](DefaultApi.md#token_create) | **POST** /api/tokens | 
 [**token_delete**](DefaultApi.md#token_delete) | **DELETE** /api/tokens/{id} | 
 [**token_list**](DefaultApi.md#token_list) | **GET** /api/tokens | 
-[**trigger_create**](DefaultApi.md#trigger_create) | **POST** /api/triggers | 
+[**trigger_create**](DefaultApi.md#trigger_create) | **POST** /api/workspaces/{workspace_id}/triggers | 
 [**trigger_delete**](DefaultApi.md#trigger_delete) | **DELETE** /api/triggers/{triggerId} | 
 [**trigger_get**](DefaultApi.md#trigger_get) | **GET** /api/triggers/{triggerId} | 
 [**trigger_invoke**](DefaultApi.md#trigger_invoke) | **POST** /api/triggers/{triggerId}/{secretKey} | 
-[**trigger_list**](DefaultApi.md#trigger_list) | **GET** /api/triggers | 
-[**update_profile_picture**](DefaultApi.md#update_profile_picture) | **POST** /api/profile/picture | 
+[**trigger_list**](DefaultApi.md#trigger_list) | **GET** /api/workspaces/{workspace_id}/triggers | 
+[**workspace_create**](DefaultApi.md#workspace_create) | **POST** /api/workspaces | 
+[**workspace_get**](DefaultApi.md#workspace_get) | **GET** /api/workspaces/{workspace_id} | 
+[**workspace_invite**](DefaultApi.md#workspace_invite) | **POST** /api/workspaces/{workspace_id}/invitations | 
+[**workspace_invite_accept**](DefaultApi.md#workspace_invite_accept) | **GET** /api/invitation/{invitation_id}/{invitation_secret}/accept | 
+[**workspace_invite_decline**](DefaultApi.md#workspace_invite_decline) | **GET** /api/invitation/{invitation_id}/{invitation_secret}/decline | 
+[**workspace_invite_get**](DefaultApi.md#workspace_invite_get) | **GET** /api/workspaces/{workspace_id}/invitations | 
+[**workspace_leave**](DefaultApi.md#workspace_leave) | **POST** /api/workspaces/{workspace_id}/leave | 
+[**workspace_list**](DefaultApi.md#workspace_list) | **GET** /api/workspaces | 
+[**workspace_list_users**](DefaultApi.md#workspace_list_users) | **GET** /api/workspaces/{workspace_id}/users | 
+[**workspace_picture_get**](DefaultApi.md#workspace_picture_get) | **GET** /api/workspaces/{workspace_id}/picture | 
+[**workspace_picture_update**](DefaultApi.md#workspace_picture_update) | **POST** /api/workspaces/{workspace_id}/picture | 
+[**workspace_update**](DefaultApi.md#workspace_update) | **PATCH** /api/workspaces/{workspace_id} | 
+[**workspace_user_remove**](DefaultApi.md#workspace_user_remove) | **DELETE** /api/workspaces/{workspace_id}/users/{user_id} | 
 
 
 
@@ -182,23 +194,55 @@ Name | Type | Description  | Required | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 
-## convert_notebook_to_template
+## data_source_create
 
-> String convert_notebook_to_template(notebook_id)
+> crate::models::DataSource data_source_create(workspace_id, new_data_source)
 
 
-Convert the notebook to a Template
+Create an workspace data-source
 
 ### Parameters
 
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**notebook_id** | **String** |  | [required] |
+**workspace_id** | **String** | The workspace ID | [required] |
+**new_data_source** | [**NewDataSource**](NewDataSource.md) | New data source | [required] |
 
 ### Return type
 
-**String**
+[**crate::models::DataSource**](dataSource.md)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## data_source_delete
+
+> data_source_delete(workspace_id, data_source_name)
+
+
+Delete a data source
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**workspace_id** | **String** | The workspace ID | [required] |
+**data_source_name** | **String** |  | [required] |
+
+### Return type
+
+ (empty response body)
 
 ### Authorization
 
@@ -207,14 +251,203 @@ Name | Type | Description  | Required | Notes
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: text/plain
+- **Accept**: Not defined
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 
-## delete_file
+## data_source_get
 
-> delete_file(notebook_id, file_id)
+> crate::models::DataSource data_source_get(workspace_id, data_source_name)
+
+
+Get the data source's details
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**workspace_id** | **String** | The workspace ID | [required] |
+**data_source_name** | **String** |  | [required] |
+
+### Return type
+
+[**crate::models::DataSource**](dataSource.md)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## data_source_list
+
+> Vec<crate::models::DataSource> data_source_list(workspace_id)
+
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**workspace_id** | **String** | The workspace ID | [required] |
+
+### Return type
+
+[**Vec<crate::models::DataSource>**](dataSource.md)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## data_source_update
+
+> crate::models::DataSource data_source_update(workspace_id, data_source_name, update_data_source)
+
+
+Update a data source
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**workspace_id** | **String** | The workspace ID | [required] |
+**data_source_name** | **String** |  | [required] |
+**update_data_source** | [**UpdateDataSource**](UpdateDataSource.md) |  | [required] |
+
+### Return type
+
+[**crate::models::DataSource**](dataSource.md)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## event_create
+
+> crate::models::Event event_create(workspace_id, new_event)
+
+
+Creates a new event
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**workspace_id** | **String** | The workspace ID | [required] |
+**new_event** | [**NewEvent**](NewEvent.md) | Event creation payload | [required] |
+
+### Return type
+
+[**crate::models::Event**](event.md)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## event_delete
+
+> event_delete(event_id)
+
+
+Deletes a event
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**event_id** | **String** | ID of the event | [required] |
+
+### Return type
+
+ (empty response body)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: Not defined
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## event_list
+
+> Vec<crate::models::Event> event_list(workspace_id, occurrence_time_start, occurrence_time_end, labels, sort_by, sort_direction, page, limit)
+
+
+Get a list of all events matching the query
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**workspace_id** | **String** | The workspace ID | [required] |
+**occurrence_time_start** | **String** |  | [required] |
+**occurrence_time_end** | **String** |  | [required] |
+**labels** | Option<[**::std::collections::HashMap<String, String>**](String.md)> |  |  |
+**sort_by** | Option<**String**> | Sort the resulting list by the following field (defaults to occurrence_time) |  |
+**sort_direction** | Option<**String**> | Sort the resulting list in the following direction (defaults to ascending) |  |
+**page** | Option<**i32**> | Page number which should be displayed; 0-indexed (defaults to 0) |  |
+**limit** | Option<**i32**> | Maximum amount of results to display per page (defaults to 20) |  |
+
+### Return type
+
+[**Vec<crate::models::Event>**](event.md)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## file_delete
+
+> file_delete(notebook_id, file_id)
 
 
 Delete a file
@@ -243,10 +476,12 @@ Name | Type | Description  | Required | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 
-## delete_notebook
+## file_get
 
-> delete_notebook(notebook_id)
+> std::path::PathBuf file_get(notebook_id, file_id)
 
+
+Get a file
 
 ### Parameters
 
@@ -254,115 +489,20 @@ Name | Type | Description  | Required | Notes
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
 **notebook_id** | **String** |  | [required] |
+**file_id** | **String** | ID of the file | [required] |
 
 ### Return type
 
- (empty response body)
+[**std::path::PathBuf**](std::path::PathBuf.md)
 
 ### Authorization
 
-[userToken](../README.md#userToken)
+No authorization required
 
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: Not defined
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-
-## event_create
-
-> crate::models::Event event_create(new_event)
-
-
-Creates a new event
-
-### Parameters
-
-
-Name | Type | Description  | Required | Notes
-------------- | ------------- | ------------- | ------------- | -------------
-**new_event** | [**NewEvent**](NewEvent.md) | Event creation payload | [required] |
-
-### Return type
-
-[**crate::models::Event**](event.md)
-
-### Authorization
-
-[userToken](../README.md#userToken)
-
-### HTTP request headers
-
-- **Content-Type**: application/json
-- **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-
-## event_delete
-
-> event_delete(id)
-
-
-Deletes a event
-
-### Parameters
-
-
-Name | Type | Description  | Required | Notes
-------------- | ------------- | ------------- | ------------- | -------------
-**id** | **String** | ID of the event | [required] |
-
-### Return type
-
- (empty response body)
-
-### Authorization
-
-[userToken](../README.md#userToken)
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
-- **Accept**: Not defined
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-
-## event_list
-
-> Vec<crate::models::Event> event_list(occurrence_time_start, occurrence_time_end, labels, sort_by, sort_direction, page, limit)
-
-
-Get a list of all events matching the query
-
-### Parameters
-
-
-Name | Type | Description  | Required | Notes
-------------- | ------------- | ------------- | ------------- | -------------
-**occurrence_time_start** | **String** |  | [required] |
-**occurrence_time_end** | **String** |  | [required] |
-**labels** | Option<[**::std::collections::HashMap<String, String>**](String.md)> |  |  |
-**sort_by** | Option<**String**> | Sort the resulting list by the following field (defaults to occurrence_time) |  |
-**sort_direction** | Option<**String**> | Sort the resulting list in the following direction (defaults to ascending) |  |
-**page** | Option<**i32**> | Page number which should be displayed; 0-indexed (defaults to 0) |  |
-**limit** | Option<**i32**> | Maximum amount of results to display per page (defaults to 20) |  |
-
-### Return type
-
-[**Vec<crate::models::Event>**](event.md)
-
-### Authorization
-
-[userToken](../README.md#userToken)
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
-- **Accept**: application/json
+- **Accept**: image/_*
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -398,124 +538,9 @@ Name | Type | Description  | Required | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 
-## get_file
-
-> std::path::PathBuf get_file(notebook_id, file_id)
-
-
-Get a file
-
-### Parameters
-
-
-Name | Type | Description  | Required | Notes
-------------- | ------------- | ------------- | ------------- | -------------
-**notebook_id** | **String** |  | [required] |
-**file_id** | **String** | ID of the file | [required] |
-
-### Return type
-
-[**std::path::PathBuf**](std::path::PathBuf.md)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
-- **Accept**: image/_*
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-
-## get_notebook
-
-> crate::models::Notebook get_notebook(notebook_id)
-
-
-Fetch a single notebook
-
-### Parameters
-
-
-Name | Type | Description  | Required | Notes
-------------- | ------------- | ------------- | ------------- | -------------
-**notebook_id** | **String** |  | [required] |
-
-### Return type
-
-[**crate::models::Notebook**](notebook.md)
-
-### Authorization
-
-[userToken](../README.md#userToken)
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
-- **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-
-## get_profile
-
-> crate::models::User get_profile()
-
-
-Fetch the profile of the authenticated user
-
-### Parameters
-
-This endpoint does not need any parameter.
-
-### Return type
-
-[**crate::models::User**](user.md)
-
-### Authorization
-
-[userToken](../README.md#userToken)
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
-- **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-
-## get_profile_picture
-
-> std::path::PathBuf get_profile_picture()
-
-
-Retrieve profile image
-
-### Parameters
-
-This endpoint does not need any parameter.
-
-### Return type
-
-[**std::path::PathBuf**](std::path::PathBuf.md)
-
-### Authorization
-
-No authorization required
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
-- **Accept**: image/_*
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-
 ## label_keys_list
 
-> Vec<String> label_keys_list(prefix)
+> Vec<String> label_keys_list(workspace_id, prefix)
 
 
 Retrieve all label keys
@@ -525,6 +550,7 @@ Retrieve all label keys
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
+**workspace_id** | **String** | The workspace ID | [required] |
 **prefix** | Option<**String**> | Prefix of the label key |  |
 
 ### Return type
@@ -545,7 +571,7 @@ Name | Type | Description  | Required | Notes
 
 ## label_values_list
 
-> Vec<String> label_values_list(label_key, prefix)
+> Vec<String> label_values_list(workspace_id, label_key, prefix)
 
 
 Retrieve all label values for a specific key
@@ -555,6 +581,7 @@ Retrieve all label values for a specific key
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
+**workspace_id** | **String** | The workspace ID | [required] |
 **label_key** | **String** | The label key | [required] |
 **prefix** | Option<**String**> | Prefix of the label value |  |
 
@@ -696,9 +723,39 @@ Name | Type | Description  | Required | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 
+## notebook_convert_to_template
+
+> String notebook_convert_to_template(notebook_id)
+
+
+Convert the notebook to a Template
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**notebook_id** | **String** |  | [required] |
+
+### Return type
+
+**String**
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: text/plain
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
 ## notebook_create
 
-> crate::models::Notebook notebook_create(new_notebook)
+> crate::models::Notebook notebook_create(workspace_id, new_notebook)
 
 
 Create a new notebook
@@ -708,6 +765,7 @@ Create a new notebook
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
+**workspace_id** | **String** | The workspace ID | [required] |
 **new_notebook** | [**NewNotebook**](NewNotebook.md) | new notebook | [required] |
 
 ### Return type
@@ -726,16 +784,77 @@ Name | Type | Description  | Required | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 
+## notebook_delete
+
+> notebook_delete(notebook_id)
+
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**notebook_id** | **String** |  | [required] |
+
+### Return type
+
+ (empty response body)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: Not defined
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## notebook_get
+
+> crate::models::Notebook notebook_get(notebook_id)
+
+
+Fetch a single notebook
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**notebook_id** | **String** |  | [required] |
+
+### Return type
+
+[**crate::models::Notebook**](notebook.md)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
 ## notebook_list
 
-> Vec<crate::models::NotebookSummary> notebook_list()
+> Vec<crate::models::NotebookSummary> notebook_list(workspace_id)
 
 
 List all accessible notebooks
 
 ### Parameters
 
-This endpoint does not need any parameter.
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**workspace_id** | **String** | The workspace ID | [required] |
 
 ### Return type
 
@@ -755,7 +874,7 @@ This endpoint does not need any parameter.
 
 ## notebook_search
 
-> Vec<crate::models::NotebookSummary> notebook_search(notebook_search)
+> Vec<crate::models::NotebookSummary> notebook_search(workspace_id, notebook_search)
 
 
 Search for notebooks
@@ -765,6 +884,7 @@ Search for notebooks
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
+**workspace_id** | **String** | The workspace ID | [required] |
 **notebook_search** | [**NotebookSearch**](NotebookSearch.md) | Notebook search payload | [required] |
 
 ### Return type
@@ -779,6 +899,37 @@ Name | Type | Description  | Required | Notes
 
 - **Content-Type**: application/json
 - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## notebook_update
+
+> notebook_update(notebook_id, notebook_patch)
+
+
+Modifies individual properties of a single notebook
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**notebook_id** | **String** |  | [required] |
+**notebook_patch** | [**NotebookPatch**](NotebookPatch.md) | updated properties | [required] |
+
+### Return type
+
+ (empty response body)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: Not defined
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -814,100 +965,12 @@ Name | Type | Description  | Required | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 
-## org_data_source_create
-
-> crate::models::OrgDataSource org_data_source_create(new_org_data_source)
-
-
-Create an organization data-source
-
-### Parameters
-
-
-Name | Type | Description  | Required | Notes
-------------- | ------------- | ------------- | ------------- | -------------
-**new_org_data_source** | [**NewOrgDataSource**](NewOrgDataSource.md) | new data-source | [required] |
-
-### Return type
-
-[**crate::models::OrgDataSource**](orgDataSource.md)
-
-### Authorization
-
-[userToken](../README.md#userToken)
-
-### HTTP request headers
-
-- **Content-Type**: application/json
-- **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-
-## org_user_list_current
-
-> Vec<crate::models::User> org_user_list_current()
-
-
-Fetch the users of the current organization
-
-### Parameters
-
-This endpoint does not need any parameter.
-
-### Return type
-
-[**Vec<crate::models::User>**](user.md)
-
-### Authorization
-
-[userToken](../README.md#userToken)
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
-- **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-
-## patch_notebook
-
-> patch_notebook(notebook_id, notebook_patch)
-
-
-Modifies individual properties of a single notebook
-
-### Parameters
-
-
-Name | Type | Description  | Required | Notes
-------------- | ------------- | ------------- | ------------- | -------------
-**notebook_id** | **String** |  | [required] |
-**notebook_patch** | [**NotebookPatch**](NotebookPatch.md) | updated properties | [required] |
-
-### Return type
-
- (empty response body)
-
-### Authorization
-
-[userToken](../README.md#userToken)
-
-### HTTP request headers
-
-- **Content-Type**: application/json
-- **Accept**: Not defined
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-
 ## pinned_notebook_create
 
 > pinned_notebook_create(new_pinned_notebook)
 
 
-Create a new notebook
+Pin a notebook
 
 ### Parameters
 
@@ -937,6 +1000,8 @@ Name | Type | Description  | Required | Notes
 > pinned_notebook_delete(notebook_id)
 
 
+Unpin a notebook
+
 ### Parameters
 
 
@@ -962,14 +1027,17 @@ Name | Type | Description  | Required | Notes
 
 ## pinned_notebook_list
 
-> Vec<crate::models::NotebookSummary> pinned_notebook_list()
+> Vec<crate::models::NotebookSummary> pinned_notebook_list(workspace_id)
 
 
-List all pinned notebooks
+List all pinned notebooks for a specific workspace
 
 ### Parameters
 
-This endpoint does not need any parameter.
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**workspace_id** | **String** | The workspace ID | [required] |
 
 ### Return type
 
@@ -987,9 +1055,93 @@ This endpoint does not need any parameter.
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 
+## profile_get
+
+> crate::models::Profile profile_get()
+
+
+Fetch the profile of the authenticated user
+
+### Parameters
+
+This endpoint does not need any parameter.
+
+### Return type
+
+[**crate::models::Profile**](profile.md)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## profile_picture_get
+
+> std::path::PathBuf profile_picture_get()
+
+
+Retrieve profile image
+
+### Parameters
+
+This endpoint does not need any parameter.
+
+### Return type
+
+[**std::path::PathBuf**](std::path::PathBuf.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: image/_*
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## profile_picture_update
+
+> profile_picture_update(picture)
+
+
+Upload profile image
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**picture** | **std::path::PathBuf** |  | [required] |
+
+### Return type
+
+ (empty response body)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: multipart/form-data
+- **Accept**: Not defined
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
 ## proxy_create
 
-> crate::models::Proxy proxy_create(new_proxy)
+> crate::models::Proxy proxy_create(workspace_id, new_proxy)
 
 
 Create a new proxy
@@ -999,6 +1151,7 @@ Create a new proxy
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
+**workspace_id** | **String** | The workspace ID | [required] |
 **new_proxy** | [**NewProxy**](NewProxy.md) | new proxy | [required] |
 
 ### Return type
@@ -1017,36 +1170,9 @@ Name | Type | Description  | Required | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 
-## proxy_data_sources_list
-
-> Vec<crate::models::DataSourceAndProxySummary> proxy_data_sources_list()
-
-
-Get all of the data sources for all proxies that belong to the same organization as the user
-
-### Parameters
-
-This endpoint does not need any parameter.
-
-### Return type
-
-[**Vec<crate::models::DataSourceAndProxySummary>**](dataSourceAndProxySummary.md)
-
-### Authorization
-
-[serviceToken](../README.md#serviceToken), [userToken](../README.md#userToken)
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
-- **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-
 ## proxy_delete
 
-> proxy_delete(proxy_id)
+> proxy_delete(workspace_id, proxy_name)
 
 
 ### Parameters
@@ -1054,7 +1180,8 @@ This endpoint does not need any parameter.
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**proxy_id** | **String** | ID of the proxy | [required] |
+**workspace_id** | **String** | The workspace ID | [required] |
+**proxy_name** | **String** |  | [required] |
 
 ### Return type
 
@@ -1074,7 +1201,7 @@ Name | Type | Description  | Required | Notes
 
 ## proxy_get
 
-> crate::models::Proxy proxy_get(proxy_id)
+> crate::models::Proxy proxy_get(workspace_id, proxy_name)
 
 
 Retrieve a single proxy
@@ -1084,7 +1211,8 @@ Retrieve a single proxy
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**proxy_id** | **String** | ID of the proxy | [required] |
+**workspace_id** | **String** | The workspace ID | [required] |
+**proxy_name** | **String** |  | [required] |
 
 ### Return type
 
@@ -1104,14 +1232,17 @@ Name | Type | Description  | Required | Notes
 
 ## proxy_list
 
-> Vec<crate::models::ProxySummary> proxy_list()
+> Vec<crate::models::ProxySummary> proxy_list(workspace_id)
 
 
 List all proxies
 
 ### Parameters
 
-This endpoint does not need any parameter.
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**workspace_id** | **String** | The workspace ID | [required] |
 
 ### Return type
 
@@ -1131,7 +1262,7 @@ This endpoint does not need any parameter.
 
 ## proxy_relay
 
-> proxy_relay(proxy_id, data_source_name)
+> std::path::PathBuf proxy_relay(workspace_id, proxy_name, data_source_name, provider_protocol_version, body)
 
 
 Relay a query to a remote proxy
@@ -1141,12 +1272,15 @@ Relay a query to a remote proxy
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**proxy_id** | **String** | ID of the proxy | [required] |
-**data_source_name** | **String** | Name of the data source | [required] |
+**workspace_id** | **String** | The workspace ID | [required] |
+**proxy_name** | **String** |  | [required] |
+**data_source_name** | **String** |  | [required] |
+**provider_protocol_version** | **String** |  | [required] |
+**body** | **std::path::PathBuf** | Message to send to the proxy | [required] |
 
 ### Return type
 
- (empty response body)
+[**std::path::PathBuf**](std::path::PathBuf.md)
 
 ### Authorization
 
@@ -1154,45 +1288,15 @@ Name | Type | Description  | Required | Notes
 
 ### HTTP request headers
 
-- **Content-Type**: Not defined
-- **Accept**: Not defined
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-
-## suggest_query
-
-> Vec<String> suggest_query(datasource_type)
-
-
-Retrieve query suggestions for a given datasource type
-
-### Parameters
-
-
-Name | Type | Description  | Required | Notes
-------------- | ------------- | ------------- | ------------- | -------------
-**datasource_type** | [**crate::models::DataSourceType**](.md) | The type of the datasource | [required] |
-
-### Return type
-
-**Vec<String>**
-
-### Authorization
-
-[userToken](../README.md#userToken)
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
-- **Accept**: application/json
+- **Content-Type**: application/octet-stream
+- **Accept**: application/octet-stream
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 
 ## template_create
 
-> crate::models::Template template_create(new_template)
+> crate::models::Template template_create(workspace_id, new_template)
 
 
 Create a new template
@@ -1202,6 +1306,7 @@ Create a new template
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
+**workspace_id** | **String** | The workspace ID | [required] |
 **new_template** | [**NewTemplate**](NewTemplate.md) |  | [required] |
 
 ### Return type
@@ -1244,60 +1349,6 @@ Name | Type | Description  | Required | Notes
 
 - **Content-Type**: Not defined
 - **Accept**: Not defined
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-
-## template_example_expand
-
-> crate::models::Notebook template_example_expand(template_id, body)
-
-
-### Parameters
-
-
-Name | Type | Description  | Required | Notes
-------------- | ------------- | ------------- | ------------- | -------------
-**template_id** | **String** | ID of the template | [required] |
-**body** | Option<**serde_json::Value**> | Parameters to pass to the template |  |
-
-### Return type
-
-[**crate::models::Notebook**](notebook.md)
-
-### Authorization
-
-[userToken](../README.md#userToken)
-
-### HTTP request headers
-
-- **Content-Type**: application/json
-- **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-
-## template_example_list
-
-> Vec<crate::models::Template> template_example_list()
-
-
-### Parameters
-
-This endpoint does not need any parameter.
-
-### Return type
-
-[**Vec<crate::models::Template>**](template.md)
-
-### Authorization
-
-[userToken](../README.md#userToken)
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
-- **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -1363,7 +1414,7 @@ Name | Type | Description  | Required | Notes
 
 ## template_list
 
-> Vec<crate::models::TemplateSummary> template_list(sort_by, sort_direction)
+> Vec<crate::models::TemplateSummary> template_list(workspace_id, sort_by, sort_direction)
 
 
 List the templates that have been uploaded
@@ -1373,6 +1424,7 @@ List the templates that have been uploaded
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
+**workspace_id** | **String** | The workspace ID | [required] |
 **sort_by** | Option<**String**> | Sort the resulting list by the following field (defaults to title) |  |
 **sort_direction** | Option<**String**> | Sort the resulting list in the following direction (defaults to ascending) |  |
 
@@ -1690,7 +1742,7 @@ Name | Type | Description  | Required | Notes
 
 ## trigger_create
 
-> crate::models::Trigger trigger_create(new_trigger)
+> crate::models::Trigger trigger_create(workspace_id, new_trigger)
 
 
 Create a new trigger
@@ -1700,6 +1752,7 @@ Create a new trigger
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
+**workspace_id** | **String** | The workspace ID | [required] |
 **new_trigger** | [**NewTrigger**](NewTrigger.md) | Template URL or body | [required] |
 
 ### Return type
@@ -1808,12 +1861,15 @@ No authorization required
 
 ## trigger_list
 
-> Vec<crate::models::Trigger> trigger_list()
+> Vec<crate::models::Trigger> trigger_list(workspace_id)
 
 
 ### Parameters
 
-This endpoint does not need any parameter.
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**workspace_id** | **String** | The workspace ID | [required] |
 
 ### Return type
 
@@ -1831,18 +1887,329 @@ This endpoint does not need any parameter.
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 
-## update_profile_picture
+## workspace_create
 
-> update_profile_picture(picture)
+> crate::models::Workspace workspace_create(new_workspace)
 
 
-Upload profile image
+Create a new workspace
 
 ### Parameters
 
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
+**new_workspace** | [**NewWorkspace**](NewWorkspace.md) | Workspace creation payload | [required] |
+
+### Return type
+
+[**crate::models::Workspace**](workspace.md)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## workspace_get
+
+> crate::models::Workspace workspace_get(workspace_id)
+
+
+Get the workspace details
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**workspace_id** | **String** | The workspace ID | [required] |
+
+### Return type
+
+[**crate::models::Workspace**](workspace.md)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## workspace_invite
+
+> crate::models::WorkspaceInviteResponse workspace_invite(workspace_id, new_workspace_invite)
+
+
+Invite a user to a workspace
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**workspace_id** | **String** | The workspace ID | [required] |
+**new_workspace_invite** | [**NewWorkspaceInvite**](NewWorkspaceInvite.md) | Workspace invitation payload | [required] |
+
+### Return type
+
+[**crate::models::WorkspaceInviteResponse**](workspace_invite_response.md)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## workspace_invite_accept
+
+> workspace_invite_accept(invitation_id, invitation_secret)
+
+
+Accept the workspace invitation
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**invitation_id** | **String** | ID of the invitation for which an action should be executed for | [required] |
+**invitation_secret** | **String** | Secret key used to verify that the route belongs to a specific email address | [required] |
+
+### Return type
+
+ (empty response body)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: Not defined
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## workspace_invite_decline
+
+> workspace_invite_decline(invitation_id, invitation_secret)
+
+
+Decline the workspace invitation
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**invitation_id** | **String** | ID of the invitation for which an action should be executed for | [required] |
+**invitation_secret** | **String** | Secret key used to verify that the route belongs to a specific email address | [required] |
+
+### Return type
+
+ (empty response body)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: Not defined
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## workspace_invite_get
+
+> Vec<crate::models::WorkspaceInvite> workspace_invite_get(workspace_id, sort_by, sort_direction, page, limit)
+
+
+Get a list of pending workspace invitations
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**workspace_id** | **String** | The workspace ID | [required] |
+**sort_by** | Option<**String**> | Sort the resulting list by the following field (defaults to id) |  |
+**sort_direction** | Option<**String**> | Sort the resulting list in the following direction (defaults to ascending) |  |
+**page** | Option<**i32**> | Page number which should be displayed; 0-indexed (defaults to 0) |  |
+**limit** | Option<**i32**> | Maximum amount of results to display per page (defaults to 20) |  |
+
+### Return type
+
+[**Vec<crate::models::WorkspaceInvite>**](workspace_invite.md)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## workspace_leave
+
+> workspace_leave(workspace_id)
+
+
+Leave a workspace
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**workspace_id** | **String** | The workspace ID | [required] |
+
+### Return type
+
+ (empty response body)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: Not defined
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## workspace_list
+
+> Vec<crate::models::Workspace> workspace_list(sort_by, sort_direction)
+
+
+List all workspaces authenticated user has access to
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**sort_by** | Option<**String**> | Sort the resulting list by the following field (defaults to id) |  |
+**sort_direction** | Option<**String**> | Sort the resulting list in the following direction (defaults to ascending) |  |
+
+### Return type
+
+[**Vec<crate::models::Workspace>**](workspace.md)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## workspace_list_users
+
+> Vec<crate::models::User> workspace_list_users(workspace_id, sort_by, sort_direction)
+
+
+List all users for a workspace
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**workspace_id** | **String** | The workspace ID | [required] |
+**sort_by** | Option<**String**> | Sort the resulting list by the following field (defaults to id) |  |
+**sort_direction** | Option<**String**> | Sort the resulting list in the following direction (defaults to ascending) |  |
+
+### Return type
+
+[**Vec<crate::models::User>**](user.md)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## workspace_picture_get
+
+> std::path::PathBuf workspace_picture_get(workspace_id)
+
+
+Retrieve workspace image
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**workspace_id** | **String** | The workspace ID | [required] |
+
+### Return type
+
+[**std::path::PathBuf**](std::path::PathBuf.md)
+
+### Authorization
+
+No authorization required
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: image/_*
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## workspace_picture_update
+
+> workspace_picture_update(workspace_id, picture)
+
+
+Upload workspace image
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**workspace_id** | **String** | The workspace ID | [required] |
 **picture** | **std::path::PathBuf** |  | [required] |
 
 ### Return type
@@ -1856,6 +2223,68 @@ Name | Type | Description  | Required | Notes
 ### HTTP request headers
 
 - **Content-Type**: multipart/form-data
+- **Accept**: Not defined
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## workspace_update
+
+> workspace_update(workspace_id, update_workspace)
+
+
+Update workspace settings
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**workspace_id** | **String** | The workspace ID | [required] |
+**update_workspace** | [**UpdateWorkspace**](UpdateWorkspace.md) | Workspace update payload | [required] |
+
+### Return type
+
+ (empty response body)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: Not defined
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## workspace_user_remove
+
+> workspace_user_remove(workspace_id, user_id)
+
+
+Remove a user from the workspace
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**workspace_id** | **String** | The workspace ID | [required] |
+**user_id** | **String** | User ID | [required] |
+
+### Return type
+
+ (empty response body)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
 - **Accept**: Not defined
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)

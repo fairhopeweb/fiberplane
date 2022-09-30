@@ -9,21 +9,28 @@
  */
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-pub struct CreatedBy {
-    #[serde(rename = "name")]
-    pub name: String,
-    #[serde(rename = "type")]
-    pub _type: crate::models::UserType,
-    #[serde(rename = "proxy", skip_serializing_if = "Option::is_none")]
-    pub proxy: Option<Box<crate::models::ProxySummary>>,
-}
-
-impl CreatedBy {
-    pub fn new(name: String, _type: crate::models::UserType) -> CreatedBy {
-        CreatedBy {
-            name,
-            _type,
-            proxy: None,
-        }
-    }
+#[serde(tag = "type")]
+pub enum CreatedBy {
+    #[serde(rename = "trigger")]
+    CreatedByTrigger {
+        #[serde(rename = "id")]
+        id: String,
+        #[serde(rename = "title")]
+        title: String,
+        #[serde(rename = "templateId")]
+        template_id: String,
+        #[serde(rename = "createdAt")]
+        created_at: String,
+        #[serde(rename = "updatedAt")]
+        updated_at: String,
+    },
+    #[serde(rename = "unknown")]
+    CreatedByUnknown {},
+    #[serde(rename = "user")]
+    CreatedByUser {
+        #[serde(rename = "id")]
+        id: String,
+        #[serde(rename = "name")]
+        name: String,
+    },
 }

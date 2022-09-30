@@ -22,9 +22,6 @@ pub struct Notebook {
     pub created_at: String,
     #[serde(rename = "createdBy")]
     pub created_by: Box<crate::models::CreatedBy>,
-    #[serde(rename = "dataSources", skip_serializing_if = "Option::is_none")]
-    pub data_sources:
-        Option<::std::collections::HashMap<String, crate::models::NotebookDataSource>>,
     #[serde(rename = "readOnly", skip_serializing_if = "Option::is_none")]
     pub read_only: Option<bool>,
     #[serde(rename = "timeRange")]
@@ -35,6 +32,10 @@ pub struct Notebook {
     pub visibility: Option<crate::models::NotebookVisibility>,
     #[serde(rename = "labels")]
     pub labels: Vec<crate::models::Label>,
+    /// This is a mapping from the provider type to the data source selected for that type
+    #[serde(rename = "selectedDataSources")]
+    pub selected_data_sources:
+        ::std::collections::HashMap<String, crate::models::SelectedDataSource>,
 }
 
 impl Notebook {
@@ -48,6 +49,10 @@ impl Notebook {
         time_range: crate::models::TimeRange,
         updated_at: String,
         labels: Vec<crate::models::Label>,
+        selected_data_sources: ::std::collections::HashMap<
+            String,
+            crate::models::SelectedDataSource,
+        >,
     ) -> Notebook {
         Notebook {
             id,
@@ -56,12 +61,12 @@ impl Notebook {
             cells,
             created_at,
             created_by: Box::new(created_by),
-            data_sources: None,
             read_only: None,
             time_range: Box::new(time_range),
             updated_at,
             visibility: None,
             labels,
+            selected_data_sources,
         }
     }
 }

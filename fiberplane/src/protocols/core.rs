@@ -1,24 +1,17 @@
-use super::{
-    blobs::EncodedBlob,
-    formatting::{translate, AnnotationWithOffset, Formatting},
-};
-use crate::{
-    markdown::formatting_from_markdown,
-    query_data::{has_query_data, set_query_field, unset_query_field},
-    text_util::char_count,
-};
+use super::blobs::EncodedBlob;
+use super::comments::UserSummary;
+use super::data_sources::SelectedDataSources;
+use super::formatting::{translate, AnnotationWithOffset, Formatting};
+use crate::markdown::formatting_from_markdown;
+use crate::query_data::{has_query_data, set_query_field, unset_query_field};
+use crate::text_util::char_count;
+use base64uuid::Base64Uuid;
 use fp_bindgen::prelude::Serializable;
 use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
-use std::str::FromStr;
-use std::{
-    collections::{BTreeMap, HashMap},
-    time::SystemTime,
-};
-use std::{
-    fmt::{self, Display, Formatter},
-    ops::Sub,
-};
+use std::collections::{BTreeMap, HashMap};
+use std::fmt::{self, Display, Formatter};
+use std::{ops::Sub, time::SystemTime};
 use thiserror::Error;
 use time::{ext::NumericalDuration, Duration, OffsetDateTime};
 
@@ -48,7 +41,7 @@ pub struct NewNotebook {
     pub time_range: NewTimeRange,
 
     #[serde(default)]
-    pub data_sources: BTreeMap<String, NotebookDataSource>,
+    pub selected_data_sources: SelectedDataSources,
 
     #[serde(default)]
     pub labels: Vec<Label>,
@@ -60,7 +53,7 @@ impl From<Notebook> for NewNotebook {
             title: notebook.title,
             cells: notebook.cells,
             time_range: notebook.time_range.into(),
-            data_sources: notebook.data_sources,
+            selected_data_sources: notebook.selected_data_sources,
             labels: notebook.labels,
         }
     }
@@ -106,11 +99,21 @@ pub struct RelativeTimeRange {
     rust_plugin_module = "fiberplane::protocols::core",
     rust_wasmer_runtime_module = "fiberplane::protocols::core"
 )]
-#[serde(rename_all = "snake_case")]
-pub enum UserType {
-    Anonymous,
-    Individual,
-    Organization,
+#[serde(tag = "type", rename_all = "snake_case")]
+pub enum CreatedBy {
+    User(UserSummary),
+    Trigger(TriggerSummary),
+    Unknown,
+}
+
+impl CreatedBy {
+    pub fn name(&self) -> String {
+        match self {
+            CreatedBy::User(user) => user.name.clone(),
+            CreatedBy::Trigger(trigger) => trigger.title.clone(),
+            CreatedBy::Unknown => String::from("Unknown"),
+        }
+    }
 }
 
 #[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, Serializable)]
@@ -119,10 +122,14 @@ pub enum UserType {
     rust_wasmer_runtime_module = "fiberplane::protocols::core"
 )]
 #[serde(rename_all = "camelCase")]
-pub struct CreatedBy {
-    #[serde(rename = "type")]
-    pub user_type: UserType,
-    pub name: String,
+pub struct TriggerSummary {
+    pub id: Base64Uuid,
+    pub title: String,
+    pub template_id: Base64Uuid,
+    #[serde(with = "time::serde::rfc3339")]
+    pub created_at: OffsetDateTime,
+    #[serde(with = "time::serde::rfc3339")]
+    pub updated_at: OffsetDateTime,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize, Serializable)]
@@ -163,7 +170,7 @@ pub struct Notebook {
     pub created_by: CreatedBy,
 
     #[serde(default)]
-    pub data_sources: BTreeMap<String, NotebookDataSource>,
+    pub selected_data_sources: SelectedDataSources,
 
     #[serde(default)]
     pub labels: Vec<Label>,
@@ -1198,220 +1205,6 @@ pub struct LogRecord {
     pub span_id: Option<String>,
 }
 
-/// NotebookDataSource represents the way a data-source can be embedded in a
-/// Notebook.
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
-#[fp(
-    rust_plugin_module = "fiberplane::protocols::core",
-    rust_wasmer_runtime_module = "fiberplane::protocols::core"
-)]
-#[serde(tag = "type", rename_all = "snake_case")]
-pub enum NotebookDataSource {
-    /// Inline is a data-source which only exists in this notebook.
-    Inline(InlineDataSource),
-
-    /// Organization is a data-source which is stored on the API server,
-    /// allowing for data-source reuse.
-    Organization(OrganizationDataSource),
-}
-
-/// OrganizationDataSource represents a data-source as stored for a organization
-/// on the API.
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
-#[fp(
-    rust_plugin_module = "fiberplane::protocols::core",
-    rust_wasmer_runtime_module = "fiberplane::protocols::core"
-)]
-#[serde(rename_all = "camelCase")]
-pub struct InlineDataSource {
-    /// The actual data-source.
-    pub data_source: DataSource,
-}
-
-/// OrganizationDataSource represents a data-source as stored for a organization
-/// on the API.
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
-#[fp(
-    rust_plugin_module = "fiberplane::protocols::core",
-    rust_wasmer_runtime_module = "fiberplane::protocols::core"
-)]
-#[serde(rename_all = "camelCase")]
-pub struct OrganizationDataSource {
-    /// identifier used to manipulate this data-source.
-    pub id: String,
-
-    /// Name to identify this organization data-source. This does not have to be
-    /// the same as the name in the data-source.
-    pub name: String,
-
-    /// If default_data_source is true, then this data-source will be added to
-    /// any newly created notebooks.
-    pub default_data_source: bool,
-
-    /// The actual data-source.
-    pub data_source: DataSource,
-}
-
-/// A data-source represents all the configuration for a specific component or
-/// service. It will be used by provider.
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
-#[fp(
-    rust_plugin_module = "fiberplane::protocols::core",
-    rust_wasmer_runtime_module = "fiberplane::protocols::core"
-)]
-#[serde(tag = "type", rename_all = "snake_case")]
-pub enum DataSource {
-    Prometheus(PrometheusDataSource),
-    Proxy(ProxyDataSource),
-    Elasticsearch(ElasticsearchDataSource),
-    Loki(LokiDataSource),
-    Sentry(SentryDataSource),
-}
-
-impl DataSource {
-    pub fn data_source_type(&self) -> DataSourceType {
-        match self {
-            DataSource::Prometheus(_) => DataSourceType::Prometheus,
-            DataSource::Proxy(_) => DataSourceType::Proxy,
-            DataSource::Elasticsearch(_) => DataSourceType::Elasticsearch,
-            DataSource::Loki(_) => DataSourceType::Loki,
-            DataSource::Sentry(_) => DataSourceType::Sentry,
-        }
-    }
-}
-
-impl From<&DataSource> for DataSourceType {
-    fn from(data_source: &DataSource) -> Self {
-        data_source.data_source_type()
-    }
-}
-
-#[derive(
-    Clone, Debug, PartialEq, Serialize, Deserialize, Serializable, Hash, PartialOrd, Eq, Ord,
-)]
-#[fp(
-    rust_plugin_module = "fiberplane::protocols::core",
-    rust_wasmer_runtime_module = "fiberplane::protocols::core"
-)]
-#[serde(rename_all = "camelCase")]
-pub enum DataSourceType {
-    Prometheus,
-    Proxy,
-    Elasticsearch,
-    Loki,
-    Sentry,
-}
-
-impl From<&DataSourceType> for &'static str {
-    fn from(data_source_type: &DataSourceType) -> Self {
-        match data_source_type {
-            DataSourceType::Prometheus => "prometheus",
-            DataSourceType::Proxy => "proxy",
-            DataSourceType::Elasticsearch => "elasticsearch",
-            DataSourceType::Loki => "loki",
-            DataSourceType::Sentry => "sentry",
-        }
-    }
-}
-
-#[derive(thiserror::Error, Debug, PartialEq, Eq)]
-#[error("Unexpected data source type: {0}")]
-pub struct UnexpectedDataSourceType(String);
-
-impl FromStr for DataSourceType {
-    type Err = UnexpectedDataSourceType;
-    fn from_str(s: &str) -> Result<Self, Self::Err> {
-        match s {
-            "prometheus" => Ok(DataSourceType::Prometheus),
-            "elasticsearch" => Ok(DataSourceType::Elasticsearch),
-            "loki" => Ok(DataSourceType::Loki),
-            "proxy" => Ok(DataSourceType::Proxy),
-            _ => Err(UnexpectedDataSourceType(s.to_string())),
-        }
-    }
-}
-
-impl Display for DataSourceType {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        f.write_str(self.into())
-    }
-}
-
-/// A data-source for Prometheus. Currently only requires a url. This should be
-/// a full URL starting with http:// or https:// the domain, and optionally a
-/// port and a path.
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
-#[fp(
-    rust_plugin_module = "fiberplane::protocols::core",
-    rust_wasmer_runtime_module = "fiberplane::protocols::core"
-)]
-#[serde(rename_all = "camelCase")]
-pub struct PrometheusDataSource {
-    pub url: String,
-}
-
-/// A data-source for Elasticsearch. Currently only requires a url. This should be
-/// a full URL starting with http:// or https:// the domain, and optionally a
-/// port and a path.
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
-#[fp(
-    rust_plugin_module = "fiberplane::protocols::core",
-    rust_wasmer_runtime_module = "fiberplane::protocols::core"
-)]
-#[serde(rename_all = "camelCase")]
-pub struct ElasticsearchDataSource {
-    pub url: String,
-    /// Parse the timestamp out of fields with the given names
-    #[serde(default)]
-    pub timestamp_field_names: Vec<String>,
-    /// Parse the body out of fields with the given names
-    #[serde(default)]
-    pub body_field_names: Vec<String>,
-}
-
-/// A data-source for Loki. Currently only requires a url. This should be
-/// a full URL starting with http:// or https:// the domain, and optionally a
-/// port and a path.
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
-#[fp(
-    rust_plugin_module = "fiberplane::protocols::core",
-    rust_wasmer_runtime_module = "fiberplane::protocols::core"
-)]
-#[serde(rename_all = "camelCase")]
-pub struct LokiDataSource {
-    pub url: String,
-}
-
-/// Relays requests for a data-source to a proxy server registered with the API.
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
-#[fp(
-    rust_plugin_module = "fiberplane::protocols::core",
-    rust_wasmer_runtime_module = "fiberplane::protocols::core"
-)]
-#[serde(rename_all = "camelCase")]
-pub struct ProxyDataSource {
-    /// ID of the proxy as known by the API.
-    pub proxy_id: String,
-
-    /// Name of the data source exposed by the proxy.
-    pub data_source_name: String,
-
-    /// Provider type
-    pub data_source_type: DataSourceType,
-}
-
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
-#[fp(
-    rust_plugin_module = "fiberplane::protocols::core",
-    rust_wasmer_runtime_module = "fiberplane::protocols::core"
-)]
-#[serde(rename_all = "camelCase")]
-pub struct SentryDataSource {
-    pub token: String,
-    pub organization_slug: String,
-    pub project_slug: String,
-}
-
 /// Labels that are associated with a Notebook.
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(
@@ -1555,6 +1348,87 @@ pub enum LabelValidationError {
 
     #[error("The value contains invalid characters")]
     ValueInvalidCharacters,
+}
+
+/// Workspace representation.
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
+#[serde(rename_all = "camelCase")]
+pub struct Workspace {
+    pub id: Base64Uuid,
+    pub name: String,
+    #[serde(rename = "type")]
+    pub ty: WorkspaceType,
+    pub default_data_sources: SelectedDataSources,
+    #[serde(with = "time::serde::rfc3339")]
+    pub created_at: OffsetDateTime,
+    #[serde(with = "time::serde::rfc3339")]
+    pub updated_at: OffsetDateTime,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
+#[serde(rename_all = "snake_case")]
+pub enum WorkspaceType {
+    Personal,
+    Organization,
+}
+
+/// Payload to be able to invite someone to a workspace.
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
+#[serde(rename_all = "camelCase")]
+pub struct NewWorkspaceInvitation {
+    pub email: String,
+}
+
+/// Response received from create a new workspace endpoint.
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
+#[serde(rename_all = "camelCase")]
+pub struct NewWorkspaceInvitationResponse {
+    pub url: String,
+}
+
+/// Payload to create a new workspace.
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
+#[serde(rename_all = "camelCase")]
+pub struct NewWorkspace {
+    pub name: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub default_data_sources: Option<SelectedDataSources>,
+}
+
+/// Payload to update workspace settings
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
+#[serde(rename_all = "camelCase")]
+pub struct UpdateWorkspace {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub name: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub owner: Option<Base64Uuid>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub default_data_sources: Option<SelectedDataSources>,
 }
 
 #[cfg(test)]

@@ -263,6 +263,9 @@ export type Error =
     | { type: "data"; message: string }
     | { type: "deserialization"; message: string }
     | { type: "config"; message: string }
+    | { type: "not_found" }
+    | { type: "proxy_disconnected" }
+    | { type: "invocation"; message: string }
     | { type: "other"; message: string };
 
 /**

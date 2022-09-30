@@ -91,9 +91,7 @@ pub fn apply_operation(
             Ok(apply_update_notebook_time_range(state, operation))
         }
         UpdateNotebookTitle(operation) => Ok(apply_update_notebook_title(state, operation)),
-        AddDataSource(operation) => Ok(apply_add_data_source_operation(state, operation)),
-        UpdateDataSource(operation) => Ok(apply_update_data_source_operation(state, operation)),
-        RemoveDataSource(operation) => Ok(apply_remove_data_source_operation(state, operation)),
+        SetSelectedDataSource(operation) => Ok(apply_set_selected_data_source(state, operation)),
         AddLabel(operation) => Ok(apply_add_label_operation(state, operation)),
         ReplaceLabel(operation) => Ok(apply_replace_label_operation(state, operation)),
         RemoveLabel(operation) => Ok(apply_remove_label_operation(state, operation)),
@@ -425,32 +423,18 @@ fn apply_update_notebook_title(
     })]
 }
 
-fn apply_add_data_source_operation(
+fn apply_set_selected_data_source(
     _: &dyn ApplyOperationState,
-    operation: &AddDataSourceOperation,
+    operation: &SetSelectedDataSourceOperation,
 ) -> Vec<Change> {
-    vec![Change::AddDataSource(AddDataSourceChange {
-        name: operation.name.clone(),
-        data_source: operation.data_source.clone(),
-    })]
-}
-
-fn apply_update_data_source_operation(
-    _: &dyn ApplyOperationState,
-    operation: &UpdateDataSourceOperation,
-) -> Vec<Change> {
-    vec![Change::UpdateDataSource(UpdateDataSourceChange {
-        name: operation.name.clone(),
-        data_source: operation.data_source.clone(),
-    })]
-}
-
-fn apply_remove_data_source_operation(
-    _: &dyn ApplyOperationState,
-    operation: &RemoveDataSourceOperation,
-) -> Vec<Change> {
-    vec![Change::DeleteDataSource(DeleteDataSourceChange {
-        name: operation.name.clone(),
+    let SetSelectedDataSourceOperation {
+        provider_type,
+        new_selected_data_source,
+        ..
+    } = operation;
+    vec![Change::SetSelectedDataSource(SetSelectedDataSourceChange {
+        provider_type: provider_type.clone(),
+        selected_data_source: new_selected_data_source.clone(),
     })]
 }
 

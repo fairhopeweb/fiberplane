@@ -23,9 +23,7 @@ pub fn validate_operation(
         ReplaceText(operation) => validate_replace_text_operation(state, operation),
         UpdateNotebookTimeRange(operation) => validate_update_notebook_time_range(state, operation),
         UpdateNotebookTitle(operation) => validate_update_notebook_title(state, operation),
-        AddDataSource(operation) => validate_add_data_source_operation(state, operation),
-        UpdateDataSource(operation) => validate_update_data_source_operation(state, operation),
-        RemoveDataSource(operation) => validate_remove_data_source_operation(state, operation),
+        SetSelectedDataSource(operation) => validate_set_selected_data_source(state, operation),
         AddLabel(operation) => validate_add_label_operation(state, operation),
         ReplaceLabel(operation) => validate_replace_label_operation(state, operation),
         RemoveLabel(operation) => validate_remove_label_operation(state, operation),
@@ -372,23 +370,9 @@ fn validate_update_notebook_title(
     Ok(())
 }
 
-fn validate_add_data_source_operation(
+fn validate_set_selected_data_source(
     _: &dyn ApplyOperationState,
-    _: &AddDataSourceOperation,
-) -> Result<(), RejectReason> {
-    Ok(())
-}
-
-fn validate_update_data_source_operation(
-    _: &dyn ApplyOperationState,
-    _: &UpdateDataSourceOperation,
-) -> Result<(), RejectReason> {
-    Ok(())
-}
-
-fn validate_remove_data_source_operation(
-    _: &dyn ApplyOperationState,
-    _: &RemoveDataSourceOperation,
+    _: &SetSelectedDataSourceOperation,
 ) -> Result<(), RejectReason> {
     Ok(())
 }

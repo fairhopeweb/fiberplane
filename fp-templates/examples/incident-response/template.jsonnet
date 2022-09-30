@@ -10,14 +10,6 @@ function(
   fp.notebook
   .new(alertTitle)
   .setTimeRangeRelative(minutes=60)
-  .addDirectDataSource(
-    type='prometheus',
-    name='Demo Data Source',
-    config={
-      url: 'https://prometheus.dev.fiberplane.io',
-    },
-  )
-  .addProxyDataSource(type='prometheus')
   .addLabels({
     'notebook-type': 'Incident',
     'incident-status': 'Open',

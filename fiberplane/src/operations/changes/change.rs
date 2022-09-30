@@ -1,7 +1,6 @@
-use crate::protocols::{
-    core::{Cell, Label, NotebookDataSource, TimeRange},
-    formatting::Formatting,
-};
+use crate::protocols::core::{Cell, Label, TimeRange};
+use crate::protocols::data_sources::SelectedDataSource;
+use crate::protocols::formatting::Formatting;
 use fp_bindgen::prelude::Serializable;
 use serde::{Deserialize, Serialize};
 
@@ -16,9 +15,7 @@ pub enum Change {
     UpdateCellText(UpdateCellTextChange),
     UpdateNotebookTimeRange(UpdateNotebookTimeRangeChange),
     UpdateNotebookTitle(UpdateNotebookTitleChange),
-    AddDataSource(AddDataSourceChange),
-    DeleteDataSource(DeleteDataSourceChange),
-    UpdateDataSource(UpdateDataSourceChange),
+    SetSelectedDataSource(SetSelectedDataSourceChange),
     AddLabel(AddLabelChange),
     ReplaceLabel(ReplaceLabelChange),
     RemoveLabel(RemoveLabelChange),
@@ -109,30 +106,13 @@ pub struct UpdateNotebookTitleChange {
     pub title: String,
 }
 
-/// Specifies the given data-source must be created with the following name.
+/// Specifies a new selected data source for the notebook.
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::operations")]
 #[serde(rename_all = "camelCase")]
-pub struct AddDataSourceChange {
-    pub name: String,
-    pub data_source: Box<NotebookDataSource>,
-}
-
-/// Specifies the data-source with the given name must be deleted.
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::operations")]
-#[serde(rename_all = "camelCase")]
-pub struct DeleteDataSourceChange {
-    pub name: String,
-}
-
-/// Specifies the given data-source must be updated.
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::operations")]
-#[serde(rename_all = "camelCase")]
-pub struct UpdateDataSourceChange {
-    pub name: String,
-    pub data_source: Box<NotebookDataSource>,
+pub struct SetSelectedDataSourceChange {
+    pub provider_type: String,
+    pub selected_data_source: Option<SelectedDataSource>,
 }
 
 /// Specifies the given label must be added.

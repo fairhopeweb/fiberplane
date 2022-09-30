@@ -1,46 +1,31 @@
 use fiberplane::protocols::core::{
-    Cell, CheckboxCell, CodeCell, DataSource, DataSourceType, ElasticsearchDataSource, HeadingCell,
-    HeadingType, ImageCell, InlineDataSource, Label, ListItemCell, ListType, LokiCell,
-    LokiDataSource, NewNotebook, NewTimeRange, NotebookDataSource, ProxyDataSource,
-    RelativeTimeRange, TextCell,
+    Cell, CheckboxCell, CodeCell, HeadingCell, HeadingType, ImageCell, Label, ListItemCell,
+    ListType, LokiCell, NewNotebook, NewTimeRange, RelativeTimeRange, TextCell,
 };
+use fiberplane::protocols::data_sources::SelectedDataSource;
 use fiberplane::protocols::formatting::{Annotation, AnnotationWithOffset};
+use fiberplane::protocols::names::Name;
 use fp_templates::{
-    expand_template, extract_template_parameters, notebook_to_template, TemplateExpander,
-    TemplateParameter, TemplateParameterType, EMPTY_ARGS,
+    expand_template, extract_template_parameters, notebook_to_template, TemplateParameter,
+    TemplateParameterType, EMPTY_ARGS,
 };
 use lazy_static::lazy_static;
 use pretty_assertions::assert_eq;
-use serde_json::{json, Value};
-use std::collections::BTreeMap;
-use std::collections::HashMap;
-use std::fs;
-use std::path::PathBuf;
+use serde_json::Value;
+use std::collections::{BTreeMap, HashMap};
+use std::{fs, path::PathBuf};
 
 lazy_static! {
     static ref NOTEBOOK: NewNotebook = NewNotebook {
         title: "Incident: 'API Outage'".to_string(),
         time_range: NewTimeRange::Relative(RelativeTimeRange { minutes: -60 }),
-        data_sources: BTreeMap::from([
-            (
-                "direct elasticsearch".to_string(),
-                NotebookDataSource::Inline(InlineDataSource {
-                    data_source: DataSource::Elasticsearch(ElasticsearchDataSource {
-                        url: "https://elasticsearch.dev.fiberplane.io".to_string(),
-                        timestamp_field_names: vec!["@timestamp".to_string()],
-                        body_field_names: vec!["message".to_string()],
-                    })
-                })
-            ),
-            (
-                "direct loki".to_string(),
-                NotebookDataSource::Inline(InlineDataSource {
-                    data_source: DataSource::Loki(LokiDataSource {
-                        url: "https://loki.dev.fiberplane.io".to_string()
-                    })
-                })
-            ),
-        ]),
+        selected_data_sources: BTreeMap::from_iter([(
+            "prometheus".to_string(),
+            SelectedDataSource {
+                name: Name::from_static("prometheus"),
+                proxy_name: Some(Name::from_static("dev")),
+            }
+        )]),
         cells: vec![
             Cell::Text(TextCell {
                 id: "1".to_string(),
@@ -219,64 +204,12 @@ fn export_notebook_to_template_and_back() {
 }
 
 #[test]
-fn searches_proxy_data_sources() {
-    let data_sources = json!([{
-        "name": "Production Prometheus",
-        "type": "prometheus",
-        "proxy": {
-            "id": "8ac70ba9-e7d3-4ebb-8520-884beb9d5d50",
-            "name": "production"
-        }
-    }]);
-    let notebook_data_source = NotebookDataSource::Inline(InlineDataSource {
-        data_source: DataSource::Proxy(ProxyDataSource {
-            data_source_name: "Production Prometheus".to_string(),
-            proxy_id: "8ac70ba9-e7d3-4ebb-8520-884beb9d5d50".to_string(),
-            data_source_type: DataSourceType::Prometheus,
-        }),
-    });
-    let mut expander = TemplateExpander::default();
-    expander.set_proxy_data_sources(serde_json::to_value(&data_sources).unwrap());
-
-    let template = |query| {
-        format!(
-            "local fp = import 'fiberplane.libsonnet';
-    fp.notebook.new('title')
-    .setTimeRangeRelative(60)
-    .addProxyDataSource({})",
-            query
-        )
-    };
-
-    // Search by type
-    let notebook = expander
-        .expand_template(template("type='prometheus'"), EMPTY_ARGS)
-        .unwrap();
-    assert_eq!(
-        notebook.data_sources.get("Production Prometheus").unwrap(),
-        &notebook_data_source
-    );
-
-    // Search by data source and proxy name
-    let notebook = expander
-        .expand_template(
-            template("proxyName='production', name='Production Prometheus'"),
-            EMPTY_ARGS,
-        )
-        .unwrap();
-    assert_eq!(
-        notebook.data_sources.get("Production Prometheus").unwrap(),
-        &notebook_data_source
-    );
-}
-
-#[test]
 fn mustache_substitution_in_title() {
     let notebook = NewNotebook {
         title: r#"Hello {{personName}}, this is a {{notebookCategory}}"#.to_string(),
         cells: Vec::new(),
+        selected_data_sources: Default::default(),
         time_range: NewTimeRange::Relative(RelativeTimeRange { minutes: -60 }),
-        data_sources: BTreeMap::new(),
         labels: Vec::new(),
     };
     let template = notebook_to_template(notebook);
@@ -311,8 +244,8 @@ fn mustache_substitution_with_formatting() {
             ]),
             read_only: None,
         })],
+        selected_data_sources: Default::default(),
         time_range: NewTimeRange::Relative(RelativeTimeRange { minutes: -60 }),
-        data_sources: BTreeMap::new(),
         labels: Vec::new(),
     };
     let template = notebook_to_template(notebook);
@@ -330,8 +263,8 @@ fn mustache_substitution_to_function_parameters() {
             content: r#"{{greeting}} {{personName}}, great to have you"#.to_string(),
             ..Default::default()
         })],
+        selected_data_sources: Default::default(),
         time_range: NewTimeRange::Relative(RelativeTimeRange { minutes: -60 }),
-        data_sources: BTreeMap::new(),
         labels: Vec::new(),
     };
     let template = notebook_to_template(notebook);

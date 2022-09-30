@@ -12,9 +12,7 @@ pub fn relevant_cell_ids_for_operation(operation: &Operation) -> Vec<&str> {
         Operation::ReplaceText(ReplaceTextOperation { cell_id, .. }) => vec![cell_id],
         Operation::UpdateNotebookTimeRange(_)
         | Operation::UpdateNotebookTitle(_)
-        | Operation::AddDataSource(_)
-        | Operation::UpdateDataSource(_)
-        | Operation::RemoveDataSource(_)
+        | Operation::SetSelectedDataSource(_)
         | Operation::AddLabel(_)
         | Operation::ReplaceLabel(_)
         | Operation::RemoveLabel(_) => vec![],

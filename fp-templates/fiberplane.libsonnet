@@ -18,11 +18,6 @@ local validate = {
   object(name, value):: (self + { types+: ['object'] }).assertType(name, value),
   array(name, value):: (self + { types+: ['array'] }).assertType(name, value),
 };
-local matches(a, b, caseSensitive) =
-  if !caseSensitive && std.isString(a) && std.isString(b) then
-    std.asciiLower(a) == std.asciiLower(b)
-  else
-    a == b;
 local isCell(value) = std.isObject(value) && std.objectHasAll(value, '_class') && value._class == 'CELL';
 local isFormattedContent(value) = std.isObject(value) && std.objectHasAll(value, '_class') && value._class == 'FORMATTED_CONTENT';
 
@@ -257,136 +252,21 @@ local notebook = {
     },
 
     /**
-     * Add a data source from a connected Fiberplane Proxy.
+     * Select a data source for the given provider type.
      *
-     * When the notebook is created from this template, the template runtime makes
-     * available the list of proxies and their data sources. This function adds
-     * one of those data sources and allows you to filter data sources by various
-     * search terms. You may specify any combination of search terms.
+     * The workspace defaults will be used if none is specified.
      *
-     * @function notebook.Notebook#addProxyDataSource
-     * @param {string | null} type=null - Add a data source of this type (e.g. `'prometheus'` or `'elasticsearch'`)
-     * @param {string | null} name=null - Add a data source with this name (e.g. `'Production Prometheus'`)
-     * @param {string | null} proxyName=null - Add a data source from this proxy (e.g. `'production'`)
-     * @param {string | null} proxyId=null - Add a data source from this proxy (e.g. `'a1bc701f-1f0e-4d4a-9ad0-e4ee54f17102'`)
-     * @param {string | null} alias=null - Optionally override the name of this data source
-     *  (mostly useful if you have multiple data sources in the same notebook with the same name)
-     * @param {boolean} caseSensitive=false - Whether to use case sensitive matching for the above search terms
-     * @param {boolean} errorIfMultipleMatch=false - Error if there are multiple data sources matching the search terms.
-     *  By default it will add one of the matching data sources.
-     * @param {boolean} errorIfNone=false - Error if there are no data sources matching the search terms.
-     *  By default it will simply not add a data source.
+     * @function notebook.Notebook#setSelectedDataSource
+     * @param {string} providerType - The type of provider to select the data source for
+     * @param {string} dataSourceName - The name of the data source to select for the given provider type
+     * @param {string | null} proxyName - If the data source is configured in a proxy, the name of the proxy
      * @returns {notebook.Notebook}
-     *
-     * @example <caption>Adding a proxy data source by type</caption>
-     * notebook.addProxyDataSource(type='prometheus')
-     * @example <caption>Adding a proxy data source by proxy and data source name</caption>
-     * notebook.addProxyDataSource(proxyName='production', name='Production Prometheus')
      */
-    addProxyDataSource(
-      alias=null,
-      type=null,
-      name=null,
-      proxyId=null,
-      proxyName=null,
-      caseSensitive=false,
-      errorIfMultipleMatch=false,
-      errorIfNoneMatch=false
-    )::
-      // Find the data source(s) that match the given criteria
-      local dataSources = std.filter(
-        function(dataSource)
-          (!std.isString(type) || matches(type, dataSource.type, caseSensitive))
-          && (!std.isString(name) || matches(name, dataSource.name, caseSensitive))
-          && (!std.isString(proxyId) || matches(proxyId, dataSource.proxy.id, caseSensitive))
-          && (!std.isString(proxyName) || matches(proxyName, dataSource.proxy.name, caseSensitive)),
-        if std.isString(std.extVar('PROXY_DATA_SOURCES')) then
-          std.parseJson(std.extVar('PROXY_DATA_SOURCES'))
-        else std.extVar('PROXY_DATA_SOURCES')
-      );
-
-      // Add the data source or error if a configured condition is violated
-      if errorIfMultipleMatch && std.length(dataSources) > 1 then
-        error 'Multiple data sources match criteria'
-      else if errorIfNoneMatch && std.length(dataSources) == 0 then
-        error 'No data sources match criteria'
-      else if std.length(dataSources) == 0 then
-        self
-      else
-        local _alias = if std.isString(alias) then alias else dataSources[0].name;
-        self {
-          dataSources+: {
-            [_alias]: {
-              type: 'inline',
-              dataSource: {
-                type: 'proxy',
-                proxyId: dataSources[0].proxy.id,
-                dataSourceName: dataSources[0].name,
-                dataSourceType: dataSources[0].type,
-              },
-            },
-          },
-        },
-
-    /**
-     * Add a direct data source (one that is accessible on the internet) to the notebook.
-     *
-     * @function notebook.Notebook#addDirectDataSource
-     * @param {string} name Data source name
-     * @param {string} type Data source type
-     * @param {object} config Data source config.
-     * @returns {notebook.Notebook}
-     *
-     * @example <caption>Adding a data source with type prometheus</caption>
-     * notebook.addDirectDataSource(
-     *   name='Production Prometheus',
-     *   type='prometheus',
-     *   config={
-     *     url='https://user:password@prometheus.example.com'
-     *   },
-     * )
-     * @example <caption>Adding a data source with type elasticsearch</caption>
-     * notebook.addDirectDataSource(
-     *   name='Production Elasticsearch',
-     *   type='elasticsearch',
-     *   config={
-     *     url='https://elasticsearch.example.com',
-     *     timestampFieldNames: ['@timestamp'],
-     *     bodyFieldNames: ['message'],
-     *   },
-     * )
-     * @example <caption>Adding a data source with type loki</caption>
-     * notebook.addDirectDataSource(
-     *   name='Production Loki',
-     *   type='loki',
-     *   config={
-     *     url='https://loki.example.com'
-     *   },
-     *)
-     */
-    addDirectDataSource(name, type, config={}, options={}, url=null):: self {
-      local dataSource = if std.isString(config) then
-        // Old signature was `addDirectDataSource(name, type, url, options={})`
-        options {
-          type: type,
-          url: config,
-        }
-      else if std.isString(url) then
-        // Support the old parameter 'url' as a named argument
-        options {
-          type: type,
-          url:
-            std.trace('The `url` parameter is deprecated. Use `config.url` instead.', url),
-        }
-      else
-        config {
-          type: type,
-        },
-
-      dataSources+: {
-        [name]: {
-          type: 'inline',
-          dataSource: dataSource,
+    setDataSourceForProviderType(providerType, dataSourceName, proxyName=null):: self {
+      selectedDataSources+: {
+        [providerType]: {
+          name: validate.string('dataSourceName', dataSourceName),
+          proxyName: validate.nullOr.string('proxyName', proxyName),
         },
       },
     },

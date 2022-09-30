@@ -9,43 +9,42 @@
  */
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
-#[serde(tag = "type")]
-pub enum DataSource {
-    #[serde(rename = "elasticsearch")]
-    ElasticsearchDataSource {
-        #[serde(rename = "url")]
-        url: String,
-        #[serde(rename = "timestampFieldNames")]
-        timestamp_field_names: Vec<String>,
-        #[serde(rename = "bodyFieldNames")]
-        body_field_names: Vec<String>,
-    },
-    #[serde(rename = "loki")]
-    LokiDataSource {
-        #[serde(rename = "url")]
-        url: String,
-    },
-    #[serde(rename = "prometheus")]
-    PrometheusDataSource {
-        #[serde(rename = "url")]
-        url: String,
-    },
-    #[serde(rename = "proxy")]
-    ProxyDataSource {
-        #[serde(rename = "proxyId")]
-        proxy_id: String,
-        #[serde(rename = "dataSourceName")]
-        data_source_name: String,
-        #[serde(rename = "dataSourceType")]
-        data_source_type: crate::models::DataSourceType,
-    },
-    #[serde(rename = "sentry")]
-    SentryDataSource {
-        #[serde(rename = "organizationSlug")]
-        organization_slug: String,
-        #[serde(rename = "projectSlug")]
-        project_slug: String,
-        #[serde(rename = "token")]
-        token: String,
-    },
+pub struct DataSource {
+    #[serde(rename = "id")]
+    pub id: String,
+    #[serde(rename = "name")]
+    pub name: String,
+    #[serde(rename = "proxyName", skip_serializing_if = "Option::is_none")]
+    pub proxy_name: Option<String>,
+    #[serde(rename = "providerType")]
+    pub provider_type: String,
+    #[serde(rename = "config", skip_serializing_if = "Option::is_none")]
+    pub config: Option<serde_json::Value>,
+    #[serde(rename = "description", skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>,
+    #[serde(rename = "status", skip_serializing_if = "Option::is_none")]
+    pub status: Option<crate::models::DataSourceConnectionStatus>,
+    #[serde(rename = "error", skip_serializing_if = "Option::is_none")]
+    pub error: Option<serde_json::Value>,
+    #[serde(rename = "createdAt", skip_serializing_if = "Option::is_none")]
+    pub created_at: Option<String>,
+    #[serde(rename = "updatedAt", skip_serializing_if = "Option::is_none")]
+    pub updated_at: Option<String>,
+}
+
+impl DataSource {
+    pub fn new(id: String, name: String, provider_type: String) -> DataSource {
+        DataSource {
+            id,
+            name,
+            proxy_name: None,
+            provider_type,
+            config: None,
+            description: None,
+            status: None,
+            error: None,
+            created_at: None,
+            updated_at: None,
+        }
+    }
 }

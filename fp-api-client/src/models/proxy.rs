@@ -21,7 +21,13 @@ pub struct Proxy {
     pub token: Option<String>,
     /// data-sources associated with this proxy
     #[serde(rename = "dataSources")]
-    pub data_sources: Vec<crate::models::DataSourceSummary>,
+    pub data_sources: Vec<crate::models::DataSource>,
+    #[serde(rename = "description", skip_serializing_if = "Option::is_none")]
+    pub description: Option<String>,
+    #[serde(rename = "createdAt")]
+    pub created_at: String,
+    #[serde(rename = "updatedAt")]
+    pub updated_at: String,
 }
 
 impl Proxy {
@@ -29,7 +35,9 @@ impl Proxy {
         id: String,
         status: crate::models::ProxyConnectionStatus,
         name: String,
-        data_sources: Vec<crate::models::DataSourceSummary>,
+        data_sources: Vec<crate::models::DataSource>,
+        created_at: String,
+        updated_at: String,
     ) -> Proxy {
         Proxy {
             id,
@@ -37,6 +45,9 @@ impl Proxy {
             name,
             token: None,
             data_sources,
+            description: None,
+            created_at,
+            updated_at,
         }
     }
 }

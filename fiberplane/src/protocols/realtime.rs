@@ -1,6 +1,7 @@
 use crate::protocols::comments::{Thread, ThreadItem, UserSummary};
-use crate::protocols::core::{LabelValidationError, UserType};
+use crate::protocols::core::LabelValidationError;
 use crate::protocols::operations::Operation;
+use base64uuid::Base64Uuid;
 use fp_bindgen::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::cmp::Ordering;
@@ -34,6 +35,12 @@ pub enum ClientRealtimeMessage {
 
     /// User started typing a comment.
     UserTypingComment(UserTypingCommentClientMessage),
+
+    /// Subscribe to workspace activities
+    SubscribeWorkspace(SubscribeWorkspaceMessage),
+
+    /// Unsubscribe from workspace activities
+    UnsubscribeWorkspace(UnsubscribeWorkspaceMessage),
 }
 
 impl ClientRealtimeMessage {
@@ -48,6 +55,8 @@ impl ClientRealtimeMessage {
             DebugRequest(msg) => &msg.op_id,
             FocusInfo(msg) => &msg.op_id,
             UserTypingComment(msg) => &msg.op_id,
+            SubscribeWorkspace(msg) => &msg.op_id,
+            UnsubscribeWorkspace(msg) => &msg.op_id,
         }
     }
 }
@@ -293,8 +302,6 @@ pub struct MentionMessage {
 #[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
 #[serde(rename_all = "camelCase")]
 pub struct MentionedBy {
-    #[serde(rename = "type")]
-    pub user_type: UserType,
     pub name: String,
 }
 
@@ -461,6 +468,30 @@ pub struct UserTypingCommentClientMessage {
     pub thread_id: String,
 
     /// Operation ID. Empty if the user has not provided a op_id.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub op_id: Option<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
+#[serde(rename_all = "camelCase")]
+pub struct SubscribeWorkspaceMessage {
+    /// ID of the workspace
+    pub workspace_id: Base64Uuid,
+
+    /// Operation ID
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub op_id: Option<String>,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
+#[fp(rust_plugin_module = "fiberplane::protocols::realtime")]
+#[serde(rename_all = "camelCase")]
+pub struct UnsubscribeWorkspaceMessage {
+    /// ID of the workspace
+    pub workspace_id: Base64Uuid,
+
+    /// Operation ID
     #[serde(skip_serializing_if = "Option::is_none")]
     pub op_id: Option<String>,
 }

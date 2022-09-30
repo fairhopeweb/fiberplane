@@ -16,9 +16,7 @@ pub fn invert_operation(operation: &Operation) -> Operation {
         ReplaceText(operation) => invert_replace_text_operation(operation),
         UpdateNotebookTimeRange(operation) => invert_update_notebook_time_range(operation),
         UpdateNotebookTitle(operation) => invert_update_notebook_title(operation),
-        AddDataSource(operation) => invert_add_data_source_operation(operation),
-        UpdateDataSource(operation) => invert_update_data_source_operation(operation),
-        RemoveDataSource(operation) => invert_remove_data_source_operation(operation),
+        SetSelectedDataSource(operation) => invert_set_selected_data_source(operation),
         AddLabel(operation) => invert_add_label_operation(operation),
         ReplaceLabel(operation) => invert_replace_label_operation(operation),
         RemoveLabel(operation) => invert_remove_label_operation(operation),
@@ -79,25 +77,11 @@ fn invert_update_notebook_title(operation: &UpdateNotebookTitleOperation) -> Ope
     })
 }
 
-fn invert_add_data_source_operation(operation: &AddDataSourceOperation) -> Operation {
-    Operation::RemoveDataSource(RemoveDataSourceOperation {
-        name: operation.name.clone(),
-        data_source: operation.data_source.clone(),
-    })
-}
-
-fn invert_update_data_source_operation(operation: &UpdateDataSourceOperation) -> Operation {
-    Operation::UpdateDataSource(UpdateDataSourceOperation {
-        name: operation.name.clone(),
-        data_source: operation.old_data_source.clone(),
-        old_data_source: operation.data_source.clone(),
-    })
-}
-
-fn invert_remove_data_source_operation(operation: &RemoveDataSourceOperation) -> Operation {
-    Operation::AddDataSource(AddDataSourceOperation {
-        name: operation.name.clone(),
-        data_source: operation.data_source.clone(),
+fn invert_set_selected_data_source(operation: &SetSelectedDataSourceOperation) -> Operation {
+    Operation::SetSelectedDataSource(SetSelectedDataSourceOperation {
+        provider_type: operation.provider_type.clone(),
+        old_selected_data_source: operation.new_selected_data_source.clone(),
+        new_selected_data_source: operation.old_selected_data_source.clone(),
     })
 }
 

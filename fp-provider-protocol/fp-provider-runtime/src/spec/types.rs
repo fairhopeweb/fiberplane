@@ -145,6 +145,11 @@ pub enum Error {
     Config {
         message: String,
     },
+    NotFound,
+    ProxyDisconnected,
+    Invocation {
+        message: String,
+    },
     #[serde(rename_all = "camelCase")]
     Other {
         message: String,

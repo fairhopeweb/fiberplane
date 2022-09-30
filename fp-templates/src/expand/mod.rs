@@ -14,7 +14,6 @@ use std::{any::Any, convert::AsRef, iter::IntoIterator, rc::Rc};
 mod tests;
 
 static FIBERPLANE_LIBRARY: &str = include_str!("../../fiberplane.libsonnet");
-static PROXY_DATA_SOURCES_EXT_VAR: &str = "PROXY_DATA_SOURCES";
 
 /// This can be passed to `expand_template` as the `args` parameter.
 // Note: we provide this because the expansion functions take generic parameters
@@ -55,16 +54,14 @@ pub fn extract_template_parameters(
 #[derive(Default)]
 pub struct TemplateExpander {
     max_stack: Option<usize>,
-    proxy_data_sources: Option<Value>,
     explaining_traces: bool,
 }
 
 impl TemplateExpander {
-    pub fn new(max_stack: Option<usize>, proxy_data_sources: Option<Value>) -> Self {
+    pub fn new(max_stack: Option<usize>) -> Self {
         Self {
             max_stack,
-            proxy_data_sources,
-            ..Default::default()
+            explaining_traces: false,
         }
     }
 
@@ -72,11 +69,6 @@ impl TemplateExpander {
     /// the problem (defaults to false)
     pub fn set_explaining_traces(&mut self, explaining_traces: bool) {
         self.explaining_traces = explaining_traces;
-    }
-
-    /// Set the data sources that are available to the template.
-    pub fn set_proxy_data_sources(&mut self, proxy_data_sources: Value) {
-        self.proxy_data_sources = Some(proxy_data_sources);
     }
 
     /// Evaluate the template with the given top-level arguments.
@@ -218,19 +210,6 @@ impl TemplateExpander {
         if let Some(stack_size) = self.max_stack {
             state.set_max_stack(stack_size);
         }
-
-        // Inject the data sources as JSON
-        let data_sources = if let Some(data_sources) = &self.proxy_data_sources {
-            serde_json::to_string(data_sources)?
-        } else {
-            "[]".to_string()
-        };
-        state
-            .add_ext_code(
-                PROXY_DATA_SOURCES_EXT_VAR.into(),
-                data_sources.as_str().into(),
-            )
-            .map_err(|err| self.format_trace(&state, err))?;
 
         let result = state
             .evaluate_snippet_raw(PathBuf::from("template").into(), template.as_ref().into())

@@ -59,7 +59,7 @@ impl<'a> MarkdownConverter<'a> {
         NewNotebook {
             title: self.parse_title(),
             cells: self.parse_cells(),
-            data_sources: Default::default(),
+            selected_data_sources: Default::default(),
             labels: Default::default(),
             time_range: NewTimeRange::Relative(RelativeTimeRange { minutes: -60 }),
         }

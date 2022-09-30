@@ -5,23 +5,8 @@ local fmt = fp.format;
 function(incidentName)
   fp.notebook
   .new("Incident: '" + incidentName + "'")
+  .setDataSourceForProviderType('prometheus', 'prometheus', 'dev')
   .setTimeRangeRelative(minutes=60)
-  .addDirectDataSource(
-    name='direct elasticsearch',
-    type='elasticsearch',
-    config={
-      url: 'https://elasticsearch.dev.fiberplane.io',
-      timestampFieldNames: ['@timestamp'],
-      bodyFieldNames: ['message'],
-    },
-  )
-  .addDirectDataSource(
-    name='direct loki',
-    type='loki',
-    config={
-      url: 'https://loki.dev.fiberplane.io'
-    },
-  )
   .addCells([
     c.text(fmt.raw("Let's ").italics('debug').raw(' this ').bold('incident!').raw(' ').label('foo', 'bar').raw(' ').label('baz')),
     c.heading.h2('TODOs:', readOnly=true),

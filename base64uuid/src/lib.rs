@@ -1,7 +1,9 @@
 use base64::DecodeError;
 use serde::{de, Deserialize, Serialize, Serializer};
+use std::borrow::{Borrow, Cow};
 use std::convert::TryFrom;
 use std::fmt::{self, Debug, Display, Formatter};
+use std::ops::Deref;
 use std::str::FromStr;
 use thiserror::Error;
 use uuid::Uuid;
@@ -19,7 +21,7 @@ mod tests;
 /// better in URLs.
 #[derive(PartialEq, Hash, Eq, Clone, Copy)]
 // This tells sqlx to save it to the database as a UUID
-#[cfg_attr(feature = "sqlx", derive(sqlx::Type))]
+#[cfg_attr(feature = "sqlx", derive(sqlx::Type), sqlx(transparent))]
 #[repr(transparent)]
 pub struct Base64Uuid(pub Uuid);
 
@@ -204,7 +206,79 @@ impl Default for Base64Uuid {
     }
 }
 
-#[derive(Debug, Error)]
+impl Deref for Base64Uuid {
+    type Target = Uuid;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+impl PartialEq<Uuid> for Base64Uuid {
+    fn eq(&self, other: &Uuid) -> bool {
+        self.0 == *other
+    }
+}
+
+impl PartialEq<Base64Uuid> for Uuid {
+    fn eq(&self, other: &Base64Uuid) -> bool {
+        *self == other.0
+    }
+}
+
+impl PartialEq<String> for Base64Uuid {
+    fn eq(&self, other: &String) -> bool {
+        &self.to_string() == other
+    }
+}
+
+impl PartialEq<Base64Uuid> for String {
+    fn eq(&self, other: &Base64Uuid) -> bool {
+        other == self
+    }
+}
+
+impl PartialEq<str> for Base64Uuid {
+    fn eq(&self, other: &str) -> bool {
+        *self == other
+    }
+}
+
+impl PartialEq<Base64Uuid> for str {
+    fn eq(&self, other: &Base64Uuid) -> bool {
+        other == self
+    }
+}
+
+impl PartialEq<&str> for Base64Uuid {
+    fn eq(&self, other: &&str) -> bool {
+        match decode_base64(other) {
+            Ok(vec) => Uuid::from_slice(&vec).map_or_else(|_| false, |uuid| self.0 == uuid),
+            Err(_) => false,
+        }
+    }
+}
+
+impl PartialEq<Base64Uuid> for &str {
+    fn eq(&self, other: &Base64Uuid) -> bool {
+        other == self
+    }
+}
+
+impl<'a> PartialEq<Cow<'a, str>> for Base64Uuid {
+    fn eq(&self, other: &Cow<'a, str>) -> bool {
+        let str: &str = other.borrow();
+        *self == str
+    }
+}
+
+impl<'a> PartialEq<Base64Uuid> for Cow<'a, str> {
+    fn eq(&self, other: &Base64Uuid) -> bool {
+        other == self
+    }
+}
+
+#[derive(Debug, Error, PartialEq, Eq, Clone, Copy)]
 #[error("Invalid Base64Uuid")]
 pub struct InvalidId;
 

@@ -1,39 +1,41 @@
-use std::num::ParseFloatError;
-
 use super::HttpRequestError;
 use fp_bindgen::prelude::Serializable;
 use serde::{Deserialize, Serialize};
+use std::num::ParseFloatError;
 
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize, Serializable, thiserror::Error)]
 #[fp(rust_plugin_module = "fiberplane::protocols::providers")]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Error {
+    #[error("unsupported request")]
     UnsupportedRequest,
+    #[error("validation error: {errors:?}")]
     ValidationError {
         /// List of errors, so all fields that failed validation can
         /// be highlighted at once.
         errors: Vec<ValidationError>,
     },
+    #[error("http error: {error:?}")]
     #[fp(rename_all = "camelCase")]
-    Http {
-        error: HttpRequestError,
-    },
+    Http { error: HttpRequestError },
+    #[error("data error: {message}")]
     #[fp(rename_all = "camelCase")]
-    Data {
-        message: String,
-    },
+    Data { message: String },
+    #[error("deserialization error: {message}")]
     #[fp(rename_all = "camelCase")]
-    Deserialization {
-        message: String,
-    },
+    Deserialization { message: String },
+    #[error("config error: {message}")]
     #[fp(rename_all = "camelCase")]
-    Config {
-        message: String,
-    },
+    Config { message: String },
+    #[error("provider cannot be found")]
+    NotFound,
+    #[error("proxy is disconnected")]
+    ProxyDisconnected,
+    #[error("error invoking provider: {message}")]
+    Invocation { message: String },
+    #[error("error: {message}")]
     #[fp(rename_all = "camelCase")]
-    Other {
-        message: String,
-    },
+    Other { message: String },
 }
 
 impl From<base64::DecodeError> for Error {

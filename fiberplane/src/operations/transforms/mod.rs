@@ -55,13 +55,7 @@ pub fn transform_operation(
             op,
             predecessor,
         )),
-        AddDataSource(op) => Ok(transform_add_data_source_operation(state, op, predecessor)),
-        UpdateDataSource(op) => Ok(transform_update_data_source_operation(
-            state,
-            op,
-            predecessor,
-        )),
-        RemoveDataSource(op) => Ok(transform_remove_data_source_operation(
+        SetSelectedDataSource(op) => Ok(transform_set_selected_data_source_operation(
             state,
             op,
             predecessor,

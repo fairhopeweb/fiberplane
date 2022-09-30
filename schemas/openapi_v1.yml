@@ -23,6 +23,7 @@ components:
       name: fp-service-auth-token
       description: JWT used for authentication between services
   schemas:
+    empty: {}
     newNotebook:
       type: object
       required:
@@ -38,14 +39,12 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/cell"
-        dataSources:
-          type: object
-          additionalProperties:
-            $ref: "#/components/schemas/notebookDataSource"
         labels:
           type: array
           items:
             $ref: "#/components/schemas/label"
+        selectedDataSources:
+          $ref: "#/components/schemas/selectedDataSources"
     cell:
       oneOf:
         - $ref: "#/components/schemas/checkboxCell"
@@ -505,6 +504,7 @@ components:
         - timeRange
         - updatedAt
         - labels
+        - selectedDataSources
       properties:
         id:
           type: string
@@ -521,10 +521,6 @@ components:
           format: date-time
         createdBy:
           $ref: "#/components/schemas/createdBy"
-        dataSources:
-          type: object
-          additionalProperties:
-            $ref: "#/components/schemas/notebookDataSource"
         readOnly:
           type: boolean
         timeRange:
@@ -538,6 +534,8 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/label"
+        selectedDataSources:
+          $ref: "#/components/schemas/selectedDataSources"
     notebookPatch:
       type: object
       properties:
@@ -855,148 +853,55 @@ components:
           type: "string"
         value:
           type: "string"
-    notebookDataSource:
-      oneOf:
-        - $ref: "#/components/schemas/inlineDataSource"
-        - $ref: "#/components/schemas/orgDataSource"
-      discriminator:
-        propertyName: type
-        mapping:
-          inline: "#/components/schemas/inlineDataSource"
-          organization: "#/components/schemas/orgDataSource"
-    inlineDataSource:
+    instant:
       type: object
       required:
-        - "dataSource"
+        - metric
+        - point
       properties:
-        dataSource:
-          $ref: "#/components/schemas/dataSource"
-    newOrgDataSource:
+        metric:
+          $ref: "#/components/schemas/metric"
+        point:
+          $ref: "#/components/schemas/point"
+    series:
       type: object
       required:
-        - "name"
-        - "defaultDataSource"
-        - "dataSource"
+        - metric
+        - points
+        - visible
+      properties:
+        metric:
+          $ref: "#/components/schemas/metric"
+        points:
+          type: array
+          items:
+            $ref: "#/components/schemas/point"
+        visible:
+          type: boolean
+    metric:
+      type: object
+      required:
+        - name
+        - labels
       properties:
         name:
           type: string
-        defaultDataSource:
-          type: boolean
-        dataSource:
-          $ref: "#/components/schemas/dataSource"
-    orgDataSource:
-      type: object
-      required:
-        - "id"
-        - "name"
-        - "defaultDataSource"
-        - "dataSource"
-      properties:
-        id:
-          type: string
-        name:
-          type: string
-        defaultDataSource:
-          type: boolean
-        dataSource:
-          $ref: "#/components/schemas/dataSource"
-    dataSource:
-      oneOf:
-        - $ref: "#/components/schemas/prometheusDataSource"
-        - $ref: "#/components/schemas/elasticsearchDataSource"
-        - $ref: "#/components/schemas/lokiDataSource"
-        - $ref: "#/components/schemas/proxyDataSource"
-        - $ref: "#/components/schemas/sentryDataSource"
-      discriminator:
-        propertyName: type
-        mapping:
-          prometheus: "#/components/schemas/prometheusDataSource"
-          elasticsearch: "#/components/schemas/elasticsearchDataSource"
-          loki: "#/components/schemas/lokiDataSource"
-          proxy: "#/components/schemas/proxyDataSource"
-          sentry: "#/components/schemas/sentryDataSource"
-    dataSourceType:
-      type: string
-      enum:
-        - prometheus
-        - elasticsearch
-        - loki
-        - proxy
-        - sentry
-    prometheusDataSource:
-      type: object
-      required:
-        - "type"
-        - "url"
-      properties:
-        type:
-          $ref: "#/components/schemas/dataSourceType"
-        url:
-          type: string
-    elasticsearchDataSource:
-      type: object
-      required:
-        - "type"
-        - "url"
-        - "timestampFieldNames"
-        - "bodyFieldNames"
-      properties:
-        type:
-          $ref: "#/components/schemas/dataSourceType"
-        url:
-          type: string
-        timestampFieldNames:
-          type: array
-          default: []
-          items:
+        labels:
+          type: object
+          additionalProperties:
             type: string
-        bodyFieldNames:
-          type: array
-          default: []
-          items:
-            type: string
-    lokiDataSource:
+    point:
       type: object
       required:
-        - "type"
-        - "url"
+        - timestamp
+        - value
       properties:
-        type:
-          $ref: "#/components/schemas/dataSourceType"
-        url:
-          type: string
-    proxyDataSource:
-      type: object
-      required:
-        - "type"
-        - "dataSourceType"
-        - "proxyId"
-        - "dataSourceName"
-      properties:
-        type:
-          $ref: "#/components/schemas/dataSourceType"
-        proxyId:
-          type: string
-        dataSourceName:
-          type: string
-        dataSourceType:
-          $ref: "#/components/schemas/dataSourceType"
-    sentryDataSource:
-      type: object
-      required:
-        - "organizationSlug"
-        - "projectSlug"
-        - "type"
-        - "token"
-      properties:
-        organizationSlug:
-          type: string
-        projectSlug:
-          type: string
-        token:
-          type: string
-        type:
-          $ref: "#/components/schemas/dataSourceType"
+        timestamp:
+          type: number
+          format: double
+        value:
+          type: number
+          format: double
     fileSummary:
       type: object
       required:
@@ -1034,6 +939,23 @@ components:
           type: string
         email:
           type: string
+    profile:
+      type: object
+      required:
+        - "id"
+        - "name"
+        - "defaultWorkspaceId"
+      properties:
+        id:
+          type: string
+          format: base64uuid
+        name:
+          type: string
+        defaultWorkspaceId:
+          type: string
+          format: base64uuid
+        email:
+          type: string
     newPinnedNotebook:
       type: object
       required:
@@ -1047,6 +969,8 @@ components:
         - name
       properties:
         name:
+          type: string
+        description:
           type: string
     proxySummary:
       type: object
@@ -1068,6 +992,8 @@ components:
         - status
         - name
         - dataSources
+        - createdAt
+        - updatedAt
       properties:
         id:
           type: string
@@ -1082,7 +1008,15 @@ components:
           description: data-sources associated with this proxy
           type: array
           items:
-            $ref: "#/components/schemas/dataSourceSummary"
+            $ref: "#/components/schemas/dataSource"
+        description:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
     proxyConnectionStatus:
       type: string
       enum:
@@ -1093,39 +1027,102 @@ components:
       enum:
         - connected
         - error
-    dataSourceSummary:
+    queryType:
+      oneOf:
+        - $ref: "#/components/schemas/seriesQuery"
+        - $ref: "#/components/schemas/instantQuery"
+      discriminator:
+        propertyName: type
+        mapping:
+          series: "#/components/schemas/seriesQuery"
+          instant: "#/components/schemas/instantQuery"
+    seriesQuery:
+      type: object
+      required:
+        - type
+        - timeRange
+      properties:
+        type:
+          type: string
+        timeRange:
+          $ref: "#/components/schemas/timeRange"
+    instantQuery:
+      type: object
+      required:
+        - type
+        - time
+      properties:
+        type:
+          type: string
+        time:
+          type: number
+          format: double
+    newDataSource:
       type: object
       required:
         - name
-        - type
-        - status
+        - providerType
+        - config
       properties:
         name:
           type: string
-        type:
-          $ref: "#/components/schemas/dataSourceType"
-        status:
-          $ref: "#/components/schemas/dataSourceConnectionStatus"
-        errorMessage:
+        providerType:
           type: string
-    dataSourceAndProxySummary:
+        config:
+          type: object
+        description:
+          type: string
+    updateDataSource:
+      type: object
+      properties:
+        description:
+          type: string
+        config:
+          type: object
+    dataSource:
       type: object
       required:
         - name
-        - type
-        - status
-        - proxy
+        - providerType
+        - id
+      properties:
+        id:
+          type: string
+          format: base64uuid
+        name:
+          type: string
+        proxyName:
+          type: string
+        providerType:
+          type: string
+        config:
+          type: object
+        description:
+          type: string
+        status:
+          $ref: "#/components/schemas/dataSourceConnectionStatus"
+        error:
+          type: object
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    selectedDataSource:
+      type: object
+      required:
+        - name
       properties:
         name:
           type: string
-        type:
-          $ref: "#/components/schemas/dataSourceType"
-        status:
-          $ref: "#/components/schemas/dataSourceConnectionStatus"
-        errorMessage:
+        proxyName:
           type: string
-        proxy:
-          $ref: "#/components/schemas/proxySummary"
+    selectedDataSources:
+      type: object
+      description: This is a mapping from the provider type to the data source selected for that type
+      additionalProperties:
+        $ref: "#/components/schemas/selectedDataSource"
     template:
       type: object
       required:
@@ -1321,6 +1318,27 @@ components:
         updatedAt:
           type: string
           format: date-time
+    triggerSummary:
+      type: object
+      required:
+        - id
+        - title
+        - templateId
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+        title:
+          type: string
+        templateId:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
     newTrigger:
       type: object
       required:
@@ -1350,17 +1368,25 @@ components:
           type: string
           format: uri
     createdBy:
-      type: object
-      required:
-        - name
-        - type
-      properties:
-        name:
-          type: string
-        type:
-          $ref: "#/components/schemas/userType"
-        proxy:
-          $ref: "#/components/schemas/proxySummary"
+      oneOf:
+        - $ref: "#/components/schemas/createdByUser"
+        - $ref: "#/components/schemas/createdByTrigger"
+        - $ref: "#/components/schemas/createdByUnknown"
+      discriminator:
+        propertyName: type
+        mapping:
+          user: "#/components/schemas/createdByUser"
+          trigger: "#/components/schemas/createdByTrigger"
+          unknown: "#/components/schemas/createdByUnknown"
+    createdByUser:
+      allOf:
+        - $ref: "#/components/schemas/userSummary"
+    createdByTrigger:
+      allOf:
+        - $ref: "#/components/schemas/triggerSummary"
+    createdByUnknown:
+      allOf:
+        - $ref: "#/components/schemas/empty"
     logRecord:
       type: object
       required:
@@ -1386,11 +1412,6 @@ components:
           type: string
         spanId:
           type: string
-    userType:
-      type: string
-      enum:
-        - organization
-        - individual
     label:
       type: object
       required:
@@ -1702,6 +1723,87 @@ components:
           format: base64uuid
         name:
           type: string
+    workspace:
+      type: object
+      required:
+        - id
+        - name
+        - type
+        - createdAt
+        - updatedAt
+        - defaultDataSources
+      properties:
+        id:
+          type: string
+          format: base64uuid
+        name:
+          type: string
+        type:
+          type: string
+          enum:
+            - personal
+            - organization
+        defaultDataSources:
+          $ref: "#/components/schemas/selectedDataSources"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    newWorkspaceInvite:
+      type: object
+      required:
+        - email
+      properties:
+        email:
+          type: string
+    newWorkspace:
+      type: object
+      required:
+        - name
+      properties:
+        name:
+          type: string
+        defaultDataSources:
+          $ref: "#/components/schemas/selectedDataSources"
+    workspace_invite:
+      type: object
+      required:
+        - id
+      properties:
+        id:
+          type: string
+          format: base64uuid
+        sender:
+          type: string
+          format: base64uuid
+        receiver:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        expiresAt:
+          type: string
+          format: date-time
+    update_workspace:
+      type: object
+      properties:
+        name:
+          type: string
+        owner:
+          type: string
+          format: base64uuid
+        defaultDataSources:
+          $ref: "#/components/schemas/selectedDataSources"
+    workspace_invite_response:
+      type: object
+      required:
+        - url
+      properties:
+        url:
+          type: string
+          format: url
   parameters:
     sortDirection:
       in: query
@@ -1734,6 +1836,29 @@ components:
       schema:
         type: string
         format: base64uuid
+    workspace_id:
+      name: workspace_id
+      in: path
+      description: The workspace ID
+      required: true
+      schema:
+        type: string
+        format: base64uuid
+    invitation_id:
+      name: invitation_id
+      in: path
+      description: ID of the invitation for which an action should be executed for
+      required: true
+      schema:
+        type: string
+        format: base64uuid
+    invitation_secret:
+      name: invitation_secret
+      in: path
+      description: Secret key used to verify that the route belongs to a specific email address
+      required: true
+      schema:
+        type: string
     threadId:
       in: path
       name: threadId
@@ -1744,6 +1869,26 @@ components:
     commentId:
       in: path
       name: commentId
+      required: true
+      schema:
+        type: string
+        format: base64uuid
+    data_source_name:
+      in: path
+      name: data_source_name
+      required: true
+      schema:
+        type: string
+    proxy_name:
+      in: path
+      name: proxy_name
+      required: true
+      schema:
+        type: string
+    user_id:
+      in: path
+      name: user_id
+      description: User ID
       required: true
       schema:
         type: string
@@ -1761,13 +1906,14 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/comment"
-
 # Most routes require authentication. The ones
 # that do not will specify "security: []"
 security:
   - userToken: []
 paths:
-  /api/notebooks:
+  /api/workspaces/{workspace_id}/notebooks:
+    parameters:
+      - $ref: "#/components/parameters/workspace_id"
     get:
       operationId: notebook_list
       description: "List all accessible notebooks"
@@ -1801,7 +1947,7 @@ paths:
     parameters:
       - $ref: "#/components/parameters/notebookId"
     get:
-      operationId: get_notebook
+      operationId: notebook_get
       description: "Fetch a single notebook"
       responses:
         "200":
@@ -1811,12 +1957,12 @@ paths:
                 $ref: "#/components/schemas/notebook"
           description: OK
     delete:
-      operationId: delete_notebook
+      operationId: notebook_delete
       responses:
         "200":
           description: OK
     patch:
-      operationId: patch_notebook
+      operationId: notebook_update
       description: "Modifies individual properties of a single notebook"
       requestBody:
         description: updated properties
@@ -1832,7 +1978,7 @@ paths:
     parameters:
       - $ref: "#/components/parameters/notebookId"
     get:
-      operationId: convert_notebook_to_template
+      operationId: notebook_convert_to_template
       description: Convert the notebook to a Template
       responses:
         "200":
@@ -1949,114 +2095,28 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/threadSummary"
-  /api/datasources:
+  /api/workspaces/{workspace_id}/data_sources:
+    parameters:
+      - $ref: "#/components/parameters/workspace_id"
     post:
-      operationId: org_data_source_create
-      description: "Create an organization data-source"
+      operationId: data_source_create
+      description: "Create an workspace data-source"
       requestBody:
-        description: new data-source
+        description: New data source
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/newOrgDataSource"
+              $ref: "#/components/schemas/newDataSource"
       responses:
         "200":
           description: OK
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/orgDataSource"
-  /api/files/{notebookId}:
-    parameters:
-      - $ref: "#/components/parameters/notebookId"
-    post:
-      operationId: file_upload
-      description: "upload a file"
-      requestBody:
-        description: a file
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              $ref: "#/components/schemas/uploadData"
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/fileSummary"
-  /api/files/{notebookId}/{fileId}:
-    parameters:
-      - $ref: "#/components/parameters/notebookId"
-      - name: fileId
-        in: path
-        description: ID of the file
-        required: true
-        schema:
-          type: string
-    delete:
-      operationId: delete_file
-      description: "Delete a file"
-      responses:
-        "200":
-          description: OK
+                $ref: "#/components/schemas/dataSource"
     get:
-      operationId: get_file
-      description: "Get a file"
-      # images are accessible to anonymous users for public notebooks
-      security: []
-      responses:
-        "200":
-          description: OK
-          content:
-            image/*:
-              schema:
-                type: string
-                format: binary
-  /api/profile:
-    get:
-      operationId: get_profile
-      description: "Fetch the profile of the authenticated user"
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/user"
-          description: OK
-  /api/profile/picture:
-    get:
-      operationId: get_profile_picture
-      description: "Retrieve profile image"
-      # can be unauthenticated
-      security: []
-      responses:
-        "200":
-          description: OK
-          content:
-            image/*:
-              schema:
-                type: string
-                format: binary
-    post:
-      operationId: update_profile_picture
-      description: "Upload profile image"
-      requestBody:
-        description: a file
-        required: true
-        content:
-          multipart/form-data:
-            schema:
-              $ref: "#/components/schemas/ProfileUploadData"
-      responses:
-        "200":
-          description: OK
-  /api/pinnednotebooks:
-    get:
-      operationId: pinned_notebook_list
-      description: "List all pinned notebooks"
+      operationId: data_source_list
       responses:
         "200":
           description: OK
@@ -2065,29 +2125,46 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/notebookSummary"
-    post:
-      operationId: pinned_notebook_create
-      description: "Create a new notebook"
+                  $ref: "#/components/schemas/dataSource"
+  /api/workspaces/{workspace_id}/data_sources/{data_source_name}:
+    parameters:
+      - $ref: "#/components/parameters/workspace_id"
+      - $ref: "#/components/parameters/data_source_name"
+    get:
+      operationId: data_source_get
+      description: Get the data source's details
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/dataSource"
+    patch:
+      operationId: data_source_update
+      description: Update a data source
       requestBody:
-        description: new notebook
         required: true
         content:
           application/json:
             schema:
-              $ref: "#/components/schemas/newPinnedNotebook"
+              $ref: "#/components/schemas/updateDataSource"
       responses:
         "200":
           description: OK
-  /api/pinnednotebooks/{notebookId}:
-    parameters:
-      - $ref: "#/components/parameters/notebookId"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/dataSource"
     delete:
-      operationId: pinned_notebook_delete
+      operationId: data_source_delete
+      description: Delete a data source
       responses:
         "200":
           description: OK
-  /api/proxies:
+  /api/workspaces/{workspace_id}/proxies:
+    parameters:
+      - $ref: "#/components/parameters/workspace_id"
     get:
       operationId: proxy_list
       description: "List all proxies"
@@ -2117,30 +2194,10 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/proxy"
-  /api/proxies/datasources:
-    get:
-      operationId: proxy_data_sources_list
-      description: Get all of the data sources for all proxies that belong to the same organization as the user
-      security:
-        - userToken: []
-        - serviceToken: []
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/dataSourceAndProxySummary"
-  /api/proxies/{proxyId}:
+  /api/workspaces/{workspace_id}/proxies/{proxy_name}:
     parameters:
-      - name: proxyId
-        in: path
-        description: ID of the proxy
-        required: true
-        schema:
-          type: string
+      - $ref: "#/components/parameters/workspace_id"
+      - $ref: "#/components/parameters/proxy_name"
     delete:
       operationId: proxy_delete
       responses:
@@ -2156,23 +2213,159 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/proxy"
-  /api/proxies/{proxyId}/relay:
+  /api/workspaces/{workspace_id}/proxies/{proxy_name}/data_sources/{data_source_name}/relay:
     parameters:
-      - name: proxyId
-        in: path
-        description: ID of the proxy
-        required: true
-        schema:
-          type: string
-      - name: dataSourceName
+      - $ref: "#/components/parameters/workspace_id"
+      - $ref: "#/components/parameters/proxy_name"
+      - $ref: "#/components/parameters/data_source_name"
+      - name: provider_protocol_version
         in: query
-        description: Name of the data source
         required: true
         schema:
           type: string
+          enum:
+            - "1"
+            - "2"
     post:
       operationId: proxy_relay
       description: "Relay a query to a remote proxy"
+      requestBody:
+        description: Message to send to the proxy
+        required: true
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+      responses:
+        "200":
+          description: OK
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+  /api/notebooks/{notebookId}/files:
+    parameters:
+      - $ref: "#/components/parameters/notebookId"
+    post:
+      operationId: file_upload
+      description: "upload a file"
+      requestBody:
+        description: a file
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/uploadData"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/fileSummary"
+  /api/notebooks/{notebookId}/files/{fileId}:
+    parameters:
+      - $ref: "#/components/parameters/notebookId"
+      - name: fileId
+        in: path
+        description: ID of the file
+        required: true
+        schema:
+          type: string
+    delete:
+      operationId: file_delete
+      description: "Delete a file"
+      responses:
+        "200":
+          description: OK
+    get:
+      operationId: file_get
+      description: "Get a file"
+      # images are accessible to anonymous users for public notebooks
+      security: []
+      responses:
+        "200":
+          description: OK
+          content:
+            image/*:
+              schema:
+                type: string
+                format: binary
+  /api/profile:
+    get:
+      operationId: profile_get
+      description: "Fetch the profile of the authenticated user"
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/profile"
+          description: OK
+  /api/profile/picture:
+    get:
+      operationId: profile_picture_get
+      description: "Retrieve profile image"
+      # can be unauthenticated
+      security: []
+      responses:
+        "200":
+          description: OK
+          content:
+            image/*:
+              schema:
+                type: string
+                format: binary
+    post:
+      operationId: profile_picture_update
+      description: "Upload profile image"
+      requestBody:
+        description: a file
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/ProfileUploadData"
+      responses:
+        "200":
+          description: OK
+  /api/workspaces/{workspace_id}/pinnednotebooks:
+    parameters:
+      - $ref: "#/components/parameters/workspace_id"
+    get:
+      operationId: pinned_notebook_list
+      description: "List all pinned notebooks for a specific workspace"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/notebookSummary"
+  /api/pinnednotebooks:
+    post:
+      operationId: pinned_notebook_create
+      description: "Pin a notebook"
+      requestBody:
+        description: new notebook
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/newPinnedNotebook"
+      responses:
+        "200":
+          description: OK
+  /api/pinnednotebooks/{notebookId}:
+    parameters:
+      - $ref: "#/components/parameters/notebookId"
+    delete:
+      operationId: pinned_notebook_delete
+      description: "Unpin a notebook"
       responses:
         "200":
           description: OK
@@ -2203,7 +2396,9 @@ paths:
       responses:
         "200":
           description: OK
-  /api/templates:
+  /api/workspaces/{workspace_id}/templates:
+    parameters:
+      - $ref: "#/components/parameters/workspace_id"
     post:
       operationId: template_create
       description: Create a new template
@@ -2305,42 +2500,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/notebook"
-  /api/templates/examples:
-    get:
-      operationId: template_example_list
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/template"
-  /api/templates/examples/{templateId}/expand:
+  /api/workspaces/{workspace_id}/triggers:
     parameters:
-      - name: templateId
-        in: path
-        description: ID of the template
-        required: true
-        schema:
-          type: string
-    post:
-      operationId: template_example_expand
-      requestBody:
-        description: Parameters to pass to the template
-        content:
-          application/json:
-            schema:
-              $ref: "#/components/schemas/templateExpandPayload"
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/notebook"
-  /api/triggers:
+      - $ref: "#/components/parameters/workspace_id"
     get:
       operationId: trigger_list
       responses:
@@ -2423,20 +2585,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/triggerInvokeResponse"
-  /api/organizations/current/users:
-    get:
-      operationId: org_user_list_current
-      description: "Fetch the users of the current organization"
-      responses:
-        "200":
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/user"
-          description: OK
-  /api/labels/keys:
+  /api/workspaces/{workspace_id}/labels/keys:
+    parameters:
+      - $ref: "#/components/parameters/workspace_id"
     get:
       operationId: label_keys_list
       description: Retrieve all label keys
@@ -2456,17 +2607,19 @@ paths:
                 type: array
                 items:
                   type: string
-  /api/labels/values/{label_key}:
+  /api/workspaces/{workspace_id}/labels/values/{label_key}:
+    parameters:
+      - $ref: "#/components/parameters/workspace_id"
+      - name: label_key
+        in: path
+        description: The label key
+        required: true
+        schema:
+          type: string
     get:
       operationId: label_values_list
       description: Retrieve all label values for a specific key
       parameters:
-        - name: label_key
-          in: path
-          description: The label key
-          required: true
-          schema:
-            type: string
         - name: prefix
           in: query
           description: Prefix of the label value
@@ -2482,7 +2635,9 @@ paths:
                 type: array
                 items:
                   type: string
-  /api/search/notebooks:
+  /api/workspaces/{workspace_id}/search/notebooks:
+    parameters:
+      - $ref: "#/components/parameters/workspace_id"
     post:
       operationId: notebook_search
       description: Search for notebooks
@@ -2502,7 +2657,9 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/notebookSummary"
-  /api/events:
+  /api/workspaces/{workspace_id}/events:
+    parameters:
+      - $ref: "#/components/parameters/workspace_id"
     get:
       operationId: event_list
       description: Get a list of all events matching the query
@@ -2566,9 +2723,9 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/event"
-  /api/events/{id}:
+  /api/events/{event_id}:
     parameters:
-      - name: id
+      - name: event_id
         in: path
         description: ID of the event
         required: true
@@ -2712,17 +2869,24 @@ paths:
       responses:
         "200":
           description: OK
-  /api/queries/{datasource_type}/suggestions:
+  /api/workspaces/{workspace_id}/users:
     parameters:
-      - name: datasource_type
-        in: path
-        description: The type of the datasource
-        required: true
-        schema:
-          $ref: "#/components/schemas/dataSourceType"
+      - $ref: "#/components/parameters/workspace_id"
     get:
-      operationId: suggest_query
-      description: Retrieve query suggestions for a given datasource type
+      operationId: workspace_list_users
+      description: List all users for a workspace
+      parameters:
+        - in: query
+          name: sort_by
+          description: Sort the resulting list by the following field (defaults to id)
+          schema:
+            type: string
+            enum:
+              - "name"
+              - "email"
+              - "joined_at"
+          required: false
+        - $ref: "#/components/parameters/sortDirection"
       responses:
         "200":
           description: OK
@@ -2731,4 +2895,186 @@ paths:
               schema:
                 type: array
                 items:
-                  type: string
+                  $ref: "#/components/schemas/user"
+  /api/workspaces:
+    get:
+      operationId: workspace_list
+      description: List all workspaces authenticated user has access to
+      parameters:
+        - in: query
+          name: sort_by
+          description: Sort the resulting list by the following field (defaults to id)
+          schema:
+            type: string
+            enum:
+              - "name"
+              - "type"
+              - "joined_at"
+          required: false
+        - $ref: "#/components/parameters/sortDirection"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/workspace"
+    post:
+      operationId: workspace_create
+      description: Create a new workspace
+      requestBody:
+        required: true
+        description: Workspace creation payload
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/newWorkspace"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/workspace"
+  /api/workspaces/{workspace_id}:
+    parameters:
+      - $ref: "#/components/parameters/workspace_id"
+    get:
+      operationId: workspace_get
+      description: Get the workspace details
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/workspace"
+    patch:
+      operationId: workspace_update
+      description: "Update workspace settings"
+      requestBody:
+        required: true
+        description: Workspace update payload
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/update_workspace"
+  /api/workspaces/{workspace_id}/invitations:
+    parameters:
+      - $ref: "#/components/parameters/workspace_id"
+    get:
+      operationId: workspace_invite_get
+      description: Get a list of pending workspace invitations
+      parameters:
+        - in: query
+          name: sort_by
+          description: Sort the resulting list by the following field (defaults to id)
+          schema:
+            type: string
+            enum:
+              - "id"
+              - "sender"
+              - "receiver"
+              - "created_at"
+              - "expires_at"
+          required: false
+        - $ref: "#/components/parameters/sortDirection"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/limit"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/workspace_invite"
+    post:
+      operationId: workspace_invite
+      description: Invite a user to a workspace
+      requestBody:
+        required: true
+        description: Workspace invitation payload
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/newWorkspaceInvite"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/workspace_invite_response"
+  /api/invitation/{invitation_id}/{invitation_secret}/accept:
+    parameters:
+      - $ref: "#/components/parameters/invitation_id"
+      - $ref: "#/components/parameters/invitation_secret"
+    get:
+      operationId: workspace_invite_accept
+      description: "Accept the workspace invitation"
+      responses:
+        "200":
+          description: OK
+      deprecated: true # This route will be replaced by POST as soon as Studio implemented it
+  /api/invitation/{invitation_id}/{invitation_secret}/decline:
+    parameters:
+      - $ref: "#/components/parameters/invitation_id"
+      - $ref: "#/components/parameters/invitation_secret"
+    get:
+      operationId: workspace_invite_decline
+      description: "Decline the workspace invitation"
+      responses:
+        "200":
+          description: OK
+      deprecated: true # This route will be replaced by POST as soon as Studio implemented it
+  /api/workspaces/{workspace_id}/leave:
+    parameters:
+      - $ref: "#/components/parameters/workspace_id"
+    post:
+      operationId: workspace_leave
+      description: "Leave a workspace"
+      responses:
+        "200":
+          description: OK
+  /api/workspaces/{workspace_id}/users/{user_id}:
+    parameters:
+      - $ref: "#/components/parameters/workspace_id"
+      - $ref: "#/components/parameters/user_id"
+    delete:
+      operationId: workspace_user_remove
+      description: "Remove a user from the workspace"
+      responses:
+        "200":
+          description: OK
+  /api/workspaces/{workspace_id}/picture:
+    parameters:
+      - $ref: "#/components/parameters/workspace_id"
+    get:
+      operationId: workspace_picture_get
+      description: Retrieve workspace image
+      security: []
+      responses:
+        "200":
+          description: OK
+          content:
+            image/*:
+              schema:
+                type: string
+                format: binary
+    post:
+      operationId: workspace_picture_update
+      description: Upload workspace image
+      requestBody:
+        description: file
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              $ref: "#/components/schemas/ProfileUploadData"
+      responses:
+        "200":
+          description: OK

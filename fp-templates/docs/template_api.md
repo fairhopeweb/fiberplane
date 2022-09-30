@@ -26,8 +26,7 @@ fp.notebook.new('My Notebook')
     * [.Notebook](#notebook.Notebook)
         * [.setTimeRangeRelative(minutes)](#notebook.Notebook+setTimeRangeRelative) ⇒ [<code>Notebook</code>](#notebook.Notebook)
         * [.setTimeRangeAbsolute(from, to)](#notebook.Notebook+setTimeRangeAbsolute) ⇒ [<code>Notebook</code>](#notebook.Notebook)
-        * [.addProxyDataSource(type, name, proxyName, proxyId, alias, caseSensitive, errorIfMultipleMatch, errorIfNone)](#notebook.Notebook+addProxyDataSource) ⇒ [<code>Notebook</code>](#notebook.Notebook)
-        * [.addDirectDataSource(name, type, config)](#notebook.Notebook+addDirectDataSource) ⇒ [<code>Notebook</code>](#notebook.Notebook)
+        * [.setSelectedDataSource(providerType, dataSourceName, proxyName)](#notebook.Notebook+setSelectedDataSource) ⇒ [<code>Notebook</code>](#notebook.Notebook)
         * [.addCell(cell)](#notebook.Notebook+addCell) ⇒ [<code>Notebook</code>](#notebook.Notebook)
         * [.addCells(cells)](#notebook.Notebook+addCells) ⇒ [<code>Notebook</code>](#notebook.Notebook)
         * [.addLabel(key, value)](#notebook.Notebook+addLabel) ⇒ [<code>Notebook</code>](#notebook.Notebook)
@@ -45,8 +44,7 @@ fp.notebook.new('My Notebook')
 * [.Notebook](#notebook.Notebook)
     * [.setTimeRangeRelative(minutes)](#notebook.Notebook+setTimeRangeRelative) ⇒ [<code>Notebook</code>](#notebook.Notebook)
     * [.setTimeRangeAbsolute(from, to)](#notebook.Notebook+setTimeRangeAbsolute) ⇒ [<code>Notebook</code>](#notebook.Notebook)
-    * [.addProxyDataSource(type, name, proxyName, proxyId, alias, caseSensitive, errorIfMultipleMatch, errorIfNone)](#notebook.Notebook+addProxyDataSource) ⇒ [<code>Notebook</code>](#notebook.Notebook)
-    * [.addDirectDataSource(name, type, config)](#notebook.Notebook+addDirectDataSource) ⇒ [<code>Notebook</code>](#notebook.Notebook)
+    * [.setSelectedDataSource(providerType, dataSourceName, proxyName)](#notebook.Notebook+setSelectedDataSource) ⇒ [<code>Notebook</code>](#notebook.Notebook)
     * [.addCell(cell)](#notebook.Notebook+addCell) ⇒ [<code>Notebook</code>](#notebook.Notebook)
     * [.addCells(cells)](#notebook.Notebook+addCells) ⇒ [<code>Notebook</code>](#notebook.Notebook)
     * [.addLabel(key, value)](#notebook.Notebook+addLabel) ⇒ [<code>Notebook</code>](#notebook.Notebook)
@@ -77,84 +75,23 @@ will automatically be set to the time when the notebook is created.</p>
 
 | Param | Type | Description |
 | --- | --- | --- |
-| from | <code>number</code> | <p>Starting timestamp in seconds since the Unix epoch</p> |
-| to | <code>number</code> | <p>Ending timestamp in seconds since the Unix epoch</p> |
+| from | <code>string</code> | <p>ISO 8601/RFC 3339 formatted start timestamp</p> |
+| to | <code>string</code> | <p>ISO 8601/RFC 3339 formatted end timestamp</p> |
 
-<a name="notebook.Notebook+addProxyDataSource"></a>
+<a name="notebook.Notebook+setSelectedDataSource"></a>
 
-#### notebook.addProxyDataSource(type, name, proxyName, proxyId, alias, caseSensitive, errorIfMultipleMatch, errorIfNone) ⇒ [<code>Notebook</code>](#notebook.Notebook)
-<p>Add a data source from a connected Fiberplane Proxy.</p>
-<p>When the notebook is created from this template, the template runtime makes
-available the list of proxies and their data sources. This function adds
-one of those data sources and allows you to filter data sources by various
-search terms. You may specify any combination of search terms.</p>
-
-**Kind**: instance method of [<code>Notebook</code>](#notebook.Notebook)  
-
-| Param | Type | Default | Description |
-| --- | --- | --- | --- |
-| type | <code>string</code> \| <code>null</code> | <code>null</code> | <p>Add a data source of this type (e.g. <code>'prometheus'</code> or <code>'elasticsearch'</code>)</p> |
-| name | <code>string</code> \| <code>null</code> | <code>null</code> | <p>Add a data source with this name (e.g. <code>'Production Prometheus'</code>)</p> |
-| proxyName | <code>string</code> \| <code>null</code> | <code>null</code> | <p>Add a data source from this proxy (e.g. <code>'production'</code>)</p> |
-| proxyId | <code>string</code> \| <code>null</code> | <code>null</code> | <p>Add a data source from this proxy (e.g. <code>'a1bc701f-1f0e-4d4a-9ad0-e4ee54f17102'</code>)</p> |
-| alias | <code>string</code> \| <code>null</code> | <code>null</code> | <p>Optionally override the name of this data source (mostly useful if you have multiple data sources in the same notebook with the same name)</p> |
-| caseSensitive | <code>boolean</code> | <code>false</code> | <p>Whether to use case sensitive matching for the above search terms</p> |
-| errorIfMultipleMatch | <code>boolean</code> | <code>false</code> | <p>Error if there are multiple data sources matching the search terms. By default it will add one of the matching data sources.</p> |
-| errorIfNone | <code>boolean</code> | <code>false</code> | <p>Error if there are no data sources matching the search terms. By default it will simply not add a data source.</p> |
-
-**Example** *(Adding a proxy data source by type)*  
-```js
-notebook.addProxyDataSource(type='prometheus')
-```
-**Example** *(Adding a proxy data source by proxy and data source name)*  
-```js
-notebook.addProxyDataSource(proxyName='production', name='Production Prometheus')
-```
-<a name="notebook.Notebook+addDirectDataSource"></a>
-
-#### notebook.addDirectDataSource(name, type, config) ⇒ [<code>Notebook</code>](#notebook.Notebook)
-<p>Add a direct data source (one that is accessible on the internet) to the notebook.</p>
+#### notebook.setSelectedDataSource(providerType, dataSourceName, proxyName) ⇒ [<code>Notebook</code>](#notebook.Notebook)
+<p>Select a data source for the given provider type.</p>
+<p>The workspace defaults will be used if none is specified.</p>
 
 **Kind**: instance method of [<code>Notebook</code>](#notebook.Notebook)  
 
 | Param | Type | Description |
 | --- | --- | --- |
-| name | <code>string</code> | <p>Data source name</p> |
-| type | <code>string</code> | <p>Data source type</p> |
-| config | <code>object</code> | <p>Data source config.</p> |
+| providerType | <code>string</code> | <p>The type of provider to select the data source for</p> |
+| dataSourceName | <code>string</code> | <p>The name of the data source to select for the given provider type</p> |
+| proxyName | <code>string</code> \| <code>null</code> | <p>If the data source is configured in a proxy, the name of the proxy</p> |
 
-**Example** *(Adding a data source with type prometheus)*  
-```js
-notebook.addDirectDataSource(
-  name='Production Prometheus',
-  type='prometheus',
-  config={
-    url='https://user:password@prometheus.example.com'
-  },
-)
-```
-**Example** *(Adding a data source with type elasticsearch)*  
-```js
-notebook.addDirectDataSource(
-  name='Production Elasticsearch',
-  type='elasticsearch',
-  config={
-    url='https://elasticsearch.example.com',
-    timestampFieldNames: ['@timestamp'],
-    bodyFieldNames: ['message'],
-  },
-)
-```
-**Example** *(Adding a data source with type loki)*  
-```js
-notebook.addDirectDataSource(
-  name='Production Loki',
-  type='loki',
-  config={
-    url='https://loki.example.com'
-  },
-)
-```
 <a name="notebook.Notebook+addCell"></a>
 
 #### notebook.addCell(cell) ⇒ [<code>Notebook</code>](#notebook.Notebook)

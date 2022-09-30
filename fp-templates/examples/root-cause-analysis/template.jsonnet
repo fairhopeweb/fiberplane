@@ -10,7 +10,6 @@ function(
   fp.notebook
   .new('RCA for Incident: ' + incidentTitle + ' ' + incidentNumber)
   .setTimeRangeRelative(minutes=60)
-  .addProxyDataSource(type='prometheus')
   .addCells([
     c.text('Incident Commander: ' + incidentCommander),
     c.h1('The Issue', readOnly=true),

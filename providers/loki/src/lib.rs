@@ -1,8 +1,7 @@
-use fiberplane::protocols::{core::LokiDataSource, providers::ProviderConfig};
 use fp_provider_bindings::{
     fp_export_impl, make_http_request, Error, HttpRequest, HttpRequestMethod,
     LegacyLogRecord as LogRecord, LegacyProviderRequest as ProviderRequest,
-    LegacyProviderResponse as ProviderResponse, LegacyTimestamp, QueryLogs,
+    LegacyProviderResponse as ProviderResponse, LegacyTimestamp, ProviderConfig, QueryLogs,
 };
 use serde::Deserialize;
 use std::{collections::HashMap, str::FromStr};
@@ -10,9 +9,14 @@ use url::Url;
 
 const CONVERSION_FACTOR: f64 = 1e9;
 
+#[derive(Deserialize)]
+struct Config {
+    url: Url,
+}
+
 #[fp_export_impl(fp_provider_bindings)]
 async fn invoke(request: ProviderRequest, config: ProviderConfig) -> ProviderResponse {
-    let config: LokiDataSource = match serde_json::from_value(config) {
+    let config: Config = match serde_json::from_value(config) {
         Ok(config) => config,
         Err(err) => {
             return ProviderResponse::Error {
@@ -62,10 +66,8 @@ struct Data {
     values: Vec<(String, String)>,
 }
 
-async fn fetch_logs(query: QueryLogs, config: LokiDataSource) -> Result<Vec<LogRecord>, Error> {
-    let mut url = Url::parse(&config.url).map_err(|e| Error::Config {
-        message: format!("Invalid LOKI URL: {:?}", e),
-    })?;
+async fn fetch_logs(query: QueryLogs, config: Config) -> Result<Vec<LogRecord>, Error> {
+    let mut url = config.url;
 
     {
         let mut path_segments = url.path_segments_mut().map_err(|_| Error::Config {
@@ -165,10 +167,8 @@ fn data_mapper(
     })
 }
 
-async fn check_status(config: LokiDataSource) -> Result<(), Error> {
-    let mut url = Url::parse(&config.url).map_err(|e| Error::Config {
-        message: format!("Invalid LOKI URL: {:?}", e),
-    })?;
+async fn check_status(config: Config) -> Result<(), Error> {
+    let mut url = config.url;
 
     {
         let mut path_segments = url.path_segments_mut().map_err(|_| Error::Config {

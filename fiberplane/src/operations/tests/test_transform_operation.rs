@@ -47,29 +47,30 @@ fn converge(operation1: &Operation, operation2: &Operation) -> bool {
             Operation::ReplaceText(operation2) => replace_texts_converge(operation1, operation2),
             _ => true,
         },
-        Operation::UpdateNotebookTimeRange(_) => {
-            !matches!(operation2, Operation::UpdateNotebookTimeRange(_))
-        }
-        Operation::UpdateNotebookTitle(_) => {
-            !matches!(operation2, Operation::UpdateNotebookTitle(_))
-        }
-        Operation::AddDataSource(operation1) => {
-            if let Operation::AddDataSource(operation2) = operation2 {
-                operation1.name != operation2.name
+        Operation::UpdateNotebookTimeRange(operation1) => {
+            // The order of operations doesn't matter if they are identical or are different types of operations
+            if let Operation::UpdateNotebookTimeRange(operation2) = operation2 {
+                operation1 == operation2
             } else {
                 true
             }
         }
-        Operation::UpdateDataSource(operation1) => match operation2 {
-            Operation::UpdateDataSource(operation2) => operation1.name != operation2.name,
-            Operation::RemoveDataSource(operation2) => operation1.name != operation2.name,
-            _ => true,
-        },
-        Operation::RemoveDataSource(operation1) => match operation2 {
-            Operation::UpdateDataSource(operation2) => operation1.name != operation2.name,
-            Operation::RemoveDataSource(operation2) => operation1.name != operation2.name,
-            _ => true,
-        },
+        Operation::UpdateNotebookTitle(operation1) => {
+            // The order of operations doesn't matter if they are identical or are different types of operations
+            if let Operation::UpdateNotebookTitle(operation2) = operation2 {
+                operation1 == operation2
+            } else {
+                true
+            }
+        }
+        Operation::SetSelectedDataSource(operation1) => {
+            // The order of operations doesn't matter if they are identical or are different types of operations
+            if let Operation::SetSelectedDataSource(operation2) = operation2 {
+                operation1 == operation2
+            } else {
+                true
+            }
+        }
         Operation::AddLabel(operation1) => match operation2 {
             // It cannot converge with a AddLabel that has the same key.
             Operation::AddLabel(operation2) => operation1.label.key != operation2.label.key,
@@ -115,7 +116,7 @@ pub fn test_transform_operation() -> Result<(), Error> {
         .collect();
 
     // Verify the amount of permutations, to make sure we don't accidentally skip any:
-    assert_eq!(testable_permutations.len(), 1076);
+    assert_eq!(testable_permutations.len(), 1079);
 
     for (i, (operation1, operation2)) in testable_permutations.iter().enumerate() {
         let progress = format!(

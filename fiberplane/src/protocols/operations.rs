@@ -1,7 +1,6 @@
-use crate::protocols::{
-    core::{Cell, NotebookDataSource, TimeRange},
-    formatting::Formatting,
-};
+use crate::protocols::core::{Cell, TimeRange};
+use crate::protocols::data_sources::SelectedDataSource;
+use crate::protocols::formatting::Formatting;
 use fp_bindgen::prelude::*;
 use serde::{Deserialize, Serialize};
 
@@ -23,9 +22,7 @@ pub enum Operation {
     ReplaceText(ReplaceTextOperation),
     UpdateNotebookTimeRange(UpdateNotebookTimeRangeOperation),
     UpdateNotebookTitle(UpdateNotebookTitleOperation),
-    AddDataSource(AddDataSourceOperation),
-    UpdateDataSource(UpdateDataSourceOperation),
-    RemoveDataSource(RemoveDataSourceOperation),
+    SetSelectedDataSource(SetSelectedDataSourceOperation),
     AddLabel(AddLabelOperation),
     ReplaceLabel(ReplaceLabelOperation),
     RemoveLabel(RemoveLabelOperation),
@@ -256,43 +253,13 @@ pub struct UpdateNotebookTitleOperation {
     pub title: String,
 }
 
-/// Adds an data-source to an notebook.
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::operations")]
 #[serde(rename_all = "camelCase")]
-pub struct AddDataSourceOperation {
-    /// The identifier of this data-source within the notebook
-    pub name: String,
-
-    /// The new data-source
-    pub data_source: Box<NotebookDataSource>,
-}
-
-/// Updates an data-source in an notebook.
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::operations")]
-#[serde(rename_all = "camelCase")]
-pub struct UpdateDataSourceOperation {
-    /// The identifier of this data-source within the notebook
-    pub name: String,
-
-    /// The new data-source content
-    pub data_source: Box<NotebookDataSource>,
-
-    /// The old data-source content
-    pub old_data_source: Box<NotebookDataSource>,
-}
-
-/// Remove an data-source to an notebook.
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
-#[fp(rust_plugin_module = "fiberplane::protocols::operations")]
-#[serde(rename_all = "camelCase")]
-pub struct RemoveDataSourceOperation {
-    /// The identifier of this data-source within the notebook
-    pub name: String,
-
-    /// The previous data-source content
-    pub data_source: Box<NotebookDataSource>,
+pub struct SetSelectedDataSourceOperation {
+    pub provider_type: String,
+    pub old_selected_data_source: Option<SelectedDataSource>,
+    pub new_selected_data_source: Option<SelectedDataSource>,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]

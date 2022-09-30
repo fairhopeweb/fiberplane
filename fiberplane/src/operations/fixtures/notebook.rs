@@ -3,7 +3,7 @@ use crate::{
         apply_operation, changes::*, error::*, notebook::Notebook, relevant_cell_ids_for_operation,
         ApplyOperationState, CellRefWithIndex, TransformOperationState,
     },
-    protocols::{core::*, operations::*},
+    protocols::{core::*, data_sources::SelectedDataSource, operations::*},
 };
 use std::collections::BTreeMap;
 
@@ -62,16 +62,16 @@ impl Notebook {
                 Self { time_range, ..self }
             }
             UpdateNotebookTitle(UpdateNotebookTitleChange { title }) => Self { title, ..self },
-            AddDataSource(change) => {
-                self.data_sources.insert(change.name, *change.data_source);
-                self
-            }
-            UpdateDataSource(change) => {
-                self.data_sources.insert(change.name, *change.data_source);
-                self
-            }
-            DeleteDataSource(change) => {
-                self.data_sources.remove(&change.name);
+            SetSelectedDataSource(SetSelectedDataSourceChange {
+                provider_type,
+                selected_data_source,
+            }) => {
+                if let Some(selected_data_source) = selected_data_source {
+                    self.selected_data_sources
+                        .insert(provider_type, selected_data_source);
+                } else {
+                    self.selected_data_sources.remove(&provider_type);
+                }
                 self
             }
             AddLabel(change) => {
@@ -134,12 +134,12 @@ impl Notebook {
     }
 
     /// Returns a copy of the notebook with updated cells.
-    pub fn with_updated_data_sources<F>(&self, updater: F) -> Self
+    pub fn with_updated_selected_data_sources<F>(&self, updater: F) -> Self
     where
-        F: FnOnce(&mut BTreeMap<String, NotebookDataSource>),
+        F: FnOnce(&mut BTreeMap<String, SelectedDataSource>),
     {
         let mut clone = self.clone();
-        updater(&mut clone.data_sources);
+        updater(&mut clone.selected_data_sources);
         clone
     }
 

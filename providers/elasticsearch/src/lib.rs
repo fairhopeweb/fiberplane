@@ -1,9 +1,8 @@
 use elasticsearch_dsl::{Hit, SearchResponse};
-use fiberplane::protocols::{core::ElasticsearchDataSource, providers::ProviderConfig};
 use fp_provider_bindings::{
     fp_export_impl, log, make_http_request, Error, HttpRequest, HttpRequestMethod,
     LegacyLogRecord as LogRecord, LegacyProviderRequest as ProviderRequest,
-    LegacyProviderResponse as ProviderResponse, QueryLogs,
+    LegacyProviderResponse as ProviderResponse, ProviderConfig, QueryLogs,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
@@ -23,6 +22,15 @@ pub(crate) static BODY_FIELDS: &[&str] =
 static RESOURCE_FIELD_PREFIXES: &[&str] = &["agent.", "cloud.", "container.", "host.", "service."];
 static RESOURCE_FIELD_EXCEPTIONS: &[&str] = &["container.labels", "host.uptime", "service.state"];
 
+#[derive(Deserialize)]
+struct Config {
+    url: Url,
+    #[serde(default)]
+    timestamp_field_names: Vec<String>,
+    #[serde(default)]
+    body_field_names: Vec<String>,
+}
+
 #[derive(Serialize)]
 struct SearchRequestBody {
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -38,7 +46,7 @@ struct Document {
 
 #[fp_export_impl(fp_provider_bindings)]
 async fn invoke(request: ProviderRequest, config: ProviderConfig) -> ProviderResponse {
-    let config: ElasticsearchDataSource = match serde_json::from_value(config) {
+    let config: Config = match serde_json::from_value(config) {
         Ok(config) => config,
         Err(err) => {
             return ProviderResponse::Error {
@@ -64,13 +72,9 @@ async fn invoke(request: ProviderRequest, config: ProviderConfig) -> ProviderRes
     }
 }
 
-async fn fetch_logs(
-    query: QueryLogs,
-    config: ElasticsearchDataSource,
-) -> Result<Vec<LogRecord>, Error> {
-    let mut url = Url::parse(&config.url).map_err(|e| Error::Config {
-        message: format!("Invalid ElasticSearch URL: {:?}", e),
-    })?;
+async fn fetch_logs(query: QueryLogs, config: Config) -> Result<Vec<LogRecord>, Error> {
+    let mut url = config.url;
+
     // Look for the timestamp and body first in the configured fields and then in the default fields
     let timestamp_field_names = config
         .timestamp_field_names
@@ -266,10 +270,8 @@ fn flatten_nested_value(output: &mut HashMap<String, String>, key: String, value
     };
 }
 
-async fn check_status(config: ElasticsearchDataSource) -> Result<(), Error> {
-    let mut url = Url::parse(&config.url).map_err(|e| Error::Config {
-        message: format!("Invalid ElasticSearch URL: {:?}", e),
-    })?;
+async fn check_status(config: Config) -> Result<(), Error> {
+    let mut url = config.url;
 
     // Add "_xpack" to the path
     {

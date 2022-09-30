@@ -34,16 +34,6 @@ impl CodeWriter {
         self.buffer.push("\n".to_string());
         self
     }
-
-    /// Increase the indentation level,
-    /// add a new line to the buffer,
-    /// and then decrease the indentation level again
-    pub fn println_indented(&mut self, line: impl Into<String>) -> &mut Self {
-        self.indent();
-        self.println(line);
-        self.dedent();
-        self
-    }
 }
 
 impl Display for CodeWriter {
@@ -61,7 +51,9 @@ fn handles_indentation() {
         .println("a")
         .indent()
         .println("b")
-        .println_indented("c")
+        .indent()
+        .println("c")
+        .dedent()
         .println("d")
         .dedent()
         .println("e")

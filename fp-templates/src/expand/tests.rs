@@ -1,8 +1,5 @@
 use super::*;
-use fiberplane::protocols::core::{
-    Cell, DataSource, InlineDataSource, Label, ListItemCell, ListType, NotebookDataSource,
-    PrometheusDataSource, TextCell,
-};
+use fiberplane::protocols::core::{Cell, Label, ListItemCell, ListType, TextCell};
 use fiberplane::protocols::formatting::Annotation::Timestamp;
 use fiberplane::protocols::formatting::{Annotation, AnnotationWithOffset, Mention};
 use serde_json::{json, Map};
@@ -23,16 +20,6 @@ fn expands_without_top_level_function() {
         )
         .unwrap();
     assert_eq!(output, "{\"title\": \"hello\"}");
-}
-
-#[test]
-fn includes_data_sources_by_default() {
-    let template = "{dataSources: std.extVar('PROXY_DATA_SOURCES')}";
-    let expander = TemplateExpander::default();
-    // This will panic if the value is not set
-    expander
-        .expand_template_to_string(template, EMPTY_ARGS, false)
-        .unwrap();
 }
 
 #[test]
@@ -672,55 +659,4 @@ fn format_list() {
     } else {
         panic!("wrong cell type");
     }
-}
-
-#[test]
-fn add_direct_data_source() {
-    let template = "local fp = import 'fiberplane.libsonnet';
-
-        fp.notebook.new('title')
-        .addDirectDataSource('data source', 'prometheus', { url: 'http://localhost:9090/api/v1/query' })";
-    let notebook = expand_template(template, EMPTY_ARGS).unwrap();
-    assert_eq!(
-        notebook.data_sources.get("data source").unwrap(),
-        &NotebookDataSource::Inline(InlineDataSource {
-            data_source: DataSource::Prometheus(PrometheusDataSource {
-                url: "http://localhost:9090/api/v1/query".to_string()
-            })
-        })
-    );
-}
-
-#[test]
-fn add_direct_data_source_with_old_signature() {
-    let template = "local fp = import 'fiberplane.libsonnet';
-
-        fp.notebook.new('title')
-        .addDirectDataSource('data source', 'prometheus', 'http://localhost:9090/api/v1/query')";
-    let notebook = expand_template(template, EMPTY_ARGS).unwrap();
-    assert_eq!(
-        notebook.data_sources.get("data source").unwrap(),
-        &NotebookDataSource::Inline(InlineDataSource {
-            data_source: DataSource::Prometheus(PrometheusDataSource {
-                url: "http://localhost:9090/api/v1/query".to_string()
-            })
-        })
-    );
-}
-
-#[test]
-fn add_direct_data_source_with_old_signature_named_parameter() {
-    let template = "local fp = import 'fiberplane.libsonnet';
-
-        fp.notebook.new('title')
-        .addDirectDataSource('data source', 'prometheus', url = 'http://localhost:9090/api/v1/query')";
-    let notebook = expand_template(template, EMPTY_ARGS).unwrap();
-    assert_eq!(
-        notebook.data_sources.get("data source").unwrap(),
-        &NotebookDataSource::Inline(InlineDataSource {
-            data_source: DataSource::Prometheus(PrometheusDataSource {
-                url: "http://localhost:9090/api/v1/query".to_string()
-            })
-        })
-    );
 }

@@ -85,3 +85,61 @@ fn deserialize_bytes_from_non_human_readable() {
     let deserialized = rmp_serde::from_slice::<Base64Uuid>(&serialized).unwrap();
     assert_eq!(deserialized, uuid);
 }
+
+#[test]
+fn partial_eq_uuid() {
+    let id_a = Base64Uuid::new();
+    let id_b: Uuid = id_a.into();
+
+    assert_eq!(id_a, id_b);
+    assert_eq!(id_b, id_a);
+}
+
+#[test]
+fn partial_eq_string() {
+    let id_a = Base64Uuid::new();
+    let id_b = id_a.to_string();
+
+    assert_eq!(id_a, id_b);
+    assert_eq!(id_b, id_a);
+}
+
+#[test]
+fn partial_eq_str() {
+    let id_a = Base64Uuid::new();
+
+    let view = id_a.to_string();
+    let id_b = view.as_str();
+
+    assert_eq!(id_a, id_b);
+    assert_eq!(id_b, id_a);
+}
+
+#[test]
+fn partial_eq_owned_cow_str() {
+    let id_a = Base64Uuid::new();
+    let id_b = Cow::Owned(id_a.to_string());
+
+    assert_eq!(id_a, id_b);
+    assert_eq!(id_b, id_a);
+}
+
+#[test]
+fn partial_eq_borrowed_cow_str() {
+    let id_a = Base64Uuid::new();
+
+    let string_view = id_a.to_string();
+    let str_view = string_view.as_str();
+    let id_b = Cow::Borrowed(str_view);
+
+    assert_eq!(id_a, id_b);
+    assert_eq!(id_b, id_a);
+}
+
+#[test]
+fn deref() {
+    let id_a = Base64Uuid::new();
+    let id_b: Uuid = id_a.into();
+
+    assert_eq!(*id_a, id_b);
+}

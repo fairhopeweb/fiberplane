@@ -24,14 +24,6 @@ function(
     service: serviceName,
     environment: environmentName,
   })
-  .addDirectDataSource(
-    type='prometheus',
-    name='default',
-    config={
-      url: 'https://prometheus.dev.fiberplane.io',
-    },
-  )
-  .addProxyDataSource(type='prometheus')
   .addCells([
     c.h1('Incident Overview'),
     c.text(fmt.italics('A summary of the incident. How did it start? What happened? You can add a timeline in the timeline section at the end of the document so keep this brief')),

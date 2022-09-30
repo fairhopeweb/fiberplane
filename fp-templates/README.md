@@ -57,10 +57,7 @@ This includes the Fiberplane Jsonnet library and external variables normally pro
 
 ```json
 {
-  "jsonnet.libPaths": ["path/to/fiberplane/templates/"],
-  "jsonnet.extStrs": {
-    "PROXY_DATA_SOURCES": "[]"
-  }
+  "jsonnet.libPaths": ["path/to/fiberplane/templates/"]
 }
 ```
 

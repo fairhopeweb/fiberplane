@@ -1,10 +1,11 @@
-use crate::{
-    operations::{Notebook, NotebookVisibility},
-    protocols::core::*,
-    protocols::formatting::{Annotation, AnnotationWithOffset, Formatting},
+use crate::operations::{Notebook, NotebookVisibility};
+use crate::protocols::formatting::{Annotation, AnnotationWithOffset, Formatting};
+use crate::protocols::{
+    comments::UserSummary, core::*, data_sources::SelectedDataSource, names::Name,
 };
+use base64uuid::Base64Uuid;
 use once_cell::sync::Lazy;
-use std::collections::BTreeMap;
+use std::{collections::BTreeMap, iter::FromIterator};
 use time::{macros::datetime, OffsetDateTime};
 
 pub static DEFAULT_TITLE: Lazy<String> = Lazy::new(|| "Test notebook".to_owned());
@@ -203,20 +204,18 @@ pub static TEST_NOTEBOOK: Lazy<Notebook> = Lazy::new(|| {
         }),
     ];
 
-    let mut data_sources = BTreeMap::new();
-    data_sources.insert(
-        String::from("inline_data_source_a"),
-        NotebookDataSource::Inline(InlineDataSource {
-            data_source: DataSource::Prometheus(PrometheusDataSource {
-                url: String::from("https://localhost:9000"),
-            }),
-        }),
-    );
+    let selected_data_sources = BTreeMap::from_iter([(
+        "data-source-type".to_string(),
+        SelectedDataSource {
+            name: Name::from_static("data-source-name"),
+            proxy_name: None,
+        },
+    )]);
 
     Notebook {
         id: "TEST_NOTEBOOK".to_owned(),
         cells,
-        data_sources,
+        selected_data_sources,
         read_only: false,
         revision: 1,
         time_range: TimeRange {
@@ -227,10 +226,10 @@ pub static TEST_NOTEBOOK: Lazy<Notebook> = Lazy::new(|| {
         visibility: NotebookVisibility::Private,
         created_at: OffsetDateTime::UNIX_EPOCH,
         updated_at: OffsetDateTime::UNIX_EPOCH,
-        created_by: CreatedBy {
-            user_type: UserType::Individual,
+        created_by: CreatedBy::User(UserSummary {
+            id: Base64Uuid::nil().to_string(),
             name: "name".to_string(),
-        },
+        }),
         labels: vec![Label::new("existing-key", "existing-value")],
     }
 });

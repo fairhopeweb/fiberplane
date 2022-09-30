@@ -1,10 +1,8 @@
 use self::code_writer::CodeWriter;
 use self::escape_string::escape_string;
 use crate::FIBERPLANE_LIBRARY_PATH;
-use fiberplane::protocols::{
-    core::{Cell, DataSource, HeadingType, ListType, NewNotebook, NotebookDataSource, TimeRange},
-    formatting::{Annotation, AnnotationWithOffset, Formatting},
-};
+use fiberplane::protocols::core::{Cell, HeadingType, ListType, NewNotebook, TimeRange};
+use fiberplane::protocols::formatting::{Annotation, AnnotationWithOffset, Formatting};
 use lazy_static::lazy_static;
 use regex::Regex;
 use std::{collections::BTreeSet, fmt::Write};
@@ -98,9 +96,22 @@ pub fn notebook_to_template(notebook: impl Into<NewNotebook>) -> String {
         writer.println("})");
     }
 
-    // Add data sources
-    for (name, data_source) in notebook.data_sources {
-        print_notebook_data_source(&mut writer, &name, &data_source);
+    // Add selected data sources
+    for (provider_type, data_source) in notebook.selected_data_sources.iter() {
+        if let Some(proxy_name) = &data_source.proxy_name {
+            writer.println(format!(
+                ".setDataSourceForProviderType({}, {}, {})",
+                escape_string(&provider_type),
+                escape_string(data_source.name.as_str()),
+                escape_string(proxy_name.as_str())
+            ));
+        } else {
+            writer.println(format!(
+                ".setDataSourceForProviderType({}, {})",
+                escape_string(&provider_type),
+                escape_string(data_source.name.as_str())
+            ));
+        }
     }
 
     // Add cells
@@ -341,110 +352,6 @@ fn finish_enclosure(string: &mut String, brackets: &str) {
         string.pop();
     }
     string.push_str(brackets);
-}
-
-fn print_notebook_data_source(
-    writer: &mut CodeWriter,
-    name: &str,
-    data_source: &NotebookDataSource,
-) {
-    match data_source {
-        NotebookDataSource::Inline(inline) => print_data_source(writer, name, &inline.data_source),
-        NotebookDataSource::Organization(org) => {
-            print_data_source(writer, &org.name, &org.data_source)
-        }
-    }
-}
-
-fn print_data_source(writer: &mut CodeWriter, name: &str, data_source: &DataSource) {
-    match data_source {
-        DataSource::Proxy(proxy) => {
-            writer
-                .println(".addProxyDataSource(")
-                .println_indented(format!("alias={},", escape_string(name)))
-                .println_indented(format!("name={},", escape_string(&proxy.data_source_name)))
-                .println_indented(format!("proxyId={},", escape_string(&proxy.proxy_id)))
-                .println_indented(format!(
-                    "type={}",
-                    escape_string(proxy.data_source_type.to_string())
-                ))
-                .println(")");
-        }
-        DataSource::Prometheus(prometheus) => {
-            writer
-                .println(".addDirectDataSource(")
-                .println_indented("type='prometheus',")
-                .println_indented(format!("name={},", escape_string(name)))
-                .println_indented("config={")
-                .indent()
-                .println_indented(format!("url: {},", escape_string(&prometheus.url)))
-                .println("},")
-                .dedent()
-                .println(")");
-        }
-        DataSource::Elasticsearch(elasticsearch) => {
-            writer
-                .println(".addDirectDataSource(")
-                .println_indented("type='elasticsearch',")
-                .println_indented(format!("name={},", escape_string(name)))
-                .println_indented("config={")
-                .indent()
-                .println_indented(format!("url: {},", escape_string(&elasticsearch.url)))
-                .println_indented(format!(
-                    "timestampFieldNames: [{}],",
-                    elasticsearch
-                        .timestamp_field_names
-                        .iter()
-                        .map(escape_string)
-                        .collect::<Vec<_>>()
-                        .join(", ")
-                ))
-                .println_indented(format!(
-                    "bodyFieldNames: [{}],",
-                    elasticsearch
-                        .body_field_names
-                        .iter()
-                        .map(escape_string)
-                        .collect::<Vec<_>>()
-                        .join(", ")
-                ))
-                .println("},")
-                .dedent()
-                .println(")");
-        }
-        DataSource::Loki(loki) => {
-            writer
-                .println(".addDirectDataSource(")
-                .println_indented("type='loki',")
-                .println_indented(format!("name={},", escape_string(name)))
-                .println_indented("config={")
-                .indent()
-                .println_indented(format!("url: {},", escape_string(&loki.url)))
-                .println("},")
-                .dedent()
-                .println(")");
-        }
-        DataSource::Sentry(sentry) => {
-            writer
-                .println(".addDirectDataSource(")
-                .println_indented("type='sentry',")
-                .println_indented(format!("name={},", escape_string(name)))
-                .println_indented("config={")
-                .indent()
-                .println_indented(format!("token: {},", escape_string(&sentry.token)))
-                .println_indented(format!(
-                    "organizationSlug: {},",
-                    escape_string(&sentry.organization_slug)
-                ))
-                .println_indented(format!(
-                    "projectSlug: {},",
-                    escape_string(&sentry.project_slug)
-                ))
-                .println("},")
-                .dedent()
-                .println(")");
-        }
-    }
 }
 
 fn escape_string_and_replace_mustache_substitutions(content: &str, separator: &str) -> String {

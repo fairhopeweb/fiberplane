@@ -41,24 +41,38 @@ pub enum CommentUpdateError {
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method `convert_notebook_to_template`
+/// struct for typed errors of method `data_source_create`
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum ConvertNotebookToTemplateError {
+pub enum DataSourceCreateError {
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method `delete_file`
+/// struct for typed errors of method `data_source_delete`
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DeleteFileError {
+pub enum DataSourceDeleteError {
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method `delete_notebook`
+/// struct for typed errors of method `data_source_get`
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum DeleteNotebookError {
+pub enum DataSourceGetError {
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method `data_source_list`
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum DataSourceListError {
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method `data_source_update`
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum DataSourceUpdateError {
     UnknownValue(serde_json::Value),
 }
 
@@ -83,38 +97,24 @@ pub enum EventListError {
     UnknownValue(serde_json::Value),
 }
 
+/// struct for typed errors of method `file_delete`
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum FileDeleteError {
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method `file_get`
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum FileGetError {
+    UnknownValue(serde_json::Value),
+}
+
 /// struct for typed errors of method `file_upload`
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum FileUploadError {
-    UnknownValue(serde_json::Value),
-}
-
-/// struct for typed errors of method `get_file`
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum GetFileError {
-    UnknownValue(serde_json::Value),
-}
-
-/// struct for typed errors of method `get_notebook`
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum GetNotebookError {
-    UnknownValue(serde_json::Value),
-}
-
-/// struct for typed errors of method `get_profile`
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum GetProfileError {
-    UnknownValue(serde_json::Value),
-}
-
-/// struct for typed errors of method `get_profile_picture`
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum GetProfilePictureError {
     UnknownValue(serde_json::Value),
 }
 
@@ -160,10 +160,31 @@ pub enum NotebookCellsAppendError {
     UnknownValue(serde_json::Value),
 }
 
+/// struct for typed errors of method `notebook_convert_to_template`
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum NotebookConvertToTemplateError {
+    UnknownValue(serde_json::Value),
+}
+
 /// struct for typed errors of method `notebook_create`
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum NotebookCreateError {
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method `notebook_delete`
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum NotebookDeleteError {
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method `notebook_get`
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum NotebookGetError {
     UnknownValue(serde_json::Value),
 }
 
@@ -181,31 +202,17 @@ pub enum NotebookSearchError {
     UnknownValue(serde_json::Value),
 }
 
+/// struct for typed errors of method `notebook_update`
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum NotebookUpdateError {
+    UnknownValue(serde_json::Value),
+}
+
 /// struct for typed errors of method `oidc_authorize_google`
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum OidcAuthorizeGoogleError {
-    UnknownValue(serde_json::Value),
-}
-
-/// struct for typed errors of method `org_data_source_create`
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum OrgDataSourceCreateError {
-    UnknownValue(serde_json::Value),
-}
-
-/// struct for typed errors of method `org_user_list_current`
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum OrgUserListCurrentError {
-    UnknownValue(serde_json::Value),
-}
-
-/// struct for typed errors of method `patch_notebook`
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum PatchNotebookError {
     UnknownValue(serde_json::Value),
 }
 
@@ -230,17 +237,31 @@ pub enum PinnedNotebookListError {
     UnknownValue(serde_json::Value),
 }
 
+/// struct for typed errors of method `profile_get`
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum ProfileGetError {
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method `profile_picture_get`
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum ProfilePictureGetError {
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method `profile_picture_update`
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum ProfilePictureUpdateError {
+    UnknownValue(serde_json::Value),
+}
+
 /// struct for typed errors of method `proxy_create`
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum ProxyCreateError {
-    UnknownValue(serde_json::Value),
-}
-
-/// struct for typed errors of method `proxy_data_sources_list`
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum ProxyDataSourcesListError {
     UnknownValue(serde_json::Value),
 }
 
@@ -272,13 +293,6 @@ pub enum ProxyRelayError {
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method `suggest_query`
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum SuggestQueryError {
-    UnknownValue(serde_json::Value),
-}
-
 /// struct for typed errors of method `template_create`
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -290,20 +304,6 @@ pub enum TemplateCreateError {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum TemplateDeleteError {
-    UnknownValue(serde_json::Value),
-}
-
-/// struct for typed errors of method `template_example_expand`
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum TemplateExampleExpandError {
-    UnknownValue(serde_json::Value),
-}
-
-/// struct for typed errors of method `template_example_list`
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum TemplateExampleListError {
     UnknownValue(serde_json::Value),
 }
 
@@ -433,10 +433,94 @@ pub enum TriggerListError {
     UnknownValue(serde_json::Value),
 }
 
-/// struct for typed errors of method `update_profile_picture`
+/// struct for typed errors of method `workspace_create`
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
-pub enum UpdateProfilePictureError {
+pub enum WorkspaceCreateError {
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method `workspace_get`
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum WorkspaceGetError {
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method `workspace_invite`
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum WorkspaceInviteError {
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method `workspace_invite_accept`
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum WorkspaceInviteAcceptError {
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method `workspace_invite_decline`
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum WorkspaceInviteDeclineError {
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method `workspace_invite_get`
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum WorkspaceInviteGetError {
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method `workspace_leave`
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum WorkspaceLeaveError {
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method `workspace_list`
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum WorkspaceListError {
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method `workspace_list_users`
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum WorkspaceListUsersError {
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method `workspace_picture_get`
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum WorkspacePictureGetError {
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method `workspace_picture_update`
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum WorkspacePictureUpdateError {
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method `workspace_update`
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum WorkspaceUpdateError {
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method `workspace_user_remove`
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum WorkspaceUserRemoveError {
     UnknownValue(serde_json::Value),
 }
 
@@ -612,17 +696,109 @@ pub async fn comment_update(
     }
 }
 
-/// Convert the notebook to a Template
-pub async fn convert_notebook_to_template(
+/// Create an workspace data-source
+pub async fn data_source_create(
     configuration: &configuration::Configuration,
-    notebook_id: &str,
-) -> Result<String, Error<ConvertNotebookToTemplateError>> {
+    workspace_id: &str,
+    new_data_source: crate::models::NewDataSource,
+) -> Result<crate::models::DataSource, Error<DataSourceCreateError>> {
     let local_var_client = &configuration.client;
 
     let local_var_uri_str = format!(
-        "{}/api/notebooks/{notebookId}/template.jsonnet",
+        "{}/api/workspaces/{workspace_id}/data_sources",
         configuration.base_path,
-        notebookId = crate::apis::urlencode(notebook_id)
+        workspace_id = crate::apis::urlencode(workspace_id)
+    );
+    let mut local_var_req_builder =
+        local_var_client.request(reqwest::Method::POST, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_user_agent) = configuration.user_agent {
+        local_var_req_builder =
+            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+    if let Some(ref local_var_token) = configuration.bearer_access_token {
+        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
+    };
+    local_var_req_builder = local_var_req_builder.json(&new_data_source);
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        serde_json::from_str(&local_var_content).map_err(Error::from)
+    } else {
+        let local_var_entity: Option<DataSourceCreateError> =
+            serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent {
+            status: local_var_status,
+            content: local_var_content,
+            entity: local_var_entity,
+        };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
+
+/// Delete a data source
+pub async fn data_source_delete(
+    configuration: &configuration::Configuration,
+    workspace_id: &str,
+    data_source_name: &str,
+) -> Result<(), Error<DataSourceDeleteError>> {
+    let local_var_client = &configuration.client;
+
+    let local_var_uri_str = format!(
+        "{}/api/workspaces/{workspace_id}/data_sources/{data_source_name}",
+        configuration.base_path,
+        workspace_id = crate::apis::urlencode(workspace_id),
+        data_source_name = crate::apis::urlencode(data_source_name)
+    );
+    let mut local_var_req_builder =
+        local_var_client.request(reqwest::Method::DELETE, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_user_agent) = configuration.user_agent {
+        local_var_req_builder =
+            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+    if let Some(ref local_var_token) = configuration.bearer_access_token {
+        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
+    };
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        Ok(())
+    } else {
+        let local_var_entity: Option<DataSourceDeleteError> =
+            serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent {
+            status: local_var_status,
+            content: local_var_content,
+            entity: local_var_entity,
+        };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
+
+/// Get the data source's details
+pub async fn data_source_get(
+    configuration: &configuration::Configuration,
+    workspace_id: &str,
+    data_source_name: &str,
+) -> Result<crate::models::DataSource, Error<DataSourceGetError>> {
+    let local_var_client = &configuration.client;
+
+    let local_var_uri_str = format!(
+        "{}/api/workspaces/{workspace_id}/data_sources/{data_source_name}",
+        configuration.base_path,
+        workspace_id = crate::apis::urlencode(workspace_id),
+        data_source_name = crate::apis::urlencode(data_source_name)
     );
     let mut local_var_req_builder =
         local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
@@ -644,7 +820,7 @@ pub async fn convert_notebook_to_template(
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
         serde_json::from_str(&local_var_content).map_err(Error::from)
     } else {
-        let local_var_entity: Option<ConvertNotebookToTemplateError> =
+        let local_var_entity: Option<DataSourceGetError> =
             serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent {
             status: local_var_status,
@@ -655,22 +831,19 @@ pub async fn convert_notebook_to_template(
     }
 }
 
-/// Delete a file
-pub async fn delete_file(
+pub async fn data_source_list(
     configuration: &configuration::Configuration,
-    notebook_id: &str,
-    file_id: &str,
-) -> Result<(), Error<DeleteFileError>> {
+    workspace_id: &str,
+) -> Result<Vec<crate::models::DataSource>, Error<DataSourceListError>> {
     let local_var_client = &configuration.client;
 
     let local_var_uri_str = format!(
-        "{}/api/files/{notebookId}/{fileId}",
+        "{}/api/workspaces/{workspace_id}/data_sources",
         configuration.base_path,
-        notebookId = crate::apis::urlencode(notebook_id),
-        fileId = crate::apis::urlencode(file_id)
+        workspace_id = crate::apis::urlencode(workspace_id)
     );
     let mut local_var_req_builder =
-        local_var_client.request(reqwest::Method::DELETE, local_var_uri_str.as_str());
+        local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
 
     if let Some(ref local_var_user_agent) = configuration.user_agent {
         local_var_req_builder =
@@ -687,9 +860,9 @@ pub async fn delete_file(
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-        Ok(())
+        serde_json::from_str(&local_var_content).map_err(Error::from)
     } else {
-        let local_var_entity: Option<DeleteFileError> =
+        let local_var_entity: Option<DataSourceListError> =
             serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent {
             status: local_var_status,
@@ -700,19 +873,23 @@ pub async fn delete_file(
     }
 }
 
-pub async fn delete_notebook(
+/// Update a data source
+pub async fn data_source_update(
     configuration: &configuration::Configuration,
-    notebook_id: &str,
-) -> Result<(), Error<DeleteNotebookError>> {
+    workspace_id: &str,
+    data_source_name: &str,
+    update_data_source: crate::models::UpdateDataSource,
+) -> Result<crate::models::DataSource, Error<DataSourceUpdateError>> {
     let local_var_client = &configuration.client;
 
     let local_var_uri_str = format!(
-        "{}/api/notebooks/{notebookId}",
+        "{}/api/workspaces/{workspace_id}/data_sources/{data_source_name}",
         configuration.base_path,
-        notebookId = crate::apis::urlencode(notebook_id)
+        workspace_id = crate::apis::urlencode(workspace_id),
+        data_source_name = crate::apis::urlencode(data_source_name)
     );
     let mut local_var_req_builder =
-        local_var_client.request(reqwest::Method::DELETE, local_var_uri_str.as_str());
+        local_var_client.request(reqwest::Method::PATCH, local_var_uri_str.as_str());
 
     if let Some(ref local_var_user_agent) = configuration.user_agent {
         local_var_req_builder =
@@ -721,6 +898,7 @@ pub async fn delete_notebook(
     if let Some(ref local_var_token) = configuration.bearer_access_token {
         local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
     };
+    local_var_req_builder = local_var_req_builder.json(&update_data_source);
 
     let local_var_req = local_var_req_builder.build()?;
     let local_var_resp = local_var_client.execute(local_var_req).await?;
@@ -729,9 +907,9 @@ pub async fn delete_notebook(
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-        Ok(())
+        serde_json::from_str(&local_var_content).map_err(Error::from)
     } else {
-        let local_var_entity: Option<DeleteNotebookError> =
+        let local_var_entity: Option<DataSourceUpdateError> =
             serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent {
             status: local_var_status,
@@ -745,11 +923,16 @@ pub async fn delete_notebook(
 /// Creates a new event
 pub async fn event_create(
     configuration: &configuration::Configuration,
+    workspace_id: &str,
     new_event: crate::models::NewEvent,
 ) -> Result<crate::models::Event, Error<EventCreateError>> {
     let local_var_client = &configuration.client;
 
-    let local_var_uri_str = format!("{}/api/events", configuration.base_path);
+    let local_var_uri_str = format!(
+        "{}/api/workspaces/{workspace_id}/events",
+        configuration.base_path,
+        workspace_id = crate::apis::urlencode(workspace_id)
+    );
     let mut local_var_req_builder =
         local_var_client.request(reqwest::Method::POST, local_var_uri_str.as_str());
 
@@ -785,14 +968,14 @@ pub async fn event_create(
 /// Deletes a event
 pub async fn event_delete(
     configuration: &configuration::Configuration,
-    id: &str,
+    event_id: &str,
 ) -> Result<(), Error<EventDeleteError>> {
     let local_var_client = &configuration.client;
 
     let local_var_uri_str = format!(
-        "{}/api/events/{id}",
+        "{}/api/events/{event_id}",
         configuration.base_path,
-        id = crate::apis::urlencode(id)
+        event_id = crate::apis::urlencode(event_id)
     );
     let mut local_var_req_builder =
         local_var_client.request(reqwest::Method::DELETE, local_var_uri_str.as_str());
@@ -828,6 +1011,7 @@ pub async fn event_delete(
 /// Get a list of all events matching the query
 pub async fn event_list(
     configuration: &configuration::Configuration,
+    workspace_id: &str,
     occurrence_time_start: String,
     occurrence_time_end: String,
     labels: Option<::std::collections::HashMap<String, String>>,
@@ -838,7 +1022,11 @@ pub async fn event_list(
 ) -> Result<Vec<crate::models::Event>, Error<EventListError>> {
     let local_var_client = &configuration.client;
 
-    let local_var_uri_str = format!("{}/api/events", configuration.base_path);
+    let local_var_uri_str = format!(
+        "{}/api/workspaces/{workspace_id}/events",
+        configuration.base_path,
+        workspace_id = crate::apis::urlencode(workspace_id)
+    );
     let mut local_var_req_builder =
         local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
 
@@ -894,6 +1082,92 @@ pub async fn event_list(
     }
 }
 
+/// Delete a file
+pub async fn file_delete(
+    configuration: &configuration::Configuration,
+    notebook_id: &str,
+    file_id: &str,
+) -> Result<(), Error<FileDeleteError>> {
+    let local_var_client = &configuration.client;
+
+    let local_var_uri_str = format!(
+        "{}/api/notebooks/{notebookId}/files/{fileId}",
+        configuration.base_path,
+        notebookId = crate::apis::urlencode(notebook_id),
+        fileId = crate::apis::urlencode(file_id)
+    );
+    let mut local_var_req_builder =
+        local_var_client.request(reqwest::Method::DELETE, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_user_agent) = configuration.user_agent {
+        local_var_req_builder =
+            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+    if let Some(ref local_var_token) = configuration.bearer_access_token {
+        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
+    };
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        Ok(())
+    } else {
+        let local_var_entity: Option<FileDeleteError> =
+            serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent {
+            status: local_var_status,
+            content: local_var_content,
+            entity: local_var_entity,
+        };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
+
+/// Get a file
+pub async fn file_get(
+    configuration: &configuration::Configuration,
+    notebook_id: &str,
+    file_id: &str,
+) -> Result<std::path::PathBuf, Error<FileGetError>> {
+    let local_var_client = &configuration.client;
+
+    let local_var_uri_str = format!(
+        "{}/api/notebooks/{notebookId}/files/{fileId}",
+        configuration.base_path,
+        notebookId = crate::apis::urlencode(notebook_id),
+        fileId = crate::apis::urlencode(file_id)
+    );
+    let mut local_var_req_builder =
+        local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_user_agent) = configuration.user_agent {
+        local_var_req_builder =
+            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        serde_json::from_str(&local_var_content).map_err(Error::from)
+    } else {
+        let local_var_entity: Option<FileGetError> = serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent {
+            status: local_var_status,
+            content: local_var_content,
+            entity: local_var_entity,
+        };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
+
 /// upload a file
 pub async fn file_upload(
     configuration: &configuration::Configuration,
@@ -903,7 +1177,7 @@ pub async fn file_upload(
     let local_var_client = &configuration.client;
 
     let local_var_uri_str = format!(
-        "{}/api/files/{notebookId}",
+        "{}/api/notebooks/{notebookId}/files",
         configuration.base_path,
         notebookId = crate::apis::urlencode(notebook_id)
     );
@@ -941,171 +1215,19 @@ pub async fn file_upload(
     }
 }
 
-/// Get a file
-pub async fn get_file(
-    configuration: &configuration::Configuration,
-    notebook_id: &str,
-    file_id: &str,
-) -> Result<std::path::PathBuf, Error<GetFileError>> {
-    let local_var_client = &configuration.client;
-
-    let local_var_uri_str = format!(
-        "{}/api/files/{notebookId}/{fileId}",
-        configuration.base_path,
-        notebookId = crate::apis::urlencode(notebook_id),
-        fileId = crate::apis::urlencode(file_id)
-    );
-    let mut local_var_req_builder =
-        local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
-
-    if let Some(ref local_var_user_agent) = configuration.user_agent {
-        local_var_req_builder =
-            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
-    }
-
-    let local_var_req = local_var_req_builder.build()?;
-    let local_var_resp = local_var_client.execute(local_var_req).await?;
-
-    let local_var_status = local_var_resp.status();
-    let local_var_content = local_var_resp.text().await?;
-
-    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-        serde_json::from_str(&local_var_content).map_err(Error::from)
-    } else {
-        let local_var_entity: Option<GetFileError> = serde_json::from_str(&local_var_content).ok();
-        let local_var_error = ResponseContent {
-            status: local_var_status,
-            content: local_var_content,
-            entity: local_var_entity,
-        };
-        Err(Error::ResponseError(local_var_error))
-    }
-}
-
-/// Fetch a single notebook
-pub async fn get_notebook(
-    configuration: &configuration::Configuration,
-    notebook_id: &str,
-) -> Result<crate::models::Notebook, Error<GetNotebookError>> {
-    let local_var_client = &configuration.client;
-
-    let local_var_uri_str = format!(
-        "{}/api/notebooks/{notebookId}",
-        configuration.base_path,
-        notebookId = crate::apis::urlencode(notebook_id)
-    );
-    let mut local_var_req_builder =
-        local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
-
-    if let Some(ref local_var_user_agent) = configuration.user_agent {
-        local_var_req_builder =
-            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
-    }
-    if let Some(ref local_var_token) = configuration.bearer_access_token {
-        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
-    };
-
-    let local_var_req = local_var_req_builder.build()?;
-    let local_var_resp = local_var_client.execute(local_var_req).await?;
-
-    let local_var_status = local_var_resp.status();
-    let local_var_content = local_var_resp.text().await?;
-
-    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-        serde_json::from_str(&local_var_content).map_err(Error::from)
-    } else {
-        let local_var_entity: Option<GetNotebookError> =
-            serde_json::from_str(&local_var_content).ok();
-        let local_var_error = ResponseContent {
-            status: local_var_status,
-            content: local_var_content,
-            entity: local_var_entity,
-        };
-        Err(Error::ResponseError(local_var_error))
-    }
-}
-
-/// Fetch the profile of the authenticated user
-pub async fn get_profile(
-    configuration: &configuration::Configuration,
-) -> Result<crate::models::User, Error<GetProfileError>> {
-    let local_var_client = &configuration.client;
-
-    let local_var_uri_str = format!("{}/api/profile", configuration.base_path);
-    let mut local_var_req_builder =
-        local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
-
-    if let Some(ref local_var_user_agent) = configuration.user_agent {
-        local_var_req_builder =
-            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
-    }
-    if let Some(ref local_var_token) = configuration.bearer_access_token {
-        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
-    };
-
-    let local_var_req = local_var_req_builder.build()?;
-    let local_var_resp = local_var_client.execute(local_var_req).await?;
-
-    let local_var_status = local_var_resp.status();
-    let local_var_content = local_var_resp.text().await?;
-
-    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-        serde_json::from_str(&local_var_content).map_err(Error::from)
-    } else {
-        let local_var_entity: Option<GetProfileError> =
-            serde_json::from_str(&local_var_content).ok();
-        let local_var_error = ResponseContent {
-            status: local_var_status,
-            content: local_var_content,
-            entity: local_var_entity,
-        };
-        Err(Error::ResponseError(local_var_error))
-    }
-}
-
-/// Retrieve profile image
-pub async fn get_profile_picture(
-    configuration: &configuration::Configuration,
-) -> Result<std::path::PathBuf, Error<GetProfilePictureError>> {
-    let local_var_client = &configuration.client;
-
-    let local_var_uri_str = format!("{}/api/profile/picture", configuration.base_path);
-    let mut local_var_req_builder =
-        local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
-
-    if let Some(ref local_var_user_agent) = configuration.user_agent {
-        local_var_req_builder =
-            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
-    }
-
-    let local_var_req = local_var_req_builder.build()?;
-    let local_var_resp = local_var_client.execute(local_var_req).await?;
-
-    let local_var_status = local_var_resp.status();
-    let local_var_content = local_var_resp.text().await?;
-
-    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-        serde_json::from_str(&local_var_content).map_err(Error::from)
-    } else {
-        let local_var_entity: Option<GetProfilePictureError> =
-            serde_json::from_str(&local_var_content).ok();
-        let local_var_error = ResponseContent {
-            status: local_var_status,
-            content: local_var_content,
-            entity: local_var_entity,
-        };
-        Err(Error::ResponseError(local_var_error))
-    }
-}
-
 /// Retrieve all label keys
 pub async fn label_keys_list(
     configuration: &configuration::Configuration,
+    workspace_id: &str,
     prefix: Option<&str>,
 ) -> Result<Vec<String>, Error<LabelKeysListError>> {
     let local_var_client = &configuration.client;
 
-    let local_var_uri_str = format!("{}/api/labels/keys", configuration.base_path);
+    let local_var_uri_str = format!(
+        "{}/api/workspaces/{workspace_id}/labels/keys",
+        configuration.base_path,
+        workspace_id = crate::apis::urlencode(workspace_id)
+    );
     let mut local_var_req_builder =
         local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
 
@@ -1144,14 +1266,16 @@ pub async fn label_keys_list(
 /// Retrieve all label values for a specific key
 pub async fn label_values_list(
     configuration: &configuration::Configuration,
+    workspace_id: &str,
     label_key: &str,
     prefix: Option<&str>,
 ) -> Result<Vec<String>, Error<LabelValuesListError>> {
     let local_var_client = &configuration.client;
 
     let local_var_uri_str = format!(
-        "{}/api/labels/values/{label_key}",
+        "{}/api/workspaces/{workspace_id}/labels/values/{label_key}",
         configuration.base_path,
+        workspace_id = crate::apis::urlencode(workspace_id),
         label_key = crate::apis::urlencode(label_key)
     );
     let mut local_var_req_builder =
@@ -1365,14 +1489,62 @@ pub async fn notebook_cells_append(
     }
 }
 
+/// Convert the notebook to a Template
+pub async fn notebook_convert_to_template(
+    configuration: &configuration::Configuration,
+    notebook_id: &str,
+) -> Result<String, Error<NotebookConvertToTemplateError>> {
+    let local_var_client = &configuration.client;
+
+    let local_var_uri_str = format!(
+        "{}/api/notebooks/{notebookId}/template.jsonnet",
+        configuration.base_path,
+        notebookId = crate::apis::urlencode(notebook_id)
+    );
+    let mut local_var_req_builder =
+        local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_user_agent) = configuration.user_agent {
+        local_var_req_builder =
+            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+    if let Some(ref local_var_token) = configuration.bearer_access_token {
+        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
+    };
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        serde_json::from_str(&local_var_content).map_err(Error::from)
+    } else {
+        let local_var_entity: Option<NotebookConvertToTemplateError> =
+            serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent {
+            status: local_var_status,
+            content: local_var_content,
+            entity: local_var_entity,
+        };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
+
 /// Create a new notebook
 pub async fn notebook_create(
     configuration: &configuration::Configuration,
+    workspace_id: &str,
     new_notebook: crate::models::NewNotebook,
 ) -> Result<crate::models::Notebook, Error<NotebookCreateError>> {
     let local_var_client = &configuration.client;
 
-    let local_var_uri_str = format!("{}/api/notebooks", configuration.base_path);
+    let local_var_uri_str = format!(
+        "{}/api/workspaces/{workspace_id}/notebooks",
+        configuration.base_path,
+        workspace_id = crate::apis::urlencode(workspace_id)
+    );
     let mut local_var_req_builder =
         local_var_client.request(reqwest::Method::POST, local_var_uri_str.as_str());
 
@@ -1405,13 +1577,103 @@ pub async fn notebook_create(
     }
 }
 
+pub async fn notebook_delete(
+    configuration: &configuration::Configuration,
+    notebook_id: &str,
+) -> Result<(), Error<NotebookDeleteError>> {
+    let local_var_client = &configuration.client;
+
+    let local_var_uri_str = format!(
+        "{}/api/notebooks/{notebookId}",
+        configuration.base_path,
+        notebookId = crate::apis::urlencode(notebook_id)
+    );
+    let mut local_var_req_builder =
+        local_var_client.request(reqwest::Method::DELETE, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_user_agent) = configuration.user_agent {
+        local_var_req_builder =
+            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+    if let Some(ref local_var_token) = configuration.bearer_access_token {
+        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
+    };
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        Ok(())
+    } else {
+        let local_var_entity: Option<NotebookDeleteError> =
+            serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent {
+            status: local_var_status,
+            content: local_var_content,
+            entity: local_var_entity,
+        };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
+
+/// Fetch a single notebook
+pub async fn notebook_get(
+    configuration: &configuration::Configuration,
+    notebook_id: &str,
+) -> Result<crate::models::Notebook, Error<NotebookGetError>> {
+    let local_var_client = &configuration.client;
+
+    let local_var_uri_str = format!(
+        "{}/api/notebooks/{notebookId}",
+        configuration.base_path,
+        notebookId = crate::apis::urlencode(notebook_id)
+    );
+    let mut local_var_req_builder =
+        local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_user_agent) = configuration.user_agent {
+        local_var_req_builder =
+            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+    if let Some(ref local_var_token) = configuration.bearer_access_token {
+        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
+    };
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        serde_json::from_str(&local_var_content).map_err(Error::from)
+    } else {
+        let local_var_entity: Option<NotebookGetError> =
+            serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent {
+            status: local_var_status,
+            content: local_var_content,
+            entity: local_var_entity,
+        };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
+
 /// List all accessible notebooks
 pub async fn notebook_list(
     configuration: &configuration::Configuration,
+    workspace_id: &str,
 ) -> Result<Vec<crate::models::NotebookSummary>, Error<NotebookListError>> {
     let local_var_client = &configuration.client;
 
-    let local_var_uri_str = format!("{}/api/notebooks", configuration.base_path);
+    let local_var_uri_str = format!(
+        "{}/api/workspaces/{workspace_id}/notebooks",
+        configuration.base_path,
+        workspace_id = crate::apis::urlencode(workspace_id)
+    );
     let mut local_var_req_builder =
         local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
 
@@ -1446,11 +1708,16 @@ pub async fn notebook_list(
 /// Search for notebooks
 pub async fn notebook_search(
     configuration: &configuration::Configuration,
+    workspace_id: &str,
     notebook_search: crate::models::NotebookSearch,
 ) -> Result<Vec<crate::models::NotebookSummary>, Error<NotebookSearchError>> {
     let local_var_client = &configuration.client;
 
-    let local_var_uri_str = format!("{}/api/search/notebooks", configuration.base_path);
+    let local_var_uri_str = format!(
+        "{}/api/workspaces/{workspace_id}/search/notebooks",
+        configuration.base_path,
+        workspace_id = crate::apis::urlencode(workspace_id)
+    );
     let mut local_var_req_builder =
         local_var_client.request(reqwest::Method::POST, local_var_uri_str.as_str());
 
@@ -1473,6 +1740,51 @@ pub async fn notebook_search(
         serde_json::from_str(&local_var_content).map_err(Error::from)
     } else {
         let local_var_entity: Option<NotebookSearchError> =
+            serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent {
+            status: local_var_status,
+            content: local_var_content,
+            entity: local_var_entity,
+        };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
+
+/// Modifies individual properties of a single notebook
+pub async fn notebook_update(
+    configuration: &configuration::Configuration,
+    notebook_id: &str,
+    notebook_patch: crate::models::NotebookPatch,
+) -> Result<(), Error<NotebookUpdateError>> {
+    let local_var_client = &configuration.client;
+
+    let local_var_uri_str = format!(
+        "{}/api/notebooks/{notebookId}",
+        configuration.base_path,
+        notebookId = crate::apis::urlencode(notebook_id)
+    );
+    let mut local_var_req_builder =
+        local_var_client.request(reqwest::Method::PATCH, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_user_agent) = configuration.user_agent {
+        local_var_req_builder =
+            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+    if let Some(ref local_var_token) = configuration.bearer_access_token {
+        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
+    };
+    local_var_req_builder = local_var_req_builder.json(&notebook_patch);
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        Ok(())
+    } else {
+        let local_var_entity: Option<NotebookUpdateError> =
             serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent {
             status: local_var_status,
@@ -1531,133 +1843,7 @@ pub async fn oidc_authorize_google(
     }
 }
 
-/// Create an organization data-source
-pub async fn org_data_source_create(
-    configuration: &configuration::Configuration,
-    new_org_data_source: crate::models::NewOrgDataSource,
-) -> Result<crate::models::OrgDataSource, Error<OrgDataSourceCreateError>> {
-    let local_var_client = &configuration.client;
-
-    let local_var_uri_str = format!("{}/api/datasources", configuration.base_path);
-    let mut local_var_req_builder =
-        local_var_client.request(reqwest::Method::POST, local_var_uri_str.as_str());
-
-    if let Some(ref local_var_user_agent) = configuration.user_agent {
-        local_var_req_builder =
-            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
-    }
-    if let Some(ref local_var_token) = configuration.bearer_access_token {
-        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
-    };
-    local_var_req_builder = local_var_req_builder.json(&new_org_data_source);
-
-    let local_var_req = local_var_req_builder.build()?;
-    let local_var_resp = local_var_client.execute(local_var_req).await?;
-
-    let local_var_status = local_var_resp.status();
-    let local_var_content = local_var_resp.text().await?;
-
-    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-        serde_json::from_str(&local_var_content).map_err(Error::from)
-    } else {
-        let local_var_entity: Option<OrgDataSourceCreateError> =
-            serde_json::from_str(&local_var_content).ok();
-        let local_var_error = ResponseContent {
-            status: local_var_status,
-            content: local_var_content,
-            entity: local_var_entity,
-        };
-        Err(Error::ResponseError(local_var_error))
-    }
-}
-
-/// Fetch the users of the current organization
-pub async fn org_user_list_current(
-    configuration: &configuration::Configuration,
-) -> Result<Vec<crate::models::User>, Error<OrgUserListCurrentError>> {
-    let local_var_client = &configuration.client;
-
-    let local_var_uri_str = format!(
-        "{}/api/organizations/current/users",
-        configuration.base_path
-    );
-    let mut local_var_req_builder =
-        local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
-
-    if let Some(ref local_var_user_agent) = configuration.user_agent {
-        local_var_req_builder =
-            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
-    }
-    if let Some(ref local_var_token) = configuration.bearer_access_token {
-        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
-    };
-
-    let local_var_req = local_var_req_builder.build()?;
-    let local_var_resp = local_var_client.execute(local_var_req).await?;
-
-    let local_var_status = local_var_resp.status();
-    let local_var_content = local_var_resp.text().await?;
-
-    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-        serde_json::from_str(&local_var_content).map_err(Error::from)
-    } else {
-        let local_var_entity: Option<OrgUserListCurrentError> =
-            serde_json::from_str(&local_var_content).ok();
-        let local_var_error = ResponseContent {
-            status: local_var_status,
-            content: local_var_content,
-            entity: local_var_entity,
-        };
-        Err(Error::ResponseError(local_var_error))
-    }
-}
-
-/// Modifies individual properties of a single notebook
-pub async fn patch_notebook(
-    configuration: &configuration::Configuration,
-    notebook_id: &str,
-    notebook_patch: crate::models::NotebookPatch,
-) -> Result<(), Error<PatchNotebookError>> {
-    let local_var_client = &configuration.client;
-
-    let local_var_uri_str = format!(
-        "{}/api/notebooks/{notebookId}",
-        configuration.base_path,
-        notebookId = crate::apis::urlencode(notebook_id)
-    );
-    let mut local_var_req_builder =
-        local_var_client.request(reqwest::Method::PATCH, local_var_uri_str.as_str());
-
-    if let Some(ref local_var_user_agent) = configuration.user_agent {
-        local_var_req_builder =
-            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
-    }
-    if let Some(ref local_var_token) = configuration.bearer_access_token {
-        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
-    };
-    local_var_req_builder = local_var_req_builder.json(&notebook_patch);
-
-    let local_var_req = local_var_req_builder.build()?;
-    let local_var_resp = local_var_client.execute(local_var_req).await?;
-
-    let local_var_status = local_var_resp.status();
-    let local_var_content = local_var_resp.text().await?;
-
-    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-        Ok(())
-    } else {
-        let local_var_entity: Option<PatchNotebookError> =
-            serde_json::from_str(&local_var_content).ok();
-        let local_var_error = ResponseContent {
-            status: local_var_status,
-            content: local_var_content,
-            entity: local_var_entity,
-        };
-        Err(Error::ResponseError(local_var_error))
-    }
-}
-
-/// Create a new notebook
+/// Pin a notebook
 pub async fn pinned_notebook_create(
     configuration: &configuration::Configuration,
     new_pinned_notebook: crate::models::NewPinnedNotebook,
@@ -1697,6 +1883,7 @@ pub async fn pinned_notebook_create(
     }
 }
 
+/// Unpin a notebook
 pub async fn pinned_notebook_delete(
     configuration: &configuration::Configuration,
     notebook_id: &str,
@@ -1739,13 +1926,18 @@ pub async fn pinned_notebook_delete(
     }
 }
 
-/// List all pinned notebooks
+/// List all pinned notebooks for a specific workspace
 pub async fn pinned_notebook_list(
     configuration: &configuration::Configuration,
+    workspace_id: &str,
 ) -> Result<Vec<crate::models::NotebookSummary>, Error<PinnedNotebookListError>> {
     let local_var_client = &configuration.client;
 
-    let local_var_uri_str = format!("{}/api/pinnednotebooks", configuration.base_path);
+    let local_var_uri_str = format!(
+        "{}/api/workspaces/{workspace_id}/pinnednotebooks",
+        configuration.base_path,
+        workspace_id = crate::apis::urlencode(workspace_id)
+    );
     let mut local_var_req_builder =
         local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
 
@@ -1777,14 +1969,134 @@ pub async fn pinned_notebook_list(
     }
 }
 
+/// Fetch the profile of the authenticated user
+pub async fn profile_get(
+    configuration: &configuration::Configuration,
+) -> Result<crate::models::Profile, Error<ProfileGetError>> {
+    let local_var_client = &configuration.client;
+
+    let local_var_uri_str = format!("{}/api/profile", configuration.base_path);
+    let mut local_var_req_builder =
+        local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_user_agent) = configuration.user_agent {
+        local_var_req_builder =
+            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+    if let Some(ref local_var_token) = configuration.bearer_access_token {
+        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
+    };
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        serde_json::from_str(&local_var_content).map_err(Error::from)
+    } else {
+        let local_var_entity: Option<ProfileGetError> =
+            serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent {
+            status: local_var_status,
+            content: local_var_content,
+            entity: local_var_entity,
+        };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
+
+/// Retrieve profile image
+pub async fn profile_picture_get(
+    configuration: &configuration::Configuration,
+) -> Result<std::path::PathBuf, Error<ProfilePictureGetError>> {
+    let local_var_client = &configuration.client;
+
+    let local_var_uri_str = format!("{}/api/profile/picture", configuration.base_path);
+    let mut local_var_req_builder =
+        local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_user_agent) = configuration.user_agent {
+        local_var_req_builder =
+            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        serde_json::from_str(&local_var_content).map_err(Error::from)
+    } else {
+        let local_var_entity: Option<ProfilePictureGetError> =
+            serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent {
+            status: local_var_status,
+            content: local_var_content,
+            entity: local_var_entity,
+        };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
+
+/// Upload profile image
+pub async fn profile_picture_update(
+    configuration: &configuration::Configuration,
+    picture: std::path::PathBuf,
+) -> Result<(), Error<ProfilePictureUpdateError>> {
+    let local_var_client = &configuration.client;
+
+    let local_var_uri_str = format!("{}/api/profile/picture", configuration.base_path);
+    let mut local_var_req_builder =
+        local_var_client.request(reqwest::Method::POST, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_user_agent) = configuration.user_agent {
+        local_var_req_builder =
+            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+    if let Some(ref local_var_token) = configuration.bearer_access_token {
+        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
+    };
+    let mut local_var_form = reqwest::multipart::Form::new();
+    // TODO: support file upload for 'picture' parameter
+    local_var_req_builder = local_var_req_builder.multipart(local_var_form);
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        Ok(())
+    } else {
+        let local_var_entity: Option<ProfilePictureUpdateError> =
+            serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent {
+            status: local_var_status,
+            content: local_var_content,
+            entity: local_var_entity,
+        };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
+
 /// Create a new proxy
 pub async fn proxy_create(
     configuration: &configuration::Configuration,
+    workspace_id: &str,
     new_proxy: crate::models::NewProxy,
 ) -> Result<crate::models::Proxy, Error<ProxyCreateError>> {
     let local_var_client = &configuration.client;
 
-    let local_var_uri_str = format!("{}/api/proxies", configuration.base_path);
+    let local_var_uri_str = format!(
+        "{}/api/workspaces/{workspace_id}/proxies",
+        configuration.base_path,
+        workspace_id = crate::apis::urlencode(workspace_id)
+    );
     let mut local_var_req_builder =
         local_var_client.request(reqwest::Method::POST, local_var_uri_str.as_str());
 
@@ -1817,63 +2129,18 @@ pub async fn proxy_create(
     }
 }
 
-/// Get all of the data sources for all proxies that belong to the same organization as the user
-pub async fn proxy_data_sources_list(
-    configuration: &configuration::Configuration,
-) -> Result<Vec<crate::models::DataSourceAndProxySummary>, Error<ProxyDataSourcesListError>> {
-    let local_var_client = &configuration.client;
-
-    let local_var_uri_str = format!("{}/api/proxies/datasources", configuration.base_path);
-    let mut local_var_req_builder =
-        local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
-
-    if let Some(ref local_var_user_agent) = configuration.user_agent {
-        local_var_req_builder =
-            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
-    }
-    if let Some(ref local_var_apikey) = configuration.api_key {
-        let local_var_key = local_var_apikey.key.clone();
-        let local_var_value = match local_var_apikey.prefix {
-            Some(ref local_var_prefix) => format!("{} {}", local_var_prefix, local_var_key),
-            None => local_var_key,
-        };
-        local_var_req_builder =
-            local_var_req_builder.header("fp-service-auth-token", local_var_value);
-    };
-    if let Some(ref local_var_token) = configuration.bearer_access_token {
-        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
-    };
-
-    let local_var_req = local_var_req_builder.build()?;
-    let local_var_resp = local_var_client.execute(local_var_req).await?;
-
-    let local_var_status = local_var_resp.status();
-    let local_var_content = local_var_resp.text().await?;
-
-    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-        serde_json::from_str(&local_var_content).map_err(Error::from)
-    } else {
-        let local_var_entity: Option<ProxyDataSourcesListError> =
-            serde_json::from_str(&local_var_content).ok();
-        let local_var_error = ResponseContent {
-            status: local_var_status,
-            content: local_var_content,
-            entity: local_var_entity,
-        };
-        Err(Error::ResponseError(local_var_error))
-    }
-}
-
 pub async fn proxy_delete(
     configuration: &configuration::Configuration,
-    proxy_id: &str,
+    workspace_id: &str,
+    proxy_name: &str,
 ) -> Result<(), Error<ProxyDeleteError>> {
     let local_var_client = &configuration.client;
 
     let local_var_uri_str = format!(
-        "{}/api/proxies/{proxyId}",
+        "{}/api/workspaces/{workspace_id}/proxies/{proxy_name}",
         configuration.base_path,
-        proxyId = crate::apis::urlencode(proxy_id)
+        workspace_id = crate::apis::urlencode(workspace_id),
+        proxy_name = crate::apis::urlencode(proxy_name)
     );
     let mut local_var_req_builder =
         local_var_client.request(reqwest::Method::DELETE, local_var_uri_str.as_str());
@@ -1909,14 +2176,16 @@ pub async fn proxy_delete(
 /// Retrieve a single proxy
 pub async fn proxy_get(
     configuration: &configuration::Configuration,
-    proxy_id: &str,
+    workspace_id: &str,
+    proxy_name: &str,
 ) -> Result<crate::models::Proxy, Error<ProxyGetError>> {
     let local_var_client = &configuration.client;
 
     let local_var_uri_str = format!(
-        "{}/api/proxies/{proxyId}",
+        "{}/api/workspaces/{workspace_id}/proxies/{proxy_name}",
         configuration.base_path,
-        proxyId = crate::apis::urlencode(proxy_id)
+        workspace_id = crate::apis::urlencode(workspace_id),
+        proxy_name = crate::apis::urlencode(proxy_name)
     );
     let mut local_var_req_builder =
         local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
@@ -1951,10 +2220,15 @@ pub async fn proxy_get(
 /// List all proxies
 pub async fn proxy_list(
     configuration: &configuration::Configuration,
+    workspace_id: &str,
 ) -> Result<Vec<crate::models::ProxySummary>, Error<ProxyListError>> {
     let local_var_client = &configuration.client;
 
-    let local_var_uri_str = format!("{}/api/proxies", configuration.base_path);
+    let local_var_uri_str = format!(
+        "{}/api/workspaces/{workspace_id}/proxies",
+        configuration.base_path,
+        workspace_id = crate::apis::urlencode(workspace_id)
+    );
     let mut local_var_req_builder =
         local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
 
@@ -1989,21 +2263,22 @@ pub async fn proxy_list(
 /// Relay a query to a remote proxy
 pub async fn proxy_relay(
     configuration: &configuration::Configuration,
-    proxy_id: &str,
+    workspace_id: &str,
+    proxy_name: &str,
     data_source_name: &str,
-) -> Result<(), Error<ProxyRelayError>> {
+    provider_protocol_version: &str,
+    body: std::path::PathBuf,
+) -> Result<std::path::PathBuf, Error<ProxyRelayError>> {
     let local_var_client = &configuration.client;
 
-    let local_var_uri_str = format!(
-        "{}/api/proxies/{proxyId}/relay",
-        configuration.base_path,
-        proxyId = crate::apis::urlencode(proxy_id)
-    );
+    let local_var_uri_str = format!("{}/api/workspaces/{workspace_id}/proxies/{proxy_name}/data_sources/{data_source_name}/relay", configuration.base_path, workspace_id=crate::apis::urlencode(workspace_id), proxy_name=crate::apis::urlencode(proxy_name), data_source_name=crate::apis::urlencode(data_source_name));
     let mut local_var_req_builder =
         local_var_client.request(reqwest::Method::POST, local_var_uri_str.as_str());
 
-    local_var_req_builder =
-        local_var_req_builder.query(&[("dataSourceName", &data_source_name.to_string())]);
+    local_var_req_builder = local_var_req_builder.query(&[(
+        "provider_protocol_version",
+        &provider_protocol_version.to_string(),
+    )]);
     if let Some(ref local_var_user_agent) = configuration.user_agent {
         local_var_req_builder =
             local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
@@ -2011,49 +2286,7 @@ pub async fn proxy_relay(
     if let Some(ref local_var_token) = configuration.bearer_access_token {
         local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
     };
-
-    let local_var_req = local_var_req_builder.build()?;
-    let local_var_resp = local_var_client.execute(local_var_req).await?;
-
-    let local_var_status = local_var_resp.status();
-    let local_var_content = local_var_resp.text().await?;
-
-    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-        Ok(())
-    } else {
-        let local_var_entity: Option<ProxyRelayError> =
-            serde_json::from_str(&local_var_content).ok();
-        let local_var_error = ResponseContent {
-            status: local_var_status,
-            content: local_var_content,
-            entity: local_var_entity,
-        };
-        Err(Error::ResponseError(local_var_error))
-    }
-}
-
-/// Retrieve query suggestions for a given datasource type
-pub async fn suggest_query(
-    configuration: &configuration::Configuration,
-    datasource_type: crate::models::DataSourceType,
-) -> Result<Vec<String>, Error<SuggestQueryError>> {
-    let local_var_client = &configuration.client;
-
-    let local_var_uri_str = format!(
-        "{}/api/queries/{datasource_type}/suggestions",
-        configuration.base_path,
-        datasource_type = serde_json::to_string(&datasource_type)?
-    );
-    let mut local_var_req_builder =
-        local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
-
-    if let Some(ref local_var_user_agent) = configuration.user_agent {
-        local_var_req_builder =
-            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
-    }
-    if let Some(ref local_var_token) = configuration.bearer_access_token {
-        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
-    };
+    local_var_req_builder = local_var_req_builder.json(&body);
 
     let local_var_req = local_var_req_builder.build()?;
     let local_var_resp = local_var_client.execute(local_var_req).await?;
@@ -2064,7 +2297,7 @@ pub async fn suggest_query(
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
         serde_json::from_str(&local_var_content).map_err(Error::from)
     } else {
-        let local_var_entity: Option<SuggestQueryError> =
+        let local_var_entity: Option<ProxyRelayError> =
             serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent {
             status: local_var_status,
@@ -2078,11 +2311,16 @@ pub async fn suggest_query(
 /// Create a new template
 pub async fn template_create(
     configuration: &configuration::Configuration,
+    workspace_id: &str,
     new_template: crate::models::NewTemplate,
 ) -> Result<crate::models::Template, Error<TemplateCreateError>> {
     let local_var_client = &configuration.client;
 
-    let local_var_uri_str = format!("{}/api/templates", configuration.base_path);
+    let local_var_uri_str = format!(
+        "{}/api/workspaces/{workspace_id}/templates",
+        configuration.base_path,
+        workspace_id = crate::apis::urlencode(workspace_id)
+    );
     let mut local_var_req_builder =
         local_var_client.request(reqwest::Method::POST, local_var_uri_str.as_str());
 
@@ -2147,87 +2385,6 @@ pub async fn template_delete(
         Ok(())
     } else {
         let local_var_entity: Option<TemplateDeleteError> =
-            serde_json::from_str(&local_var_content).ok();
-        let local_var_error = ResponseContent {
-            status: local_var_status,
-            content: local_var_content,
-            entity: local_var_entity,
-        };
-        Err(Error::ResponseError(local_var_error))
-    }
-}
-
-pub async fn template_example_expand(
-    configuration: &configuration::Configuration,
-    template_id: &str,
-    body: Option<serde_json::Value>,
-) -> Result<crate::models::Notebook, Error<TemplateExampleExpandError>> {
-    let local_var_client = &configuration.client;
-
-    let local_var_uri_str = format!(
-        "{}/api/templates/examples/{templateId}/expand",
-        configuration.base_path,
-        templateId = crate::apis::urlencode(template_id)
-    );
-    let mut local_var_req_builder =
-        local_var_client.request(reqwest::Method::POST, local_var_uri_str.as_str());
-
-    if let Some(ref local_var_user_agent) = configuration.user_agent {
-        local_var_req_builder =
-            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
-    }
-    if let Some(ref local_var_token) = configuration.bearer_access_token {
-        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
-    };
-    local_var_req_builder = local_var_req_builder.json(&body);
-
-    let local_var_req = local_var_req_builder.build()?;
-    let local_var_resp = local_var_client.execute(local_var_req).await?;
-
-    let local_var_status = local_var_resp.status();
-    let local_var_content = local_var_resp.text().await?;
-
-    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-        serde_json::from_str(&local_var_content).map_err(Error::from)
-    } else {
-        let local_var_entity: Option<TemplateExampleExpandError> =
-            serde_json::from_str(&local_var_content).ok();
-        let local_var_error = ResponseContent {
-            status: local_var_status,
-            content: local_var_content,
-            entity: local_var_entity,
-        };
-        Err(Error::ResponseError(local_var_error))
-    }
-}
-
-pub async fn template_example_list(
-    configuration: &configuration::Configuration,
-) -> Result<Vec<crate::models::Template>, Error<TemplateExampleListError>> {
-    let local_var_client = &configuration.client;
-
-    let local_var_uri_str = format!("{}/api/templates/examples", configuration.base_path);
-    let mut local_var_req_builder =
-        local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
-
-    if let Some(ref local_var_user_agent) = configuration.user_agent {
-        local_var_req_builder =
-            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
-    }
-    if let Some(ref local_var_token) = configuration.bearer_access_token {
-        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
-    };
-
-    let local_var_req = local_var_req_builder.build()?;
-    let local_var_resp = local_var_client.execute(local_var_req).await?;
-
-    let local_var_status = local_var_resp.status();
-    let local_var_content = local_var_resp.text().await?;
-
-    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-        serde_json::from_str(&local_var_content).map_err(Error::from)
-    } else {
-        let local_var_entity: Option<TemplateExampleListError> =
             serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent {
             status: local_var_status,
@@ -2328,12 +2485,17 @@ pub async fn template_get(
 /// List the templates that have been uploaded
 pub async fn template_list(
     configuration: &configuration::Configuration,
+    workspace_id: &str,
     sort_by: Option<&str>,
     sort_direction: Option<&str>,
 ) -> Result<Vec<crate::models::TemplateSummary>, Error<TemplateListError>> {
     let local_var_client = &configuration.client;
 
-    let local_var_uri_str = format!("{}/api/templates", configuration.base_path);
+    let local_var_uri_str = format!(
+        "{}/api/workspaces/{workspace_id}/templates",
+        configuration.base_path,
+        workspace_id = crate::apis::urlencode(workspace_id)
+    );
     let mut local_var_req_builder =
         local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
 
@@ -2822,11 +2984,16 @@ pub async fn token_list(
 /// Create a new trigger
 pub async fn trigger_create(
     configuration: &configuration::Configuration,
+    workspace_id: &str,
     new_trigger: crate::models::NewTrigger,
 ) -> Result<crate::models::Trigger, Error<TriggerCreateError>> {
     let local_var_client = &configuration.client;
 
-    let local_var_uri_str = format!("{}/api/triggers", configuration.base_path);
+    let local_var_uri_str = format!(
+        "{}/api/workspaces/{workspace_id}/triggers",
+        configuration.base_path,
+        workspace_id = crate::apis::urlencode(workspace_id)
+    );
     let mut local_var_req_builder =
         local_var_client.request(reqwest::Method::POST, local_var_uri_str.as_str());
 
@@ -2989,10 +3156,15 @@ pub async fn trigger_invoke(
 
 pub async fn trigger_list(
     configuration: &configuration::Configuration,
+    workspace_id: &str,
 ) -> Result<Vec<crate::models::Trigger>, Error<TriggerListError>> {
     let local_var_client = &configuration.client;
 
-    let local_var_uri_str = format!("{}/api/triggers", configuration.base_path);
+    let local_var_uri_str = format!(
+        "{}/api/workspaces/{workspace_id}/triggers",
+        configuration.base_path,
+        workspace_id = crate::apis::urlencode(workspace_id)
+    );
     let mut local_var_req_builder =
         local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
 
@@ -3024,14 +3196,484 @@ pub async fn trigger_list(
     }
 }
 
-/// Upload profile image
-pub async fn update_profile_picture(
+/// Create a new workspace
+pub async fn workspace_create(
     configuration: &configuration::Configuration,
-    picture: std::path::PathBuf,
-) -> Result<(), Error<UpdateProfilePictureError>> {
+    new_workspace: crate::models::NewWorkspace,
+) -> Result<crate::models::Workspace, Error<WorkspaceCreateError>> {
     let local_var_client = &configuration.client;
 
-    let local_var_uri_str = format!("{}/api/profile/picture", configuration.base_path);
+    let local_var_uri_str = format!("{}/api/workspaces", configuration.base_path);
+    let mut local_var_req_builder =
+        local_var_client.request(reqwest::Method::POST, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_user_agent) = configuration.user_agent {
+        local_var_req_builder =
+            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+    if let Some(ref local_var_token) = configuration.bearer_access_token {
+        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
+    };
+    local_var_req_builder = local_var_req_builder.json(&new_workspace);
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        serde_json::from_str(&local_var_content).map_err(Error::from)
+    } else {
+        let local_var_entity: Option<WorkspaceCreateError> =
+            serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent {
+            status: local_var_status,
+            content: local_var_content,
+            entity: local_var_entity,
+        };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
+
+/// Get the workspace details
+pub async fn workspace_get(
+    configuration: &configuration::Configuration,
+    workspace_id: &str,
+) -> Result<crate::models::Workspace, Error<WorkspaceGetError>> {
+    let local_var_client = &configuration.client;
+
+    let local_var_uri_str = format!(
+        "{}/api/workspaces/{workspace_id}",
+        configuration.base_path,
+        workspace_id = crate::apis::urlencode(workspace_id)
+    );
+    let mut local_var_req_builder =
+        local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_user_agent) = configuration.user_agent {
+        local_var_req_builder =
+            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+    if let Some(ref local_var_token) = configuration.bearer_access_token {
+        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
+    };
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        serde_json::from_str(&local_var_content).map_err(Error::from)
+    } else {
+        let local_var_entity: Option<WorkspaceGetError> =
+            serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent {
+            status: local_var_status,
+            content: local_var_content,
+            entity: local_var_entity,
+        };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
+
+/// Invite a user to a workspace
+pub async fn workspace_invite(
+    configuration: &configuration::Configuration,
+    workspace_id: &str,
+    new_workspace_invite: crate::models::NewWorkspaceInvite,
+) -> Result<crate::models::WorkspaceInviteResponse, Error<WorkspaceInviteError>> {
+    let local_var_client = &configuration.client;
+
+    let local_var_uri_str = format!(
+        "{}/api/workspaces/{workspace_id}/invitations",
+        configuration.base_path,
+        workspace_id = crate::apis::urlencode(workspace_id)
+    );
+    let mut local_var_req_builder =
+        local_var_client.request(reqwest::Method::POST, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_user_agent) = configuration.user_agent {
+        local_var_req_builder =
+            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+    if let Some(ref local_var_token) = configuration.bearer_access_token {
+        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
+    };
+    local_var_req_builder = local_var_req_builder.json(&new_workspace_invite);
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        serde_json::from_str(&local_var_content).map_err(Error::from)
+    } else {
+        let local_var_entity: Option<WorkspaceInviteError> =
+            serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent {
+            status: local_var_status,
+            content: local_var_content,
+            entity: local_var_entity,
+        };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
+
+/// Accept the workspace invitation
+pub async fn workspace_invite_accept(
+    configuration: &configuration::Configuration,
+    invitation_id: &str,
+    invitation_secret: &str,
+) -> Result<(), Error<WorkspaceInviteAcceptError>> {
+    let local_var_client = &configuration.client;
+
+    let local_var_uri_str = format!(
+        "{}/api/invitation/{invitation_id}/{invitation_secret}/accept",
+        configuration.base_path,
+        invitation_id = crate::apis::urlencode(invitation_id),
+        invitation_secret = crate::apis::urlencode(invitation_secret)
+    );
+    let mut local_var_req_builder =
+        local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_user_agent) = configuration.user_agent {
+        local_var_req_builder =
+            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+    if let Some(ref local_var_token) = configuration.bearer_access_token {
+        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
+    };
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        Ok(())
+    } else {
+        let local_var_entity: Option<WorkspaceInviteAcceptError> =
+            serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent {
+            status: local_var_status,
+            content: local_var_content,
+            entity: local_var_entity,
+        };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
+
+/// Decline the workspace invitation
+pub async fn workspace_invite_decline(
+    configuration: &configuration::Configuration,
+    invitation_id: &str,
+    invitation_secret: &str,
+) -> Result<(), Error<WorkspaceInviteDeclineError>> {
+    let local_var_client = &configuration.client;
+
+    let local_var_uri_str = format!(
+        "{}/api/invitation/{invitation_id}/{invitation_secret}/decline",
+        configuration.base_path,
+        invitation_id = crate::apis::urlencode(invitation_id),
+        invitation_secret = crate::apis::urlencode(invitation_secret)
+    );
+    let mut local_var_req_builder =
+        local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_user_agent) = configuration.user_agent {
+        local_var_req_builder =
+            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+    if let Some(ref local_var_token) = configuration.bearer_access_token {
+        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
+    };
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        Ok(())
+    } else {
+        let local_var_entity: Option<WorkspaceInviteDeclineError> =
+            serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent {
+            status: local_var_status,
+            content: local_var_content,
+            entity: local_var_entity,
+        };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
+
+/// Get a list of pending workspace invitations
+pub async fn workspace_invite_get(
+    configuration: &configuration::Configuration,
+    workspace_id: &str,
+    sort_by: Option<&str>,
+    sort_direction: Option<&str>,
+    page: Option<i32>,
+    limit: Option<i32>,
+) -> Result<Vec<crate::models::WorkspaceInvite>, Error<WorkspaceInviteGetError>> {
+    let local_var_client = &configuration.client;
+
+    let local_var_uri_str = format!(
+        "{}/api/workspaces/{workspace_id}/invitations",
+        configuration.base_path,
+        workspace_id = crate::apis::urlencode(workspace_id)
+    );
+    let mut local_var_req_builder =
+        local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_str) = sort_by {
+        local_var_req_builder =
+            local_var_req_builder.query(&[("sort_by", &local_var_str.to_string())]);
+    }
+    if let Some(ref local_var_str) = sort_direction {
+        local_var_req_builder =
+            local_var_req_builder.query(&[("sort_direction", &local_var_str.to_string())]);
+    }
+    if let Some(ref local_var_str) = page {
+        local_var_req_builder =
+            local_var_req_builder.query(&[("page", &local_var_str.to_string())]);
+    }
+    if let Some(ref local_var_str) = limit {
+        local_var_req_builder =
+            local_var_req_builder.query(&[("limit", &local_var_str.to_string())]);
+    }
+    if let Some(ref local_var_user_agent) = configuration.user_agent {
+        local_var_req_builder =
+            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+    if let Some(ref local_var_token) = configuration.bearer_access_token {
+        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
+    };
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        serde_json::from_str(&local_var_content).map_err(Error::from)
+    } else {
+        let local_var_entity: Option<WorkspaceInviteGetError> =
+            serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent {
+            status: local_var_status,
+            content: local_var_content,
+            entity: local_var_entity,
+        };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
+
+/// Leave a workspace
+pub async fn workspace_leave(
+    configuration: &configuration::Configuration,
+    workspace_id: &str,
+) -> Result<(), Error<WorkspaceLeaveError>> {
+    let local_var_client = &configuration.client;
+
+    let local_var_uri_str = format!(
+        "{}/api/workspaces/{workspace_id}/leave",
+        configuration.base_path,
+        workspace_id = crate::apis::urlencode(workspace_id)
+    );
+    let mut local_var_req_builder =
+        local_var_client.request(reqwest::Method::POST, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_user_agent) = configuration.user_agent {
+        local_var_req_builder =
+            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+    if let Some(ref local_var_token) = configuration.bearer_access_token {
+        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
+    };
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        Ok(())
+    } else {
+        let local_var_entity: Option<WorkspaceLeaveError> =
+            serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent {
+            status: local_var_status,
+            content: local_var_content,
+            entity: local_var_entity,
+        };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
+
+/// List all workspaces authenticated user has access to
+pub async fn workspace_list(
+    configuration: &configuration::Configuration,
+    sort_by: Option<&str>,
+    sort_direction: Option<&str>,
+) -> Result<Vec<crate::models::Workspace>, Error<WorkspaceListError>> {
+    let local_var_client = &configuration.client;
+
+    let local_var_uri_str = format!("{}/api/workspaces", configuration.base_path);
+    let mut local_var_req_builder =
+        local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_str) = sort_by {
+        local_var_req_builder =
+            local_var_req_builder.query(&[("sort_by", &local_var_str.to_string())]);
+    }
+    if let Some(ref local_var_str) = sort_direction {
+        local_var_req_builder =
+            local_var_req_builder.query(&[("sort_direction", &local_var_str.to_string())]);
+    }
+    if let Some(ref local_var_user_agent) = configuration.user_agent {
+        local_var_req_builder =
+            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+    if let Some(ref local_var_token) = configuration.bearer_access_token {
+        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
+    };
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        serde_json::from_str(&local_var_content).map_err(Error::from)
+    } else {
+        let local_var_entity: Option<WorkspaceListError> =
+            serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent {
+            status: local_var_status,
+            content: local_var_content,
+            entity: local_var_entity,
+        };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
+
+/// List all users for a workspace
+pub async fn workspace_list_users(
+    configuration: &configuration::Configuration,
+    workspace_id: &str,
+    sort_by: Option<&str>,
+    sort_direction: Option<&str>,
+) -> Result<Vec<crate::models::User>, Error<WorkspaceListUsersError>> {
+    let local_var_client = &configuration.client;
+
+    let local_var_uri_str = format!(
+        "{}/api/workspaces/{workspace_id}/users",
+        configuration.base_path,
+        workspace_id = crate::apis::urlencode(workspace_id)
+    );
+    let mut local_var_req_builder =
+        local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_str) = sort_by {
+        local_var_req_builder =
+            local_var_req_builder.query(&[("sort_by", &local_var_str.to_string())]);
+    }
+    if let Some(ref local_var_str) = sort_direction {
+        local_var_req_builder =
+            local_var_req_builder.query(&[("sort_direction", &local_var_str.to_string())]);
+    }
+    if let Some(ref local_var_user_agent) = configuration.user_agent {
+        local_var_req_builder =
+            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+    if let Some(ref local_var_token) = configuration.bearer_access_token {
+        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
+    };
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        serde_json::from_str(&local_var_content).map_err(Error::from)
+    } else {
+        let local_var_entity: Option<WorkspaceListUsersError> =
+            serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent {
+            status: local_var_status,
+            content: local_var_content,
+            entity: local_var_entity,
+        };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
+
+/// Retrieve workspace image
+pub async fn workspace_picture_get(
+    configuration: &configuration::Configuration,
+    workspace_id: &str,
+) -> Result<std::path::PathBuf, Error<WorkspacePictureGetError>> {
+    let local_var_client = &configuration.client;
+
+    let local_var_uri_str = format!(
+        "{}/api/workspaces/{workspace_id}/picture",
+        configuration.base_path,
+        workspace_id = crate::apis::urlencode(workspace_id)
+    );
+    let mut local_var_req_builder =
+        local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_user_agent) = configuration.user_agent {
+        local_var_req_builder =
+            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        serde_json::from_str(&local_var_content).map_err(Error::from)
+    } else {
+        let local_var_entity: Option<WorkspacePictureGetError> =
+            serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent {
+            status: local_var_status,
+            content: local_var_content,
+            entity: local_var_entity,
+        };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
+
+/// Upload workspace image
+pub async fn workspace_picture_update(
+    configuration: &configuration::Configuration,
+    workspace_id: &str,
+    picture: std::path::PathBuf,
+) -> Result<(), Error<WorkspacePictureUpdateError>> {
+    let local_var_client = &configuration.client;
+
+    let local_var_uri_str = format!(
+        "{}/api/workspaces/{workspace_id}/picture",
+        configuration.base_path,
+        workspace_id = crate::apis::urlencode(workspace_id)
+    );
     let mut local_var_req_builder =
         local_var_client.request(reqwest::Method::POST, local_var_uri_str.as_str());
 
@@ -3055,7 +3697,97 @@ pub async fn update_profile_picture(
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
         Ok(())
     } else {
-        let local_var_entity: Option<UpdateProfilePictureError> =
+        let local_var_entity: Option<WorkspacePictureUpdateError> =
+            serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent {
+            status: local_var_status,
+            content: local_var_content,
+            entity: local_var_entity,
+        };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
+
+/// Update workspace settings
+pub async fn workspace_update(
+    configuration: &configuration::Configuration,
+    workspace_id: &str,
+    update_workspace: crate::models::UpdateWorkspace,
+) -> Result<(), Error<WorkspaceUpdateError>> {
+    let local_var_client = &configuration.client;
+
+    let local_var_uri_str = format!(
+        "{}/api/workspaces/{workspace_id}",
+        configuration.base_path,
+        workspace_id = crate::apis::urlencode(workspace_id)
+    );
+    let mut local_var_req_builder =
+        local_var_client.request(reqwest::Method::PATCH, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_user_agent) = configuration.user_agent {
+        local_var_req_builder =
+            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+    if let Some(ref local_var_token) = configuration.bearer_access_token {
+        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
+    };
+    local_var_req_builder = local_var_req_builder.json(&update_workspace);
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        Ok(())
+    } else {
+        let local_var_entity: Option<WorkspaceUpdateError> =
+            serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent {
+            status: local_var_status,
+            content: local_var_content,
+            entity: local_var_entity,
+        };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
+
+/// Remove a user from the workspace
+pub async fn workspace_user_remove(
+    configuration: &configuration::Configuration,
+    workspace_id: &str,
+    user_id: &str,
+) -> Result<(), Error<WorkspaceUserRemoveError>> {
+    let local_var_client = &configuration.client;
+
+    let local_var_uri_str = format!(
+        "{}/api/workspaces/{workspace_id}/users/{user_id}",
+        configuration.base_path,
+        workspace_id = crate::apis::urlencode(workspace_id),
+        user_id = crate::apis::urlencode(user_id)
+    );
+    let mut local_var_req_builder =
+        local_var_client.request(reqwest::Method::DELETE, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_user_agent) = configuration.user_agent {
+        local_var_req_builder =
+            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+    if let Some(ref local_var_token) = configuration.bearer_access_token {
+        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
+    };
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        Ok(())
+    } else {
+        let local_var_entity: Option<WorkspaceUserRemoveError> =
             serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent {
             status: local_var_status,

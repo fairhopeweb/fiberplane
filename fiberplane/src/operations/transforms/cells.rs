@@ -82,9 +82,7 @@ pub(crate) fn transform_move_cells_operation(
         Operation::ReplaceText(_)
         | Operation::UpdateNotebookTimeRange(_)
         | Operation::UpdateNotebookTitle(_)
-        | Operation::AddDataSource(_)
-        | Operation::UpdateDataSource(_)
-        | Operation::RemoveDataSource(_)
+        | Operation::SetSelectedDataSource(_)
         | Operation::AddLabel(_)
         | Operation::ReplaceLabel(_)
         | Operation::RemoveLabel(_) => Some(Operation::MoveCells(successor.clone())),
@@ -110,9 +108,7 @@ pub(crate) fn transform_replace_cells_operation(
         }
         Operation::UpdateNotebookTimeRange(_)
         | Operation::UpdateNotebookTitle(_)
-        | Operation::AddDataSource(_)
-        | Operation::UpdateDataSource(_)
-        | Operation::RemoveDataSource(_)
+        | Operation::SetSelectedDataSource(_)
         | Operation::AddLabel(_)
         | Operation::ReplaceLabel(_)
         | Operation::RemoveLabel(_) => Some(Operation::ReplaceCells(successor.clone())),
@@ -588,9 +584,7 @@ pub(crate) fn transform_replace_text_operation(
         Operation::MoveCells(_)
         | Operation::UpdateNotebookTimeRange(_)
         | Operation::UpdateNotebookTitle(_)
-        | Operation::AddDataSource(_)
-        | Operation::UpdateDataSource(_)
-        | Operation::RemoveDataSource(_)
+        | Operation::SetSelectedDataSource(_)
         | Operation::AddLabel(_)
         | Operation::ReplaceLabel(_)
         | Operation::RemoveLabel(_) => Some(Operation::ReplaceText(successor.clone())),

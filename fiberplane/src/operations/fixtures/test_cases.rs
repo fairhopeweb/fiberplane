@@ -4,7 +4,9 @@ use crate::{
     protocols::{
         blobs::Blob,
         core::*,
+        data_sources::SelectedDataSource,
         formatting::{Annotation, AnnotationWithOffset, Formatting},
+        names::Name,
         operations::*,
     },
     text_util::char_count,
@@ -34,9 +36,7 @@ pub static TEST_CASES: Lazy<Vec<OperationTestCase>> = Lazy::new(|| {
     create_update_cell_test_cases(&mut test_cases);
     create_update_notebook_time_range_test_cases(&mut test_cases);
 
-    create_add_data_source_test_cases(&mut test_cases);
-    create_update_data_source_test_cases(&mut test_cases);
-    create_remove_data_source_test_cases(&mut test_cases);
+    create_set_selected_data_source_test_cases(&mut test_cases);
 
     create_add_label_test_case(&mut test_cases);
     create_replace_label_test_case(&mut test_cases);
@@ -1350,61 +1350,54 @@ fn create_update_notebook_time_range_test_cases(test_cases: &mut Vec<OperationTe
     });
 }
 
-fn create_add_data_source_test_cases(test_cases: &mut Vec<OperationTestCase>) {
-    let data_source = NotebookDataSource::Organization(OrganizationDataSource {
-        id: String::from(""),
-        name: String::from("org_data_source_a"),
-        default_data_source: true,
-        data_source: DataSource::Prometheus(PrometheusDataSource {
-            url: String::from("https://localhost:9000"),
-        }),
-    });
+fn create_set_selected_data_source_test_cases(test_cases: &mut Vec<OperationTestCase>) {
+    let selected = SelectedDataSource {
+        name: Name::from_static("test"),
+        proxy_name: None,
+    };
 
+    // Test adding a new value
     test_cases.push(OperationTestCase {
-        operation: Operation::AddDataSource(AddDataSourceOperation {
-            name: String::from("org_data_source_a"),
-            data_source: Box::new(data_source.clone()),
+        operation: Operation::SetSelectedDataSource(SetSelectedDataSourceOperation {
+            provider_type: "test-provider".to_string(),
+            old_selected_data_source: None,
+            new_selected_data_source: Some(selected.clone()),
         }),
-        expected_apply_operation_result: TEST_NOTEBOOK.with_updated_data_sources(|data_sources| {
-            data_sources.insert(String::from("org_data_source_a"), data_source.clone());
-        }),
-    });
-}
-
-fn create_update_data_source_test_cases(test_cases: &mut Vec<OperationTestCase>) {
-    let data_source_name = String::from("inline_data_source_a");
-    let data_source = NotebookDataSource::Organization(OrganizationDataSource {
-        id: String::from(""),
-        name: String::from("org_data_source_a"),
-        default_data_source: true,
-        data_source: DataSource::Prometheus(PrometheusDataSource {
-            url: String::from("https://localhost:9000"),
-        }),
+        expected_apply_operation_result: TEST_NOTEBOOK.with_updated_selected_data_sources(
+            |selected_data_sources| {
+                selected_data_sources.insert("test-provider".to_string(), selected.clone());
+            },
+        ),
     });
 
+    // Test updating an existing value
+    let (provider_type, selected_data_source) =
+        TEST_NOTEBOOK.selected_data_sources.iter().next().unwrap();
     test_cases.push(OperationTestCase {
-        operation: Operation::UpdateDataSource(UpdateDataSourceOperation {
-            name: data_source_name.clone(),
-            data_source: Box::new(data_source.clone()),
-            old_data_source: Box::new(TEST_NOTEBOOK.data_sources[&data_source_name].clone()),
+        operation: Operation::SetSelectedDataSource(SetSelectedDataSourceOperation {
+            provider_type: provider_type.to_string(),
+            old_selected_data_source: Some(selected_data_source.clone()),
+            new_selected_data_source: Some(selected.clone()),
         }),
-        expected_apply_operation_result: TEST_NOTEBOOK.with_updated_data_sources(|data_sources| {
-            data_sources.insert(data_source_name, data_source.clone());
-        }),
+        expected_apply_operation_result: TEST_NOTEBOOK.with_updated_selected_data_sources(
+            |selected_data_sources| {
+                selected_data_sources.insert(provider_type.clone(), selected.clone());
+            },
+        ),
     });
-}
 
-fn create_remove_data_source_test_cases(test_cases: &mut Vec<OperationTestCase>) {
-    let data_source_name = String::from("inline_data_source_a");
-
+    // Test removing an existing value
     test_cases.push(OperationTestCase {
-        operation: Operation::RemoveDataSource(RemoveDataSourceOperation {
-            name: data_source_name.clone(),
-            data_source: Box::new(TEST_NOTEBOOK.data_sources[&data_source_name].clone()),
+        operation: Operation::SetSelectedDataSource(SetSelectedDataSourceOperation {
+            provider_type: provider_type.to_string(),
+            old_selected_data_source: Some(selected_data_source.clone()),
+            new_selected_data_source: None,
         }),
-        expected_apply_operation_result: TEST_NOTEBOOK.with_updated_data_sources(|data_sources| {
-            data_sources.remove(&data_source_name);
-        }),
+        expected_apply_operation_result: TEST_NOTEBOOK.with_updated_selected_data_sources(
+            |selected_data_sources| {
+                selected_data_sources.remove(provider_type);
+            },
+        ),
     });
 }
 
