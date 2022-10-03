@@ -594,8 +594,16 @@ Note that if this is added inside a formatting helper, the outer formatting will
 | Param | Type | Description |
 | --- | --- | --- |
 | content | <code>string</code> \| [<code>FormattedContent</code>](#format.FormattedContent) \| <code>Array.&lt;(string\|format.FormattedContent)&gt;</code> | <p>The content to add</p> |
-| url | <code>string</code> | <p>The URL of the link</p> |
+| url | <code>string</code> \| <code>null</code> | <p>The URL of the link. If none is provided, the content will be used as the link URL</p> |
 
+**Example**  
+```js
+fmt.link('Example', 'https://example.com')
+```
+**Example**  
+```js
+fmt.link('https://example.com')
+```
 <a name="format.FormattedContent+mention"></a>
 
 #### formattedContent.mention(userName, userId) ⇒ [<code>FormattedContent</code>](#format.FormattedContent)
@@ -719,5 +727,13 @@ Note that if this is added inside a formatting helper, the outer formatting will
 | Param | Type | Description |
 | --- | --- | --- |
 | content | <code>string</code> \| [<code>FormattedContent</code>](#format.FormattedContent) \| <code>Array.&lt;(string\|format.FormattedContent)&gt;</code> | <p>The content to add</p> |
-| url | <code>string</code> | <p>The URL of the link</p> |
+| url | <code>string</code> \| <code>null</code> | <p>The URL of the link. If none is provided, the content will be used as the link URL</p> |
 
+**Example**  
+```js
+fmt.link('Example', 'https://example.com')
+```
+**Example**  
+```js
+fmt.link('https://example.com')
+```

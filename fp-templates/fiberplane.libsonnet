@@ -146,10 +146,13 @@ local formattedContent(content='') =
      *
      * @function format.FormattedContent#link
      * @param {string | format.FormattedContent | Array.<(string | format.FormattedContent)>} content - The content to add
-     * @param {string} url - The URL of the link
+     * @param {string | null} url - The URL of the link. If none is provided, the content will be used as the link URL
      * @returns {format.FormattedContent}
+     *
+     * @example fmt.link('Example', 'https://example.com')
+     * @example fmt.link('https://example.com')
      */
-    link(content, url):: addContentAndFormatting(self, content, 'link', url=validate.string('url', url)),
+    link(content, url):: addContentAndFormatting(self, content, 'link', url=if std.type(url) == 'null' then content else validate.string('url', url)),
     /**
      * Add a mention
      *
