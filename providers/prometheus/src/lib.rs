@@ -47,6 +47,12 @@ async fn get_supported_query_types(_config: ProviderConfig) -> Vec<SupportedQuer
                     label: "Specify a time range".to_owned(),
                     required: true,
                 }),
+                QueryField::Checkbox(CheckboxField {
+                    name: LIVE_PARAM_NAME.to_owned(),
+                    label: "Enable live mode".to_owned(),
+                    checked: false,
+                    value: "true".to_owned(),
+                }),
             ],
             mime_types: vec![TIMESERIES_MSGPACK_MIME_TYPE.to_owned()],
         },
