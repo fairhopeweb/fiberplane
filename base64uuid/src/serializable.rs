@@ -17,10 +17,7 @@ impl Serializable for Base64Uuid {
                 CargoDependency {
                     git: Some("ssh://git@github.com/fiberplane/fiberplane-rs.git"),
                     branch: Some("main"),
-                    path: None,
-                    version: None,
-                    features: Default::default(),
-                    default_features: None,
+                    ..Default::default()
                 },
             )]),
             serde_attrs: Default::default(),

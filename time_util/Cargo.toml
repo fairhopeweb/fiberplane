@@ -1,18 +1,18 @@
 [package]
 name = "time_util"
 version = "0.1.0"
-authors = ["Benno van den Berg <benno@fiberplane.com>"]
-edition = "2018"
+authors = { workspace = true }
+edition = { workspace = true }
+rust-version = { workspace = true }
 
 [lib]
 crate-type = ["lib"]
 
 [dependencies]
 anyhow = "1.0.44"
-serde = { version = "1.0", features = ["derive"] }
-time = { version = "0.3", features = ["serde-human-readable"] }
+serde = { workspace = true }
+time = { workspace = true }
 
 [dev-dependencies]
-serde_json = "1.0"
+serde_json = { workspace = true }
 clap = { version = "3.0.5", features = ["derive", "env", "wrap_help"] }
-time = "0.3.5"

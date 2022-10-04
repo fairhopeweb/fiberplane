@@ -1,8 +1,9 @@
 [package]
 name = "sentry-provider"
 version = "0.1.0"
-authors = ["Fiberplane <info@fiberplane.com>"]
-edition = "2018"
+authors = { workspace = true }
+edition = { workspace = true }
+rust-version = { workspace = true }
 
 [lib]
 crate-type = ["cdylib"]
@@ -14,7 +15,7 @@ fp-provider-bindings = { path = "../../fp-provider-protocol/fp-provider-bindings
 futures = "0.3"
 percent-encoding = "2.1"
 rmp-serde = "1"
-serde = { version = "1", features = ["derive"] }
-serde_json = "1"
-time = { version = "0.3.11", features = ["formatting", "parsing"] }
+serde = { workspace = true }
+serde_json = { workspace = true }
+time = { workspace = true, features = ["formatting", "parsing"] }
 url = "2.2.2"

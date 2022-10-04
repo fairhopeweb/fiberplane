@@ -87,7 +87,7 @@ fn main() {
             (
                 "fiberplane",
                 fp_bindgen::types::CargoDependency {
-                    path: Some("../../fiberplane"),
+                    workspace: Some(true),
                     ..Default::default()
                 },
             ),

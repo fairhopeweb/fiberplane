@@ -12,10 +12,26 @@ members = [
     "time_util",
 ]
 
+[workspace.package]
+authors = ["Fiberplane <info@fiberplane.com>"]
+edition = "2021"
+rust-version = "1.64"
+
+[workspace.dependencies]
+bytes = { version = "1.2", features = ["serde"] }
+fiberplane = { path = "fiberplane" }
+fp-bindgen = { version = "2.4" }
+fp-bindgen-support = { version = "2.4" }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+thiserror = "1.0.37"
+time = { version = "0.3.15", features = [ "macros", "serde-human-readable", "serde-well-known" ] }
+tracing = "0.1.36"
+
 [patch.crates-io]
 # fp-bindgen = { path = "../fp-bindgen/fp-bindgen"}
 # fp-bindgen-macros = { path = "../fp-bindgen/macros"}
 # fp-bindgen-support = { path = "../fp-bindgen/fp-bindgen-support"}
-fp-bindgen = { git = "ssh://git@github.com/fiberplane/fp-bindgen.git", branch = "main" }
-fp-bindgen-macros = { git = "ssh://git@github.com/fiberplane/fp-bindgen.git", branch = "main" }
-fp-bindgen-support = { git = "ssh://git@github.com/fiberplane/fp-bindgen.git", branch = "main" }
+# fp-bindgen = { git = "ssh://git@github.com/fiberplane/fp-bindgen.git", branch = "workspace-dependencies" }
+# fp-bindgen-macros = { git = "ssh://git@github.com/fiberplane/fp-bindgen.git", branch = "workspace-dependencies" }
+# fp-bindgen-support = { git = "ssh://git@github.com/fiberplane/fp-bindgen.git", branch = "workspace-dependencies" }

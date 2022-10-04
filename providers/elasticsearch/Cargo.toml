@@ -1,8 +1,9 @@
 [package]
 name = "elasticsearch-provider"
 version = "0.1.0"
-authors = ["Fiberplane <info@fiberplane.com>"]
-edition = "2018"
+authors = { workspace = true }
+edition = { workspace = true }
+rust-version = { workspace = true }
 
 [lib]
 crate-type = ["cdylib"]
@@ -11,7 +12,7 @@ crate-type = ["cdylib"]
 elasticsearch-dsl = "0.1"
 fp-provider-bindings = { path = "../../fp-provider-protocol/fp-provider-bindings" }
 hex = "0.4.3"
-serde = { version = "1", features = ["derive"] }
-serde_json = "1"
-time = { version = "0.3.7", features = ["serde", "serde-well-known"] }
+serde = { workspace = true }
+serde_json = { workspace = true }
+time = { workspace = true }
 url = { version = "2.2.2", features = ["serde"] }

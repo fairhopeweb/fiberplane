@@ -6,8 +6,8 @@ edition = "2018"
 
 [dependencies]
 bytes = { version = "1", features = ["serde"] }
-fiberplane = { path = "../../fiberplane" }
-fp-bindgen-support = { version = "2.3.0", features = ["async", "guest"] }
+fiberplane = { workspace = true }
+fp-bindgen-support = { version = "2.4.0", features = ["async", "guest"] }
 once_cell = { version = "1.4" }
 rmp-serde = { version = "1.0" }
 rmpv = { version = "1.0.0", features = ["with-serde"] }

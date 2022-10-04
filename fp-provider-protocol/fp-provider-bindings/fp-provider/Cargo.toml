@@ -1,11 +1,11 @@
 [package]
 name = "fp-provider"
 version = "2.0.0"
-authors = ["Fiberplane <info@fiberplane.com>"]
-edition = "2018"
+authors = { workspace = true }
+edition = { workspace = true }
 
 [dependencies]
-fiberplane = { git = "ssh://git@github.com/fiberplane/fiberplane-rs.git", branch = "main" }
+fiberplane = { path = "../../fiberplane" }
 fp-bindgen-support = { version = "2.0.1", features = ["async", "guest"] }
 once_cell = { version = "1.4" }
 rmp-serde = { version = "1.0" }
