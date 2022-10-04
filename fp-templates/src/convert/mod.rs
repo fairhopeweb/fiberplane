@@ -248,7 +248,7 @@ fn format_content(content: &str, formatting: Option<Formatting>) -> String {
                 // Add any content before this annotation to the output
                 if offset > index {
                     output.push_str(&escape_string_and_replace_mustache_substitutions(
-                        char_slice(content, index as usize, offset as usize),
+                        char_slice(content, index, offset),
                         ", ",
                     ));
                     output.push_str(", ");
@@ -326,7 +326,7 @@ fn format_content(content: &str, formatting: Option<Formatting>) -> String {
             // If the content ends with plain text, make sure to add it to the output
             if index < char_count(&content) {
                 output.push_str(&escape_string_and_replace_mustache_substitutions(
-                    &char_slice_from(content, index as usize),
+                    &char_slice_from(content, index),
                     ", ",
                 ));
             }

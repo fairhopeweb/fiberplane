@@ -149,7 +149,7 @@ fn apply_replace_cells_operation(
                     "{}{}{}",
                     first_original_cell
                         .text()
-                        .map(|text| char_slice(text, 0, split_offset as usize))
+                        .map(|text| char_slice(text, 0, split_offset))
                         .unwrap_or_default(),
                     new_cell_text,
                     // Be careful, if there is only one new cell, we also need
@@ -161,7 +161,7 @@ fn apply_replace_cells_operation(
                             .map(CellWithIndex::id)
                             .and_then(|cell_id| state.cell(cell_id))
                             .and_then(Cell::text)
-                            .map(|text| char_slice_from(text, merge_offset as usize))
+                            .map(|text| char_slice_from(text, merge_offset))
                             .unwrap_or_default()
                     } else {
                         ""
@@ -272,7 +272,7 @@ fn apply_replace_cells_operation(
                     new_cell_text,
                     last_original_cell
                         .text()
-                        .map(|text| char_slice_from(text, merge_offset as usize))
+                        .map(|text| char_slice_from(text, merge_offset))
                         .unwrap_or_default()
                 );
                 if cell.cell.supports_formatting() {

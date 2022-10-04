@@ -18,15 +18,15 @@ pub fn char_index(text: &str, offset: u32) -> usize {
 
 /// Returns a slice of a string, based on character offsets instead of byte
 /// indices.
-pub fn char_slice(text: &str, start: usize, end: usize) -> &str {
-    let start = char_index(text, start as u32);
-    let end = char_index(text, end as u32);
+pub fn char_slice(text: &str, start: u32, end: u32) -> &str {
+    let start = char_index(text, start);
+    let end = char_index(text, end);
     &text[start..end]
 }
 
 /// Returns a slice of a string, based on character offsets instead of byte
 /// indices.
-pub fn char_slice_from(text: &str, start: usize) -> &str {
-    let start = char_index(text, start as u32);
+pub fn char_slice_from(text: &str, start: u32) -> &str {
+    let start = char_index(text, start);
     &text[start..]
 }

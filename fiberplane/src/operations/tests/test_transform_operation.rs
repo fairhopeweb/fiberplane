@@ -298,8 +298,8 @@ fn report_validation_error(
                         cell.text()
                             .map(|text| char_slice(
                                 text,
-                                op.offset as usize,
-                                (op.offset + char_count(&op.old_text)) as usize
+                                op.offset,
+                                op.offset + char_count(&op.old_text)
                             ))
                             .unwrap_or_default(),
                         &op.old_text,

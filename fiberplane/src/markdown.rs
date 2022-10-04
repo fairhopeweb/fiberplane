@@ -98,13 +98,14 @@ pub fn formatting_from_markdown(text: &str) -> Formatting {
                             || !is_right_flanking_delimiter_run(prev_char, c)
                             || is_punctuation(prev_char);
                         if can_open {
-                            let delimiter_run = char_slice(text, delimiter_start_offset, i);
+                            let delimiter_run =
+                                char_slice(text, delimiter_start_offset as u32, i as u32);
                             open_delimiter_run = Some((delimiter_start_offset, delimiter_run));
                         }
                     }
                 } else if is_right_flanking_delimiter_run(prev_char, c) {
                     if let Some((run_start_offset, run)) = open_delimiter_run {
-                        if run == char_slice(text, delimiter_start_offset, i) {
+                        if run == char_slice(text, delimiter_start_offset as u32, i as u32) {
                             // https://spec.commonmark.org/0.29/#can-close-emphasis
                             let can_close = delimiter_run_char == '*'
                                 || !is_left_flanking_delimiter_run(prev_char, c)

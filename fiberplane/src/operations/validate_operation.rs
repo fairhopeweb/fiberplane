@@ -337,8 +337,8 @@ fn validate_replace_text_operation(
     {
         let current_text_at_offset = char_slice(
             &text,
-            operation.offset as usize,
-            (operation.offset + char_count(&operation.old_text)) as usize,
+            operation.offset,
+            operation.offset + char_count(&operation.old_text),
         );
         if operation.old_text == current_text_at_offset {
             Ok(())
@@ -456,7 +456,7 @@ pub fn get_existing_cell_to_compare(
             None => text_len,
         };
 
-        let split_text = char_slice(text, split_offset as usize, end_offset as usize);
+        let split_text = char_slice(text, split_offset, end_offset);
         let cell_to_compare = if let Some(formatting) = existing_cell.formatting() {
             let split_formatting = formatting
                 .iter()
@@ -492,7 +492,7 @@ pub fn get_existing_cell_to_compare(
     }
 
     if let Some(merge_offset) = merge_offset {
-        let merge_text = char_slice(text, 0, merge_offset as usize);
+        let merge_text = char_slice(text, 0, merge_offset);
         let cell_to_compare = if let Some(formatting) = existing_cell.formatting() {
             let merge_formatting = formatting
                 .iter()
