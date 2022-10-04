@@ -3,6 +3,7 @@ use self::escape_string::escape_string;
 use crate::FIBERPLANE_LIBRARY_PATH;
 use fiberplane::protocols::core::{Cell, HeadingType, ListType, NewNotebook, TimeRange};
 use fiberplane::protocols::formatting::{Annotation, AnnotationWithOffset, Formatting};
+use fiberplane::text_util::{char_count, char_slice, char_slice_from};
 use lazy_static::lazy_static;
 use regex::Regex;
 use std::{collections::BTreeSet, fmt::Write};
@@ -235,7 +236,7 @@ fn format_content(content: &str, formatting: Option<Formatting>) -> String {
     match formatting {
         Some(mut formatting) if !formatting.is_empty() => {
             let mut output = "[".to_string();
-            let mut index: usize = 0;
+            let mut index: u32 = 0;
             // Count the number of starting and ending annotations to handle unmatched start annotations
             let mut start_annotations = 0;
             let mut end_annotations = 0;
@@ -244,11 +245,10 @@ fn format_content(content: &str, formatting: Option<Formatting>) -> String {
 
             // Convert each annotation to a jsonnet helper function
             for AnnotationWithOffset { offset, annotation } in formatting {
-                let offset = offset as usize;
                 // Add any content before this annotation to the output
                 if offset > index {
                     output.push_str(&escape_string_and_replace_mustache_substitutions(
-                        &content[index..offset],
+                        char_slice(content, index as usize, offset as usize),
                         ", ",
                     ));
                     output.push_str(", ");
@@ -303,7 +303,7 @@ fn format_content(content: &str, formatting: Option<Formatting>) -> String {
                         )
                         .expect("Cannot write mention instruction");
                         // Adding + 1 to the mention length to account for the @ sign
-                        index += mention.name.len() + 1;
+                        index += char_count(&mention.name) + 1;
                     }
                     Annotation::Timestamp { timestamp } => {
                         let formatted = timestamp
@@ -311,7 +311,7 @@ fn format_content(content: &str, formatting: Option<Formatting>) -> String {
                             .expect("Invalid timestamp format");
                         write!(output, "fmt.timestamp('{}'), ", formatted)
                             .expect("Cannot write timestamp instruction");
-                        index += formatted.len();
+                        index += char_count(&formatted);
                     }
                     Annotation::Label(label) => {
                         let args = match label.value.is_empty() {
@@ -319,14 +319,14 @@ fn format_content(content: &str, formatting: Option<Formatting>) -> String {
                             false => format!("'{}', '{}'", label.key, label.value),
                         };
                         output.push_str(&format!("fmt.label({}), ", args));
-                        index += label.to_string().len();
+                        index += char_count(&label.to_string())
                     }
                 }
             }
             // If the content ends with plain text, make sure to add it to the output
-            if index < content.len() {
+            if index < char_count(&content) {
                 output.push_str(&escape_string_and_replace_mustache_substitutions(
-                    &content[index..],
+                    &char_slice_from(content, index as usize),
                     ", ",
                 ));
             }

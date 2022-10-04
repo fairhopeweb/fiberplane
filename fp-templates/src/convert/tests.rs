@@ -165,3 +165,32 @@ fn print_divider_cell() {
     );
     assert_eq!(writer.to_string(), "c.divider(),\n");
 }
+
+#[test]
+fn print_cell_handles_unicode() {
+    let mut writer = CodeWriter::new();
+    let cell = Cell::Text(TextCell {
+        content: "👀 I'm a text cell with unicode 🦀".to_owned(),
+        ..Default::default()
+    });
+    print_cell(&mut writer, cell);
+    assert_eq!(
+        writer.to_string(),
+        "c.text(\"👀 I'm a text cell with unicode 🦀\"),\n"
+    );
+}
+
+#[test]
+fn print_cell_handles_formatted_unicode() {
+    let mut writer = CodeWriter::new();
+    let cell = Cell::Text(TextCell {
+        content: "👀".to_owned(),
+        formatting: Some(vec![
+            AnnotationWithOffset::new(0, Annotation::StartHighlight),
+            AnnotationWithOffset::new(1, Annotation::EndHighlight),
+        ]),
+        ..Default::default()
+    });
+    print_cell(&mut writer, cell);
+    assert_eq!(writer.to_string(), "c.text([fmt.highlight(['👀'])]),\n");
+}
