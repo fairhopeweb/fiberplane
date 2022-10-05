@@ -89,14 +89,15 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**workspace_invite**](docs/DefaultApi.md#workspace_invite) | **POST** /api/workspaces/{workspace_id}/invitations | 
 *DefaultApi* | [**workspace_invite_accept**](docs/DefaultApi.md#workspace_invite_accept) | **GET** /api/invitation/{invitation_id}/{invitation_secret}/accept | 
 *DefaultApi* | [**workspace_invite_decline**](docs/DefaultApi.md#workspace_invite_decline) | **GET** /api/invitation/{invitation_id}/{invitation_secret}/decline | 
+*DefaultApi* | [**workspace_invite_delete**](docs/DefaultApi.md#workspace_invite_delete) | **DELETE** /api/invitation/{invitation_id} | 
 *DefaultApi* | [**workspace_invite_get**](docs/DefaultApi.md#workspace_invite_get) | **GET** /api/workspaces/{workspace_id}/invitations | 
 *DefaultApi* | [**workspace_leave**](docs/DefaultApi.md#workspace_leave) | **POST** /api/workspaces/{workspace_id}/leave | 
 *DefaultApi* | [**workspace_list**](docs/DefaultApi.md#workspace_list) | **GET** /api/workspaces | 
-*DefaultApi* | [**workspace_list_users**](docs/DefaultApi.md#workspace_list_users) | **GET** /api/workspaces/{workspace_id}/users | 
 *DefaultApi* | [**workspace_picture_get**](docs/DefaultApi.md#workspace_picture_get) | **GET** /api/workspaces/{workspace_id}/picture | 
 *DefaultApi* | [**workspace_picture_update**](docs/DefaultApi.md#workspace_picture_update) | **POST** /api/workspaces/{workspace_id}/picture | 
 *DefaultApi* | [**workspace_update**](docs/DefaultApi.md#workspace_update) | **PATCH** /api/workspaces/{workspace_id} | 
 *DefaultApi* | [**workspace_user_remove**](docs/DefaultApi.md#workspace_user_remove) | **DELETE** /api/workspaces/{workspace_id}/users/{user_id} | 
+*DefaultApi* | [**workspace_users_list**](docs/DefaultApi.md#workspace_users_list) | **GET** /api/workspaces/{workspace_id}/users | 
 
 
 ## Documentation For Models

@@ -468,6 +468,13 @@ pub enum WorkspaceInviteDeclineError {
     UnknownValue(serde_json::Value),
 }
 
+/// struct for typed errors of method `workspace_invite_delete`
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum WorkspaceInviteDeleteError {
+    UnknownValue(serde_json::Value),
+}
+
 /// struct for typed errors of method `workspace_invite_get`
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
@@ -486,13 +493,6 @@ pub enum WorkspaceLeaveError {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum WorkspaceListError {
-    UnknownValue(serde_json::Value),
-}
-
-/// struct for typed errors of method `workspace_list_users`
-#[derive(Debug, Clone, Serialize, Deserialize)]
-#[serde(untagged)]
-pub enum WorkspaceListUsersError {
     UnknownValue(serde_json::Value),
 }
 
@@ -521,6 +521,13 @@ pub enum WorkspaceUpdateError {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(untagged)]
 pub enum WorkspaceUserRemoveError {
+    UnknownValue(serde_json::Value),
+}
+
+/// struct for typed errors of method `workspace_users_list`
+#[derive(Debug, Clone, Serialize, Deserialize)]
+#[serde(untagged)]
+pub enum WorkspaceUsersListError {
     UnknownValue(serde_json::Value),
 }
 
@@ -3414,6 +3421,49 @@ pub async fn workspace_invite_decline(
     }
 }
 
+/// Delete a pending workspace invitation
+pub async fn workspace_invite_delete(
+    configuration: &configuration::Configuration,
+    invitation_id: &str,
+) -> Result<(), Error<WorkspaceInviteDeleteError>> {
+    let local_var_client = &configuration.client;
+
+    let local_var_uri_str = format!(
+        "{}/api/invitation/{invitation_id}",
+        configuration.base_path,
+        invitation_id = crate::apis::urlencode(invitation_id)
+    );
+    let mut local_var_req_builder =
+        local_var_client.request(reqwest::Method::DELETE, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_user_agent) = configuration.user_agent {
+        local_var_req_builder =
+            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+    if let Some(ref local_var_token) = configuration.bearer_access_token {
+        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
+    };
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        Ok(())
+    } else {
+        let local_var_entity: Option<WorkspaceInviteDeleteError> =
+            serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent {
+            status: local_var_status,
+            content: local_var_content,
+            entity: local_var_entity,
+        };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
+
 /// Get a list of pending workspace invitations
 pub async fn workspace_invite_get(
     configuration: &configuration::Configuration,
@@ -3568,59 +3618,6 @@ pub async fn workspace_list(
     }
 }
 
-/// List all users for a workspace
-pub async fn workspace_list_users(
-    configuration: &configuration::Configuration,
-    workspace_id: &str,
-    sort_by: Option<&str>,
-    sort_direction: Option<&str>,
-) -> Result<Vec<crate::models::User>, Error<WorkspaceListUsersError>> {
-    let local_var_client = &configuration.client;
-
-    let local_var_uri_str = format!(
-        "{}/api/workspaces/{workspace_id}/users",
-        configuration.base_path,
-        workspace_id = crate::apis::urlencode(workspace_id)
-    );
-    let mut local_var_req_builder =
-        local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
-
-    if let Some(ref local_var_str) = sort_by {
-        local_var_req_builder =
-            local_var_req_builder.query(&[("sort_by", &local_var_str.to_string())]);
-    }
-    if let Some(ref local_var_str) = sort_direction {
-        local_var_req_builder =
-            local_var_req_builder.query(&[("sort_direction", &local_var_str.to_string())]);
-    }
-    if let Some(ref local_var_user_agent) = configuration.user_agent {
-        local_var_req_builder =
-            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
-    }
-    if let Some(ref local_var_token) = configuration.bearer_access_token {
-        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
-    };
-
-    let local_var_req = local_var_req_builder.build()?;
-    let local_var_resp = local_var_client.execute(local_var_req).await?;
-
-    let local_var_status = local_var_resp.status();
-    let local_var_content = local_var_resp.text().await?;
-
-    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-        serde_json::from_str(&local_var_content).map_err(Error::from)
-    } else {
-        let local_var_entity: Option<WorkspaceListUsersError> =
-            serde_json::from_str(&local_var_content).ok();
-        let local_var_error = ResponseContent {
-            status: local_var_status,
-            content: local_var_content,
-            entity: local_var_entity,
-        };
-        Err(Error::ResponseError(local_var_error))
-    }
-}
-
 /// Retrieve workspace image
 pub async fn workspace_picture_get(
     configuration: &configuration::Configuration,
@@ -3713,7 +3710,7 @@ pub async fn workspace_update(
     configuration: &configuration::Configuration,
     workspace_id: &str,
     update_workspace: crate::models::UpdateWorkspace,
-) -> Result<(), Error<WorkspaceUpdateError>> {
+) -> Result<crate::models::Workspace, Error<WorkspaceUpdateError>> {
     let local_var_client = &configuration.client;
 
     let local_var_uri_str = format!(
@@ -3740,7 +3737,7 @@ pub async fn workspace_update(
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-        Ok(())
+        serde_json::from_str(&local_var_content).map_err(Error::from)
     } else {
         let local_var_entity: Option<WorkspaceUpdateError> =
             serde_json::from_str(&local_var_content).ok();
@@ -3788,6 +3785,59 @@ pub async fn workspace_user_remove(
         Ok(())
     } else {
         let local_var_entity: Option<WorkspaceUserRemoveError> =
+            serde_json::from_str(&local_var_content).ok();
+        let local_var_error = ResponseContent {
+            status: local_var_status,
+            content: local_var_content,
+            entity: local_var_entity,
+        };
+        Err(Error::ResponseError(local_var_error))
+    }
+}
+
+/// List all users for a workspace
+pub async fn workspace_users_list(
+    configuration: &configuration::Configuration,
+    workspace_id: &str,
+    sort_by: Option<&str>,
+    sort_direction: Option<&str>,
+) -> Result<Vec<crate::models::User>, Error<WorkspaceUsersListError>> {
+    let local_var_client = &configuration.client;
+
+    let local_var_uri_str = format!(
+        "{}/api/workspaces/{workspace_id}/users",
+        configuration.base_path,
+        workspace_id = crate::apis::urlencode(workspace_id)
+    );
+    let mut local_var_req_builder =
+        local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
+
+    if let Some(ref local_var_str) = sort_by {
+        local_var_req_builder =
+            local_var_req_builder.query(&[("sort_by", &local_var_str.to_string())]);
+    }
+    if let Some(ref local_var_str) = sort_direction {
+        local_var_req_builder =
+            local_var_req_builder.query(&[("sort_direction", &local_var_str.to_string())]);
+    }
+    if let Some(ref local_var_user_agent) = configuration.user_agent {
+        local_var_req_builder =
+            local_var_req_builder.header(reqwest::header::USER_AGENT, local_var_user_agent.clone());
+    }
+    if let Some(ref local_var_token) = configuration.bearer_access_token {
+        local_var_req_builder = local_var_req_builder.bearer_auth(local_var_token.to_owned());
+    };
+
+    let local_var_req = local_var_req_builder.build()?;
+    let local_var_resp = local_var_client.execute(local_var_req).await?;
+
+    let local_var_status = local_var_resp.status();
+    let local_var_content = local_var_resp.text().await?;
+
+    if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+        serde_json::from_str(&local_var_content).map_err(Error::from)
+    } else {
+        let local_var_entity: Option<WorkspaceUsersListError> =
             serde_json::from_str(&local_var_content).ok();
         let local_var_error = ResponseContent {
             status: local_var_status,

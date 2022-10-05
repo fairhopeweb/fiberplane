@@ -69,14 +69,15 @@ Method | HTTP request | Description
 [**workspace_invite**](DefaultApi.md#workspace_invite) | **POST** /api/workspaces/{workspace_id}/invitations | 
 [**workspace_invite_accept**](DefaultApi.md#workspace_invite_accept) | **GET** /api/invitation/{invitation_id}/{invitation_secret}/accept | 
 [**workspace_invite_decline**](DefaultApi.md#workspace_invite_decline) | **GET** /api/invitation/{invitation_id}/{invitation_secret}/decline | 
+[**workspace_invite_delete**](DefaultApi.md#workspace_invite_delete) | **DELETE** /api/invitation/{invitation_id} | 
 [**workspace_invite_get**](DefaultApi.md#workspace_invite_get) | **GET** /api/workspaces/{workspace_id}/invitations | 
 [**workspace_leave**](DefaultApi.md#workspace_leave) | **POST** /api/workspaces/{workspace_id}/leave | 
 [**workspace_list**](DefaultApi.md#workspace_list) | **GET** /api/workspaces | 
-[**workspace_list_users**](DefaultApi.md#workspace_list_users) | **GET** /api/workspaces/{workspace_id}/users | 
 [**workspace_picture_get**](DefaultApi.md#workspace_picture_get) | **GET** /api/workspaces/{workspace_id}/picture | 
 [**workspace_picture_update**](DefaultApi.md#workspace_picture_update) | **POST** /api/workspaces/{workspace_id}/picture | 
 [**workspace_update**](DefaultApi.md#workspace_update) | **PATCH** /api/workspaces/{workspace_id} | 
 [**workspace_user_remove**](DefaultApi.md#workspace_user_remove) | **DELETE** /api/workspaces/{workspace_id}/users/{user_id} | 
+[**workspace_users_list**](DefaultApi.md#workspace_users_list) | **GET** /api/workspaces/{workspace_id}/users | 
 
 
 
@@ -2040,6 +2041,36 @@ Name | Type | Description  | Required | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 
+## workspace_invite_delete
+
+> workspace_invite_delete(invitation_id)
+
+
+Delete a pending workspace invitation
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**invitation_id** | **String** | ID of the invitation for which an action should be executed for | [required] |
+
+### Return type
+
+ (empty response body)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: Not defined
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
 ## workspace_invite_get
 
 > Vec<crate::models::WorkspaceInvite> workspace_invite_get(workspace_id, sort_by, sort_direction, page, limit)
@@ -2135,38 +2166,6 @@ Name | Type | Description  | Required | Notes
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
 
-## workspace_list_users
-
-> Vec<crate::models::User> workspace_list_users(workspace_id, sort_by, sort_direction)
-
-
-List all users for a workspace
-
-### Parameters
-
-
-Name | Type | Description  | Required | Notes
-------------- | ------------- | ------------- | ------------- | -------------
-**workspace_id** | **String** | The workspace ID | [required] |
-**sort_by** | Option<**String**> | Sort the resulting list by the following field (defaults to id) |  |
-**sort_direction** | Option<**String**> | Sort the resulting list in the following direction (defaults to ascending) |  |
-
-### Return type
-
-[**Vec<crate::models::User>**](user.md)
-
-### Authorization
-
-[userToken](../README.md#userToken)
-
-### HTTP request headers
-
-- **Content-Type**: Not defined
-- **Accept**: application/json
-
-[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
-
-
 ## workspace_picture_get
 
 > std::path::PathBuf workspace_picture_get(workspace_id)
@@ -2230,7 +2229,7 @@ Name | Type | Description  | Required | Notes
 
 ## workspace_update
 
-> workspace_update(workspace_id, update_workspace)
+> crate::models::Workspace workspace_update(workspace_id, update_workspace)
 
 
 Update workspace settings
@@ -2245,7 +2244,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
- (empty response body)
+[**crate::models::Workspace**](workspace.md)
 
 ### Authorization
 
@@ -2254,7 +2253,7 @@ Name | Type | Description  | Required | Notes
 ### HTTP request headers
 
 - **Content-Type**: application/json
-- **Accept**: Not defined
+- **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
@@ -2286,6 +2285,38 @@ Name | Type | Description  | Required | Notes
 
 - **Content-Type**: Not defined
 - **Accept**: Not defined
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## workspace_users_list
+
+> Vec<crate::models::User> workspace_users_list(workspace_id, sort_by, sort_direction)
+
+
+List all users for a workspace
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**workspace_id** | **String** | The workspace ID | [required] |
+**sort_by** | Option<**String**> | Sort the resulting list by the following field (defaults to id) |  |
+**sort_direction** | Option<**String**> | Sort the resulting list in the following direction (defaults to ascending) |  |
+
+### Return type
+
+[**Vec<crate::models::User>**](user.md)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
