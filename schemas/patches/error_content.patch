@@ -1,0 +1,24 @@
+From: Evan Schwartz <evan@fiberplane.com>
+Date: Thu Oct 06 2022 11:56:37 GMT+0200
+Subject: [PATCH] Display error content
+
+By default, only the error status code is displayed. This patch adds The
+error message to the display output.
+
+---
+diff --git a/fp-api-client/src/apis/mod.rs b/fp-api-client/src/apis/mod.rs
+index 26cf8cf..e99b47d 100644
+--- a/fp-api-client/src/apis/mod.rs
++++ b/fp-api-client/src/apis/mod.rs
+@@ -22,7 +22,10 @@ impl<T> fmt::Display for Error<T> {
+             Error::Reqwest(e) => ("reqwest", e.to_string()),
+             Error::Serde(e) => ("serde", e.to_string()),
+             Error::Io(e) => ("IO", e.to_string()),
+-            Error::ResponseError(e) => ("response", format!("status code {}", e.status)),
++            Error::ResponseError(e) => (
++                "response",
++                format!("status code: {} {}", e.status.as_u16(), e.content),
++            ),
+         };
+         write!(f, "error in {}: {}", module, e)
+     }
