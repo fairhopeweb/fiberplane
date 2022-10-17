@@ -1804,6 +1804,16 @@ components:
         url:
           type: string
           format: url
+    workspace_user_update:
+      type: object
+      properties:
+        role:
+          type: string
+          description: New role that the user should receive
+          enum:
+            - write
+            - read
+            - admin
   parameters:
     sortDirection:
       in: query
@@ -3060,6 +3070,23 @@ paths:
     parameters:
       - $ref: "#/components/parameters/workspace_id"
       - $ref: "#/components/parameters/user_id"
+    patch:
+      operationId: workspace_user_update
+      description: Update the user within a workspace
+      requestBody:
+        description: Workspace user update payload
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/workspace_user_update"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/user"
     delete:
       operationId: workspace_user_remove
       description: "Remove a user from the workspace"

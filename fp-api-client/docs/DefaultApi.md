@@ -77,6 +77,7 @@ Method | HTTP request | Description
 [**workspace_picture_update**](DefaultApi.md#workspace_picture_update) | **POST** /api/workspaces/{workspace_id}/picture | 
 [**workspace_update**](DefaultApi.md#workspace_update) | **PATCH** /api/workspaces/{workspace_id} | 
 [**workspace_user_remove**](DefaultApi.md#workspace_user_remove) | **DELETE** /api/workspaces/{workspace_id}/users/{user_id} | 
+[**workspace_user_update**](DefaultApi.md#workspace_user_update) | **PATCH** /api/workspaces/{workspace_id}/users/{user_id} | 
 [**workspace_users_list**](DefaultApi.md#workspace_users_list) | **GET** /api/workspaces/{workspace_id}/users | 
 
 
@@ -2285,6 +2286,38 @@ Name | Type | Description  | Required | Notes
 
 - **Content-Type**: Not defined
 - **Accept**: Not defined
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## workspace_user_update
+
+> crate::models::User workspace_user_update(workspace_id, user_id, workspace_user_update)
+
+
+Update the user within a workspace
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**workspace_id** | **String** | The workspace ID | [required] |
+**user_id** | **String** | User ID | [required] |
+**workspace_user_update** | [**WorkspaceUserUpdate**](WorkspaceUserUpdate.md) | Workspace user update payload | [required] |
+
+### Return type
+
+[**crate::models::User**](user.md)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 

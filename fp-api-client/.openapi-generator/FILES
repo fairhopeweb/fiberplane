@@ -122,6 +122,7 @@ docs/UserSummary.md
 docs/Workspace.md
 docs/WorkspaceInvite.md
 docs/WorkspaceInviteResponse.md
+docs/WorkspaceUserUpdate.md
 git_push.sh
 src/apis/configuration.rs
 src/apis/default_api.rs
@@ -246,3 +247,4 @@ src/models/user_summary.rs
 src/models/workspace.rs
 src/models/workspace_invite.rs
 src/models/workspace_invite_response.rs
+src/models/workspace_user_update.rs

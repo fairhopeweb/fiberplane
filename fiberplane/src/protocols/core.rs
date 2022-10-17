@@ -1431,6 +1431,30 @@ pub struct UpdateWorkspace {
     pub default_data_sources: Option<SelectedDataSources>,
 }
 
+/// Payload to update a workspace members' role
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
+#[serde(rename_all = "snake_case")]
+pub struct UpdateWorkspaceMember {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub role: Option<AuthzRoles>,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
+#[fp(
+    rust_plugin_module = "fiberplane::protocols::core",
+    rust_wasmer_runtime_module = "fiberplane::protocols::core"
+)]
+#[serde(rename_all = "snake_case")]
+pub enum AuthzRoles {
+    Read,
+    Write,
+    Admin,
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

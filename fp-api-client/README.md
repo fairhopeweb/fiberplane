@@ -97,6 +97,7 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**workspace_picture_update**](docs/DefaultApi.md#workspace_picture_update) | **POST** /api/workspaces/{workspace_id}/picture | 
 *DefaultApi* | [**workspace_update**](docs/DefaultApi.md#workspace_update) | **PATCH** /api/workspaces/{workspace_id} | 
 *DefaultApi* | [**workspace_user_remove**](docs/DefaultApi.md#workspace_user_remove) | **DELETE** /api/workspaces/{workspace_id}/users/{user_id} | 
+*DefaultApi* | [**workspace_user_update**](docs/DefaultApi.md#workspace_user_update) | **PATCH** /api/workspaces/{workspace_id}/users/{user_id} | 
 *DefaultApi* | [**workspace_users_list**](docs/DefaultApi.md#workspace_users_list) | **GET** /api/workspaces/{workspace_id}/users | 
 
 
@@ -220,6 +221,7 @@ Class | Method | HTTP request | Description
  - [Workspace](docs/Workspace.md)
  - [WorkspaceInvite](docs/WorkspaceInvite.md)
  - [WorkspaceInviteResponse](docs/WorkspaceInviteResponse.md)
+ - [WorkspaceUserUpdate](docs/WorkspaceUserUpdate.md)
 
 
 To get access to the crate's generated documentation, use:

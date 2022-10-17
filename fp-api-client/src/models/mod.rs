@@ -234,3 +234,5 @@ pub mod workspace_invite;
 pub use self::workspace_invite::WorkspaceInvite;
 pub mod workspace_invite_response;
 pub use self::workspace_invite_response::WorkspaceInviteResponse;
+pub mod workspace_user_update;
+pub use self::workspace_user_update::WorkspaceUserUpdate;
