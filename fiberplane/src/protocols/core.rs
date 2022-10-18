@@ -6,6 +6,7 @@ use crate::markdown::formatting_from_markdown;
 use crate::query_data::{has_query_data, set_query_field, unset_query_field};
 use crate::text_util::char_count;
 use base64uuid::Base64Uuid;
+use clap::ArgEnum;
 use fp_bindgen::prelude::Serializable;
 use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
@@ -1443,7 +1444,7 @@ pub struct UpdateWorkspaceMember {
     pub role: Option<AuthzRoles>,
 }
 
-#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq, ArgEnum, Serialize, Serializable)]
 #[fp(
     rust_plugin_module = "fiberplane::protocols::core",
     rust_wasmer_runtime_module = "fiberplane::protocols::core"
