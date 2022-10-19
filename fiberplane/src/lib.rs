@@ -1,4 +1,3 @@
-pub mod markdown;
 pub mod operations;
 pub mod protocols;
 pub mod query_data;

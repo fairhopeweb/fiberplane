@@ -1,5 +1,5 @@
 use crate::protocols::comments::{Thread, ThreadItem, UserSummary};
-use crate::protocols::core::LabelValidationError;
+use crate::protocols::labels::LabelValidationError;
 use crate::protocols::operations::Operation;
 use base64uuid::Base64Uuid;
 use fp_bindgen::prelude::*;

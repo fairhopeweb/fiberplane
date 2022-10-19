@@ -82,7 +82,7 @@ impl Name {
         // Check the first and last characters
         let first = name.chars().next().unwrap();
         let last = name.chars().last().unwrap();
-        if !first.is_alphanumeric() || !last.is_alphanumeric() {
+        if !first.is_ascii_alphanumeric() || !last.is_ascii_alphanumeric() {
             return Err(InvalidName::NonAlphanumericStartOrEnd);
         }
 

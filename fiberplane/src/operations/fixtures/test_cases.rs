@@ -5,7 +5,7 @@ use crate::{
         blobs::Blob,
         core::*,
         data_sources::SelectedDataSource,
-        formatting::{Annotation, AnnotationWithOffset, Formatting},
+        formatting::{translate, Annotation, AnnotationWithOffset, Formatting},
         names::Name,
         operations::*,
     },
@@ -1455,4 +1455,20 @@ fn create_remove_label_test_case(test_cases: &mut Vec<OperationTestCase>) {
             labels.retain(|label| label.key != target_key);
         }),
     });
+}
+
+impl Cell {
+    #[must_use]
+    fn with_appended_rich_text(&self, text: &str, formatting: &[AnnotationWithOffset]) -> Self {
+        let existing_text = self.text().unwrap_or_default();
+        let existing_text_len = char_count(existing_text);
+        self.with_rich_text(
+            &format!("{}{}", existing_text, text),
+            [
+                self.formatting().cloned().unwrap_or_default(),
+                translate(formatting, existing_text_len as i64),
+            ]
+            .concat(),
+        )
+    }
 }
