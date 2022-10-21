@@ -65,6 +65,7 @@ Method | HTTP request | Description
 [**trigger_invoke**](DefaultApi.md#trigger_invoke) | **POST** /api/triggers/{triggerId}/{secretKey} | 
 [**trigger_list**](DefaultApi.md#trigger_list) | **GET** /api/workspaces/{workspace_id}/triggers | 
 [**workspace_create**](DefaultApi.md#workspace_create) | **POST** /api/workspaces | 
+[**workspace_delete**](DefaultApi.md#workspace_delete) | **DELETE** /api/workspaces/{workspace_id} | 
 [**workspace_get**](DefaultApi.md#workspace_get) | **GET** /api/workspaces/{workspace_id} | 
 [**workspace_invite**](DefaultApi.md#workspace_invite) | **POST** /api/workspaces/{workspace_id}/invitations | 
 [**workspace_invite_accept**](DefaultApi.md#workspace_invite_accept) | **GET** /api/invitation/{invitation_id}/{invitation_secret}/accept | 
@@ -1915,6 +1916,36 @@ Name | Type | Description  | Required | Notes
 
 - **Content-Type**: application/json
 - **Accept**: application/json
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## workspace_delete
+
+> workspace_delete(workspace_id)
+
+
+Delete workspace
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**workspace_id** | **String** | The workspace ID | [required] |
+
+### Return type
+
+ (empty response body)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: Not defined
+- **Accept**: Not defined
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 

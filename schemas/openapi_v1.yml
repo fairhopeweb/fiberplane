@@ -2978,6 +2978,12 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/workspace"
+    delete:
+      operationId: workspace_delete
+      description: Delete workspace
+      responses:
+        "200":
+          description: OK
   /api/workspaces/{workspace_id}/invitations:
     parameters:
       - $ref: "#/components/parameters/workspace_id"

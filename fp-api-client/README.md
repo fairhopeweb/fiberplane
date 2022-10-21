@@ -85,6 +85,7 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**trigger_invoke**](docs/DefaultApi.md#trigger_invoke) | **POST** /api/triggers/{triggerId}/{secretKey} | 
 *DefaultApi* | [**trigger_list**](docs/DefaultApi.md#trigger_list) | **GET** /api/workspaces/{workspace_id}/triggers | 
 *DefaultApi* | [**workspace_create**](docs/DefaultApi.md#workspace_create) | **POST** /api/workspaces | 
+*DefaultApi* | [**workspace_delete**](docs/DefaultApi.md#workspace_delete) | **DELETE** /api/workspaces/{workspace_id} | 
 *DefaultApi* | [**workspace_get**](docs/DefaultApi.md#workspace_get) | **GET** /api/workspaces/{workspace_id} | 
 *DefaultApi* | [**workspace_invite**](docs/DefaultApi.md#workspace_invite) | **POST** /api/workspaces/{workspace_id}/invitations | 
 *DefaultApi* | [**workspace_invite_accept**](docs/DefaultApi.md#workspace_invite_accept) | **GET** /api/invitation/{invitation_id}/{invitation_secret}/accept | 
