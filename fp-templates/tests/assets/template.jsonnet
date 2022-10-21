@@ -28,6 +28,8 @@ let b = "c";'),
       ]),
     ]),
     c.image(url='http://example.com/image.png'),
+    c.prometheus(content='http_requests', title='sample title'),
+    c.prometheus(),
   ])
   .addLabel('key1')
   .addLabel('key2', 'value2')

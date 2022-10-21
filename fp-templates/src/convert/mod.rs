@@ -197,12 +197,16 @@ fn print_cell(writer: &mut CodeWriter, cell: Cell) {
             args.push(("content", format_content(&cell.content, cell.formatting)));
             ("text", cell.read_only)
         }
+        Cell::Provider(cell) => {
+            args.push(("title", escape_string(&cell.title)));
+            args.push(("intent", escape_string(&cell.intent)));
+            if let Some(query_data) = cell.query_data {
+                args.push(("queryData", escape_string(&query_data)));
+            }
+            ("provider", cell.read_only)
+        }
         // Ignored cell types:
-        Cell::Discussion(_)
-        | Cell::Graph(_)
-        | Cell::Log(_)
-        | Cell::Provider(_)
-        | Cell::Table(_) => return,
+        Cell::Discussion(_) | Cell::Graph(_) | Cell::Log(_) | Cell::Table(_) => return,
     };
 
     // Only print the read only property if it's true

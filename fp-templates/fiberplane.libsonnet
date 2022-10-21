@@ -598,15 +598,35 @@ local cell = {
       li('unordered', content, startNumber, level, readOnly),
   },
 
+  local provider = function(intent='', title='', queryData=null, readOnly=null) {
+    type: 'provider',
+    output: [],
+    title: validate.string('title', title),
+    intent: validate.string('intent', intent),
+    queryData: validate.nullOr.string('queryData', queryData),
+    readOnly: validate.nullOr.boolean('readOnly', readOnly),
+  },
+
+  /**
+    * Create a provider cell
+    *
+    * @function cell.provider
+    * @param {string} intent - The intent of the new provider cell
+    * @param {string} title - Title for the new provider cell
+    * @param {string} queryData - Query data that the provider will understand
+    * @param {boolean} readOnly=false - Whether the cell is locked
+   */
+  provider:: provider,
+
   /**
    * Create a Prometheus query cell
    *
    * @function cell.prometheus
-   * @param {string} content='' - Cell text content
+   * @param {string} content='' - Prometheus query
    * @param {boolean} readOnly=false - Whether the cell is locked
    * @returns {cell.Cell}
    */
-  prometheus(content='', readOnly=null):: base('prometheus', validate.string('content', content), readOnly),
+  prometheus(content='', readOnly=null, title=''):: provider('prometheus,timeseries', title, if validate.string('content', content) == '' then null else 'application/x-www-form-urlencoded,query=' + content, readOnly),
 
   /**
    * Create an Elasticsearch query cell

@@ -1,6 +1,6 @@
 use fiberplane::protocols::core::{
     Cell, CheckboxCell, CodeCell, HeadingCell, HeadingType, ImageCell, Label, ListItemCell,
-    ListType, LokiCell, NewNotebook, NewTimeRange, RelativeTimeRange, TextCell,
+    ListType, LokiCell, NewNotebook, NewTimeRange, ProviderCell, RelativeTimeRange, TextCell,
 };
 use fiberplane::protocols::data_sources::SelectedDataSource;
 use fiberplane::protocols::formatting::{Annotation, AnnotationWithOffset};
@@ -157,7 +157,29 @@ let b = \"c\";"
                 preview: None,
                 progress: None,
                 read_only: None,
-            })
+            }),
+            Cell::Provider(ProviderCell {
+                id: "15".to_string(),
+                intent: "prometheus,timeseries".to_string(),
+                query_data: Some(
+                    "application/x-www-form-urlencoded,query=http_requests".to_string()
+                ),
+                response: None,
+                output: None,
+                title: "sample title".to_string(),
+                formatting: None,
+                read_only: None,
+            }),
+            Cell::Provider(ProviderCell {
+                id: "16".to_string(),
+                intent: "prometheus,timeseries".to_string(),
+                query_data: None,
+                response: None,
+                output: None,
+                title: "".to_string(),
+                formatting: None,
+                read_only: None,
+            }),
         ],
         labels: vec![
             Label {

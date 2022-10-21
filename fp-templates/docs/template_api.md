@@ -191,6 +191,7 @@ notebook.addCells([
     * [.checkbox(checked, content, level, readOnly)](#cell.checkbox) ⇒ [<code>Cell</code>](#cell.Cell)
     * [.code(checked, content, syntax, readOnly)](#cell.code) ⇒ [<code>Cell</code>](#cell.Cell)
     * [.divider(readOnly)](#cell.divider) ⇒ [<code>Cell</code>](#cell.Cell)
+    * [.provider(intent, title, queryData, readOnly)](#cell.provider)
     * [.prometheus(content, readOnly)](#cell.prometheus) ⇒ [<code>Cell</code>](#cell.Cell)
     * [.elasticsearch(content, readOnly)](#cell.elasticsearch) ⇒ [<code>Cell</code>](#cell.Cell)
     * [.loki(content, readOnly)](#cell.loki) ⇒ [<code>Cell</code>](#cell.Cell)
@@ -383,6 +384,20 @@ notebook.addCells([
 | --- | --- | --- | --- |
 | readOnly | <code>boolean</code> | <code>false</code> | <p>Whether the cell is locked</p> |
 
+<a name="cell.provider"></a>
+
+### cell.provider(intent, title, queryData, readOnly)
+<p>Create a provider cell</p>
+
+**Kind**: static method of [<code>cell</code>](#cell)  
+
+| Param | Type | Default | Description |
+| --- | --- | --- | --- |
+| intent | <code>string</code> |  | <p>The intent of the new provider cell</p> |
+| title | <code>string</code> |  | <p>Title for the new provider cell</p> |
+| queryData | <code>string</code> |  | <p>Query data that the provider will understand</p> |
+| readOnly | <code>boolean</code> | <code>false</code> | <p>Whether the cell is locked</p> |
+
 <a name="cell.prometheus"></a>
 
 ### cell.prometheus(content, readOnly) ⇒ [<code>Cell</code>](#cell.Cell)
@@ -392,7 +407,7 @@ notebook.addCells([
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
-| content | <code>string</code> | <code>&quot;&#x27;&#x27;&quot;</code> | <p>Cell text content</p> |
+| content | <code>string</code> | <code>&quot;&#x27;&#x27;&quot;</code> | <p>Prometheus query</p> |
 | readOnly | <code>boolean</code> | <code>false</code> | <p>Whether the cell is locked</p> |
 
 <a name="cell.elasticsearch"></a>
