@@ -5,7 +5,6 @@ use super::formatting::Formatting;
 pub use super::labels::Label;
 use crate::query_data::{has_query_data, set_query_field, unset_query_field};
 use base64uuid::Base64Uuid;
-use clap::ArgEnum;
 use fp_bindgen::prelude::Serializable;
 use serde::{Deserialize, Serialize};
 use std::collections::{BTreeMap, HashMap};
@@ -1264,7 +1263,8 @@ pub struct UpdateWorkspaceMember {
     pub role: Option<AuthzRoles>,
 }
 
-#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq, ArgEnum, Serialize, Serializable)]
+#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
+#[cfg_attr(feature = "clap", derive(clap::ValueEnum))]
 #[fp(
     rust_plugin_module = "fiberplane::protocols::core",
     rust_wasmer_runtime_module = "fiberplane::protocols::core"

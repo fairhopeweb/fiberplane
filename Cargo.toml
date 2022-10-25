@@ -18,7 +18,7 @@ edition = "2021"
 rust-version = "1.64"
 
 [workspace.dependencies]
-bytes = { version = "1.2", features = ["serde"] }
+bytes = { version = "1", features = ["serde"] }
 fiberplane = { path = "fiberplane" }
 fp-bindgen = { version = "2.4" }
 fp-bindgen-support = { version = "2.4" }
