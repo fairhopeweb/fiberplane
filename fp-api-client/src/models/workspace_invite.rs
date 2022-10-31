@@ -16,6 +16,8 @@ pub struct WorkspaceInvite {
     pub sender: Option<String>,
     #[serde(rename = "receiver", skip_serializing_if = "Option::is_none")]
     pub receiver: Option<String>,
+    #[serde(rename = "role", skip_serializing_if = "Option::is_none")]
+    pub role: Option<Role>,
     #[serde(rename = "createdAt", skip_serializing_if = "Option::is_none")]
     pub created_at: Option<String>,
     #[serde(rename = "expiresAt", skip_serializing_if = "Option::is_none")]
@@ -28,8 +30,20 @@ impl WorkspaceInvite {
             id,
             sender: None,
             receiver: None,
+            role: None,
             created_at: None,
             expires_at: None,
         }
     }
+}
+
+///
+#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
+pub enum Role {
+    #[serde(rename = "read")]
+    Read,
+    #[serde(rename = "write")]
+    Write,
+    #[serde(rename = "admin")]
+    Admin,
 }

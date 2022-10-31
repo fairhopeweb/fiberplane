@@ -1755,9 +1755,16 @@ components:
       type: object
       required:
         - email
+        - role
       properties:
         email:
           type: string
+        role:
+          type: string
+          enum:
+            - read
+            - write
+            - admin
     newWorkspace:
       type: object
       required:
@@ -1780,6 +1787,12 @@ components:
           format: base64uuid
         receiver:
           type: string
+        role:
+          type: string
+          enum:
+            - read
+            - write
+            - admin
         createdAt:
           type: string
           format: date-time

@@ -1209,6 +1209,8 @@ pub enum WorkspaceType {
 #[serde(rename_all = "camelCase")]
 pub struct NewWorkspaceInvitation {
     pub email: String,
+    #[serde(default)]
+    pub role: AuthzRoles,
 }
 
 /// Response received from create a new workspace endpoint.
@@ -1274,4 +1276,10 @@ pub enum AuthzRoles {
     Read,
     Write,
     Admin,
+}
+
+impl Default for AuthzRoles {
+    fn default() -> Self {
+        Self::Write
+    }
 }
