@@ -3058,24 +3058,22 @@ paths:
     parameters:
       - $ref: "#/components/parameters/invitation_id"
       - $ref: "#/components/parameters/invitation_secret"
-    get:
+    post:
       operationId: workspace_invite_accept
       description: "Accept the workspace invitation"
       responses:
         "200":
           description: OK
-      deprecated: true # This route will be replaced by POST as soon as Studio implemented it
   /api/invitation/{invitation_id}/{invitation_secret}/decline:
     parameters:
       - $ref: "#/components/parameters/invitation_id"
       - $ref: "#/components/parameters/invitation_secret"
-    get:
+    post:
       operationId: workspace_invite_decline
       description: "Decline the workspace invitation"
       responses:
         "200":
           description: OK
-      deprecated: true # This route will be replaced by POST as soon as Studio implemented it
   /api/workspaces/{workspace_id}/leave:
     parameters:
       - $ref: "#/components/parameters/workspace_id"

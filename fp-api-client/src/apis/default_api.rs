@@ -3403,7 +3403,7 @@ pub async fn workspace_invite_accept(
         invitation_secret = crate::apis::urlencode(invitation_secret)
     );
     let mut local_var_req_builder =
-        local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
+        local_var_client.request(reqwest::Method::POST, local_var_uri_str.as_str());
 
     if let Some(ref local_var_user_agent) = configuration.user_agent {
         local_var_req_builder =
@@ -3448,7 +3448,7 @@ pub async fn workspace_invite_decline(
         invitation_secret = crate::apis::urlencode(invitation_secret)
     );
     let mut local_var_req_builder =
-        local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
+        local_var_client.request(reqwest::Method::POST, local_var_uri_str.as_str());
 
     if let Some(ref local_var_user_agent) = configuration.user_agent {
         local_var_req_builder =
