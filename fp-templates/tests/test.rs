@@ -14,6 +14,7 @@ use pretty_assertions::assert_eq;
 use serde_json::Value;
 use std::collections::{BTreeMap, HashMap};
 use std::{fs, path::PathBuf};
+use time::macros::datetime;
 
 lazy_static! {
     static ref NOTEBOOK: NewNotebook = NewNotebook {
@@ -178,6 +179,17 @@ let b = \"c\";"
                 output: None,
                 title: "".to_string(),
                 formatting: None,
+                read_only: None,
+            }),
+            Cell::Text(TextCell {
+                id: "17".to_string(),
+                content: "Prefix: 2022-10-24T10:42:10.977Z - error triggered".to_string(),
+                formatting: Some(vec![AnnotationWithOffset {
+                    offset: 8,
+                    annotation: Annotation::Timestamp {
+                        timestamp: datetime!(2022-10-24 10:42:10.977 UTC),
+                    },
+                }]),
                 read_only: None,
             }),
         ],
