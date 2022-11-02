@@ -3064,6 +3064,10 @@ paths:
       responses:
         "200":
           description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/workspace"
   /api/invitation/{invitation_id}/{invitation_secret}/decline:
     parameters:
       - $ref: "#/components/parameters/invitation_id"

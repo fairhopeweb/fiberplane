@@ -3393,7 +3393,7 @@ pub async fn workspace_invite_accept(
     configuration: &configuration::Configuration,
     invitation_id: &str,
     invitation_secret: &str,
-) -> Result<(), Error<WorkspaceInviteAcceptError>> {
+) -> Result<crate::models::Workspace, Error<WorkspaceInviteAcceptError>> {
     let local_var_client = &configuration.client;
 
     let local_var_uri_str = format!(
@@ -3420,7 +3420,7 @@ pub async fn workspace_invite_accept(
     let local_var_content = local_var_resp.text().await?;
 
     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
-        Ok(())
+        serde_json::from_str(&local_var_content).map_err(Error::from)
     } else {
         let local_var_entity: Option<WorkspaceInviteAcceptError> =
             serde_json::from_str(&local_var_content).ok();

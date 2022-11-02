@@ -2013,7 +2013,7 @@ Name | Type | Description  | Required | Notes
 
 ## workspace_invite_accept
 
-> workspace_invite_accept(invitation_id, invitation_secret)
+> crate::models::Workspace workspace_invite_accept(invitation_id, invitation_secret)
 
 
 Accept the workspace invitation
@@ -2028,7 +2028,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
- (empty response body)
+[**crate::models::Workspace**](workspace.md)
 
 ### Authorization
 
@@ -2037,7 +2037,7 @@ Name | Type | Description  | Required | Notes
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: Not defined
+- **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 
