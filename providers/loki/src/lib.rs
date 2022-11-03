@@ -172,15 +172,16 @@ async fn check_status(config: Config) -> Result<(), Error> {
 
     {
         let mut path_segments = url.path_segments_mut().map_err(|_| Error::Config {
-            message: "Invalid LOKI URL: cannot-be-a-base".to_string(),
+            message: "Invalid Loki URL: cannot-be-a-base".to_string(),
         })?;
         path_segments
             .push("loki")
             .push("api")
             .push("v1")
-            .push("status")
-            .push("buildinfo");
+            .push("query_range");
     }
+    url.query_pairs_mut()
+        .append_pair("query", "fiberplane_check_status");
 
     let request = HttpRequest {
         body: None,
@@ -191,7 +192,7 @@ async fn check_status(config: Config) -> Result<(), Error> {
 
     let _ = make_http_request(request).await?;
 
-    // At this point we don't care to validate the info LOKI sends back
+    // At this point we don't care to validate the info Loki sends back
     // We just care it responded with 200 OK
     Ok(())
 }
