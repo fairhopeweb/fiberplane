@@ -3397,7 +3397,7 @@ pub async fn workspace_invite_accept(
     let local_var_client = &configuration.client;
 
     let local_var_uri_str = format!(
-        "{}/api/invitation/{invitation_id}/{invitation_secret}/accept",
+        "{}/api/invitations/{invitation_id}/{invitation_secret}/accept",
         configuration.base_path,
         invitation_id = crate::apis::urlencode(invitation_id),
         invitation_secret = crate::apis::urlencode(invitation_secret)
@@ -3442,7 +3442,7 @@ pub async fn workspace_invite_decline(
     let local_var_client = &configuration.client;
 
     let local_var_uri_str = format!(
-        "{}/api/invitation/{invitation_id}/{invitation_secret}/decline",
+        "{}/api/invitations/{invitation_id}/{invitation_secret}/decline",
         configuration.base_path,
         invitation_id = crate::apis::urlencode(invitation_id),
         invitation_secret = crate::apis::urlencode(invitation_secret)
@@ -3486,7 +3486,7 @@ pub async fn workspace_invite_delete(
     let local_var_client = &configuration.client;
 
     let local_var_uri_str = format!(
-        "{}/api/invitation/{invitation_id}",
+        "{}/api/invitations/{invitation_id}",
         configuration.base_path,
         invitation_id = crate::apis::urlencode(invitation_id)
     );

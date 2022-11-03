@@ -3045,7 +3045,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/workspace_invite_response"
-  /api/invitation/{invitation_id}:
+  /api/invitations/{invitation_id}:
     parameters:
       - $ref: "#/components/parameters/invitation_id"
     delete:
@@ -3054,7 +3054,7 @@ paths:
       responses:
         "200":
           description: OK
-  /api/invitation/{invitation_id}/{invitation_secret}/accept:
+  /api/invitations/{invitation_id}/{invitation_secret}/accept:
     parameters:
       - $ref: "#/components/parameters/invitation_id"
       - $ref: "#/components/parameters/invitation_secret"
@@ -3068,7 +3068,7 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/workspace"
-  /api/invitation/{invitation_id}/{invitation_secret}/decline:
+  /api/invitations/{invitation_id}/{invitation_secret}/decline:
     parameters:
       - $ref: "#/components/parameters/invitation_id"
       - $ref: "#/components/parameters/invitation_secret"

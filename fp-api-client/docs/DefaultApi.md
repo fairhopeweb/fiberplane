@@ -68,9 +68,9 @@ Method | HTTP request | Description
 [**workspace_delete**](DefaultApi.md#workspace_delete) | **DELETE** /api/workspaces/{workspace_id} | 
 [**workspace_get**](DefaultApi.md#workspace_get) | **GET** /api/workspaces/{workspace_id} | 
 [**workspace_invite**](DefaultApi.md#workspace_invite) | **POST** /api/workspaces/{workspace_id}/invitations | 
-[**workspace_invite_accept**](DefaultApi.md#workspace_invite_accept) | **POST** /api/invitation/{invitation_id}/{invitation_secret}/accept | 
-[**workspace_invite_decline**](DefaultApi.md#workspace_invite_decline) | **POST** /api/invitation/{invitation_id}/{invitation_secret}/decline | 
-[**workspace_invite_delete**](DefaultApi.md#workspace_invite_delete) | **DELETE** /api/invitation/{invitation_id} | 
+[**workspace_invite_accept**](DefaultApi.md#workspace_invite_accept) | **POST** /api/invitations/{invitation_id}/{invitation_secret}/accept | 
+[**workspace_invite_decline**](DefaultApi.md#workspace_invite_decline) | **POST** /api/invitations/{invitation_id}/{invitation_secret}/decline | 
+[**workspace_invite_delete**](DefaultApi.md#workspace_invite_delete) | **DELETE** /api/invitations/{invitation_id} | 
 [**workspace_invite_get**](DefaultApi.md#workspace_invite_get) | **GET** /api/workspaces/{workspace_id}/invitations | 
 [**workspace_leave**](DefaultApi.md#workspace_leave) | **POST** /api/workspaces/{workspace_id}/leave | 
 [**workspace_list**](DefaultApi.md#workspace_list) | **GET** /api/workspaces | 
