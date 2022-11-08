@@ -9,6 +9,7 @@ rust-version = { workspace = true }
 crate-type = ["cdylib"]
 
 [dependencies]
+base64 = "0.13"
 fp-provider-bindings = { path = "../../fp-provider-protocol/fp-provider-bindings" }
 serde = { workspace = true }
 serde_json = { workspace = true }

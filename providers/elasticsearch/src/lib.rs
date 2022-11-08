@@ -23,12 +23,14 @@ static RESOURCE_FIELD_PREFIXES: &[&str] = &["agent.", "cloud.", "container.", "h
 static RESOURCE_FIELD_EXCEPTIONS: &[&str] = &["container.labels", "host.uptime", "service.state"];
 
 #[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
 struct Config {
     url: Url,
     #[serde(default)]
     timestamp_field_names: Vec<String>,
     #[serde(default)]
     body_field_names: Vec<String>,
+    api_key: Option<String>,
 }
 
 #[derive(Serialize)]
@@ -96,8 +98,10 @@ async fn fetch_logs(query: QueryLogs, config: Config) -> Result<Vec<LogRecord>, 
     path_segments.push("_search");
     drop(path_segments);
 
-    // TODO parse the authentication details from the URL and put them in the headers
     let mut headers = HashMap::new();
+    if let Some(api_key) = config.api_key {
+        headers.insert("Authorization".to_string(), format!("ApiKey {}", api_key));
+    }
     headers.insert("Content-Type".to_string(), "application/json".to_string());
 
     // Lucene Query Syntax: https://www.elastic.co/guide/en/kibana/current/lucene-query.html

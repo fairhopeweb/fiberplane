@@ -1,3 +1,4 @@
+use config::Config;
 use fp_provider_bindings::{
     fp_export_impl, make_http_request, Error, HttpRequest, HttpRequestMethod,
     LegacyLogRecord as LogRecord, LegacyProviderRequest as ProviderRequest,
@@ -5,14 +6,10 @@ use fp_provider_bindings::{
 };
 use serde::Deserialize;
 use std::{collections::HashMap, str::FromStr};
-use url::Url;
+
+mod config;
 
 const CONVERSION_FACTOR: f64 = 1e9;
-
-#[derive(Deserialize)]
-struct Config {
-    url: Url,
-}
 
 #[fp_export_impl(fp_provider_bindings)]
 async fn invoke(request: ProviderRequest, config: ProviderConfig) -> ProviderResponse {
@@ -67,20 +64,14 @@ struct Data {
 }
 
 async fn fetch_logs(query: QueryLogs, config: Config) -> Result<Vec<LogRecord>, Error> {
-    let mut url = config.url;
-
-    {
-        let mut path_segments = url.path_segments_mut().map_err(|_| Error::Config {
-            message: "Invalid LOKI URL".to_string(),
+    let mut url = config
+        .url
+        .join("loki/api/v1/query_range")
+        .map_err(|e| Error::Config {
+            message: format!("Invalid loki URL: {:?}", e),
         })?;
-        path_segments
-            .push("loki")
-            .push("api")
-            .push("v1")
-            .push("query_range");
-    }
 
-    //convert unix epoch in seconds to epoch in nanoseconds
+    // Convert unix epoch in seconds to epoch in nanoseconds
     let from = (query.time_range.from * CONVERSION_FACTOR).to_string();
     let to = (query.time_range.to * CONVERSION_FACTOR).to_string();
 
@@ -96,9 +87,11 @@ async fn fetch_logs(query: QueryLogs, config: Config) -> Result<Vec<LogRecord>, 
             .finish();
     url.set_query(Some(&qstr));
 
+    let headers = config.auth.map(|auth| auth.to_headers());
+
     let request = HttpRequest {
         body: None,
-        headers: None,
+        headers,
         method: HttpRequestMethod::Post,
         url: url.to_string(),
     };
@@ -168,29 +161,22 @@ fn data_mapper(
 }
 
 async fn check_status(config: Config) -> Result<(), Error> {
-    let mut url = config.url;
-
-    {
-        let mut path_segments = url.path_segments_mut().map_err(|_| Error::Config {
-            message: "Invalid Loki URL: cannot-be-a-base".to_string(),
+    let url = config
+        .url
+        .join("loki/api/v1/query_range?query=fiberplane_check_status")
+        .map_err(|e| Error::Config {
+            message: format!("Invalid loki URL: {:?}", e),
         })?;
-        path_segments
-            .push("loki")
-            .push("api")
-            .push("v1")
-            .push("query_range");
-    }
-    url.query_pairs_mut()
-        .append_pair("query", "fiberplane_check_status");
+    let headers = config.auth.map(|auth| auth.to_headers());
 
     let request = HttpRequest {
         body: None,
-        headers: None,
+        headers,
         method: HttpRequestMethod::Get,
         url: url.to_string(),
     };
 
-    let _ = make_http_request(request).await?;
+    make_http_request(request).await?;
 
     // At this point we don't care to validate the info Loki sends back
     // We just care it responded with 200 OK

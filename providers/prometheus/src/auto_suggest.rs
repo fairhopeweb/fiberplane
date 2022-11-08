@@ -1,4 +1,4 @@
-use super::{config::PrometheusConfig, constants::*, prometheus::*};
+use super::{config::Config, constants::*, prometheus::*};
 use fiberplane::protocols::providers::{AutoSuggestRequest, Suggestion};
 use fp_provider_bindings::*;
 
@@ -52,7 +52,7 @@ const PROM_QL_FUNCTIONS: &[&str] = &[
     "stdvar_over_time",
 ];
 
-pub async fn query_suggestions(query_data: Blob, config: PrometheusConfig) -> Result<Blob, Error> {
+pub async fn query_suggestions(query_data: Blob, config: Config) -> Result<Blob, Error> {
     let query = AutoSuggestRequest::from_query_data(&query_data)?.query;
     let identifier = extract_identifier(&query);
 

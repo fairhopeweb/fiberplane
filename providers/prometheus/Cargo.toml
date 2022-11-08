@@ -9,6 +9,7 @@ rust-version = { workspace = true }
 crate-type = ["cdylib"]
 
 [dependencies]
+base64 = "0.13"
 const_format = "0.2"
 fiberplane = { path = "../../fiberplane" }
 form_urlencoded = "1"
@@ -18,4 +19,4 @@ rmpv = { version = "1.0.0", features = ["with-serde"] }
 serde = { workspace = true }
 serde_json = { workspace = true }
 time = { workspace = true, features = ["formatting"] }
-url = "2.2.2"
+url = { version = "2.2.2", features = ["serde"] }

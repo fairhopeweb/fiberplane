@@ -1,11 +1,11 @@
-use super::{config::PrometheusConfig, constants::*, prometheus::*};
+use super::{config::*, constants::*, prometheus::*};
 use fiberplane::{
     protocols::providers::{Metric, FORM_ENCODED_MIME_TYPE},
     text_util::char_count,
 };
 use fp_provider_bindings::*;
 use serde::{Deserialize, Serialize};
-use std::collections::{BTreeMap, HashMap};
+use std::collections::BTreeMap;
 
 /// A single data-point in time, with meta-data about the metric it was taken from.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -16,15 +16,20 @@ pub struct Instant {
     pub metric: Metric,
 }
 
-pub async fn query_instants(query_data: Blob, config: PrometheusConfig) -> Result<Blob, Error> {
+pub async fn query_instants(query_data: Blob, config: Config) -> Result<Blob, Error> {
     if query_data.mime_type != FORM_ENCODED_MIME_TYPE {
         return Err(Error::UnsupportedRequest);
     }
 
-    let mut headers = HashMap::new();
+    let mut headers = config
+        .auth
+        .map(|auth| auth.to_headers())
+        .unwrap_or_default();
     headers.insert("Content-Type".to_owned(), query_data.mime_type);
 
-    let url = format!("{}/api/v1/query", config.url);
+    let url = config.url.join("api/v1/query").map_err(|e| Error::Config {
+        message: format!("Invalid prometheus URL: {:?}", e),
+    })?;
     log(format!(
         "Prometheus provider fetching instant from: {}, {:?}",
         &url, &query_data.data
@@ -34,7 +39,7 @@ pub async fn query_instants(query_data: Blob, config: PrometheusConfig) -> Resul
         body: Some(query_data.data),
         headers: Some(headers),
         method: HttpRequestMethod::Post,
-        url,
+        url: url.to_string(),
     })
     .await?;
 

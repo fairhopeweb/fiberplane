@@ -6,7 +6,7 @@ mod prometheus;
 mod timeseries;
 
 use auto_suggest::query_suggestions;
-use config::PrometheusConfig;
+use config::Config;
 use constants::*;
 use fiberplane::protocols::providers::{
     STATUS_MIME_TYPE, STATUS_QUERY_TYPE, SUGGESTIONS_QUERY_TYPE, TIMESERIES_QUERY_TYPE,
@@ -14,7 +14,6 @@ use fiberplane::protocols::providers::{
 use fp_provider_bindings::*;
 use instants::query_instants;
 use timeseries::{create_graph_cell, query_series};
-use url::Url;
 
 #[fp_export_impl(fp_provider_bindings)]
 async fn get_supported_query_types(_config: ProviderConfig) -> Vec<SupportedQueryType> {
@@ -76,10 +75,9 @@ async fn invoke2(request: ProviderRequest) -> Result<Blob, Error> {
         request.query_type, request.query_data
     ));
 
-    let config: PrometheusConfig =
-        serde_json::from_value(request.config).map_err(|err| Error::Config {
-            message: format!("Error parsing config: {:?}", err),
-        })?;
+    let config: Config = serde_json::from_value(request.config).map_err(|err| Error::Config {
+        message: format!("Error parsing config: {:?}", err),
+    })?;
 
     match request.query_type.as_str() {
         INSTANTS_QUERY_TYPE => query_instants(request.query_data, config).await,
@@ -101,27 +99,20 @@ fn create_cells(query_type: String, _response: Blob) -> Result<Vec<Cell>, Error>
     }
 }
 
-async fn check_status(config: PrometheusConfig) -> Result<Blob, Error> {
-    let mut url = Url::parse(&config.url).map_err(|e| Error::Config {
-        message: format!("Invalid prometheus URL: {:?}", e),
-    })?;
-
-    // Send a fake query to the query endpoint to check if we can connect to the
-    // Prometheus instance. We should get a 200 response even though it won't
-    // return any data.
-    url.path_segments_mut()
-        .map_err(|_| Error::Config {
-            message: "Invalid prometheus URL: cannot-be-a-base".to_string(),
-        })?
-        .push("api")
-        .push("v1")
-        .push("query");
-    url.query_pairs_mut()
-        .append_pair("query", "fiberplane_check_status");
+async fn check_status(config: Config) -> Result<Blob, Error> {
+    // Send a fake query to the query endpoint to check if we can connect to the Prometheus
+    // instance. We should get a 200 response even though it won't return any data.
+    let url = config
+        .url
+        .join("api/v1/query?query=fiberplane_check_status")
+        .map_err(|e| Error::Config {
+            message: format!("Invalid prometheus URL: {:?}", e),
+        })?;
+    let headers = config.auth.map(|auth| auth.to_headers());
 
     make_http_request(HttpRequest {
         body: None,
-        headers: None,
+        headers,
         method: HttpRequestMethod::Get,
         url: url.to_string(),
     })

@@ -1,7 +1,7 @@
-use super::{config::PrometheusConfig, constants::*, prometheus::*};
+use super::{config::Config, constants::*, prometheus::*};
 use fiberplane::protocols::providers::{FORM_ENCODED_MIME_TYPE, TIMESERIES_MIME_TYPE};
 use fp_provider_bindings::*;
-use std::{collections::HashMap, time::SystemTime};
+use std::time::SystemTime;
 use time::{ext::NumericalDuration, format_description::well_known::Rfc3339, OffsetDateTime};
 
 struct SeriesRequest {
@@ -39,7 +39,7 @@ impl StepUnit {
     }
 }
 
-pub async fn query_series(query_data: Blob, config: PrometheusConfig) -> Result<Blob, Error> {
+pub async fn query_series(query_data: Blob, config: Config) -> Result<Blob, Error> {
     let request = parse_metrics_request(query_data)?;
     let step = step_for_range(request.from, request.to);
     let start = to_iso_date(round_to_grid(request.from, step, RoundToGridEdge::Start));
@@ -51,10 +51,18 @@ pub async fn query_series(query_data: Blob, config: PrometheusConfig) -> Result<
     form_data.append_pair("end", &end);
     form_data.append_pair("step", &step.to_string());
 
-    let mut headers = HashMap::new();
+    let mut headers = config
+        .auth
+        .map(|auth| auth.to_headers())
+        .unwrap_or_default();
     headers.insert("Content-Type".to_owned(), FORM_ENCODED_MIME_TYPE.to_owned());
 
-    let url = format!("{}/api/v1/query_range", config.url);
+    let url = config
+        .url
+        .join("api/v1/query_range")
+        .map_err(|e| Error::Config {
+            message: format!("Invalid prometheus URL: {:?}", e),
+        })?;
     log(format!(
         "prometheus provider fetching series from: {}, query: {}",
         &url, &request.query
@@ -64,7 +72,7 @@ pub async fn query_series(query_data: Blob, config: PrometheusConfig) -> Result<
         body: Some(form_data.finish().into()),
         headers: Some(headers),
         method: HttpRequestMethod::Post,
-        url,
+        url: url.to_string(),
     })
     .await?;
 
