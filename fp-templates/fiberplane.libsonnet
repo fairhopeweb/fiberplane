@@ -21,6 +21,54 @@ local validate = {
 local isCell(value) = std.isObject(value) && std.objectHasAll(value, '_class') && value._class == 'CELL';
 local isFormattedContent(value) = std.isObject(value) && std.objectHasAll(value, '_class') && value._class == 'FORMATTED_CONTENT';
 
+local formEncodingReplacements = {
+  ' ': '+',
+  '\b': '%08',
+  '\t': '%09',
+  '\n': '%0A',
+  '\f': '%0C',
+  '\r': '%0D',
+  '!': '%21',
+  '"': '%22',
+  '#': '%23',
+  '$': '%24',
+  ',': '%2C',
+  '^': '%5E',
+  '&': '%26',
+  "'": '%27',
+  '(': '%28',
+  ')': '%29',
+  '+': '%2B',
+  '/': '%2F',
+  ':': '%3A',
+  ';': '%3B',
+  '=': '%3D',
+  '?': '%3F',
+  '@': '%40',
+  '[': '%5B',
+  '\\': '%5C',
+  ']': '%5D',
+  '`': '%60',
+  '{': '%7B',
+  '|': '%7C',
+  '}': '%7D',
+  '~': '%7E',
+  '%': '%25',
+};
+local formEscapeCharacter(character) =
+  if std.objectHas(formEncodingReplacements, character) then
+    formEncodingReplacements[character]
+  else
+    character;
+
+// Helper function to perform form encoding
+local encodeFormComponent(string) =
+  std.foldl(
+    function(result, character) result + formEscapeCharacter(character),
+    std.stringChars(string),
+    ''
+  );
+
 /**
  * @class format.FormattedContent
  * @classdesc A class representing formatted text. Each of the formatting functions can be called as methods to append text with the given formatting.
@@ -626,27 +674,27 @@ local cell = {
    * @param {boolean} readOnly=false - Whether the cell is locked
    * @returns {cell.Cell}
    */
-  prometheus(content='', readOnly=null, title=''):: provider('prometheus,timeseries', title, if validate.string('content', content) == '' then null else 'application/x-www-form-urlencoded,query=' + content, readOnly),
+  prometheus(content='', readOnly=null, title=''):: provider('prometheus,timeseries', title, if validate.string('content', content) == '' then null else 'application/x-www-form-urlencoded,query=' + encodeFormComponent(content), readOnly),
 
   /**
    * Create an Elasticsearch query cell
    *
    * @function cell.elasticsearch
-   * @param {string} content='' - Cell text content
+   * @param {string} content='' - Elasticsearch query
    * @param {boolean} readOnly=false - Whether the cell is locked
    * @returns {cell.Cell}
    */
-  elasticsearch(content='', readOnly=null):: base('elasticsearch', validate.string('content', content), readOnly),
+  elasticsearch(content='', readOnly=null, title=''):: provider('elasticsearch,events', title, if validate.string('content', content) == '' then null else 'application/x-www-form-urlencoded,query=' + encodeFormComponent(content), readOnly),
 
   /**
    * Create a Loki query cell
    *
    * @function cell.loki
-   * @param {string} content='' - Cell text content
+   * @param {string} content='' - Loki query
    * @param {boolean} readOnly=false - Whether the cell is locked
    * @returns {cell.Cell}
    */
-  loki(content='', readOnly=null):: base('loki', validate.string('content', content), readOnly),
+  loki(content='', readOnly=null, title=''):: provider('loki,events', title, if validate.string('content', content) == '' then null else 'application/x-www-form-urlencoded,query=' + encodeFormComponent(content), readOnly),
 
   /**
    * Create a plain text cell

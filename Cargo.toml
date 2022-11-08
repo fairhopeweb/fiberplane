@@ -22,6 +22,7 @@ bytes = { version = "1", features = ["serde"] }
 fiberplane = { path = "fiberplane" }
 fp-bindgen = { version = "2.4" }
 fp-bindgen-support = { version = "2.4" }
+once_cell = { version = "1.8" }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 thiserror = "1.0.37"

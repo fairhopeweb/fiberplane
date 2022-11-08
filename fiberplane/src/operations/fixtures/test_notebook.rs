@@ -1,5 +1,5 @@
 use crate::operations::{Notebook, NotebookVisibility};
-use crate::protocols::formatting::{Annotation, AnnotationWithOffset, Formatting};
+use crate::protocols::formatting::{Annotation, AnnotationWithOffset};
 use crate::protocols::{
     comments::UserSummary, core::*, data_sources::SelectedDataSource, names::Name,
 };
@@ -15,26 +15,24 @@ pub static TEST_NOTEBOOK: Lazy<Notebook> = Lazy::new(|| {
             id: "c1".to_owned(),
             heading_type: HeadingType::H1,
             content: DEFAULT_TITLE.clone(),
-            formatting: Some(Formatting::default()),
-            read_only: None,
+            ..Default::default()
         }),
         Cell::Heading(HeadingCell {
             id: "c2".to_owned(),
             heading_type: HeadingType::H2,
             content: "Locked subtitle".to_owned(),
-            formatting: Some(Formatting::default()),
             read_only: Some(true),
+            ..Default::default()
         }),
         Cell::Text(TextCell {
             id: "c3".to_owned(),
             content: "Some introductory text".to_owned(),
-            formatting: Some(Formatting::default()),
-            read_only: None,
+            ..Default::default()
         }),
-        Cell::Loki(LokiCell {
+        Cell::Text(TextCell {
             id: "c4".to_owned(),
             content: "go_memstats_alloc_bytes".to_owned(),
-            read_only: None,
+            ..Default::default()
         }),
         Cell::Graph(GraphCell {
             id: "c5".to_owned(),
@@ -45,7 +43,6 @@ pub static TEST_NOTEBOOK: Lazy<Notebook> = Lazy::new(|| {
         }),
         Cell::Provider(ProviderCell {
             id: "c6".to_owned(),
-            formatting: Some(Formatting::default()),
             intent: "prometheus,x-instants".to_owned(),
             output: Some(vec![Cell::Table(TableCell {
                 id: "c6/table".to_owned(),
@@ -67,8 +64,8 @@ pub static TEST_NOTEBOOK: Lazy<Notebook> = Lazy::new(|| {
                 "application/x-www-form-urlencoded,query=go_memstats_alloc_bytes".to_owned(),
             ),
             read_only: Some(true),
-            response: None,
             title: "Table".to_owned(),
+            ..Default::default()
         }),
         Cell::Discussion(DiscussionCell {
             id: "c7".to_owned(),
@@ -82,7 +79,7 @@ pub static TEST_NOTEBOOK: Lazy<Notebook> = Lazy::new(|| {
                 Right before our crown jewel: ***a locked, multi-sourced bar graph with a custom \
                 time range***!"
                 .to_owned(),
-            formatting: Some(vec![
+            formatting: vec![
                 AnnotationWithOffset::new(8, Annotation::StartItalics),
                 AnnotationWithOffset::new(18, Annotation::EndItalics),
                 AnnotationWithOffset::new(50, Annotation::StartBold),
@@ -91,15 +88,13 @@ pub static TEST_NOTEBOOK: Lazy<Notebook> = Lazy::new(|| {
                 AnnotationWithOffset::new(95, Annotation::StartItalics),
                 AnnotationWithOffset::new(159, Annotation::EndBold),
                 AnnotationWithOffset::new(159, Annotation::EndItalics),
-            ]),
-            level: None,
+            ],
             list_type: ListType::Unordered,
             read_only: Some(true),
-            start_number: None,
+            ..Default::default()
         }),
         Cell::Provider(ProviderCell {
             id: "c9".to_owned(),
-            formatting: None,
             intent: "prometheus,metrics".to_owned(),
             output: Some(vec![Cell::Graph(GraphCell {
                 id: "c9/graph".to_owned(),
@@ -118,28 +113,23 @@ pub static TEST_NOTEBOOK: Lazy<Notebook> = Lazy::new(|| {
                     .to_owned(),
             ),
             read_only: Some(true),
-            response: None,
             title: "They call me the crown jewel".to_owned(),
+            ..Default::default()
         }),
-        Cell::Elasticsearch(ElasticsearchCell {
+        Cell::Text(TextCell {
             id: "c10".to_owned(),
             content: "kubernetes.labels.app:api".to_owned(),
-            read_only: None,
+            ..Default::default()
         }),
         Cell::Log(LogCell {
             id: "c11".to_owned(),
-            title: "Logs".to_owned(),
-            source_ids: vec!["c10".to_owned()],
-            time_range: Some(LegacyTimeRange {
-                from: 50.0,
-                to: 150.0,
-            }),
+            data_links: vec!["data:text/plain,rather-arbitrary".to_owned()],
             ..Default::default()
         }),
         Cell::Text(TextCell {
             id: "c12".to_owned(),
             content: "italic bold both".to_owned(),
-            formatting: Some(vec![
+            formatting: vec![
                 AnnotationWithOffset {
                     annotation: Annotation::StartItalics,
                     offset: 0,
@@ -172,13 +162,13 @@ pub static TEST_NOTEBOOK: Lazy<Notebook> = Lazy::new(|| {
                     annotation: Annotation::EndBold,
                     offset: 16,
                 },
-            ]),
+            ],
             read_only: None,
         }),
         Cell::Text(TextCell {
             id: "c13".to_owned(),
             content: "🇳🇱 and https://fiberplane.com".to_owned(),
-            formatting: Some(vec![
+            formatting: vec![
                 AnnotationWithOffset {
                     annotation: Annotation::StartLink {
                         url: "https://fiberplane.com".to_owned(),
@@ -189,18 +179,14 @@ pub static TEST_NOTEBOOK: Lazy<Notebook> = Lazy::new(|| {
                     annotation: Annotation::EndLink,
                     offset: 29,
                 },
-            ]),
+            ],
             read_only: None,
         }),
         Cell::Provider(ProviderCell {
             id: "c14".to_owned(),
-            formatting: Some(Vec::new()),
             intent: "sentry;my-data-source,x-error-details".to_owned(),
-            output: None,
             query_data: Some("application/x-www-form-urlencoded,trace_id=123".to_owned()),
-            read_only: None,
-            response: None,
-            title: "".to_owned(),
+            ..Default::default()
         }),
     ];
 

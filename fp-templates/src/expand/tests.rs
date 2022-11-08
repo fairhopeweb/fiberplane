@@ -1,7 +1,7 @@
 use super::*;
 use fiberplane::protocols::core::{Cell, Label, ListItemCell, ListType, TextCell};
 use fiberplane::protocols::formatting::Annotation::Timestamp;
-use fiberplane::protocols::formatting::{Annotation, AnnotationWithOffset, Mention};
+use fiberplane::protocols::formatting::{Annotation, AnnotationWithOffset, Formatting, Mention};
 use serde_json::{json, Map};
 use std::collections::HashMap;
 use std::iter::FromIterator;
@@ -97,46 +97,40 @@ fn expands_nested_lists() {
                 id: "1".to_string(),
                 content: "A".to_string(),
                 list_type: ListType::Ordered,
-                level: None,
-                read_only: None,
                 start_number: Some(1),
-                formatting: None,
+                ..Default::default()
             },
             ListItemCell {
                 id: "2".to_string(),
                 content: "1".to_string(),
                 list_type: ListType::Ordered,
                 level: Some(1),
-                read_only: None,
                 start_number: Some(1),
-                formatting: None,
+                ..Default::default()
             },
             ListItemCell {
                 id: "3".to_string(),
                 content: "2".to_string(),
                 list_type: ListType::Ordered,
                 level: Some(1),
-                read_only: None,
                 start_number: Some(2),
-                formatting: None,
+                ..Default::default()
             },
             ListItemCell {
                 id: "4".to_string(),
                 content: "i".to_string(),
                 list_type: ListType::Ordered,
                 level: Some(2),
-                read_only: None,
                 start_number: Some(1),
-                formatting: None,
+                ..Default::default()
             },
             ListItemCell {
                 id: "5".to_string(),
                 content: "ii".to_string(),
                 list_type: ListType::Ordered,
                 level: Some(2),
-                read_only: None,
                 start_number: Some(2),
-                formatting: None,
+                ..Default::default()
             }
         ]
     );
@@ -370,7 +364,7 @@ fn formatting_basic() {
 
     assert_eq!(cells[0].content, "some bold text");
     assert_eq!(
-        cells[0].formatting.as_ref().unwrap(),
+        &cells[0].formatting,
         &[
             AnnotationWithOffset {
                 annotation: Annotation::StartBold,
@@ -384,7 +378,7 @@ fn formatting_basic() {
     );
     assert_eq!(cells[1].content, "some code");
     assert_eq!(
-        cells[1].formatting.as_ref().unwrap(),
+        &cells[1].formatting,
         &[
             AnnotationWithOffset {
                 annotation: Annotation::StartCode,
@@ -398,7 +392,7 @@ fn formatting_basic() {
     );
     assert_eq!(cells[2].content, "some highlighted text");
     assert_eq!(
-        cells[2].formatting.as_ref().unwrap(),
+        &cells[2].formatting,
         &[
             AnnotationWithOffset {
                 annotation: Annotation::StartHighlight,
@@ -412,7 +406,7 @@ fn formatting_basic() {
     );
     assert_eq!(cells[3].content, "some italicized text");
     assert_eq!(
-        cells[3].formatting.as_ref().unwrap(),
+        &cells[3].formatting,
         &[
             AnnotationWithOffset {
                 annotation: Annotation::StartItalics,
@@ -426,7 +420,7 @@ fn formatting_basic() {
     );
     assert_eq!(cells[4].content, "Fiberplane");
     assert_eq!(
-        cells[4].formatting.as_ref().unwrap(),
+        &cells[4].formatting,
         &[
             AnnotationWithOffset {
                 annotation: Annotation::StartLink {
@@ -442,7 +436,7 @@ fn formatting_basic() {
     );
     assert_eq!(cells[5].content, "some strikethrough text");
     assert_eq!(
-        cells[5].formatting.as_ref().unwrap(),
+        &cells[5].formatting,
         &[
             AnnotationWithOffset {
                 annotation: Annotation::StartStrikethrough,
@@ -456,7 +450,7 @@ fn formatting_basic() {
     );
     assert_eq!(cells[6].content, "some underlined text");
     assert_eq!(
-        cells[6].formatting.as_ref().unwrap(),
+        &cells[6].formatting,
         &[
             AnnotationWithOffset {
                 annotation: Annotation::StartUnderline,
@@ -471,7 +465,7 @@ fn formatting_basic() {
 
     assert_eq!(cells[7].content, "@Bob");
     assert_eq!(
-        cells[7].formatting.as_ref().unwrap(),
+        &cells[7].formatting,
         &[AnnotationWithOffset {
             annotation: Annotation::Mention(Mention {
                 name: "Bob Bobsen".to_owned(),
@@ -483,7 +477,7 @@ fn formatting_basic() {
 
     assert_eq!(cells[8].content, "2020-01-01T00:00:00Z");
     assert_eq!(
-        cells[8].formatting.as_ref().unwrap(),
+        &cells[8].formatting,
         &[AnnotationWithOffset {
             annotation: Timestamp {
                 timestamp: OffsetDateTime::parse("2020-01-01T00:00:00Z", &Rfc3339).unwrap()
@@ -494,7 +488,7 @@ fn formatting_basic() {
 
     assert_eq!(cells[9].content, "foo:bar");
     assert_eq!(
-        cells[9].formatting.as_ref().unwrap(),
+        &cells[9].formatting,
         &[AnnotationWithOffset {
             annotation: Annotation::Label(Label {
                 key: "foo".to_owned(),
@@ -506,7 +500,7 @@ fn formatting_basic() {
 
     assert_eq!(cells[10].content, "foo");
     assert_eq!(
-        cells[10].formatting.as_ref().unwrap(),
+        &cells[10].formatting,
         &[AnnotationWithOffset {
             annotation: Annotation::Label(Label {
                 key: "foo".to_owned(),
@@ -534,7 +528,7 @@ fn formatting_nested() {
             "some normal, some bold, and some bold italicized text"
         );
         assert_eq!(
-            cell.formatting.as_ref().unwrap(),
+            &cell.formatting,
             &[
                 AnnotationWithOffset {
                     annotation: Annotation::StartBold,
@@ -576,7 +570,7 @@ fn formatting_builder() {
             "some normal, some bold, and some italicized text"
         );
         assert_eq!(
-            cell.formatting.as_ref().unwrap(),
+            &cell.formatting,
             &[
                 AnnotationWithOffset {
                     annotation: Annotation::StartBold,
@@ -620,7 +614,7 @@ fn format_list() {
     if let Cell::ListItem(cell) = &notebook.cells[0] {
         assert_eq!(cell.content, "some normal, and some bold");
         assert_eq!(
-            cell.formatting.as_ref().unwrap(),
+            &cell.formatting,
             &[
                 AnnotationWithOffset {
                     annotation: Annotation::StartBold,
@@ -638,7 +632,7 @@ fn format_list() {
     if let Cell::ListItem(cell) = &notebook.cells[1] {
         assert_eq!(cell.content, "bold item");
         assert_eq!(
-            cell.formatting.as_ref().unwrap(),
+            &cell.formatting,
             &[
                 AnnotationWithOffset {
                     annotation: Annotation::StartBold,
@@ -655,7 +649,7 @@ fn format_list() {
     }
     if let Cell::ListItem(cell) = &notebook.cells[2] {
         assert_eq!(cell.content, "normal item");
-        assert_eq!(cell.formatting, None);
+        assert_eq!(cell.formatting, Formatting::default());
     } else {
         panic!("wrong cell type");
     }

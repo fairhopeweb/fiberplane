@@ -19,8 +19,6 @@ pub enum CellType {
     Discussion,
     #[serde(rename = "divider")]
     Divider,
-    #[serde(rename = "elasticsearch")]
-    Elasticsearch,
     #[serde(rename = "graph")]
     Graph,
     #[serde(rename = "heading")]
@@ -31,8 +29,6 @@ pub enum CellType {
     ListItem,
     #[serde(rename = "log")]
     Log,
-    #[serde(rename = "loki")]
-    Loki,
     #[serde(rename = "provider")]
     Provider,
     #[serde(rename = "table")]
@@ -48,13 +44,11 @@ impl ToString for CellType {
             Self::Code => String::from("code"),
             Self::Discussion => String::from("discussion"),
             Self::Divider => String::from("divider"),
-            Self::Elasticsearch => String::from("elasticsearch"),
             Self::Graph => String::from("graph"),
             Self::Heading => String::from("heading"),
             Self::Image => String::from("image"),
             Self::ListItem => String::from("list_item"),
             Self::Log => String::from("log"),
-            Self::Loki => String::from("loki"),
             Self::Provider => String::from("provider"),
             Self::Table => String::from("table"),
             Self::Text => String::from("text"),

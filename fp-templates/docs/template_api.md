@@ -419,7 +419,7 @@ notebook.addCells([
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
-| content | <code>string</code> | <code>&quot;&#x27;&#x27;&quot;</code> | <p>Cell text content</p> |
+| content | <code>string</code> | <code>&quot;&#x27;&#x27;&quot;</code> | <p>Elasticsearch query</p> |
 | readOnly | <code>boolean</code> | <code>false</code> | <p>Whether the cell is locked</p> |
 
 <a name="cell.loki"></a>
@@ -431,7 +431,7 @@ notebook.addCells([
 
 | Param | Type | Default | Description |
 | --- | --- | --- | --- |
-| content | <code>string</code> | <code>&quot;&#x27;&#x27;&quot;</code> | <p>Cell text content</p> |
+| content | <code>string</code> | <code>&quot;&#x27;&#x27;&quot;</code> | <p>Loki query</p> |
 | readOnly | <code>boolean</code> | <code>false</code> | <p>Whether the cell is locked</p> |
 
 <a name="cell.text"></a>

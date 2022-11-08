@@ -51,13 +51,11 @@ components:
         - $ref: "#/components/schemas/codeCell"
         - $ref: "#/components/schemas/discussionCell"
         - $ref: "#/components/schemas/dividerCell"
-        - $ref: "#/components/schemas/elasticsearchCell"
         - $ref: "#/components/schemas/graphCell"
         - $ref: "#/components/schemas/headingCell"
         - $ref: "#/components/schemas/imageCell"
         - $ref: "#/components/schemas/listItemCell"
         - $ref: "#/components/schemas/logCell"
-        - $ref: "#/components/schemas/lokiCell"
         - $ref: "#/components/schemas/providerCell"
         - $ref: "#/components/schemas/tableCell"
         - $ref: "#/components/schemas/textCell"
@@ -68,13 +66,11 @@ components:
           code: "#/components/schemas/codeCell"
           discussion: "#/components/schemas/discussionCell"
           divider: "#/components/schemas/dividerCell"
-          elasticsearch: "#/components/schemas/elasticsearchCell"
           graph: "#/components/schemas/graphCell"
           heading: "#/components/schemas/headingCell"
           image: "#/components/schemas/imageCell"
           list_item: "#/components/schemas/listItemCell"
           log: "#/components/schemas/logCell"
-          loki: "#/components/schemas/lokiCell"
           provider: "#/components/schemas/providerCell"
           table: "#/components/schemas/tableCell"
           text: "#/components/schemas/textCell"
@@ -85,13 +81,11 @@ components:
         - code
         - discussion
         - divider
-        - elasticsearch
         - graph
         - heading
         - image
         - list_item
         - log
-        - loki
         - provider
         - table
         - text
@@ -284,36 +278,6 @@ components:
           type: string
         mimeType:
           type: string
-    elasticsearchCell:
-      type: object
-      required:
-        - type
-        - id
-        - content
-      properties:
-        type:
-          $ref: "#/components/schemas/cellType"
-        id:
-          type: string
-        content:
-          type: string
-        readOnly:
-          type: boolean
-    lokiCell:
-      type: object
-      required:
-        - type
-        - id
-        - content
-      properties:
-        type:
-          $ref: "#/components/schemas/cellType"
-        id:
-          type: string
-        content:
-          type: string
-        readOnly:
-          type: boolean
     tableCell:
       type: object
       required:
@@ -352,25 +316,18 @@ components:
       required:
         - type
         - id
-        - sourceIds
-        - title
+        - dataLinks
       properties:
         type:
           $ref: "#/components/schemas/cellType"
         id:
           type: string
-        readOnly:
-          type: boolean
-        sourceIds:
+        dataLinks:
           type: array
           items:
             type: string
-        title:
-          type: string
-        formatting:
-          $ref: "#/components/schemas/formatting"
-        timeRange:
-          $ref: "#/components/schemas/legacyTimeRange"
+        readOnly:
+          type: boolean
         hideSimilarValues:
           type: boolean
         displayFields:
@@ -383,43 +340,26 @@ components:
             $ref: "#/components/schemas/logRecordIndex"
         visibilityFilter:
           $ref: "#/components/schemas/logCellVisibility"
-        selected_indices:
+        selectedIndices:
           type: array
           items:
             $ref: "#/components/schemas/logRecordIndex"
-        highlighted_indices:
+        highlightedIndices:
           type: array
           items:
             $ref: "#/components/schemas/logRecordIndex"
-        data:
-          type: object
-          additionalProperties:
-            type: array
-            items:
-              $ref: "#/components/schemas/logRecord"
-    legacyTimeRange:
-      type: object
-      required:
-        - from
-        - to
-      properties:
-        from:
-          type: number
-          format: double
-        to:
-          type: number
-          format: double
     logRecordIndex:
       type: object
       required:
-        - key
-        - index
+        - linkIndex
+        - recordIndex
       properties:
-        key:
-          type: string
-        index:
+        linkIndex:
           type: number
-          format: int32
+          format: uint8
+        recordIndex:
+          type: number
+          format: uint32
     textCell:
       type: object
       required:
@@ -1387,31 +1327,6 @@ components:
     createdByUnknown:
       allOf:
         - $ref: "#/components/schemas/empty"
-    logRecord:
-      type: object
-      required:
-        - timestamp
-        - body
-        - attributes
-        - resource
-      properties:
-        timestamp:
-          type: number
-          format: double
-        body:
-          type: string
-        attributes:
-          type: object
-          additionalProperties:
-            type: string
-        resource:
-          type: object
-          additionalProperties:
-            type: string
-        traceId:
-          type: string
-        spanId:
-          type: string
     label:
       type: object
       required:

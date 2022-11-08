@@ -53,15 +53,6 @@ pub enum Cell {
         #[serde(rename = "readOnly", skip_serializing_if = "Option::is_none")]
         read_only: Option<bool>,
     },
-    #[serde(rename = "elasticsearch")]
-    ElasticsearchCell {
-        #[serde(rename = "id")]
-        id: String,
-        #[serde(rename = "content")]
-        content: String,
-        #[serde(rename = "readOnly", skip_serializing_if = "Option::is_none")]
-        read_only: Option<bool>,
-    },
     #[serde(rename = "graph")]
     GraphCell {
         #[serde(rename = "id")]
@@ -128,16 +119,10 @@ pub enum Cell {
     LogCell {
         #[serde(rename = "id")]
         id: String,
+        #[serde(rename = "dataLinks")]
+        data_links: Vec<String>,
         #[serde(rename = "readOnly", skip_serializing_if = "Option::is_none")]
         read_only: Option<bool>,
-        #[serde(rename = "sourceIds")]
-        source_ids: Vec<String>,
-        #[serde(rename = "title")]
-        title: String,
-        #[serde(rename = "formatting", skip_serializing_if = "Option::is_none")]
-        formatting: Option<Vec<crate::models::Annotation>>,
-        #[serde(rename = "timeRange", skip_serializing_if = "Option::is_none")]
-        time_range: Option<Box<crate::models::LegacyTimeRange>>,
         #[serde(rename = "hideSimilarValues", skip_serializing_if = "Option::is_none")]
         hide_similar_values: Option<bool>,
         #[serde(rename = "displayFields", skip_serializing_if = "Option::is_none")]
@@ -146,24 +131,10 @@ pub enum Cell {
         expanded_indices: Option<Vec<crate::models::LogRecordIndex>>,
         #[serde(rename = "visibilityFilter", skip_serializing_if = "Option::is_none")]
         visibility_filter: Option<crate::models::LogCellVisibility>,
-        #[serde(rename = "selected_indices", skip_serializing_if = "Option::is_none")]
+        #[serde(rename = "selectedIndices", skip_serializing_if = "Option::is_none")]
         selected_indices: Option<Vec<crate::models::LogRecordIndex>>,
-        #[serde(
-            rename = "highlighted_indices",
-            skip_serializing_if = "Option::is_none"
-        )]
+        #[serde(rename = "highlightedIndices", skip_serializing_if = "Option::is_none")]
         highlighted_indices: Option<Vec<crate::models::LogRecordIndex>>,
-        #[serde(rename = "data", skip_serializing_if = "Option::is_none")]
-        data: Option<::std::collections::HashMap<String, Vec<crate::models::LogRecord>>>,
-    },
-    #[serde(rename = "loki")]
-    LokiCell {
-        #[serde(rename = "id")]
-        id: String,
-        #[serde(rename = "content")]
-        content: String,
-        #[serde(rename = "readOnly", skip_serializing_if = "Option::is_none")]
-        read_only: Option<bool>,
     },
     #[serde(rename = "provider")]
     ProviderCell {

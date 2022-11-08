@@ -92,6 +92,13 @@ fn main() {
                 },
             ),
             (
+                "once_cell",
+                fp_bindgen::types::CargoDependency {
+                    workspace: Some(true),
+                    ..Default::default()
+                },
+            ),
+            (
                 "rmpv",
                 CargoDependency {
                     version: Some("1.0.0"),

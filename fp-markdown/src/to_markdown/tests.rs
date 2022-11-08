@@ -1,7 +1,7 @@
 use super::*;
 use fiberplane::protocols::core::*;
 use fiberplane::protocols::formatting::Annotation::Timestamp;
-use fiberplane::protocols::formatting::{Annotation, AnnotationWithOffset, Mention};
+use fiberplane::protocols::formatting::{Annotation, AnnotationWithOffset, Formatting, Mention};
 use time::OffsetDateTime;
 
 #[test]
@@ -36,7 +36,7 @@ fn decrements_headings() {
 #[test]
 fn plain_text() {
     let mut converter = NotebookConverter::new();
-    converter.convert_formatted_text("Some text".to_string(), None);
+    converter.convert_formatted_text("Some text".to_string(), Formatting::default());
     assert_eq!(converter.into_markdown(), "Some text");
 }
 
@@ -45,14 +45,14 @@ fn formatted_text() {
     let mut converter = NotebookConverter::new();
     converter.convert_formatted_text(
         "Some bold, italics, strikethrough".to_string(),
-        Some(vec![
+        vec![
             AnnotationWithOffset::new(5, Annotation::StartBold),
             AnnotationWithOffset::new(9, Annotation::EndBold),
             AnnotationWithOffset::new(11, Annotation::StartItalics),
             AnnotationWithOffset::new(18, Annotation::EndItalics),
             AnnotationWithOffset::new(20, Annotation::StartStrikethrough),
             AnnotationWithOffset::new(33, Annotation::EndStrikethrough),
-        ]),
+        ],
     );
     assert_eq!(
         converter.into_markdown(),
@@ -84,13 +84,13 @@ fn mentions() {
     let mut converter = NotebookConverter::new();
     converter.convert_formatted_text(
         "Some @mention".to_string(),
-        Some(vec![AnnotationWithOffset::new(
+        vec![AnnotationWithOffset::new(
             5,
             Annotation::Mention(Mention {
                 name: "mention".to_string(),
                 user_id: "user_id".to_string(),
             }),
-        )]),
+        )],
     );
     assert_eq!(converter.into_markdown(), "Some **@mention**");
 }
@@ -100,12 +100,12 @@ fn timestamps() {
     let mut converter = NotebookConverter::new();
     converter.convert_formatted_text(
         "Some 2020-01-01T00:00:00Z timestamp".to_string(),
-        Some(vec![AnnotationWithOffset::new(
+        vec![AnnotationWithOffset::new(
             5,
             Timestamp {
                 timestamp: OffsetDateTime::parse("2020-01-01T00:00:00Z", &Rfc3339).unwrap(),
             },
-        )]),
+        )],
     );
     assert_eq!(
         converter.into_markdown(),
@@ -118,13 +118,13 @@ fn labels() {
     let mut converter = NotebookConverter::new();
     converter.convert_formatted_text(
         "Some foo:bar".to_string(),
-        Some(vec![AnnotationWithOffset::new(
+        vec![AnnotationWithOffset::new(
             5,
             Annotation::Label(Label {
                 key: "foo".to_string(),
                 value: "bar".to_string(),
             }),
-        )]),
+        )],
     );
     assert_eq!(converter.into_markdown(), "Some **foo:bar**");
 }
@@ -134,7 +134,7 @@ fn links() {
     let mut converter = NotebookConverter::new();
     converter.convert_formatted_text(
         "Some link here".to_string(),
-        Some(vec![
+        vec![
             AnnotationWithOffset::new(
                 5,
                 Annotation::StartLink {
@@ -142,7 +142,7 @@ fn links() {
                 },
             ),
             AnnotationWithOffset::new(9, Annotation::EndLink),
-        ]),
+        ],
     );
     assert_eq!(
         converter.into_markdown(),
@@ -176,10 +176,10 @@ fn inline_code() {
     let mut converter = NotebookConverter::new();
     converter.convert_formatted_text(
         "Some code here".to_string(),
-        Some(vec![
+        vec![
             AnnotationWithOffset::new(5, Annotation::StartCode),
             AnnotationWithOffset::new(9, Annotation::EndCode),
-        ]),
+        ],
     );
     assert_eq!(converter.into_markdown(), "Some `code` here");
 }
@@ -219,7 +219,7 @@ fn unclosed_formatting_annotation() {
     let mut converter = NotebookConverter::new();
     converter.convert_formatted_text(
         "Some bold".to_string(),
-        Some(vec![AnnotationWithOffset::new(5, Annotation::StartBold)]),
+        vec![AnnotationWithOffset::new(5, Annotation::StartBold)],
     );
     assert_eq!(converter.into_markdown(), "Some **bold**");
 }
@@ -229,7 +229,7 @@ fn unclosed_code() {
     let mut converter = NotebookConverter::new();
     converter.convert_formatted_text(
         "Some code".to_string(),
-        Some(vec![AnnotationWithOffset::new(5, Annotation::StartCode)]),
+        vec![AnnotationWithOffset::new(5, Annotation::StartCode)],
     );
     assert_eq!(converter.into_markdown(), "Some `code`");
 }
@@ -239,10 +239,10 @@ fn ignore_start_formatting_annotation_at_content_end() {
     let mut converter = NotebookConverter::new();
     converter.convert_formatted_text(
         "Some text".to_string(),
-        Some(vec![
+        vec![
             AnnotationWithOffset::new(9, Annotation::StartBold),
             AnnotationWithOffset::new(10, Annotation::EndBold),
-        ]),
+        ],
     );
     assert_eq!(converter.into_markdown(), "Some text");
 }
@@ -252,7 +252,7 @@ fn mixed_formatting() {
     let mut converter = NotebookConverter::new();
     converter.convert_formatted_text(
         "A link with code and bold here".to_string(),
-        Some(vec![
+        vec![
             AnnotationWithOffset::new(
                 2,
                 Annotation::StartLink {
@@ -264,7 +264,7 @@ fn mixed_formatting() {
             AnnotationWithOffset::new(21, Annotation::StartBold),
             AnnotationWithOffset::new(25, Annotation::EndBold),
             AnnotationWithOffset::new(25, Annotation::EndLink),
-        ]),
+        ],
     );
 
     assert_eq!(
@@ -278,12 +278,12 @@ fn overlapping_formatting() {
     let mut converter = NotebookConverter::new();
     converter.convert_formatted_text(
         "Some overlapping formatting".to_string(),
-        Some(vec![
+        vec![
             AnnotationWithOffset::new(0, Annotation::StartBold),
             AnnotationWithOffset::new(5, Annotation::StartItalics),
             AnnotationWithOffset::new(16, Annotation::EndBold),
             AnnotationWithOffset::new(27, Annotation::EndItalics),
-        ]),
+        ],
     );
     let markdown = converter.into_markdown();
     assert_eq!(markdown, "**Some *overlapping** formatting*");
@@ -294,10 +294,10 @@ fn highlighting() {
     let mut converter = NotebookConverter::new();
     converter.convert_formatted_text(
         "Some highlighted text".to_string(),
-        Some(vec![
+        vec![
             AnnotationWithOffset::new(5, Annotation::StartHighlight),
             AnnotationWithOffset::new(21, Annotation::EndHighlight),
-        ]),
+        ],
     );
     assert_eq!(
         converter.into_markdown(),

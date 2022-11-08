@@ -10,14 +10,17 @@
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct LogRecordIndex {
-    #[serde(rename = "key")]
-    pub key: String,
-    #[serde(rename = "index")]
-    pub index: f32,
+    #[serde(rename = "linkIndex")]
+    pub link_index: f32,
+    #[serde(rename = "recordIndex")]
+    pub record_index: f32,
 }
 
 impl LogRecordIndex {
-    pub fn new(key: String, index: f32) -> LogRecordIndex {
-        LogRecordIndex { key, index }
+    pub fn new(link_index: f32, record_index: f32) -> LogRecordIndex {
+        LogRecordIndex {
+            link_index,
+            record_index,
+        }
     }
 }

@@ -25,20 +25,17 @@ Name | Type | Description | Notes
 **preview** | Option<**String**> |  | [optional]
 **list_type** | **String** |  | 
 **start_number** | Option<**i32**> |  | [optional]
-**source_ids** | **Vec<String>** |  | 
-**title** | **String** |  | 
-**time_range** | Option<[**crate::models::LegacyTimeRange**](legacyTimeRange.md)> |  | [optional]
 **hide_similar_values** | Option<**bool**> |  | [optional]
 **display_fields** | Option<**Vec<String>**> |  | [optional]
 **expanded_indices** | Option<[**Vec<crate::models::LogRecordIndex>**](logRecordIndex.md)> |  | [optional]
 **visibility_filter** | Option<[**crate::models::LogCellVisibility**](logCellVisibility.md)> |  | [optional]
 **selected_indices** | Option<[**Vec<crate::models::LogRecordIndex>**](logRecordIndex.md)> |  | [optional]
 **highlighted_indices** | Option<[**Vec<crate::models::LogRecordIndex>**](logRecordIndex.md)> |  | [optional]
-**data** | Option<[**::std::collections::HashMap<String, Vec<crate::models::LogRecord>>**](array.md)> |  | [optional]
 **intent** | **String** |  | 
 **query_data** | Option<**String**> |  | [optional]
 **response** | Option<[**crate::models::EncodedBlob**](encodedBlob.md)> |  | [optional]
 **output** | [**Vec<crate::models::Cell>**](cell.md) |  | 
+**title** | **String** |  | 
 **rows** | [**crate::models::TableRow**](tableRow.md) |  | 
 
 [[Back to Model list]](../README.md#documentation-for-models) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to README]](../README.md)

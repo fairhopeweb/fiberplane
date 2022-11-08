@@ -1,6 +1,6 @@
 #![allow(unused_imports)]
 use serde::{Deserialize, Serialize};
-use std::{collections::BTreeMap, collections::HashMap};
+use std::collections::HashMap;
 
 pub use fiberplane::protocols::blobs::Blob;
 pub use fiberplane::protocols::blobs::EncodedBlob;
@@ -8,21 +8,16 @@ pub use fiberplane::protocols::core::Cell;
 pub use fiberplane::protocols::core::CheckboxCell;
 pub use fiberplane::protocols::core::CodeCell;
 pub use fiberplane::protocols::core::DividerCell;
-pub use fiberplane::protocols::core::ElasticsearchCell;
 pub use fiberplane::protocols::core::GraphCell;
 pub use fiberplane::protocols::core::GraphType;
 pub use fiberplane::protocols::core::HeadingCell;
 pub use fiberplane::protocols::core::HeadingType;
 pub use fiberplane::protocols::core::ImageCell;
-pub use fiberplane::protocols::core::Label;
-pub use fiberplane::protocols::core::LegacyTimeRange;
 pub use fiberplane::protocols::core::ListItemCell;
 pub use fiberplane::protocols::core::ListType;
 pub use fiberplane::protocols::core::LogCell;
-pub use fiberplane::protocols::core::LogRecord;
 pub use fiberplane::protocols::core::LogRecordIndex;
 pub use fiberplane::protocols::core::LogVisibilityFilter;
-pub use fiberplane::protocols::core::LokiCell;
 pub use fiberplane::protocols::core::ProviderCell;
 pub use fiberplane::protocols::core::StackingType;
 pub use fiberplane::protocols::core::TableCell;
@@ -33,6 +28,7 @@ pub use fiberplane::protocols::core::Timestamp;
 pub use fiberplane::protocols::formatting::Annotation;
 pub use fiberplane::protocols::formatting::AnnotationWithOffset;
 pub use fiberplane::protocols::formatting::Mention;
+pub use fiberplane::protocols::labels::Label;
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -284,6 +280,12 @@ pub enum LegacyProviderResponse {
         log_records: Vec<LegacyLogRecord>,
     },
     StatusOk,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+pub struct LegacyTimeRange {
+    pub from: LegacyTimestamp,
+    pub to: LegacyTimestamp,
 }
 
 pub type LegacyTimestamp = f64;

@@ -26,7 +26,6 @@ docs/DataSourceConnectionStatus.md
 docs/DefaultApi.md
 docs/DiscussionCell.md
 docs/DividerCell.md
-docs/ElasticsearchCell.md
 docs/EncodedBlob.md
 docs/EndBoldAnnotation.md
 docs/EndCodeAnnotation.md
@@ -44,13 +43,10 @@ docs/Instant.md
 docs/InstantQuery.md
 docs/Label.md
 docs/LabelAnnotation.md
-docs/LegacyTimeRange.md
 docs/ListItemCell.md
 docs/LogCell.md
 docs/LogCellVisibility.md
-docs/LogRecord.md
 docs/LogRecordIndex.md
-docs/LokiCell.md
 docs/MentionAnnotation.md
 docs/Metric.md
 docs/NewComment.md
@@ -150,7 +146,6 @@ src/models/data_source.rs
 src/models/data_source_connection_status.rs
 src/models/discussion_cell.rs
 src/models/divider_cell.rs
-src/models/elasticsearch_cell.rs
 src/models/encoded_blob.rs
 src/models/end_bold_annotation.rs
 src/models/end_code_annotation.rs
@@ -168,13 +163,10 @@ src/models/instant.rs
 src/models/instant_query.rs
 src/models/label.rs
 src/models/label_annotation.rs
-src/models/legacy_time_range.rs
 src/models/list_item_cell.rs
 src/models/log_cell.rs
 src/models/log_cell_visibility.rs
-src/models/log_record.rs
 src/models/log_record_index.rs
-src/models/loki_cell.rs
 src/models/mention_annotation.rs
 src/models/metric.rs
 src/models/mod.rs

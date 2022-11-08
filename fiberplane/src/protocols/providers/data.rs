@@ -67,21 +67,21 @@ pub struct OtelMetadata {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::providers")]
 #[serde(rename_all = "camelCase")]
-pub struct OtelSeverityNumber(u8);
+pub struct OtelSeverityNumber(pub u8);
 
 /// Span ID, as specified by OpenTelemetry:
 ///  https://opentelemetry.io/docs/reference/specification/overview/#spancontext
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::providers")]
 #[serde(rename_all = "camelCase")]
-pub struct OtelSpanId([u8; 8]);
+pub struct OtelSpanId(pub [u8; 8]);
 
 /// Trace ID, as specified by OpenTelemetry:
 ///  https://opentelemetry.io/docs/reference/specification/overview/#spancontext
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::providers")]
 #[serde(rename_all = "camelCase")]
-pub struct OtelTraceId([u8; 16]);
+pub struct OtelTraceId(pub [u8; 16]);
 
 /// A series of metrics over time, with metadata.
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, Serializable)]

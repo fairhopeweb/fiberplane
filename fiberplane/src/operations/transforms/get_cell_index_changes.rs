@@ -249,10 +249,7 @@ impl<'a> ConditionalCellIterator<'a> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::{
-        operations::fixtures::TEST_NOTEBOOK,
-        protocols::{core::*, formatting::*},
-    };
+    use crate::{operations::fixtures::TEST_NOTEBOOK, protocols::core::*};
     use pretty_assertions::assert_eq;
 
     #[test]
@@ -264,16 +261,15 @@ mod tests {
                         cell: Cell::Text(TextCell {
                             id: "c3".to_owned(),
                             content: "text".to_owned(),
-                            formatting: Some(Formatting::default()),
-                            read_only: None,
+                            ..Default::default()
                         }),
                         index: 2,
                     },
                     CellWithIndex {
-                        cell: Cell::Loki(LokiCell {
+                        cell: Cell::Text(TextCell {
                             id: "c4".to_owned(),
                             content: "go_memstats".to_owned(),
-                            read_only: None,
+                            ..Default::default()
                         }),
                         index: 3,
                     },
@@ -282,8 +278,7 @@ mod tests {
                     cell: Cell::Text(TextCell {
                         id: "c3".to_owned(),
                         content: "".to_owned(),
-                        formatting: Some(Formatting::default()),
-                        read_only: None,
+                        ..Default::default()
                     }),
                     index: 2,
                 }],
@@ -313,10 +308,10 @@ mod tests {
                         index: 3,
                     },
                     CellWithIndex {
-                        cell: Cell::Loki(LokiCell {
+                        cell: Cell::Text(TextCell {
                             id: "s3".to_owned(),
                             content: "bytes".to_owned(),
-                            read_only: None,
+                            ..Default::default()
                         }),
                         index: 4,
                     },
@@ -327,18 +322,7 @@ mod tests {
                 }],
                 split_offset: Some(18),
                 merge_offset: None,
-                new_referencing_cells: vec![CellWithIndex {
-                    cell: TEST_NOTEBOOK.cells[8].with_source_ids(vec![
-                        "c4".to_owned(),
-                        "c6".to_owned(),
-                        "s3".to_owned(),
-                    ]),
-                    index: 9,
-                }],
-                old_referencing_cells: vec![CellWithIndex {
-                    cell: TEST_NOTEBOOK.cells[8].clone(),
-                    index: 8,
-                }],
+                ..Default::default()
             }),
             vec![
                 CellIndexChange::Replacement {
@@ -351,11 +335,6 @@ mod tests {
                     new_index: 4,
                     cell_id: "s3",
                     priority: CellIndexPriority::High
-                },
-                CellIndexChange::Replacement {
-                    old_index: 8,
-                    new_index: 9,
-                    cell_id: "c9"
                 },
             ]
         );

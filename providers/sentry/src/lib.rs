@@ -172,7 +172,7 @@ fn create_overview_cells(issues: Vec<SentryIssue>) -> Result<Vec<Cell>, Error> {
             Cell::ListItem(ListItemCell {
                 id,
                 content,
-                formatting: Some(formatting),
+                formatting,
                 list_type: ListType::Unordered,
                 ..Default::default()
             })
@@ -265,14 +265,12 @@ fn create_issue_cells(
         id: "heading".to_owned(),
         heading_type: HeadingType::H3,
         content: format!("Issue {}: {}", issue.id, issue.title),
-        formatting: Some(Formatting::default()),
         ..Default::default()
     })];
 
     cells.push(Cell::Text(TextCell {
         id: "tags".to_owned(),
         content: "Tags: TODO".to_owned(),
-        formatting: Some(Formatting::default()),
         ..Default::default()
     }));
 
@@ -322,7 +320,7 @@ fn create_issue_cells(
     cells.push(Cell::Text(TextCell {
         id: "reported".to_owned(),
         content: format!("Reported: {}", issue.first_seen),
-        formatting: Some(vec![
+        formatting: vec![
             AnnotationWithOffset {
                 annotation: Annotation::StartBold,
                 offset: 0,
@@ -331,7 +329,7 @@ fn create_issue_cells(
                 annotation: Annotation::EndBold,
                 offset: 9,
             },
-        ]),
+        ],
         ..Default::default()
     }));
 
@@ -342,12 +340,12 @@ fn create_issue_cells(
     cells.push(Cell::Text(TextCell {
         id: "breadcrumbs".to_owned(),
         content: format!("Breadcrumbs: {breadcrumbs_url}"),
-        formatting: Some(vec![AnnotationWithOffset {
+        formatting: vec![AnnotationWithOffset {
             annotation: Annotation::StartLink {
                 url: breadcrumbs_url,
             },
             offset: 13,
-        }]),
+        }],
         ..Default::default()
     }));
 

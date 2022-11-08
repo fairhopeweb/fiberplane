@@ -4,7 +4,7 @@ use crate::FIBERPLANE_LIBRARY_PATH;
 use fiberplane::protocols::core::{Cell, HeadingType, ListType, NewNotebook, TimeRange};
 use fiberplane::protocols::formatting::{Annotation, AnnotationWithOffset, Formatting};
 use fiberplane::text_util::{char_count, char_slice, char_slice_from};
-use lazy_static::lazy_static;
+use once_cell::unsync::Lazy;
 use regex::Regex;
 use std::{collections::BTreeSet, fmt::Write};
 use time::{format_description::well_known::Rfc3339, Duration};
@@ -14,9 +14,7 @@ mod escape_string;
 #[cfg(test)]
 mod tests;
 
-lazy_static! {
-    static ref MUSTACHE_SUBSTITUTION: Regex = Regex::new(r"\{\{(\w+)\}\}").unwrap();
-}
+const MUSTACHE_SUBSTITUTION: Lazy<Regex> = Lazy::new(|| Regex::new(r"\{\{(\w+)\}\}").unwrap());
 
 // Note: we use the NewNotebook struct because it contains
 // the subset of the Notebook fields that we need to
@@ -156,10 +154,6 @@ fn print_cell(writer: &mut CodeWriter, cell: Cell) {
             ("code", cell.read_only)
         }
         Cell::Divider(cell) => ("divider", cell.read_only),
-        Cell::Elasticsearch(cell) => {
-            args.push(("content", escape_string(&cell.content)));
-            ("elasticsearch", cell.read_only)
-        }
         Cell::Heading(cell) => {
             let heading_type = match cell.heading_type {
                 HeadingType::H1 => "h1",
@@ -188,10 +182,6 @@ fn print_cell(writer: &mut CodeWriter, cell: Cell) {
                 args.push(("startNumber", start_number.to_string()));
             }
             (function_name, cell.read_only)
-        }
-        Cell::Loki(cell) => {
-            args.push(("content", escape_string(&cell.content)));
-            ("loki", cell.read_only)
         }
         Cell::Text(cell) => {
             args.push(("content", format_content(&cell.content, cell.formatting)));
@@ -236,117 +226,116 @@ fn print_cell(writer: &mut CodeWriter, cell: Cell) {
     };
 }
 
-fn format_content(content: &str, formatting: Option<Formatting>) -> String {
-    match formatting {
-        Some(mut formatting) if !formatting.is_empty() => {
-            let mut output = "[".to_string();
-            let mut index: u32 = 0;
-            // Count the number of starting and ending annotations to handle unmatched start annotations
-            let mut start_annotations = 0;
-            let mut end_annotations = 0;
-
-            formatting.sort_by_key(|f| f.offset);
-
-            // Convert each annotation to a jsonnet helper function
-            for AnnotationWithOffset { offset, annotation } in formatting {
-                // Add any content before this annotation to the output
-                if offset > index {
-                    output.push_str(&escape_string_and_replace_mustache_substitutions(
-                        char_slice(content, index, offset),
-                        ", ",
-                    ));
-                    output.push_str(", ");
-                    index = offset;
-                }
-                match annotation {
-                    Annotation::StartBold => {
-                        output.push_str("fmt.bold([");
-                        start_annotations += 1;
-                    }
-                    Annotation::StartCode => {
-                        output.push_str("fmt.code([");
-                        start_annotations += 1;
-                    }
-                    Annotation::StartItalics => {
-                        output.push_str("fmt.italics([");
-                        start_annotations += 1;
-                    }
-                    Annotation::StartStrikethrough => {
-                        output.push_str("fmt.strikethrough([");
-                        start_annotations += 1;
-                    }
-                    Annotation::StartUnderline => {
-                        output.push_str("fmt.underline([");
-                        start_annotations += 1;
-                    }
-                    Annotation::StartHighlight => {
-                        output.push_str("fmt.highlight([");
-                        start_annotations += 1;
-                    }
-                    Annotation::StartLink { url } => {
-                        output.push_str("fmt.link(url=");
-                        output.push_str(&escape_string(url));
-                        output.push_str(", content=[");
-                        start_annotations += 1;
-                    }
-                    Annotation::EndBold
-                    | Annotation::EndCode
-                    | Annotation::EndItalics
-                    | Annotation::EndStrikethrough
-                    | Annotation::EndUnderline
-                    | Annotation::EndHighlight
-                    | Annotation::EndLink => {
-                        finish_enclosure(&mut output, "]), ");
-                        end_annotations += 1;
-                    }
-                    Annotation::Mention(mention) => {
-                        write!(
-                            output,
-                            "fmt.mention('{}', '{}'), ",
-                            mention.name, mention.user_id
-                        )
-                        .expect("Cannot write mention instruction");
-                        // Adding + 1 to the mention length to account for the @ sign
-                        index += char_count(&mention.name) + 1;
-                    }
-                    Annotation::Timestamp { timestamp } => {
-                        let formatted = timestamp
-                            .format(&Rfc3339)
-                            .expect("Invalid timestamp format");
-                        write!(output, "fmt.timestamp('{}'), ", formatted)
-                            .expect("Cannot write timestamp instruction");
-                        index += char_count(&formatted);
-                    }
-                    Annotation::Label(label) => {
-                        let args = match label.value.is_empty() {
-                            true => format!("'{}'", label.key.to_string()),
-                            false => format!("'{}', '{}'", label.key, label.value),
-                        };
-                        output.push_str(&format!("fmt.label({}), ", args));
-                        index += char_count(&label.to_string())
-                    }
-                }
-            }
-            // If the content ends with plain text, make sure to add it to the output
-            if index < char_count(&content) {
-                output.push_str(&escape_string_and_replace_mustache_substitutions(
-                    &char_slice_from(content, index),
-                    ", ",
-                ));
-            }
-            // If there are unclosed annotations, add extra closing brackets and parens
-            // to close the helper function calls
-            if start_annotations > end_annotations {
-                for _i in 0..start_annotations - end_annotations {
-                    finish_enclosure(&mut output, "])")
-                }
-            }
-            finish_enclosure(&mut output, "]");
-
-            output
-        }
-        _ => escape_string(content),
+fn format_content(content: &str, mut formatting: Formatting) -> String {
+    if formatting.is_empty() {
+        return escape_string(content);
     }
+
+    let mut output = "[".to_string();
+    let mut index: u32 = 0;
+    // Count the number of starting and ending annotations to handle unmatched start annotations
+    let mut start_annotations = 0;
+    let mut end_annotations = 0;
+
+    formatting.sort_by_key(|f| f.offset);
+
+    // Convert each annotation to a jsonnet helper function
+    for AnnotationWithOffset { offset, annotation } in formatting {
+        // Add any content before this annotation to the output
+        if offset > index {
+            output.push_str(&escape_string_and_replace_mustache_substitutions(
+                char_slice(content, index, offset),
+                ", ",
+            ));
+            output.push_str(", ");
+            index = offset;
+        }
+        match annotation {
+            Annotation::StartBold => {
+                output.push_str("fmt.bold([");
+                start_annotations += 1;
+            }
+            Annotation::StartCode => {
+                output.push_str("fmt.code([");
+                start_annotations += 1;
+            }
+            Annotation::StartItalics => {
+                output.push_str("fmt.italics([");
+                start_annotations += 1;
+            }
+            Annotation::StartStrikethrough => {
+                output.push_str("fmt.strikethrough([");
+                start_annotations += 1;
+            }
+            Annotation::StartUnderline => {
+                output.push_str("fmt.underline([");
+                start_annotations += 1;
+            }
+            Annotation::StartHighlight => {
+                output.push_str("fmt.highlight([");
+                start_annotations += 1;
+            }
+            Annotation::StartLink { url } => {
+                output.push_str("fmt.link(url=");
+                output.push_str(&escape_string(url));
+                output.push_str(", content=[");
+                start_annotations += 1;
+            }
+            Annotation::EndBold
+            | Annotation::EndCode
+            | Annotation::EndItalics
+            | Annotation::EndStrikethrough
+            | Annotation::EndUnderline
+            | Annotation::EndHighlight
+            | Annotation::EndLink => {
+                finish_enclosure(&mut output, "]), ");
+                end_annotations += 1;
+            }
+            Annotation::Mention(mention) => {
+                write!(
+                    output,
+                    "fmt.mention('{}', '{}'), ",
+                    mention.name, mention.user_id
+                )
+                .expect("Cannot write mention instruction");
+                // Adding + 1 to the mention length to account for the @ sign
+                index += char_count(&mention.name) + 1;
+            }
+            Annotation::Timestamp { timestamp } => {
+                let formatted = timestamp
+                    .format(&Rfc3339)
+                    .expect("Invalid timestamp format");
+                write!(output, "fmt.timestamp('{}'), ", formatted)
+                    .expect("Cannot write timestamp instruction");
+                index += char_count(&formatted);
+            }
+            Annotation::Label(label) => {
+                let args = match label.value.is_empty() {
+                    true => format!("'{}'", label.key.to_string()),
+                    false => format!("'{}', '{}'", label.key, label.value),
+                };
+                output.push_str(&format!("fmt.label({}), ", args));
+                index += char_count(&label.to_string())
+            }
+        }
+    }
+    // If the content ends with plain text, make sure to add it to the output
+    if index < char_count(&content) {
+        output.push_str(&escape_string_and_replace_mustache_substitutions(
+            &char_slice_from(content, index),
+            ", ",
+        ));
+    }
+    // If there are unclosed annotations, add extra closing brackets and parens
+    // to close the helper function calls
+    if start_annotations > end_annotations {
+        for _i in 0..start_annotations - end_annotations {
+            finish_enclosure(&mut output, "])")
+        }
+    }
+    finish_enclosure(&mut output, "]");
+
+    output
 }
 
 /// Remove trailing commas and whitespace and add the closing brackets/parens
@@ -402,8 +391,9 @@ fn parse_template_function_parameters<'a>(
     cell_content: impl Iterator<Item = &'a str>,
 ) -> Vec<String> {
     let mut unique_parameters = BTreeSet::new();
-    let title_substitutions = MUSTACHE_SUBSTITUTION.captures_iter(title);
-    let cell_substitutions = cell_content.flat_map(|c| MUSTACHE_SUBSTITUTION.captures_iter(c));
+    let mustache_substitution = &*MUSTACHE_SUBSTITUTION;
+    let title_substitutions = mustache_substitution.captures_iter(title);
+    let cell_substitutions = cell_content.flat_map(|c| mustache_substitution.captures_iter(c));
     title_substitutions
         .chain(cell_substitutions)
         .flat_map(|c| c.get(1))

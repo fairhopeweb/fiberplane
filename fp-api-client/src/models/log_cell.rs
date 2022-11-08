@@ -14,16 +14,10 @@ pub struct LogCell {
     pub _type: crate::models::CellType,
     #[serde(rename = "id")]
     pub id: String,
+    #[serde(rename = "dataLinks")]
+    pub data_links: Vec<String>,
     #[serde(rename = "readOnly", skip_serializing_if = "Option::is_none")]
     pub read_only: Option<bool>,
-    #[serde(rename = "sourceIds")]
-    pub source_ids: Vec<String>,
-    #[serde(rename = "title")]
-    pub title: String,
-    #[serde(rename = "formatting", skip_serializing_if = "Option::is_none")]
-    pub formatting: Option<Vec<crate::models::Annotation>>,
-    #[serde(rename = "timeRange", skip_serializing_if = "Option::is_none")]
-    pub time_range: Option<Box<crate::models::LegacyTimeRange>>,
     #[serde(rename = "hideSimilarValues", skip_serializing_if = "Option::is_none")]
     pub hide_similar_values: Option<bool>,
     #[serde(rename = "displayFields", skip_serializing_if = "Option::is_none")]
@@ -32,39 +26,25 @@ pub struct LogCell {
     pub expanded_indices: Option<Vec<crate::models::LogRecordIndex>>,
     #[serde(rename = "visibilityFilter", skip_serializing_if = "Option::is_none")]
     pub visibility_filter: Option<crate::models::LogCellVisibility>,
-    #[serde(rename = "selected_indices", skip_serializing_if = "Option::is_none")]
+    #[serde(rename = "selectedIndices", skip_serializing_if = "Option::is_none")]
     pub selected_indices: Option<Vec<crate::models::LogRecordIndex>>,
-    #[serde(
-        rename = "highlighted_indices",
-        skip_serializing_if = "Option::is_none"
-    )]
+    #[serde(rename = "highlightedIndices", skip_serializing_if = "Option::is_none")]
     pub highlighted_indices: Option<Vec<crate::models::LogRecordIndex>>,
-    #[serde(rename = "data", skip_serializing_if = "Option::is_none")]
-    pub data: Option<::std::collections::HashMap<String, Vec<crate::models::LogRecord>>>,
 }
 
 impl LogCell {
-    pub fn new(
-        _type: crate::models::CellType,
-        id: String,
-        source_ids: Vec<String>,
-        title: String,
-    ) -> LogCell {
+    pub fn new(_type: crate::models::CellType, id: String, data_links: Vec<String>) -> LogCell {
         LogCell {
             _type,
             id,
+            data_links,
             read_only: None,
-            source_ids,
-            title,
-            formatting: None,
-            time_range: None,
             hide_similar_values: None,
             display_fields: None,
             expanded_indices: None,
             visibility_filter: None,
             selected_indices: None,
             highlighted_indices: None,
-            data: None,
         }
     }
 }

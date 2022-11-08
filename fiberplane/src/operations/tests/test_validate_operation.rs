@@ -101,10 +101,10 @@ pub fn test_invalid_replace_cells_operations() {
                         index: 3,
                     },
                     CellWithIndex {
-                        cell: Cell::Loki(LokiCell {
+                        cell: Cell::Text(TextCell {
                             id: "s1".to_owned(),
                             content: "memstats_alloc_bytes".to_owned(),
-                            read_only: None,
+                            ..Default::default()
                         }),
                         index: 4,
                     },
@@ -132,10 +132,10 @@ pub fn test_invalid_replace_cells_operations() {
                         index: 3,
                     },
                     CellWithIndex {
-                        cell: Cell::Loki(LokiCell {
+                        cell: Cell::Text(TextCell {
                             id: "s1".to_owned(),
                             content: "memstats_alloc_bytes".to_owned(),
-                            read_only: None,
+                            ..Default::default()
                         }),
                         index: 4,
                     },

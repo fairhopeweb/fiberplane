@@ -25,7 +25,7 @@ fn formatting_basic() {
             offset: 43,
         },
     ];
-    let actual = format_content(content, Some(formatting));
+    let actual = format_content(content, formatting);
     // alternative: "fmt.raw('some normal, ').bold('some bold, ').italics('and some italicized text')"
     assert_eq!(
         actual,
@@ -54,7 +54,7 @@ fn formatting_nested() {
             offset: 48,
         },
     ];
-    let actual = format_content(content, Some(formatting));
+    let actual = format_content(content, formatting);
     assert_eq!(actual, "['some normal, ', fmt.bold(['some bold, ', fmt.italics(['and some bold italicized'])]), ' text']");
 }
 
@@ -73,7 +73,7 @@ fn format_link() {
             offset: 8,
         },
     ];
-    let actual = format_content(content, Some(formatting));
+    let actual = format_content(content, formatting);
     assert_eq!(
         actual,
         "['see ', fmt.link(url='https://example.com/more', content=['here']), ' for more']"
@@ -87,7 +87,7 @@ fn format_unclosed() {
         annotation: Annotation::StartBold,
         offset: 13,
     }];
-    let actual = format_content(content, Some(formatting));
+    let actual = format_content(content, formatting);
     assert_eq!(actual, "['some normal, ', fmt.bold(['some bold'])]");
 }
 
@@ -101,7 +101,7 @@ fn format_mention() {
         }),
         offset: 3,
     }];
-    let actual = format_content(content, Some(formatting));
+    let actual = format_content(content, formatting);
     assert_eq!(
         actual,
         "['hi ', fmt.mention('Bob Bobsen', '1234'), ' mention']"
@@ -117,7 +117,7 @@ fn format_timestamp() {
         },
         offset: 3,
     }];
-    let actual = format_content(content, Some(formatting));
+    let actual = format_content(content, formatting);
     assert_eq!(
         actual,
         "['hi ', fmt.timestamp('2020-01-01T00:00:00Z'), ' timestamp']"
@@ -134,7 +134,7 @@ fn format_label() {
         }),
         offset: 3,
     }];
-    let actual = format_content(content, Some(formatting));
+    let actual = format_content(content, formatting);
     assert_eq!(actual, "['hi ', fmt.label('foo', 'bar'), ' label']");
 }
 
@@ -146,8 +146,7 @@ fn print_text_cell() {
         Cell::Text(TextCell {
             id: "c1".to_owned(),
             content: "I'm a text cell".to_owned(),
-            formatting: Some(Formatting::default()),
-            read_only: None,
+            ..Default::default()
         }),
     );
     assert_eq!(writer.to_string(), "c.text(\"I'm a text cell\"),\n");
@@ -185,10 +184,10 @@ fn print_cell_handles_formatted_unicode() {
     let mut writer = CodeWriter::new();
     let cell = Cell::Text(TextCell {
         content: "👀".to_owned(),
-        formatting: Some(vec![
+        formatting: vec![
             AnnotationWithOffset::new(0, Annotation::StartHighlight),
             AnnotationWithOffset::new(1, Annotation::EndHighlight),
-        ]),
+        ],
         ..Default::default()
     });
     print_cell(&mut writer, cell);

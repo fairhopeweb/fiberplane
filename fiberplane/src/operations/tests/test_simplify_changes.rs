@@ -1,7 +1,5 @@
 use crate::operations::*;
-use crate::protocols::{
-    core::*, data_sources::SelectedDataSource, formatting::Formatting, names::Name,
-};
+use crate::protocols::{core::*, data_sources::SelectedDataSource, names::Name};
 use pretty_assertions::assert_eq;
 
 #[test]
@@ -279,7 +277,6 @@ pub fn test_simplify_update_and_update_text_changes() {
             cell: Cell::Text(TextCell {
                 content: "2".to_owned(),
                 id: "test_cell".to_owned(),
-                formatting: Some(Formatting::default()),
                 ..Default::default()
             }),
         })]

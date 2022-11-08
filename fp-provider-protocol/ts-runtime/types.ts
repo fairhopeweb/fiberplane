@@ -93,13 +93,11 @@ export type Cell =
     | { type: "code" } & CodeCell
     | { type: "discussion" } & DiscussionCell
     | { type: "divider" } & DividerCell
-    | { type: "elasticsearch" } & ElasticsearchCell
     | { type: "graph" } & GraphCell
     | { type: "heading" } & HeadingCell
     | { type: "image" } & ImageCell
     | { type: "list_item" } & ListItemCell
     | { type: "log" } & LogCell
-    | { type: "loki" } & LokiCell
     | { type: "provider" } & ProviderCell
     | { type: "table" } & TableCell
     | { type: "text" } & TextCell;
@@ -112,7 +110,7 @@ export type CheckboxCell = {
     /**
      * Optional formatting to be applied to the cell's content.
      */
-    formatting?: Formatting;
+    formatting: Formatting;
     level?: number;
     readOnly?: boolean;
 };
@@ -225,12 +223,6 @@ export type DividerCell = {
     readOnly?: boolean;
 };
 
-export type ElasticsearchCell = {
-    id: string;
-    content: string;
-    readOnly?: boolean;
-};
-
 /**
  * base64-encoded version of [Blob].
  */
@@ -322,7 +314,7 @@ export type HeadingCell = {
     /**
      * Optional formatting to be applied to the cell's content.
      */
-    formatting?: Formatting;
+    formatting: Formatting;
     readOnly?: boolean;
 };
 
@@ -485,7 +477,7 @@ export type ListItemCell = {
     /**
      * Optional formatting to be applied to the cell's content.
      */
-    formatting?: Formatting;
+    formatting: Formatting;
     listType: ListType;
     level?: number;
     readOnly?: boolean;
@@ -498,16 +490,12 @@ export type ListType =
 
 export type LogCell = {
     id: string;
-    readOnly?: boolean;
-    sourceIds: Array<string>;
 
     /**
-     * Optional formatting to be applied to the cell's title.
+     * Links to the data to render in the log.
      */
-    formatting?: Formatting;
-    title: string;
-    data?: Record<string, Array<LogRecord>>;
-    timeRange?: LegacyTimeRange;
+    dataLinks: Array<string>;
+    readOnly?: boolean;
     displayFields?: Array<string>;
     hideSimilarValues?: boolean;
     expandedIndices?: Array<LogRecordIndex>;
@@ -516,34 +504,26 @@ export type LogCell = {
     highlightedIndices?: Array<LogRecordIndex>;
 };
 
-export type LogRecord = {
-    timestamp: LegacyTimestamp;
-    body: string;
-    attributes: Record<string, string>;
-    resource: Record<string, string>;
-    traceId?: string;
-    spanId?: string;
-};
-
 /**
  * A single expanded row of log records, as identified by [key] and [index]
  * pointing into the source data of the LogCell.
  */
 export type LogRecordIndex = {
-    key: string;
-    index: number;
+    /**
+     * Index of the data link that produced the log record.
+     */
+    linkIndex: number;
+
+    /**
+     * Index of the record within the data of a single data link.
+     */
+    recordIndex: number;
 };
 
 export type LogVisibilityFilter =
     | "all"
     | "selected"
     | "highlighted";
-
-export type LokiCell = {
-    id: string;
-    content: string;
-    readOnly?: boolean;
-};
 
 /**
  * Annotation for the mention of a user.
@@ -640,7 +620,7 @@ export type ProviderCell = {
     /**
      * Optional formatting to apply to the title.
      */
-    formatting?: Formatting;
+    formatting: Formatting;
     readOnly?: boolean;
 };
 
@@ -840,7 +820,7 @@ export type TextCell = {
     /**
      * Optional formatting to be applied to the cell's content.
      */
-    formatting?: Formatting;
+    formatting: Formatting;
     readOnly?: boolean;
 };
 

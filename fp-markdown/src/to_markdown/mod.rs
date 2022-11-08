@@ -70,7 +70,6 @@ impl<'a> NotebookConverter<'a> {
                 }
                 Cell::Code(cell) => self.convert_code_block(cell.content),
                 Cell::Divider(_) => self.events.push(Rule),
-                Cell::Elasticsearch(cell) => self.convert_code_block(cell.content),
                 Cell::Heading(cell) => {
                     let level = match cell.heading_type {
                         HeadingType::H1 => HeadingLevel::H2,
@@ -121,7 +120,6 @@ impl<'a> NotebookConverter<'a> {
 
                     self.end_all_lists();
                 }
-                Cell::Loki(cell) => self.convert_code_block(cell.content),
                 Cell::Provider(cell) => {
                     if !cell.title.is_empty() {
                         self.events.push(Start(Tag::Paragraph));
@@ -170,12 +168,11 @@ impl<'a> NotebookConverter<'a> {
         self.events.push(End(tag));
     }
 
-    fn convert_formatted_text(&mut self, content: String, formatting: Option<Formatting>) {
+    fn convert_formatted_text(&mut self, content: String, mut formatting: Formatting) {
         let mut current_offset: usize = 0;
         let mut content = content.chars().peekable();
         let mut tags_to_close = Vec::new();
 
-        let mut formatting = formatting.unwrap_or_default();
         formatting.sort_by_key(|a| a.offset);
 
         let mut formatting = formatting.into_iter().peekable();

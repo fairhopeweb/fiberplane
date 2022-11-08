@@ -1,10 +1,7 @@
 #![allow(dead_code)]
 
 use bytes::Bytes;
-use fiberplane::protocols::{
-    core::{LegacyTimeRange, LegacyTimestamp},
-    providers::Error,
-};
+use fiberplane::protocols::providers::Error;
 use fp_bindgen::prelude::Serializable;
 use std::collections::HashMap;
 
@@ -18,6 +15,15 @@ pub enum LegacyProviderRequest {
     /// Check data source status, any issue will be returned as `Error`
     Status,
 }
+
+#[derive(Clone, Debug, PartialEq, Serializable)]
+pub struct LegacyTimeRange {
+    pub from: LegacyTimestamp,
+    pub to: LegacyTimestamp,
+}
+
+/// Timestamp specified in seconds since the UNIX epoch, with subsecond precision.
+pub type LegacyTimestamp = f64;
 
 /// Relays requests for a data-source to a proxy server registered with the API.
 #[derive(Serializable, Debug)]

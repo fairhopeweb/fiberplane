@@ -7,7 +7,6 @@ use crate::query_data::{has_query_data, set_query_field, unset_query_field};
 use base64uuid::Base64Uuid;
 use fp_bindgen::prelude::Serializable;
 use serde::{Deserialize, Serialize};
-use std::collections::{BTreeMap, HashMap};
 use std::{ops::Sub, time::SystemTime};
 use time::{ext::NumericalDuration, Duration, OffsetDateTime};
 
@@ -170,13 +169,11 @@ pub enum Cell {
     Code(CodeCell),
     Discussion(DiscussionCell),
     Divider(DividerCell),
-    Elasticsearch(ElasticsearchCell),
     Graph(GraphCell),
     Heading(HeadingCell),
     Image(ImageCell),
     ListItem(ListItemCell),
     Log(LogCell),
-    Loki(LokiCell),
     Provider(ProviderCell),
     Table(TableCell),
     Text(TextCell),
@@ -190,13 +187,11 @@ impl Cell {
             Cell::Code(cell) => Some(&cell.content),
             Cell::Discussion(_) => None,
             Cell::Divider(_) => None,
-            Cell::Elasticsearch(cell) => Some(&cell.content),
             Cell::Graph(_) => None,
             Cell::Heading(cell) => Some(&cell.content),
             Cell::Image(_) => None,
             Cell::ListItem(cell) => Some(&cell.content),
             Cell::Log(_) => None,
-            Cell::Loki(cell) => Some(&cell.content),
             Cell::Provider(_) => None,
             Cell::Table(_) => None,
             Cell::Text(cell) => Some(&cell.content),
@@ -209,17 +204,15 @@ impl Cell {
             Cell::Code(_)
             | Cell::Discussion(_)
             | Cell::Divider(_)
-            | Cell::Elasticsearch(_)
             | Cell::Graph(_)
             | Cell::Image(_)
-            | Cell::Loki(_)
+            | Cell::Log(_)
             | Cell::Table(_) => None,
-            Cell::Checkbox(cell) => cell.formatting.as_ref(),
-            Cell::Heading(cell) => cell.formatting.as_ref(),
-            Cell::ListItem(cell) => cell.formatting.as_ref(),
-            Cell::Log(cell) => cell.formatting.as_ref(),
-            Cell::Provider(cell) => cell.formatting.as_ref(),
-            Cell::Text(cell) => cell.formatting.as_ref(),
+            Cell::Checkbox(cell) => Some(&cell.formatting),
+            Cell::Heading(cell) => Some(&cell.formatting),
+            Cell::ListItem(cell) => Some(&cell.formatting),
+            Cell::Provider(cell) => Some(&cell.formatting),
+            Cell::Text(cell) => Some(&cell.formatting),
         }
     }
 
@@ -228,16 +221,14 @@ impl Cell {
             Cell::Code(_)
             | Cell::Discussion(_)
             | Cell::Divider(_)
-            | Cell::Elasticsearch(_)
-            | Cell::Image(_)
-            | Cell::Loki(_) => false,
-            Cell::Checkbox(_)
             | Cell::Graph(_)
+            | Cell::Image(_)
+            | Cell::Log(_)
+            | Cell::Table(_) => false,
+            Cell::Checkbox(_)
             | Cell::Heading(_)
             | Cell::ListItem(_)
-            | Cell::Log(_)
             | Cell::Provider(_)
-            | Cell::Table(_)
             | Cell::Text(_) => true,
         }
     }
@@ -249,111 +240,22 @@ impl Cell {
             Cell::Code(cell) => &cell.id,
             Cell::Discussion(cell) => &cell.id,
             Cell::Divider(cell) => &cell.id,
-            Cell::Elasticsearch(cell) => &cell.id,
             Cell::Graph(cell) => &cell.id,
             Cell::Heading(cell) => &cell.id,
             Cell::Image(cell) => &cell.id,
             Cell::ListItem(cell) => &cell.id,
             Cell::Log(cell) => &cell.id,
-            Cell::Loki(cell) => &cell.id,
             Cell::Provider(cell) => &cell.id,
             Cell::Table(cell) => &cell.id,
             Cell::Text(cell) => &cell.id,
         }
     }
 
-    /// Returns whether the cell is an output cell.
-    pub fn is_output_cell(&self) -> bool {
-        matches!(self, Cell::Graph(_) | Cell::Table(_))
-    }
-
-    /// Returns all the source IDs referenced by the cell.
-    pub fn source_ids(&self) -> Vec<&str> {
-        match self {
-            Cell::Log(cell) => cell.source_ids.iter().map(String::as_str).collect(),
-            Cell::Checkbox(_)
-            | Cell::Code(_)
-            | Cell::Discussion(_)
-            | Cell::Divider(_)
-            | Cell::Elasticsearch(_)
-            | Cell::Graph(_)
-            | Cell::Heading(_)
-            | Cell::Image(_)
-            | Cell::ListItem(_)
-            | Cell::Loki(_)
-            | Cell::Provider(_)
-            | Cell::Table(_)
-            | Cell::Text(_) => vec![],
-        }
-    }
-
     /// Returns the cell's text, if any.
     pub fn text(&self) -> Option<&str> {
         match self {
-            Cell::Log(cell) => Some(&cell.title),
             Cell::Provider(cell) => Some(&cell.title),
             cell => cell.content(),
-        }
-    }
-
-    /// Returns a copy of the cell with the given content appended.
-    #[must_use]
-    pub fn with_appended_content(&self, content: &str) -> Self {
-        self.with_content(&format!("{}{}", self.content().unwrap_or(""), content))
-    }
-
-    /// Returns a copy of the cell with its content replaced by the given
-    /// content (without any formatting).
-    #[must_use]
-    pub fn with_content(&self, content: &str) -> Self {
-        match self {
-            Cell::Checkbox(cell) => Cell::Checkbox(CheckboxCell {
-                id: cell.id.clone(),
-                content: content.to_owned(),
-                formatting: Some(vec![]),
-                ..*cell
-            }),
-            Cell::Code(cell) => Cell::Code(CodeCell {
-                id: cell.id.clone(),
-                content: content.to_owned(),
-                syntax: cell.syntax.clone(),
-                ..*cell
-            }),
-            Cell::Discussion(cell) => Cell::Discussion(cell.clone()),
-            Cell::Divider(cell) => Cell::Divider(cell.clone()),
-            Cell::Elasticsearch(cell) => Cell::Elasticsearch(ElasticsearchCell {
-                id: cell.id.clone(),
-                content: content.to_owned(),
-                ..*cell
-            }),
-            Cell::Graph(cell) => Cell::Graph(cell.clone()),
-            Cell::Heading(cell) => Cell::Heading(HeadingCell {
-                id: cell.id.clone(),
-                content: content.to_owned(),
-                formatting: Some(vec![]),
-                ..*cell
-            }),
-            Cell::Image(cell) => Cell::Image(cell.clone()),
-            Cell::ListItem(cell) => Cell::ListItem(ListItemCell {
-                id: cell.id.clone(),
-                content: content.to_owned(),
-                formatting: Some(vec![]),
-                ..*cell
-            }),
-            Cell::Log(cell) => Cell::Log(cell.clone()),
-            Cell::Loki(cell) => Cell::Loki(LokiCell {
-                id: cell.id.clone(),
-                content: content.to_owned(),
-                ..*cell
-            }),
-            Cell::Provider(cell) => Cell::Provider(cell.clone()),
-            Cell::Table(cell) => Cell::Table(cell.clone()),
-            Cell::Text(cell) => Cell::Text(TextCell {
-                id: cell.id.clone(),
-                content: content.to_owned(),
-                formatting: Some(vec![]),
-                ..*cell
-            }),
         }
     }
 
@@ -377,10 +279,6 @@ impl Cell {
                 id: id.to_owned(),
                 ..cell.clone()
             }),
-            Cell::Elasticsearch(cell) => Cell::Elasticsearch(ElasticsearchCell {
-                id: id.to_owned(),
-                ..cell.clone()
-            }),
             Cell::Graph(cell) => Cell::Graph(GraphCell {
                 id: id.to_owned(),
                 ..cell.clone()
@@ -401,10 +299,6 @@ impl Cell {
                 id: id.to_owned(),
                 ..cell.clone()
             }),
-            Cell::Loki(cell) => Cell::Loki(LokiCell {
-                id: id.to_owned(),
-                ..cell.clone()
-            }),
             Cell::Provider(cell) => Cell::Provider(ProviderCell {
                 id: id.to_owned(),
                 ..cell.clone()
@@ -420,48 +314,43 @@ impl Cell {
         }
     }
 
-    /// Returns a copy of the cell with its source IDs replaced by the given IDs.
-    ///
-    /// If the cell contains any data, only data that belongs to any of the new
-    /// source IDs is retained.
-    #[must_use]
-    pub fn with_source_ids(&self, source_ids: Vec<String>) -> Self {
-        match self {
-            Cell::Log(cell) => Cell::Log(LogCell {
-                data: cell.data.as_ref().map(|data| {
-                    data.iter()
-                        .filter(|&(k, _)| source_ids.contains(k))
-                        .map(|(k, v)| (k.clone(), v.clone()))
-                        .collect()
-                }),
-                source_ids,
-                ..cell.clone()
-            }),
-            cell => cell.clone(),
-        }
-    }
-
-    /// Returns a copy of the cell with its text replaced by the given text.
+    /// Returns a copy of the cell with its text replaced by the given text,
+    /// without any formatting.
     #[must_use]
     pub fn with_text(&self, text: &str) -> Self {
         match self {
-            Cell::Log(cell) => Cell::Log(LogCell {
+            Cell::Checkbox(cell) => Cell::Checkbox(CheckboxCell {
                 id: cell.id.clone(),
-                data: cell.data.clone(),
-                title: text.to_owned(),
-                formatting: Some(vec![]),
-                time_range: cell.time_range.clone(),
-                source_ids: cell.source_ids.clone(),
-                display_fields: cell.display_fields.clone(),
-                expanded_indices: cell.expanded_indices.clone(),
-                selected_indices: cell.selected_indices.clone(),
-                highlighted_indices: cell.highlighted_indices.clone(),
-                visibility_filter: cell.visibility_filter.clone(),
+                content: text.to_owned(),
+                formatting: Formatting::default(),
                 ..*cell
             }),
+            Cell::Code(cell) => Cell::Code(CodeCell {
+                id: cell.id.clone(),
+                content: text.to_owned(),
+                syntax: cell.syntax.clone(),
+                ..*cell
+            }),
+            Cell::Discussion(cell) => Cell::Discussion(cell.clone()),
+            Cell::Divider(cell) => Cell::Divider(cell.clone()),
+            Cell::Graph(cell) => Cell::Graph(cell.clone()),
+            Cell::Heading(cell) => Cell::Heading(HeadingCell {
+                id: cell.id.clone(),
+                content: text.to_owned(),
+                formatting: Formatting::default(),
+                ..*cell
+            }),
+            Cell::Image(cell) => Cell::Image(cell.clone()),
+            Cell::ListItem(cell) => Cell::ListItem(ListItemCell {
+                id: cell.id.clone(),
+                content: text.to_owned(),
+                formatting: Formatting::default(),
+                ..*cell
+            }),
+            Cell::Log(cell) => Cell::Log(cell.clone()),
             Cell::Provider(cell) => Cell::Provider(ProviderCell {
                 id: cell.id.clone(),
-                formatting: Some(Vec::new()),
+                formatting: Formatting::default(),
                 intent: cell.intent.clone(),
                 output: cell.output.clone(),
                 query_data: cell.query_data.clone(),
@@ -469,7 +358,13 @@ impl Cell {
                 response: cell.response.clone(),
                 title: text.to_owned(),
             }),
-            cell => cell.with_content(text),
+            Cell::Table(cell) => Cell::Table(cell.clone()),
+            Cell::Text(cell) => Cell::Text(TextCell {
+                id: cell.id.clone(),
+                content: text.to_owned(),
+                formatting: Formatting::default(),
+                ..*cell
+            }),
         }
     }
 
@@ -484,16 +379,12 @@ impl Cell {
             Cell::Checkbox(cell) => Cell::Checkbox(CheckboxCell {
                 id: cell.id.clone(),
                 content: text.to_owned(),
-                formatting: Some(formatting),
+                formatting,
                 ..*cell
             }),
             Cell::Log(cell) => Cell::Log(LogCell {
                 id: cell.id.clone(),
-                data: cell.data.clone(),
-                formatting: Some(formatting),
-                source_ids: cell.source_ids.clone(),
-                time_range: cell.time_range.clone(),
-                title: text.to_owned(),
+                data_links: cell.data_links.clone(),
                 display_fields: cell.display_fields.clone(),
                 expanded_indices: cell.expanded_indices.clone(),
                 selected_indices: cell.selected_indices.clone(),
@@ -504,18 +395,18 @@ impl Cell {
             Cell::Heading(cell) => Cell::Heading(HeadingCell {
                 id: cell.id.clone(),
                 content: text.to_owned(),
-                formatting: Some(formatting),
+                formatting,
                 ..*cell
             }),
             Cell::ListItem(cell) => Cell::ListItem(ListItemCell {
                 id: cell.id.clone(),
                 content: text.to_owned(),
-                formatting: Some(formatting),
+                formatting,
                 ..*cell
             }),
             Cell::Provider(cell) => Cell::Provider(ProviderCell {
                 id: cell.id.clone(),
-                formatting: Some(formatting),
+                formatting,
                 intent: cell.intent.clone(),
                 output: cell.output.clone(),
                 query_data: cell.query_data.clone(),
@@ -526,16 +417,14 @@ impl Cell {
             Cell::Text(cell) => Cell::Text(TextCell {
                 id: cell.id.clone(),
                 content: text.to_owned(),
-                formatting: Some(formatting),
+                formatting,
                 ..*cell
             }),
             Cell::Code(_)
             | Cell::Discussion(_)
             | Cell::Divider(_)
-            | Cell::Elasticsearch(_)
             | Cell::Graph(_)
             | Cell::Image(_)
-            | Cell::Loki(_)
             | Cell::Table(_) => self.with_text(text),
         }
     }
@@ -576,50 +465,33 @@ impl Cell {
             Cell::Code(cell) => &mut cell.id,
             Cell::Discussion(cell) => &mut cell.id,
             Cell::Divider(cell) => &mut cell.id,
-            Cell::Elasticsearch(cell) => &mut cell.id,
             Cell::Graph(cell) => &mut cell.id,
             Cell::Heading(cell) => &mut cell.id,
             Cell::Image(cell) => &mut cell.id,
             Cell::ListItem(cell) => &mut cell.id,
             Cell::Log(cell) => &mut cell.id,
-            Cell::Loki(cell) => &mut cell.id,
             Cell::Provider(cell) => &mut cell.id,
             Cell::Table(cell) => &mut cell.id,
             Cell::Text(cell) => &mut cell.id,
         }
     }
 
-    /// Returns a mutable reference to the formatting array if the cell type supports formatting.
-    ///
-    /// If the cell type supports formatting but the cell does not have any, this method
-    /// will initialize the formatting as an empty array.
+    /// Returns a mutable reference to the formatting array if the cell type
+    /// supports formatting.
     pub fn formatting_mut(&mut self) -> Option<&mut Formatting> {
-        let formatting = match self {
+        match self {
             Cell::Checkbox(cell) => Some(&mut cell.formatting),
             Cell::Heading(cell) => Some(&mut cell.formatting),
             Cell::ListItem(cell) => Some(&mut cell.formatting),
-            Cell::Log(cell) => Some(&mut cell.formatting),
             Cell::Provider(cell) => Some(&mut cell.formatting),
             Cell::Text(cell) => Some(&mut cell.formatting),
             Cell::Code(_)
             | Cell::Discussion(_)
             | Cell::Divider(_)
-            | Cell::Elasticsearch(_)
             | Cell::Graph(_)
             | Cell::Image(_)
-            | Cell::Loki(_)
+            | Cell::Log(_)
             | Cell::Table(_) => None,
-        };
-
-        // Turn the Option<&mut Option<Formatting>> into a Option<&mut Formatting>
-        // and initialize the formatting array if necessary
-        match formatting {
-            Some(Some(formatting)) => Some(formatting),
-            Some(formatting @ None) => {
-                *formatting = Some(vec![]);
-                formatting.as_mut()
-            }
-            None => None,
         }
     }
 
@@ -631,12 +503,10 @@ impl Cell {
             Cell::Discussion(_) => None,
             Cell::Divider(_) => None,
             Cell::Image(_) => None,
-            Cell::Elasticsearch(cell) => Some(&mut cell.content),
             Cell::Graph(_) => None,
             Cell::Heading(cell) => Some(&mut cell.content),
             Cell::ListItem(cell) => Some(&mut cell.content),
-            Cell::Log(cell) => Some(&mut cell.title),
-            Cell::Loki(cell) => Some(&mut cell.content),
+            Cell::Log(_) => None,
             Cell::Provider(cell) => Some(&mut cell.title),
             Cell::Table(_) => None,
             Cell::Text(cell) => Some(&mut cell.content),
@@ -655,8 +525,8 @@ pub struct CheckboxCell {
     pub checked: bool,
     pub content: String,
     /// Optional formatting to be applied to the cell's content.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub formatting: Option<Formatting>,
+    #[serde(default, skip_serializing_if = "Formatting::is_empty")]
+    pub formatting: Formatting,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub level: Option<u8>,
     #[serde(skip_serializing_if = "Option::is_none")]
@@ -723,8 +593,8 @@ pub struct HeadingCell {
     pub heading_type: HeadingType,
     pub content: String,
     /// Optional formatting to be applied to the cell's content.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub formatting: Option<Formatting>,
+    #[serde(default, skip_serializing_if = "Formatting::is_empty")]
+    pub formatting: Formatting,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub read_only: Option<bool>,
 }
@@ -737,36 +607,30 @@ pub struct HeadingCell {
 #[serde(rename_all = "camelCase")]
 pub struct LogCell {
     pub id: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
+
+    /// Links to the data to render in the log.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub data_links: Vec<String>,
+
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub read_only: Option<bool>,
-    pub source_ids: Vec<String>,
-    /// Optional formatting to be applied to the cell's title.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub formatting: Option<Formatting>,
 
-    #[serde(default = "default_title")]
-    pub title: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub data: Option<BTreeMap<String, Vec<LogRecord>>>,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub time_range: Option<LegacyTimeRange>,
-
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub display_fields: Option<Vec<String>>,
 
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub hide_similar_values: Option<bool>,
 
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub expanded_indices: Option<Vec<LogRecordIndex>>,
 
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub visibility_filter: Option<LogVisibilityFilter>,
 
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub selected_indices: Option<Vec<LogRecordIndex>>,
 
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub highlighted_indices: Option<Vec<LogRecordIndex>>,
 }
 
@@ -782,10 +646,6 @@ pub enum LogVisibilityFilter {
     Highlighted,
 }
 
-fn default_title() -> String {
-    "".to_string()
-}
-
 /// A single expanded row of log records, as identified by [key] and [index]
 /// pointing into the source data of the LogCell.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize, Serializable)]
@@ -795,8 +655,11 @@ fn default_title() -> String {
 )]
 #[serde(rename_all = "camelCase")]
 pub struct LogRecordIndex {
-    pub key: String,
-    pub index: i32,
+    /// Index of the data link that produced the log record.
+    pub link_index: u8,
+
+    /// Index of the record within the data of a single data link.
+    pub record_index: u32,
 }
 
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Eq, Serialize, Serializable)]
@@ -809,8 +672,8 @@ pub struct ListItemCell {
     pub id: String,
     pub content: String,
     /// Optional formatting to be applied to the cell's content.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub formatting: Option<Formatting>,
+    #[serde(default, skip_serializing_if = "Formatting::is_empty")]
+    pub formatting: Formatting,
     pub list_type: ListType,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub level: Option<u8>,
@@ -856,8 +719,8 @@ pub struct ProviderCell {
     pub title: String,
 
     /// Optional formatting to apply to the title.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub formatting: Option<Formatting>,
+    #[serde(default, skip_serializing_if = "Formatting::is_empty")]
+    pub formatting: Formatting,
 
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub read_only: Option<bool>,
@@ -884,32 +747,6 @@ impl ProviderCell {
             ..self.clone()
         }
     }
-}
-
-#[derive(Clone, Debug, Default, Deserialize, PartialEq, Eq, Serialize, Serializable)]
-#[fp(
-    rust_plugin_module = "fiberplane::protocols::core",
-    rust_wasmer_runtime_module = "fiberplane::protocols::core"
-)]
-#[serde(rename_all = "camelCase")]
-pub struct ElasticsearchCell {
-    pub id: String,
-    pub content: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub read_only: Option<bool>,
-}
-
-#[derive(Clone, Debug, Default, Deserialize, PartialEq, Eq, Serialize, Serializable)]
-#[fp(
-    rust_plugin_module = "fiberplane::protocols::core",
-    rust_wasmer_runtime_module = "fiberplane::protocols::core"
-)]
-#[serde(rename_all = "camelCase")]
-pub struct LokiCell {
-    pub id: String,
-    pub content: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub read_only: Option<bool>,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
@@ -962,8 +799,8 @@ pub struct TextCell {
     pub id: String,
     pub content: String,
     /// Optional formatting to be applied to the cell's content.
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub formatting: Option<Formatting>,
+    #[serde(default, skip_serializing_if = "Formatting::is_empty")]
+    pub formatting: Formatting,
     #[serde(skip_serializing_if = "Option::is_none")]
     pub read_only: Option<bool>,
 }
@@ -1107,7 +944,9 @@ impl From<NewTimeRange> for TimeRange {
     }
 }
 
-#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize, Serializable)]
+#[derive(
+    Clone, Copy, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize, Serializable,
+)]
 #[fp(
     rust_plugin_module = "fiberplane::protocols::core",
     rust_wasmer_runtime_module = "fiberplane::protocols::core"
@@ -1138,36 +977,6 @@ impl From<Timestamp> for OffsetDateTime {
     fn from(timestamp: Timestamp) -> Self {
         timestamp.0
     }
-}
-
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
-#[fp(
-    rust_plugin_module = "fiberplane::protocols::core",
-    rust_wasmer_runtime_module = "fiberplane::protocols::core"
-)]
-#[deprecated(note = "Use `TimeRange` instead")]
-pub struct LegacyTimeRange {
-    pub from: LegacyTimestamp,
-    pub to: LegacyTimestamp,
-}
-
-/// Timestamp specified in seconds since the UNIX epoch, with subsecond precision.
-#[deprecated(note = "Use `Timestamp` instead")]
-pub type LegacyTimestamp = f64;
-
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
-#[fp(
-    rust_plugin_module = "fiberplane::protocols::core",
-    rust_wasmer_runtime_module = "fiberplane::protocols::core"
-)]
-#[serde(rename_all = "camelCase")]
-pub struct LogRecord {
-    pub timestamp: LegacyTimestamp,
-    pub body: String,
-    pub attributes: HashMap<String, String>,
-    pub resource: HashMap<String, String>,
-    pub trace_id: Option<String>,
-    pub span_id: Option<String>,
 }
 
 /// Workspace representation.

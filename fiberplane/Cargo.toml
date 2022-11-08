@@ -21,7 +21,7 @@ clap = { version = "4.0.17", features = ["derive"], optional = true }
 form_urlencoded = "1"
 fp-bindgen = { workspace = true, features = ["bytes-compat", "time-compat"] }
 # fp-bindgen = { path = "../fp-bindgen/fp-bindgen", features = ["time-compat"] }
-once_cell = "1.8"
+once_cell = { workspace = true }
 rmpv = "1"
 rmp-serde = "1.0"
 serde = { workspace = true }
