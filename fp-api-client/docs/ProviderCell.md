@@ -9,7 +9,7 @@ Name | Type | Description | Notes
 **intent** | **String** |  | 
 **query_data** | Option<**String**> |  | [optional]
 **response** | Option<[**crate::models::EncodedBlob**](encodedBlob.md)> |  | [optional]
-**output** | [**Vec<crate::models::Cell>**](cell.md) |  | 
+**output** | Option<[**Vec<crate::models::Cell>**](cell.md)> |  | [optional]
 **title** | **String** |  | 
 **formatting** | Option<[**Vec<crate::models::Annotation>**](annotation.md)> |  | [optional]
 **read_only** | Option<**bool**> |  | [optional]

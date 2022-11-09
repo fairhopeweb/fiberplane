@@ -104,6 +104,7 @@ docs/ThreadItemType.md
 docs/ThreadStatus.md
 docs/ThreadSummary.md
 docs/TimeRange.md
+docs/TimestampAnnotation.md
 docs/Token.md
 docs/TokenSummary.md
 docs/Trigger.md
@@ -226,6 +227,7 @@ src/models/thread_item_type.rs
 src/models/thread_status.rs
 src/models/thread_summary.rs
 src/models/time_range.rs
+src/models/timestamp_annotation.rs
 src/models/token.rs
 src/models/token_summary.rs
 src/models/trigger.rs

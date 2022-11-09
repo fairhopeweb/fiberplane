@@ -245,7 +245,6 @@ components:
         - type
         - id
         - intent
-        - output
         - title
       properties:
         type:
@@ -566,6 +565,7 @@ components:
         - $ref: "#/components/schemas/startUnderlineAnnotation"
         - $ref: "#/components/schemas/endUnderlineAnnotation"
         - $ref: "#/components/schemas/labelAnnotation"
+        - $ref: "#/components/schemas/timestampAnnotation"
       discriminator:
         propertyName: type
         mapping:
@@ -585,6 +585,7 @@ components:
           start_underline: "#/components/schemas/startUnderlineAnnotation"
           end_underline: "#/components/schemas/endUnderlineAnnotation"
           label: "#/components/schemas/labelAnnotation"
+          timestamp: "#/components/schemas/timestampAnnotation"
     annotationType:
       type: string
       enum:
@@ -599,6 +600,7 @@ components:
         - start_link
         - end_link
         - mention
+        - timestamp
         - start_strikethrough
         - end_strikethrough
         - start_underline
@@ -733,6 +735,21 @@ components:
           type: "string"
         userId:
           type: "string"
+    timestampAnnotation:
+      type: object
+      required:
+        - type
+        - offset
+        - timestamp
+      properties:
+        type:
+          $ref: "#/components/schemas/annotationType"
+        offset:
+          type: integer
+          format: int32
+        timestamp:
+          type: string
+          format: date-time
     startStrikethroughAnnotation:
       type: object
       required:
