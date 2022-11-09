@@ -5,7 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **id** | **String** |  | 
-**title** | **String** |  | 
+**name** | **String** |  | 
 **description** | **String** |  | 
 **body** | **String** |  | 
 **parameters** | [**Vec<crate::models::TemplateParameter>**](templateParameter.md) |  | 

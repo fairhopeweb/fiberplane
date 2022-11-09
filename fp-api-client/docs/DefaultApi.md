@@ -45,11 +45,11 @@ Method | HTTP request | Description
 [**proxy_list**](DefaultApi.md#proxy_list) | **GET** /api/workspaces/{workspace_id}/proxies | 
 [**proxy_relay**](DefaultApi.md#proxy_relay) | **POST** /api/workspaces/{workspace_id}/proxies/{proxy_name}/data_sources/{data_source_name}/relay | 
 [**template_create**](DefaultApi.md#template_create) | **POST** /api/workspaces/{workspace_id}/templates | 
-[**template_delete**](DefaultApi.md#template_delete) | **DELETE** /api/templates/{templateId} | 
-[**template_expand**](DefaultApi.md#template_expand) | **POST** /api/templates/{templateId}/expand | 
-[**template_get**](DefaultApi.md#template_get) | **GET** /api/templates/{templateId} | 
+[**template_delete**](DefaultApi.md#template_delete) | **DELETE** /api/workspaces/{workspace_id}/templates/{templateName} | 
+[**template_expand**](DefaultApi.md#template_expand) | **POST** /api/workspaces/{workspace_id}/templates/{templateName}/expand | 
+[**template_get**](DefaultApi.md#template_get) | **GET** /api/workspaces/{workspace_id}/templates/{templateName} | 
 [**template_list**](DefaultApi.md#template_list) | **GET** /api/workspaces/{workspace_id}/templates | 
-[**template_update**](DefaultApi.md#template_update) | **PATCH** /api/templates/{templateId} | 
+[**template_update**](DefaultApi.md#template_update) | **PATCH** /api/workspaces/{workspace_id}/templates/{templateName} | 
 [**thread_create**](DefaultApi.md#thread_create) | **POST** /api/notebooks/{notebookId}/threads | 
 [**thread_delete**](DefaultApi.md#thread_delete) | **DELETE** /api/threads/{threadId} | 
 [**thread_get**](DefaultApi.md#thread_get) | **GET** /api/threads/{threadId} | 
@@ -1330,7 +1330,7 @@ Name | Type | Description  | Required | Notes
 
 ## template_delete
 
-> template_delete(template_id)
+> template_delete(workspace_id, template_name)
 
 
 ### Parameters
@@ -1338,7 +1338,8 @@ Name | Type | Description  | Required | Notes
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**template_id** | **String** | ID of the template | [required] |
+**workspace_id** | **String** | The workspace ID | [required] |
+**template_name** | **String** | Name of the template | [required] |
 
 ### Return type
 
@@ -1358,7 +1359,7 @@ Name | Type | Description  | Required | Notes
 
 ## template_expand
 
-> crate::models::Notebook template_expand(template_id, body)
+> crate::models::Notebook template_expand(workspace_id, template_name, body)
 
 
 Expand the template into a notebook
@@ -1368,7 +1369,8 @@ Expand the template into a notebook
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**template_id** | **String** | ID of the template | [required] |
+**workspace_id** | **String** | The workspace ID | [required] |
+**template_name** | **String** | Name of the template | [required] |
 **body** | Option<**serde_json::Value**> | Parameters to pass to the template |  |
 
 ### Return type
@@ -1389,7 +1391,7 @@ Name | Type | Description  | Required | Notes
 
 ## template_get
 
-> crate::models::Template template_get(template_id)
+> crate::models::Template template_get(workspace_id, template_name)
 
 
 ### Parameters
@@ -1397,7 +1399,8 @@ Name | Type | Description  | Required | Notes
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**template_id** | **String** | ID of the template | [required] |
+**workspace_id** | **String** | The workspace ID | [required] |
+**template_name** | **String** | Name of the template | [required] |
 
 ### Return type
 
@@ -1449,7 +1452,7 @@ Name | Type | Description  | Required | Notes
 
 ## template_update
 
-> crate::models::Template template_update(template_id, update_template)
+> crate::models::Template template_update(workspace_id, template_name, update_template)
 
 
 ### Parameters
@@ -1457,7 +1460,8 @@ Name | Type | Description  | Required | Notes
 
 Name | Type | Description  | Required | Notes
 ------------- | ------------- | ------------- | ------------- | -------------
-**template_id** | **String** | ID of the template | [required] |
+**workspace_id** | **String** | The workspace ID | [required] |
+**template_name** | **String** | Name of the template | [required] |
 **update_template** | [**UpdateTemplate**](UpdateTemplate.md) |  | [required] |
 
 ### Return type

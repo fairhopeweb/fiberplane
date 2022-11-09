@@ -4,7 +4,6 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**title** | Option<**String**> |  | [optional]
 **description** | Option<**String**> |  | [optional]
 **body** | Option<**String**> |  | [optional]
 

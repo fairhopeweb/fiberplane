@@ -5,7 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **id** | **String** |  | 
-**title** | **String** |  | 
+**name** | **String** |  | 
 **description** | **String** |  | 
 **created_at** | **String** |  | 
 **updated_at** | **String** |  | 

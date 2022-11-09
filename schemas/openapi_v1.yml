@@ -1073,7 +1073,7 @@ components:
       type: object
       required:
         - id
-        - title
+        - name
         - description
         - body
         - parameters
@@ -1082,8 +1082,9 @@ components:
       properties:
         id:
           type: string
-        title:
+        name:
           type: string
+          format: name
         description:
           type: string
         body:
@@ -1199,15 +1200,16 @@ components:
       type: object
       required:
         - id
-        - title
+        - name
         - description
         - createdAt
         - updatedAt
       properties:
         id:
           type: string
-        title:
+        name:
           type: string
+          format: name
         description:
           type: string
         createdAt:
@@ -1219,12 +1221,13 @@ components:
     newTemplate:
       type: object
       required:
-        - title
+        - name
         - description
         - body
       properties:
-        title:
+        name:
           type: string
+          format: name
         description:
           type: string
         body:
@@ -1232,8 +1235,6 @@ components:
     updateTemplate:
       type: object
       properties:
-        title:
-          type: string
         description:
           type: string
         body:
@@ -1289,12 +1290,13 @@ components:
       type: object
       required:
         - title
-        - templateId
+        - templateName
       properties:
         title:
           type: string
-        templateId:
+        templateName:
           type: string
+          format: name
         defaultArguments:
           type: object
     templateExpandPayload:
@@ -2376,14 +2378,16 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/templateSummary"
-  /api/templates/{templateId}:
+  /api/workspaces/{workspace_id}/templates/{templateName}:
     parameters:
-      - name: templateId
+      - $ref: "#/components/parameters/workspace_id"
+      - name: templateName
         in: path
-        description: ID of the template
+        description: Name of the template
         required: true
         schema:
           type: string
+          format: name
     get:
       operationId: template_get
       responses:
@@ -2413,14 +2417,16 @@ paths:
       responses:
         "200":
           description: OK
-  /api/templates/{templateId}/expand:
+  /api/workspaces/{workspace_id}/templates/{templateName}/expand:
     parameters:
-      - name: templateId
+      - $ref: "#/components/parameters/workspace_id"
+      - name: templateName
         in: path
-        description: ID of the template
+        description: Name of the template
         required: true
         schema:
           type: string
+          format: name
     post:
       operationId: template_expand
       description: Expand the template into a notebook

@@ -12,17 +12,17 @@
 pub struct NewTrigger {
     #[serde(rename = "title")]
     pub title: String,
-    #[serde(rename = "templateId")]
-    pub template_id: String,
+    #[serde(rename = "templateName")]
+    pub template_name: String,
     #[serde(rename = "defaultArguments", skip_serializing_if = "Option::is_none")]
     pub default_arguments: Option<serde_json::Value>,
 }
 
 impl NewTrigger {
-    pub fn new(title: String, template_id: String) -> NewTrigger {
+    pub fn new(title: String, template_name: String) -> NewTrigger {
         NewTrigger {
             title,
-            template_id,
+            template_name,
             default_arguments: None,
         }
     }

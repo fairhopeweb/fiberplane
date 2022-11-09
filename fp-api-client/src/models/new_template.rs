@@ -10,8 +10,8 @@
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct NewTemplate {
-    #[serde(rename = "title")]
-    pub title: String,
+    #[serde(rename = "name")]
+    pub name: String,
     #[serde(rename = "description")]
     pub description: String,
     #[serde(rename = "body")]
@@ -19,9 +19,9 @@ pub struct NewTemplate {
 }
 
 impl NewTemplate {
-    pub fn new(title: String, description: String, body: String) -> NewTemplate {
+    pub fn new(name: String, description: String, body: String) -> NewTemplate {
         NewTemplate {
-            title,
+            name,
             description,
             body,
         }

@@ -10,8 +10,6 @@
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct UpdateTemplate {
-    #[serde(rename = "title", skip_serializing_if = "Option::is_none")]
-    pub title: Option<String>,
     #[serde(rename = "description", skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
     #[serde(rename = "body", skip_serializing_if = "Option::is_none")]
@@ -21,7 +19,6 @@ pub struct UpdateTemplate {
 impl UpdateTemplate {
     pub fn new() -> UpdateTemplate {
         UpdateTemplate {
-            title: None,
             description: None,
             body: None,
         }

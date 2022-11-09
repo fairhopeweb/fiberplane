@@ -54,7 +54,7 @@ pub trait SortField {
 #[serde(rename_all = "snake_case")]
 #[strum(serialize_all = "snake_case")]
 pub enum TemplateListSortFields {
-    Title,
+    Name,
     CreatedAt,
     UpdatedAt,
 }
@@ -63,7 +63,7 @@ impl TemplateListSortFields {
     #[inline]
     pub fn to_sql(&self) -> &'static str {
         match self {
-            TemplateListSortFields::Title => "title",
+            TemplateListSortFields::Name => "name",
             TemplateListSortFields::UpdatedAt => "updated_at",
             TemplateListSortFields::CreatedAt => "created_at",
         }
@@ -73,7 +73,7 @@ impl TemplateListSortFields {
 impl SortField for TemplateListSortFields {
     #[inline]
     fn default_sort_field() -> Self {
-        Self::Title
+        Self::Name
     }
 }
 

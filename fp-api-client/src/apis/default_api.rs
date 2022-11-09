@@ -2376,14 +2376,16 @@ pub async fn template_create(
 
 pub async fn template_delete(
     configuration: &configuration::Configuration,
-    template_id: &str,
+    workspace_id: &str,
+    template_name: &str,
 ) -> Result<(), Error<TemplateDeleteError>> {
     let local_var_client = &configuration.client;
 
     let local_var_uri_str = format!(
-        "{}/api/templates/{templateId}",
+        "{}/api/workspaces/{workspace_id}/templates/{templateName}",
         configuration.base_path,
-        templateId = crate::apis::urlencode(template_id)
+        workspace_id = crate::apis::urlencode(workspace_id),
+        templateName = crate::apis::urlencode(template_name)
     );
     let mut local_var_req_builder =
         local_var_client.request(reqwest::Method::DELETE, local_var_uri_str.as_str());
@@ -2419,15 +2421,17 @@ pub async fn template_delete(
 /// Expand the template into a notebook
 pub async fn template_expand(
     configuration: &configuration::Configuration,
-    template_id: &str,
+    workspace_id: &str,
+    template_name: &str,
     body: Option<serde_json::Value>,
 ) -> Result<crate::models::Notebook, Error<TemplateExpandError>> {
     let local_var_client = &configuration.client;
 
     let local_var_uri_str = format!(
-        "{}/api/templates/{templateId}/expand",
+        "{}/api/workspaces/{workspace_id}/templates/{templateName}/expand",
         configuration.base_path,
-        templateId = crate::apis::urlencode(template_id)
+        workspace_id = crate::apis::urlencode(workspace_id),
+        templateName = crate::apis::urlencode(template_name)
     );
     let mut local_var_req_builder =
         local_var_client.request(reqwest::Method::POST, local_var_uri_str.as_str());
@@ -2463,14 +2467,16 @@ pub async fn template_expand(
 
 pub async fn template_get(
     configuration: &configuration::Configuration,
-    template_id: &str,
+    workspace_id: &str,
+    template_name: &str,
 ) -> Result<crate::models::Template, Error<TemplateGetError>> {
     let local_var_client = &configuration.client;
 
     let local_var_uri_str = format!(
-        "{}/api/templates/{templateId}",
+        "{}/api/workspaces/{workspace_id}/templates/{templateName}",
         configuration.base_path,
-        templateId = crate::apis::urlencode(template_id)
+        workspace_id = crate::apis::urlencode(workspace_id),
+        templateName = crate::apis::urlencode(template_name)
     );
     let mut local_var_req_builder =
         local_var_client.request(reqwest::Method::GET, local_var_uri_str.as_str());
@@ -2558,15 +2564,17 @@ pub async fn template_list(
 
 pub async fn template_update(
     configuration: &configuration::Configuration,
-    template_id: &str,
+    workspace_id: &str,
+    template_name: &str,
     update_template: crate::models::UpdateTemplate,
 ) -> Result<crate::models::Template, Error<TemplateUpdateError>> {
     let local_var_client = &configuration.client;
 
     let local_var_uri_str = format!(
-        "{}/api/templates/{templateId}",
+        "{}/api/workspaces/{workspace_id}/templates/{templateName}",
         configuration.base_path,
-        templateId = crate::apis::urlencode(template_id)
+        workspace_id = crate::apis::urlencode(workspace_id),
+        templateName = crate::apis::urlencode(template_name)
     );
     let mut local_var_req_builder =
         local_var_client.request(reqwest::Method::PATCH, local_var_uri_str.as_str());

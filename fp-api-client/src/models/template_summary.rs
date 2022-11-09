@@ -12,8 +12,8 @@
 pub struct TemplateSummary {
     #[serde(rename = "id")]
     pub id: String,
-    #[serde(rename = "title")]
-    pub title: String,
+    #[serde(rename = "name")]
+    pub name: String,
     #[serde(rename = "description")]
     pub description: String,
     #[serde(rename = "createdAt")]
@@ -25,14 +25,14 @@ pub struct TemplateSummary {
 impl TemplateSummary {
     pub fn new(
         id: String,
-        title: String,
+        name: String,
         description: String,
         created_at: String,
         updated_at: String,
     ) -> TemplateSummary {
         TemplateSummary {
             id,
-            title,
+            name,
             description,
             created_at,
             updated_at,

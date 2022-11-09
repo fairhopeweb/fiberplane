@@ -65,11 +65,11 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**proxy_list**](docs/DefaultApi.md#proxy_list) | **GET** /api/workspaces/{workspace_id}/proxies | 
 *DefaultApi* | [**proxy_relay**](docs/DefaultApi.md#proxy_relay) | **POST** /api/workspaces/{workspace_id}/proxies/{proxy_name}/data_sources/{data_source_name}/relay | 
 *DefaultApi* | [**template_create**](docs/DefaultApi.md#template_create) | **POST** /api/workspaces/{workspace_id}/templates | 
-*DefaultApi* | [**template_delete**](docs/DefaultApi.md#template_delete) | **DELETE** /api/templates/{templateId} | 
-*DefaultApi* | [**template_expand**](docs/DefaultApi.md#template_expand) | **POST** /api/templates/{templateId}/expand | 
-*DefaultApi* | [**template_get**](docs/DefaultApi.md#template_get) | **GET** /api/templates/{templateId} | 
+*DefaultApi* | [**template_delete**](docs/DefaultApi.md#template_delete) | **DELETE** /api/workspaces/{workspace_id}/templates/{templateName} | 
+*DefaultApi* | [**template_expand**](docs/DefaultApi.md#template_expand) | **POST** /api/workspaces/{workspace_id}/templates/{templateName}/expand | 
+*DefaultApi* | [**template_get**](docs/DefaultApi.md#template_get) | **GET** /api/workspaces/{workspace_id}/templates/{templateName} | 
 *DefaultApi* | [**template_list**](docs/DefaultApi.md#template_list) | **GET** /api/workspaces/{workspace_id}/templates | 
-*DefaultApi* | [**template_update**](docs/DefaultApi.md#template_update) | **PATCH** /api/templates/{templateId} | 
+*DefaultApi* | [**template_update**](docs/DefaultApi.md#template_update) | **PATCH** /api/workspaces/{workspace_id}/templates/{templateName} | 
 *DefaultApi* | [**thread_create**](docs/DefaultApi.md#thread_create) | **POST** /api/notebooks/{notebookId}/threads | 
 *DefaultApi* | [**thread_delete**](docs/DefaultApi.md#thread_delete) | **DELETE** /api/threads/{threadId} | 
 *DefaultApi* | [**thread_get**](docs/DefaultApi.md#thread_get) | **GET** /api/threads/{threadId} | 
