@@ -13,22 +13,11 @@ pub struct NewWorkspaceInvite {
     #[serde(rename = "email")]
     pub email: String,
     #[serde(rename = "role")]
-    pub role: Role,
+    pub role: crate::models::AuthRole,
 }
 
 impl NewWorkspaceInvite {
-    pub fn new(email: String, role: Role) -> NewWorkspaceInvite {
+    pub fn new(email: String, role: crate::models::AuthRole) -> NewWorkspaceInvite {
         NewWorkspaceInvite { email, role }
     }
-}
-
-///
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
-pub enum Role {
-    #[serde(rename = "read")]
-    Read,
-    #[serde(rename = "write")]
-    Write,
-    #[serde(rename = "admin")]
-    Admin,
 }

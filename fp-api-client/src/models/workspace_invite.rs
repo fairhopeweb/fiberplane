@@ -17,7 +17,7 @@ pub struct WorkspaceInvite {
     #[serde(rename = "receiver", skip_serializing_if = "Option::is_none")]
     pub receiver: Option<String>,
     #[serde(rename = "role", skip_serializing_if = "Option::is_none")]
-    pub role: Option<Role>,
+    pub role: Option<crate::models::AuthRole>,
     #[serde(rename = "createdAt", skip_serializing_if = "Option::is_none")]
     pub created_at: Option<String>,
     #[serde(rename = "expiresAt", skip_serializing_if = "Option::is_none")]
@@ -35,15 +35,4 @@ impl WorkspaceInvite {
             expires_at: None,
         }
     }
-}
-
-///
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
-pub enum Role {
-    #[serde(rename = "read")]
-    Read,
-    #[serde(rename = "write")]
-    Write,
-    #[serde(rename = "admin")]
-    Admin,
 }

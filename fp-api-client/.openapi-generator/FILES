@@ -6,6 +6,7 @@ README.md
 docs/Annotation.md
 docs/AnnotationType.md
 docs/ArrayTemplateParameter.md
+docs/AuthRole.md
 docs/BooleanTemplateParameter.md
 docs/Cell.md
 docs/CellAppendText.md
@@ -127,6 +128,7 @@ src/lib.rs
 src/models/annotation.rs
 src/models/annotation_type.rs
 src/models/array_template_parameter.rs
+src/models/auth_role.rs
 src/models/boolean_template_parameter.rs
 src/models/cell.rs
 src/models/cell_append_text.rs

@@ -4,6 +4,8 @@ pub mod annotation_type;
 pub use self::annotation_type::AnnotationType;
 pub mod array_template_parameter;
 pub use self::array_template_parameter::ArrayTemplateParameter;
+pub mod auth_role;
+pub use self::auth_role::AuthRole;
 pub mod boolean_template_parameter;
 pub use self::boolean_template_parameter::BooleanTemplateParameter;
 pub mod cell;

@@ -10,24 +10,12 @@
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct WorkspaceUserUpdate {
-    /// New role that the user should receive
     #[serde(rename = "role", skip_serializing_if = "Option::is_none")]
-    pub role: Option<Role>,
+    pub role: Option<crate::models::AuthRole>,
 }
 
 impl WorkspaceUserUpdate {
     pub fn new() -> WorkspaceUserUpdate {
         WorkspaceUserUpdate { role: None }
     }
-}
-
-/// New role that the user should receive
-#[derive(Clone, Copy, Debug, Eq, PartialEq, Ord, PartialOrd, Hash, Serialize, Deserialize)]
-pub enum Role {
-    #[serde(rename = "write")]
-    Write,
-    #[serde(rename = "read")]
-    Read,
-    #[serde(rename = "admin")]
-    Admin,
 }

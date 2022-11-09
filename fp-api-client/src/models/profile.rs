@@ -18,15 +18,24 @@ pub struct Profile {
     pub default_workspace_id: String,
     #[serde(rename = "email", skip_serializing_if = "Option::is_none")]
     pub email: Option<String>,
+    /// This contains a mapping of the workspace ID and the role that the user has in the workspace
+    #[serde(rename = "roles")]
+    pub roles: ::std::collections::HashMap<String, crate::models::AuthRole>,
 }
 
 impl Profile {
-    pub fn new(id: String, name: String, default_workspace_id: String) -> Profile {
+    pub fn new(
+        id: String,
+        name: String,
+        default_workspace_id: String,
+        roles: ::std::collections::HashMap<String, crate::models::AuthRole>,
+    ) -> Profile {
         Profile {
             id,
             name,
             default_workspace_id,
             email: None,
+            roles,
         }
     }
 }

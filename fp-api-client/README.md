@@ -107,6 +107,7 @@ Class | Method | HTTP request | Description
  - [Annotation](docs/Annotation.md)
  - [AnnotationType](docs/AnnotationType.md)
  - [ArrayTemplateParameter](docs/ArrayTemplateParameter.md)
+ - [AuthRole](docs/AuthRole.md)
  - [BooleanTemplateParameter](docs/BooleanTemplateParameter.md)
  - [Cell](docs/Cell.md)
  - [CellAppendText](docs/CellAppendText.md)

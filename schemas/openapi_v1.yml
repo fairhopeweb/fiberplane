@@ -885,6 +885,7 @@ components:
         - "id"
         - "name"
         - "defaultWorkspaceId"
+        - "roles"
       properties:
         id:
           type: string
@@ -896,6 +897,11 @@ components:
           format: base64uuid
         email:
           type: string
+        roles:
+          type: object
+          description: "This contains a mapping of the workspace ID and the role that the user has in the workspace"
+          additionalProperties:
+            $ref: "#/components/schemas/auth_role"
     newPinnedNotebook:
       type: object
       required:
@@ -1675,11 +1681,7 @@ components:
         email:
           type: string
         role:
-          type: string
-          enum:
-            - read
-            - write
-            - admin
+          $ref: "#/components/schemas/auth_role"
     newWorkspace:
       type: object
       required:
@@ -1703,11 +1705,7 @@ components:
         receiver:
           type: string
         role:
-          type: string
-          enum:
-            - read
-            - write
-            - admin
+          $ref: "#/components/schemas/auth_role"
         createdAt:
           type: string
           format: date-time
@@ -1736,12 +1734,13 @@ components:
       type: object
       properties:
         role:
-          type: string
-          description: New role that the user should receive
-          enum:
-            - write
-            - read
-            - admin
+          $ref: "#/components/schemas/auth_role"
+    auth_role:
+      type: string
+      enum:
+        - read
+        - write
+        - admin
   parameters:
     sortDirection:
       in: query

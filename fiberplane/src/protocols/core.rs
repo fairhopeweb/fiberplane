@@ -1019,7 +1019,7 @@ pub enum WorkspaceType {
 pub struct NewWorkspaceInvitation {
     pub email: String,
     #[serde(default)]
-    pub role: AuthzRoles,
+    pub role: AuthRole,
 }
 
 /// Response received from create a new workspace endpoint.
@@ -1071,7 +1071,7 @@ pub struct UpdateWorkspace {
 #[serde(rename_all = "snake_case")]
 pub struct UpdateWorkspaceMember {
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub role: Option<AuthzRoles>,
+    pub role: Option<AuthRole>,
 }
 
 #[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
@@ -1081,13 +1081,13 @@ pub struct UpdateWorkspaceMember {
     rust_wasmer_runtime_module = "fiberplane::protocols::core"
 )]
 #[serde(rename_all = "snake_case")]
-pub enum AuthzRoles {
+pub enum AuthRole {
     Read,
     Write,
     Admin,
 }
 
-impl Default for AuthzRoles {
+impl Default for AuthRole {
     fn default() -> Self {
         Self::Write
     }
