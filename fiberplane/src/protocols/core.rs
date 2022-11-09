@@ -512,6 +512,24 @@ impl Cell {
             Cell::Text(cell) => Some(&mut cell.content),
         }
     }
+
+    /// Returns the cell type as a string
+    pub fn type_str(&self) -> &'static str {
+        match self {
+            Cell::Checkbox(_) => "checkbox",
+            Cell::Code(_) => "code",
+            Cell::Discussion(_) => "discussion",
+            Cell::Divider(_) => "divider",
+            Cell::Graph(_) => "graph",
+            Cell::Heading(_) => "heading",
+            Cell::Image(_) => "image",
+            Cell::ListItem(_) => "list item",
+            Cell::Log(_) => "log",
+            Cell::Provider(_) => "provider",
+            Cell::Table(_) => "table",
+            Cell::Text(_) => "text",
+        }
+    }
 }
 
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Eq, Serialize, Serializable)]
