@@ -12,6 +12,8 @@
 pub struct NotebookSummary {
     #[serde(rename = "id")]
     pub id: String,
+    #[serde(rename = "workspaceId")]
+    pub workspace_id: String,
     #[serde(rename = "title")]
     pub title: String,
     #[serde(rename = "createdAt")]
@@ -29,6 +31,7 @@ pub struct NotebookSummary {
 impl NotebookSummary {
     pub fn new(
         id: String,
+        workspace_id: String,
         title: String,
         created_at: String,
         created_by: crate::models::CreatedBy,
@@ -37,6 +40,7 @@ impl NotebookSummary {
     ) -> NotebookSummary {
         NotebookSummary {
             id,
+            workspace_id,
             title,
             created_at,
             created_by: Box::new(created_by),

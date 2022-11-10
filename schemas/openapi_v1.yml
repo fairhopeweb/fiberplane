@@ -435,6 +435,7 @@ components:
       type: object
       required:
         - id
+        - workspaceId
         - revision
         - title
         - cells
@@ -447,6 +448,9 @@ components:
       properties:
         id:
           type: string
+        workspaceId:
+          type: string
+          format: base64uuid
         revision:
           type: integer
         title:
@@ -484,6 +488,7 @@ components:
       type: object
       required:
         - id
+        - workspaceId
         - title
         - createdAt
         - createdBy
@@ -492,6 +497,9 @@ components:
       properties:
         id:
           type: string
+        workspaceId:
+          type: string
+          format: base64uuid
         title:
           type: string
         createdAt:

@@ -12,6 +12,8 @@
 pub struct Notebook {
     #[serde(rename = "id")]
     pub id: String,
+    #[serde(rename = "workspaceId")]
+    pub workspace_id: String,
     #[serde(rename = "revision")]
     pub revision: i32,
     #[serde(rename = "title")]
@@ -41,6 +43,7 @@ pub struct Notebook {
 impl Notebook {
     pub fn new(
         id: String,
+        workspace_id: String,
         revision: i32,
         title: String,
         cells: Vec<crate::models::Cell>,
@@ -56,6 +59,7 @@ impl Notebook {
     ) -> Notebook {
         Notebook {
             id,
+            workspace_id,
             revision,
             title,
             cells,

@@ -5,6 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **id** | **String** |  | 
+**workspace_id** | **String** |  | 
 **title** | **String** |  | 
 **created_at** | **String** |  | 
 **created_by** | [**crate::models::CreatedBy**](createdBy.md) |  | 

@@ -138,6 +138,7 @@ impl Default for NotebookVisibility {
 #[serde(rename_all = "camelCase")]
 pub struct Notebook {
     pub id: String,
+    pub workspace_id: Base64Uuid,
     #[serde(with = "time::serde::rfc3339")]
     pub created_at: OffsetDateTime,
     #[serde(with = "time::serde::rfc3339")]

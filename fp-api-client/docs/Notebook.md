@@ -5,6 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **id** | **String** |  | 
+**workspace_id** | **String** |  | 
 **revision** | **i32** |  | 
 **title** | **String** |  | 
 **cells** | [**Vec<crate::models::Cell>**](cell.md) |  | 

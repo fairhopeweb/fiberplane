@@ -200,6 +200,7 @@ pub static TEST_NOTEBOOK: Lazy<Notebook> = Lazy::new(|| {
 
     Notebook {
         id: "TEST_NOTEBOOK".to_owned(),
+        workspace_id: Base64Uuid::nil(),
         cells,
         selected_data_sources,
         read_only: false,
