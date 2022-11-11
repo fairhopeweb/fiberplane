@@ -148,6 +148,7 @@ Class | Method | HTTP request | Description
  - [LogCell](docs/LogCell.md)
  - [LogCellVisibility](docs/LogCellVisibility.md)
  - [LogRecordIndex](docs/LogRecordIndex.md)
+ - [Membership](docs/Membership.md)
  - [MentionAnnotation](docs/MentionAnnotation.md)
  - [Metric](docs/Metric.md)
  - [NewComment](docs/NewComment.md)

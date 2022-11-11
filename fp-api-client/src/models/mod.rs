@@ -86,6 +86,8 @@ pub mod log_cell_visibility;
 pub use self::log_cell_visibility::LogCellVisibility;
 pub mod log_record_index;
 pub use self::log_record_index::LogRecordIndex;
+pub mod membership;
+pub use self::membership::Membership;
 pub mod mention_annotation;
 pub use self::mention_annotation::MentionAnnotation;
 pub mod metric;

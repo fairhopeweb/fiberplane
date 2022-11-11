@@ -48,6 +48,7 @@ docs/ListItemCell.md
 docs/LogCell.md
 docs/LogCellVisibility.md
 docs/LogRecordIndex.md
+docs/Membership.md
 docs/MentionAnnotation.md
 docs/Metric.md
 docs/NewComment.md
@@ -170,6 +171,7 @@ src/models/list_item_cell.rs
 src/models/log_cell.rs
 src/models/log_cell_visibility.rs
 src/models/log_record_index.rs
+src/models/membership.rs
 src/models/mention_annotation.rs
 src/models/metric.rs
 src/models/mod.rs

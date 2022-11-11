@@ -3913,7 +3913,7 @@ pub async fn workspace_users_list(
     workspace_id: &str,
     sort_by: Option<&str>,
     sort_direction: Option<&str>,
-) -> Result<Vec<crate::models::User>, Error<WorkspaceUsersListError>> {
+) -> Result<Vec<crate::models::Membership>, Error<WorkspaceUsersListError>> {
     let local_var_client = &configuration.client;
 
     let local_var_uri_str = format!(

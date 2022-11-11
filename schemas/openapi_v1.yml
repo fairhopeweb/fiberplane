@@ -904,6 +904,21 @@ components:
           type: string
         email:
           type: string
+    membership:
+      type: object
+      required:
+        - "id"
+        - "name"
+        - "role"
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        email:
+          type: string
+        role:
+          $ref: "#/components/schemas/auth_role"
     profile:
       type: object
       required:
@@ -2863,7 +2878,7 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/user"
+                  $ref: "#/components/schemas/membership"
   /api/workspaces:
     get:
       operationId: workspace_list

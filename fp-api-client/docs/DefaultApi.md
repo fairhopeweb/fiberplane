@@ -2359,7 +2359,7 @@ Name | Type | Description  | Required | Notes
 
 ## workspace_users_list
 
-> Vec<crate::models::User> workspace_users_list(workspace_id, sort_by, sort_direction)
+> Vec<crate::models::Membership> workspace_users_list(workspace_id, sort_by, sort_direction)
 
 
 List all users for a workspace
@@ -2375,7 +2375,7 @@ Name | Type | Description  | Required | Notes
 
 ### Return type
 
-[**Vec<crate::models::User>**](user.md)
+[**Vec<crate::models::Membership>**](membership.md)
 
 ### Authorization
 
