@@ -22,6 +22,9 @@ const QUERY_PARAM_NAME: &str = "q";
 const TIME_RANGE_PARAM_NAME: &str = "time_range";
 const ISSUE_ID_NAME: &str = "issue";
 
+static COMMIT_HASH: &str = env!("VERGEN_GIT_SHA");
+static BUILD_TIMESTAMP: &str = env!("VERGEN_BUILD_TIMESTAMP");
+
 #[fp_export_impl(fp_provider_bindings)]
 async fn get_supported_query_types(_config: ProviderConfig) -> Vec<SupportedQueryType> {
     vec![
@@ -67,8 +70,8 @@ async fn get_supported_query_types(_config: ProviderConfig) -> Vec<SupportedQuer
 #[fp_export_impl(fp_provider_bindings)]
 async fn invoke2(request: ProviderRequest) -> Result<Blob, Error> {
     log(format!(
-        "Sentry provider invoked for query type \"{}\" and query data \"{:?}\"",
-        request.query_type, request.query_data
+        "Sentry provider (commit: {}, built at: {}) invoked for query type \"{}\" and query data \"{:?}\"",
+        COMMIT_HASH, BUILD_TIMESTAMP, request.query_type, request.query_data
     ));
 
     let config: SentryConfig =

@@ -1,18 +1,27 @@
-use config::Config;
 use fp_provider_bindings::{
-    fp_export_impl, make_http_request, Error, HttpRequest, HttpRequestMethod,
-    LegacyLogRecord as LogRecord, LegacyProviderRequest as ProviderRequest,
-    LegacyProviderResponse as ProviderResponse, LegacyTimestamp, ProviderConfig, QueryLogs,
+    fp_export_impl, log, Error, LegacyLogRecord as LogRecord,
+    LegacyProviderRequest as ProviderRequest, LegacyProviderResponse as ProviderResponse,
+    LegacyTimestamp, ProviderConfig, QueryLogs,
 };
+use grafana_common::{query_direct_and_proxied, Config};
 use serde::Deserialize;
+use serde_json::Value;
 use std::{collections::HashMap, str::FromStr};
 
-mod config;
+#[cfg(test)]
+mod tests;
 
 const CONVERSION_FACTOR: f64 = 1e9;
+static COMMIT_HASH: &str = env!("VERGEN_GIT_SHA");
+static BUILD_TIMESTAMP: &str = env!("VERGEN_BUILD_TIMESTAMP");
 
 #[fp_export_impl(fp_provider_bindings)]
 async fn invoke(request: ProviderRequest, config: ProviderConfig) -> ProviderResponse {
+    log(format!(
+        "Loki provider (commit: {}, built at: {}) invoked with request: {:?}",
+        COMMIT_HASH, BUILD_TIMESTAMP, request
+    ));
+
     let config: Config = match serde_json::from_value(config) {
         Ok(config) => config,
         Err(err) => {
@@ -64,18 +73,11 @@ struct Data {
 }
 
 async fn fetch_logs(query: QueryLogs, config: Config) -> Result<Vec<LogRecord>, Error> {
-    let mut url = config
-        .url
-        .join("loki/api/v1/query_range")
-        .map_err(|e| Error::Config {
-            message: format!("Invalid loki URL: {:?}", e),
-        })?;
-
     // Convert unix epoch in seconds to epoch in nanoseconds
     let from = (query.time_range.from * CONVERSION_FACTOR).to_string();
     let to = (query.time_range.to * CONVERSION_FACTOR).to_string();
 
-    let qstr: String =
+    let query_string: String =
         url::form_urlencoded::Serializer::new(String::with_capacity(query.query.capacity()))
             .append_pair("query", &query.query)
             .append_pair(
@@ -85,34 +87,14 @@ async fn fetch_logs(query: QueryLogs, config: Config) -> Result<Vec<LogRecord>, 
             .append_pair("start", &from)
             .append_pair("end", &to)
             .finish();
-    url.set_query(Some(&qstr));
 
-    let headers = config.auth.map(|auth| auth.to_headers());
-
-    let request = HttpRequest {
-        body: None,
-        headers,
-        method: HttpRequestMethod::Post,
-        url: url.to_string(),
-    };
-
-    // Parse response
-    let response = make_http_request(request)
-        .await
-        .map_err(|error| match &error {
-            fp_provider_bindings::HttpRequestError::ServerError {
-                status_code,
-                response,
-            } if *status_code == 400 => Error::Other {
-                message: format!("Query error: {}", String::from_utf8_lossy(response)),
-            },
-            _ => Error::Http { error },
-        })?
-        .body;
-
-    let response: QueryResponse = serde_json::from_slice(&response).map_err(|e| Error::Data {
-        message: format!("Error parsing LOKI response: {:?}", e),
-    })?;
+    let response: QueryResponse = query_direct_and_proxied(
+        &config,
+        "loki",
+        &format!("loki/api/v1/query_range?{}", &query_string),
+        None,
+    )
+    .await?;
 
     if response.status != "success" {
         return Err(Error::Data {
@@ -161,117 +143,17 @@ fn data_mapper(
 }
 
 async fn check_status(config: Config) -> Result<(), Error> {
-    let url = config
-        .url
-        .join("loki/api/v1/query_range?query=fiberplane_check_status")
-        .map_err(|e| Error::Config {
-            message: format!("Invalid loki URL: {:?}", e),
-        })?;
-    let headers = config.auth.map(|auth| auth.to_headers());
+    // Send a fake query to check the status
+    let query_string = url::form_urlencoded::Serializer::new(String::new())
+        .append_pair("query", r#"{job="fiberplane_check_status"} != ``"#)
+        .finish();
 
-    let request = HttpRequest {
-        body: None,
-        headers,
-        method: HttpRequestMethod::Get,
-        url: url.to_string(),
-    };
-
-    make_http_request(request).await?;
-
-    // At this point we don't care to validate the info Loki sends back
-    // We just care it responded with 200 OK
+    query_direct_and_proxied::<Value>(
+        &config,
+        "loki",
+        &format!("loki/api/v1/query_range?{}", &query_string),
+        None,
+    )
+    .await?;
     Ok(())
-}
-
-#[cfg(test)]
-mod test {
-    use crate::{data_mapper, Data, QueryData, QueryResponse};
-    use fp_provider_bindings::LegacyLogRecord as LogRecord;
-    use serde::Deserialize;
-    use serde_json::Deserializer;
-    use std::collections::HashMap;
-
-    const DATA: &str = r#"{
-        "status": "success",
-        "data": {
-          "resultType": "streams",
-          "result": [
-            {
-              "stream": {
-                "filename": "/var/log/myproject.log",
-                "job": "varlogs",
-                "level": "info"
-              },
-              "values": [
-                [
-                  "1569266497240578000",
-                  "foo"
-                ],
-                [
-                  "1569266492548155000",
-                  "bar"
-                ]
-              ]
-            }
-          ],
-          "stats": {
-          }
-        }
-      }"#;
-
-    #[test]
-    fn test_deserialization() {
-        let value = QueryResponse::deserialize(&mut Deserializer::from_str(DATA)).unwrap();
-
-        assert_eq!(
-            value,
-            QueryResponse {
-                data: QueryData::Streams(vec![Data {
-                    labels: HashMap::from([
-                        ("filename".to_owned(), "/var/log/myproject.log".to_owned()),
-                        ("job".to_owned(), "varlogs".to_owned()),
-                        ("level".to_owned(), "info".to_owned()),
-                    ]),
-                    values: vec![
-                        ("1569266497240578000".to_owned(), "foo".to_owned()),
-                        ("1569266492548155000".to_owned(), "bar".to_owned()),
-                    ],
-                }]),
-                status: "success".to_owned(),
-            },
-        )
-    }
-
-    #[test]
-    fn test_data_mapper() {
-        let value = QueryResponse::deserialize(&mut Deserializer::from_str(DATA)).unwrap();
-        if let QueryData::Streams(data) = &value.data {
-            let mapped = data_mapper(&data[0])
-                .collect::<Result<Vec<_>, _>>()
-                .unwrap();
-            assert_eq!(
-                mapped,
-                vec![
-                    LogRecord {
-                        timestamp: 1569266497.240578000,
-                        body: "foo".to_owned(),
-                        attributes: data[0].labels.clone(),
-                        span_id: None,
-                        trace_id: None,
-                        resource: HashMap::default(),
-                    },
-                    LogRecord {
-                        timestamp: 1569266492.5481548, //not the exact value due to floating point precision
-                        body: "bar".to_owned(),
-                        attributes: data[0].labels.clone(),
-                        span_id: None,
-                        trace_id: None,
-                        resource: HashMap::default(),
-                    }
-                ]
-            );
-        } else {
-            panic!("unexpected query data type");
-        }
-    }
 }

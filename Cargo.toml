@@ -11,6 +11,7 @@ members = [
     "providers/*",
     "time_util",
 ]
+exclude = [ "providers/.cargo"]
 
 [workspace.package]
 authors = ["Fiberplane <info@fiberplane.com>"]
@@ -28,6 +29,7 @@ serde_json = "1"
 thiserror = "1.0.37"
 time = { version = "0.3.15", features = [ "macros", "serde-human-readable", "serde-well-known" ] }
 tracing = "0.1.36"
+vergen = { version = "7.4.2", default-features = false, features = ["build", "git"] }
 
 [patch.crates-io]
 # fp-bindgen = { path = "../fp-bindgen/fp-bindgen"}

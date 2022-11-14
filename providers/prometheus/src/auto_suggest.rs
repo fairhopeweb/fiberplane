@@ -1,6 +1,7 @@
-use super::{config::Config, constants::*, prometheus::*};
+use super::{constants::*, prometheus::*};
 use fiberplane::protocols::providers::{AutoSuggestRequest, Suggestion};
 use fp_provider_bindings::*;
+use grafana_common::{query_direct_and_proxied, Config};
 
 /// See: https://prometheus.io/docs/prometheus/latest/querying/functions/
 const PROM_QL_FUNCTIONS: &[&str] = &[
@@ -55,22 +56,21 @@ const PROM_QL_FUNCTIONS: &[&str] = &[
 pub async fn query_suggestions(query_data: Blob, config: Config) -> Result<Blob, Error> {
     let query = AutoSuggestRequest::from_query_data(&query_data)?.query;
     let identifier = extract_identifier(&query);
-    let url = config
-        .url
-        .join("api/v1/metadata")
-        .map_err(|e| Error::Config {
-            message: format!("Invalid prometheus URL: {:?}", e),
-        })?;
 
-    let response = make_http_request(HttpRequest {
-        body: None,
-        headers: None,
-        method: HttpRequestMethod::Get,
-        url: url.to_string(),
-    })
-    .await?;
+    let response: PrometheusMetadataResponse =
+        query_direct_and_proxied(&config, "prometheus", "api/v1/metadata", None).await?;
 
-    let mut suggestions = from_metadata(&response.body)?;
+    let mut suggestions: Vec<Suggestion> = response
+        .data
+        .into_iter()
+        .filter_map(|(name, values)| {
+            values.into_iter().next().map(|value| Suggestion {
+                text: name,
+                description: value.help,
+            })
+        })
+        .collect();
+
     if !identifier.is_empty() {
         suggestions = suggestions
             .into_iter()
@@ -114,27 +114,6 @@ fn extract_identifier(query: &str) -> &str {
     } else {
         query.trim()
     }
-}
-
-fn from_metadata(response: &[u8]) -> Result<Vec<Suggestion>, Error> {
-    let response = match serde_json::from_slice::<PrometheusMetadataResponse>(response) {
-        Ok(response) => response.data,
-        Err(error) => {
-            return Err(Error::Data {
-                message: format!("Error parsing response: {}", error),
-            })
-        }
-    };
-
-    Ok(response
-        .into_iter()
-        .filter_map(|(name, values)| {
-            values.into_iter().next().map(|value| Suggestion {
-                text: name,
-                description: value.help,
-            })
-        })
-        .collect())
 }
 
 fn is_letter(c: char) -> bool {

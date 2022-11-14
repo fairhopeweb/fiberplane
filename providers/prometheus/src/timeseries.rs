@@ -1,6 +1,7 @@
-use super::{config::Config, constants::*, prometheus::*};
+use super::{constants::*, prometheus::*};
 use fiberplane::protocols::providers::{FORM_ENCODED_MIME_TYPE, TIMESERIES_MIME_TYPE};
 use fp_provider_bindings::*;
+use grafana_common::{query_direct_and_proxied, Config};
 use std::time::SystemTime;
 use time::{ext::NumericalDuration, format_description::well_known::Rfc3339, OffsetDateTime};
 
@@ -50,49 +51,26 @@ pub async fn query_series(query_data: Blob, config: Config) -> Result<Blob, Erro
     form_data.append_pair("start", &start);
     form_data.append_pair("end", &end);
     form_data.append_pair("step", &step.to_string());
+    let query_string = form_data.finish();
 
-    let mut headers = config
-        .auth
-        .map(|auth| auth.to_headers())
-        .unwrap_or_default();
-    headers.insert("Content-Type".to_owned(), FORM_ENCODED_MIME_TYPE.to_owned());
+    let body = Blob {
+        data: query_string.into_bytes().into(),
+        mime_type: FORM_ENCODED_MIME_TYPE.to_owned(),
+    };
 
-    let url = config
-        .url
-        .join("api/v1/query_range")
-        .map_err(|e| Error::Config {
-            message: format!("Invalid prometheus URL: {:?}", e),
-        })?;
-    log(format!(
-        "prometheus provider fetching series from: {}, query: {}",
-        &url, &request.query
-    ));
+    let response: PrometheusResponse =
+        query_direct_and_proxied(&config, "prometheus", "api/v1/query_range", Some(body)).await?;
 
-    let response = make_http_request(HttpRequest {
-        body: Some(form_data.finish().into()),
-        headers: Some(headers),
-        method: HttpRequestMethod::Post,
-        url: url.to_string(),
-    })
-    .await?;
+    let matrix = match response.data {
+        PrometheusData::Matrix(response) => response,
+        PrometheusData::Vector(_) => {
+            return Err(Error::Data {
+                message: "Unexpected response type".to_owned(),
+            })
+        }
+    };
 
-    from_matrix(&response.body)
-}
-
-fn from_matrix(response: &[u8]) -> Result<Blob, Error> {
-    let response = match serde_json::from_slice::<PrometheusResponse>(response)
-        .map(|response| response.data)
-    {
-        Ok(PrometheusData::Matrix(response)) => Ok(response),
-        Ok(_) => Err(Error::Data {
-            message: "Unexpected response type".to_owned(),
-        }),
-        Err(error) => Err(Error::Data {
-            message: format!("Error parsing response: {}", error),
-        }),
-    }?;
-
-    response
+    matrix
         .into_iter()
         .map(RangeVector::into_series)
         .collect::<Result<Vec<_>, Error>>()

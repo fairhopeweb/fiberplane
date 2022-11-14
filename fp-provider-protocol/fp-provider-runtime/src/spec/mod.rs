@@ -15,7 +15,7 @@ const MAX_HTTP_RESPONSE_SIZE: usize = 1024 * 1024 * 2; //2MiB
 #[instrument(skip_all, fields(
     url = ?req.url,
     method = ?req.method,
-    num_headers = ?req.headers.as_ref().map(|headers| headers.len()).unwrap_or_default(),
+    headers = ?req.headers.as_ref().map(|headers| headers.keys().map(|key| key.as_str()).collect::<Vec<_>>()).unwrap_or_default(),
     body_size = ?req.body.as_ref().map(|body| body.len()).unwrap_or_default())
 )]
 pub async fn make_http_request(req: HttpRequest) -> Result<HttpResponse, HttpRequestError> {

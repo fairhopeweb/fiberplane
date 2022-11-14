@@ -1,9 +1,10 @@
-use super::{config::*, constants::*, prometheus::*};
+use super::{constants::*, prometheus::*};
 use fiberplane::{
     protocols::providers::{Metric, FORM_ENCODED_MIME_TYPE},
     text_util::char_count,
 };
 use fp_provider_bindings::*;
+use grafana_common::{query_direct_and_proxied, Config};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 
@@ -21,45 +22,19 @@ pub async fn query_instants(query_data: Blob, config: Config) -> Result<Blob, Er
         return Err(Error::UnsupportedRequest);
     }
 
-    let mut headers = config
-        .auth
-        .map(|auth| auth.to_headers())
-        .unwrap_or_default();
-    headers.insert("Content-Type".to_owned(), query_data.mime_type);
+    let response: PrometheusResponse =
+        query_direct_and_proxied(&config, "prometheus", "api/v1/query", Some(query_data)).await?;
 
-    let url = config.url.join("api/v1/query").map_err(|e| Error::Config {
-        message: format!("Invalid prometheus URL: {:?}", e),
-    })?;
-    log(format!(
-        "Prometheus provider fetching instant from: {}, {:?}",
-        &url, &query_data.data
-    ));
+    let instants = match response.data {
+        PrometheusData::Vector(v) => v,
+        PrometheusData::Matrix(_) => {
+            return Err(Error::Data {
+                message: "Expected a vector of instants, got a matrix".to_string(),
+            })
+        }
+    };
 
-    let response = make_http_request(HttpRequest {
-        body: Some(query_data.data),
-        headers: Some(headers),
-        method: HttpRequestMethod::Post,
-        url: url.to_string(),
-    })
-    .await?;
-
-    from_vector(&response.body)
-}
-
-fn from_vector(response: &[u8]) -> Result<Blob, Error> {
-    let response = match serde_json::from_slice::<PrometheusResponse>(response)
-        .map(|response| response.data)
-    {
-        Ok(PrometheusData::Vector(response)) => Ok(response),
-        Ok(_) => Err(Error::Data {
-            message: "Unexpected response type".to_owned(),
-        }),
-        Err(error) => Err(Error::Data {
-            message: format!("Error parsing response: {}", error),
-        }),
-    }?;
-
-    response
+    instants
         .into_iter()
         .map(InstantVector::into_instant)
         .collect::<Result<Vec<_>, Error>>()

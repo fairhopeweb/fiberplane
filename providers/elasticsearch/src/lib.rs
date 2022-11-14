@@ -21,6 +21,8 @@ pub(crate) static BODY_FIELDS: &[&str] =
 // https://github.com/open-telemetry/opentelemetry-specification/blob/main/specification/logs/data-model.md#elastic-common-schema
 static RESOURCE_FIELD_PREFIXES: &[&str] = &["agent.", "cloud.", "container.", "host.", "service."];
 static RESOURCE_FIELD_EXCEPTIONS: &[&str] = &["container.labels", "host.uptime", "service.state"];
+static COMMIT_HASH: &str = env!("VERGEN_GIT_SHA");
+static BUILD_TIMESTAMP: &str = env!("VERGEN_BUILD_TIMESTAMP");
 
 #[derive(Deserialize)]
 #[serde(rename_all = "camelCase")]
@@ -48,6 +50,11 @@ struct Document {
 
 #[fp_export_impl(fp_provider_bindings)]
 async fn invoke(request: ProviderRequest, config: ProviderConfig) -> ProviderResponse {
+    log(format!(
+        "Elasticsearch provider (commit: {}, built at: {}) invoked with request: {:?}",
+        COMMIT_HASH, BUILD_TIMESTAMP, request
+    ));
+
     let config: Config = match serde_json::from_value(config) {
         Ok(config) => config,
         Err(err) => {
