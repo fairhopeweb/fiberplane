@@ -515,7 +515,7 @@ impl Cell {
     }
 
     /// Returns the cell type as a string
-    pub fn type_str(&self) -> &'static str {
+    pub fn type_str(&self) -> &str {
         match self {
             Cell::Checkbox(_) => "checkbox",
             Cell::Code(_) => "code",
@@ -526,7 +526,7 @@ impl Cell {
             Cell::Image(_) => "image",
             Cell::ListItem(_) => "list item",
             Cell::Log(_) => "log",
-            Cell::Provider(_) => "provider",
+            Cell::Provider(cell) => &cell.intent,
             Cell::Table(_) => "table",
             Cell::Text(_) => "text",
         }
