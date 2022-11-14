@@ -55,12 +55,18 @@ const PROM_QL_FUNCTIONS: &[&str] = &[
 pub async fn query_suggestions(query_data: Blob, config: Config) -> Result<Blob, Error> {
     let query = AutoSuggestRequest::from_query_data(&query_data)?.query;
     let identifier = extract_identifier(&query);
+    let url = config
+        .url
+        .join("api/v1/metadata")
+        .map_err(|e| Error::Config {
+            message: format!("Invalid prometheus URL: {:?}", e),
+        })?;
 
     let response = make_http_request(HttpRequest {
         body: None,
         headers: None,
         method: HttpRequestMethod::Get,
-        url: format!("{}/api/v1/metadata", config.url),
+        url: url.to_string(),
     })
     .await?;
 
