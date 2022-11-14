@@ -12,6 +12,8 @@
 pub struct NewWorkspace {
     #[serde(rename = "name")]
     pub name: String,
+    #[serde(rename = "displayName", skip_serializing_if = "Option::is_none")]
+    pub display_name: Option<String>,
     /// This is a mapping from the provider type to the data source selected for that type
     #[serde(rename = "defaultDataSources", skip_serializing_if = "Option::is_none")]
     pub default_data_sources:
@@ -22,6 +24,7 @@ impl NewWorkspace {
     pub fn new(name: String) -> NewWorkspace {
         NewWorkspace {
             name,
+            display_name: None,
             default_data_sources: None,
         }
     }

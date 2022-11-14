@@ -3,6 +3,7 @@ use super::comments::UserSummary;
 use super::data_sources::SelectedDataSources;
 use super::formatting::Formatting;
 pub use super::labels::Label;
+use super::names::Name;
 use crate::query_data::{has_query_data, set_query_field, unset_query_field};
 use base64uuid::Base64Uuid;
 use fp_bindgen::prelude::Serializable;
@@ -1007,7 +1008,8 @@ impl From<Timestamp> for OffsetDateTime {
 #[serde(rename_all = "camelCase")]
 pub struct Workspace {
     pub id: Base64Uuid,
-    pub name: String,
+    pub name: Name,
+    pub display_name: String,
     #[serde(rename = "type")]
     pub ty: WorkspaceType,
     pub default_data_sources: SelectedDataSources,
@@ -1017,7 +1019,7 @@ pub struct Workspace {
     pub updated_at: OffsetDateTime,
 }
 
-#[derive(Clone, Copy, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(
     rust_plugin_module = "fiberplane::protocols::core",
     rust_wasmer_runtime_module = "fiberplane::protocols::core"
@@ -1052,7 +1054,7 @@ pub struct NewWorkspaceInvitationResponse {
     pub url: String,
 }
 
-/// Payload to create a new workspace.
+/// Payload to create a new organization workspace.
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(
     rust_plugin_module = "fiberplane::protocols::core",
@@ -1060,7 +1062,9 @@ pub struct NewWorkspaceInvitationResponse {
 )]
 #[serde(rename_all = "camelCase")]
 pub struct NewWorkspace {
-    pub name: String,
+    pub name: Name,
+    /// The display name of the workspace. The `name` will be used if none is provided
+    pub display_name: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub default_data_sources: Option<SelectedDataSources>,
 }
@@ -1074,7 +1078,7 @@ pub struct NewWorkspace {
 #[serde(rename_all = "camelCase")]
 pub struct UpdateWorkspace {
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub name: Option<String>,
+    pub display_name: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub owner: Option<Base64Uuid>,
     #[serde(default, skip_serializing_if = "Option::is_none")]

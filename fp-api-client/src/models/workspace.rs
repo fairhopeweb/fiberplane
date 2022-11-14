@@ -14,6 +14,8 @@ pub struct Workspace {
     pub id: String,
     #[serde(rename = "name")]
     pub name: String,
+    #[serde(rename = "displayName")]
+    pub display_name: String,
     #[serde(rename = "type")]
     pub _type: Type,
     /// This is a mapping from the provider type to the data source selected for that type
@@ -30,6 +32,7 @@ impl Workspace {
     pub fn new(
         id: String,
         name: String,
+        display_name: String,
         _type: Type,
         default_data_sources: ::std::collections::HashMap<
             String,
@@ -41,6 +44,7 @@ impl Workspace {
         Workspace {
             id,
             name,
+            display_name,
             _type,
             default_data_sources,
             created_at,

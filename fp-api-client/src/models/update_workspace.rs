@@ -10,8 +10,8 @@
 
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct UpdateWorkspace {
-    #[serde(rename = "name", skip_serializing_if = "Option::is_none")]
-    pub name: Option<String>,
+    #[serde(rename = "displayName", skip_serializing_if = "Option::is_none")]
+    pub display_name: Option<String>,
     #[serde(rename = "owner", skip_serializing_if = "Option::is_none")]
     pub owner: Option<String>,
     /// This is a mapping from the provider type to the data source selected for that type
@@ -23,7 +23,7 @@ pub struct UpdateWorkspace {
 impl UpdateWorkspace {
     pub fn new() -> UpdateWorkspace {
         UpdateWorkspace {
-            name: None,
+            display_name: None,
             owner: None,
             default_data_sources: None,
         }

@@ -1691,6 +1691,7 @@ components:
       required:
         - id
         - name
+        - displayName
         - type
         - createdAt
         - updatedAt
@@ -1700,6 +1701,9 @@ components:
           type: string
           format: base64uuid
         name:
+          type: string
+          format: name
+        displayName:
           type: string
         type:
           type: string
@@ -1731,6 +1735,9 @@ components:
       properties:
         name:
           type: string
+          format: name
+        displayName:
+          type: string
         defaultDataSources:
           $ref: "#/components/schemas/selectedDataSources"
     workspace_invite:
@@ -1757,7 +1764,7 @@ components:
     update_workspace:
       type: object
       properties:
-        name:
+        displayName:
           type: string
         owner:
           type: string

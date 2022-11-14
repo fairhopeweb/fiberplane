@@ -15,7 +15,7 @@ const MIN_LENGTH: usize = 1;
 pub enum InvalidName {
     #[error("name is too long")]
     TooLong,
-    #[error("name contains invalid characters")]
+    #[error("name contains invalid characters (names can only include lowercase ASCII letters, numbers, and dashes)")]
     InvalidCharacters,
     #[error("name cannot be an empty string")]
     TooShort,
