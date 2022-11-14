@@ -12,7 +12,3 @@ The template has four arguments which can be used to provide context for the inc
 
 ### Time Range
 The template defaults to the last hour. Change the value of `.setTimeRangeRelative(minutes=60)` to edit this
-
-### Example Notebook
-An example incident using template can be found here:
-https://fiberplane.com/notebook/Incident-Analysis-1234-Loss-of-internet-facing-services-rwEnxvpCQsic7wKG4ltenA

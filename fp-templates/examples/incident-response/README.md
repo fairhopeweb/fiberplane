@@ -11,7 +11,3 @@ The template has three arguments which can be used to provide context for the in
 
 ### Time Range
 The template defaults to the last hour. Change the value of `.setTimeRangeRelative(minutes=60)` to edit this
-
-### Example Notebook
-An example incident using template can be found here:
-https://fiberplane.com/notebook/High500ErrorRate-ydtbuDjTRPmgZaXX7G7T4Q

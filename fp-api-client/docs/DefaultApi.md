@@ -1,6 +1,6 @@
 # \DefaultApi
 
-All URIs are relative to *https://fiberplane.com*
+All URIs are relative to *https://studio.fiberplane.com*
 
 Method | HTTP request | Description
 ------------- | ------------- | -------------

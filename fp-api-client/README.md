@@ -20,7 +20,7 @@ Put the package under your project folder and add the following to `Cargo.toml` 
 
 ## Documentation for API Endpoints
 
-All URIs are relative to *https://fiberplane.com*
+All URIs are relative to *https://studio.fiberplane.com*
 
 Class | Method | HTTP request | Description
 ------------ | ------------- | ------------- | -------------

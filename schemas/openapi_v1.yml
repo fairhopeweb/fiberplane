@@ -4,7 +4,7 @@ info:
   title: Fiberplane API
   version: "1.0"
 servers:
-  - url: https://fiberplane.com/
+  - url: https://studio.fiberplane.com/
     description: Production servers
   - url: https://{env}.fiberplane.io/
     description: Non-production servers
