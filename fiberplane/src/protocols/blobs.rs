@@ -1,9 +1,10 @@
-use std::convert::TryFrom;
-
+use crate::debug_print_bytes;
 use base64::DecodeError;
 use bytes::Bytes;
 use fp_bindgen::prelude::Serializable;
 use serde::{Deserialize, Serialize};
+use std::convert::TryFrom;
+use std::fmt::{self, Debug, Formatter};
 
 /// Binary blob for passing data in arbitrary encodings.
 ///
@@ -14,7 +15,7 @@ use serde::{Deserialize, Serialize};
 ///
 /// We can also store blobs in cells, but for this we use [EncodedBlob] to allow
 /// JSON serialization.
-#[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Default, Deserialize, Eq, PartialEq, Serialize, Serializable)]
 #[fp(
     rust_plugin_module = "fiberplane::protocols::blobs",
     rust_wasmer_runtime_module = "fiberplane::protocols::blobs"
@@ -56,8 +57,18 @@ impl TryFrom<&EncodedBlob> for Blob {
     }
 }
 
+impl Debug for Blob {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        f.debug_struct("Blob")
+            .field("mime_type", &self.mime_type)
+            .field("data_length", &self.data.len())
+            .field("data", &debug_print_bytes(&self.data))
+            .finish()
+    }
+}
+
 /// base64-encoded version of [Blob].
-#[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Default, Deserialize, Eq, PartialEq, Serialize, Serializable)]
 #[fp(
     rust_plugin_module = "fiberplane::protocols::blobs",
     rust_wasmer_runtime_module = "fiberplane::protocols::blobs"
@@ -88,5 +99,15 @@ impl From<&Blob> for EncodedBlob {
             data: base64::encode(blob.data.as_ref()),
             mime_type: blob.mime_type.clone(),
         }
+    }
+}
+
+impl Debug for EncodedBlob {
+    fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
+        f.debug_struct("EncodedBlob")
+            .field("mime_type", &self.mime_type)
+            .field("data_length", &self.data.len())
+            .field("data", &debug_print_bytes(self.data.as_bytes()))
+            .finish()
     }
 }
