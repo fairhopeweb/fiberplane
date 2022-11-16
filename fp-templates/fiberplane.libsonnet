@@ -200,7 +200,7 @@ local formattedContent(content='') =
      * @example fmt.link('Example', 'https://example.com')
      * @example fmt.link('https://example.com')
      */
-    link(content, url):: addContentAndFormatting(self, content, 'link', url=if std.type(url) == 'null' then content else validate.string('url', url)),
+    link(content, url=null):: addContentAndFormatting(self, content, 'link', url=if std.type(url) == 'null' then content else validate.string('url', url)),
     /**
      * Add a mention
      *
