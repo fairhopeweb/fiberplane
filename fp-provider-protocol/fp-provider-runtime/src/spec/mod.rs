@@ -1,7 +1,7 @@
 use rand::Rng;
-use reqwest::Url;
+use reqwest::{Client, Url};
 use std::collections::HashMap;
-use std::time::SystemTime;
+use std::time::{Duration, SystemTime};
 use tracing::{debug, error, instrument, trace};
 
 mod bindings;
@@ -10,7 +10,12 @@ pub mod types;
 pub use bindings::*;
 use types::*;
 
-const MAX_HTTP_RESPONSE_SIZE: usize = 1024 * 1024 * 2; //2MiB
+const MAX_HTTP_RESPONSE_SIZE: usize = 1024 * 1024 * 2; // 2MiB
+const TCP_KEEPALIVE: Duration = Duration::from_secs(60);
+thread_local!(static CLIENT: Client = Client::builder()
+    .tcp_keepalive(Some(TCP_KEEPALIVE))
+    .build()
+    .expect("Failed to build HTTP client"));
 
 #[instrument(skip_all, fields(
     url = ?req.url,
@@ -32,13 +37,12 @@ pub async fn make_http_request(req: HttpRequest) -> Result<HttpResponse, HttpReq
 
     trace!("making HTTP request");
 
-    let client = reqwest::Client::new();
-    let mut builder = match req.method {
+    let mut builder = CLIENT.with(|client| match req.method {
         HttpRequestMethod::Delete => client.delete(url),
         HttpRequestMethod::Get => client.get(url),
         HttpRequestMethod::Head => client.head(url),
         HttpRequestMethod::Post => client.post(url),
-    };
+    });
     if let Some(body) = req.body {
         builder = builder.body(body);
     }
