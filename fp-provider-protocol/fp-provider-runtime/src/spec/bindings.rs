@@ -238,7 +238,7 @@ fn create_import_object(store: &Store, env: &RuntimeInstanceData) -> ImportObjec
 
 pub fn _log(env: &RuntimeInstanceData, message: FatPtr) {
     let message = import_from_guest::<String>(env, message);
-    let result = super::log(message);
+    let _result = super::log(message);
 }
 
 pub fn _make_http_request(env: &RuntimeInstanceData, request: FatPtr) -> FatPtr {

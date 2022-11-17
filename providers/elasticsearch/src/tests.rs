@@ -1,8 +1,7 @@
 use super::*;
-use elasticsearch_dsl::{Hit, Hits, Relation, SearchResponse, Shards, Total};
+use elasticsearch_dsl::{Hit, HitsMetadata, SearchResponse, TotalHits, TotalHitsRelation};
 use fp_provider_bindings::common::mem::FatPtr;
 use serde_json::json;
-use std::iter::FromIterator;
 use time::{format_description::well_known::Rfc3339, OffsetDateTime};
 
 #[no_mangle]
@@ -120,7 +119,7 @@ fn timestamp_deserializes_from_unix_epoch() {
         },
     });
 
-    let document: Hit<Document, Document> = serde_json::from_value(js).unwrap();
+    let document: Hit = serde_json::from_value(js).unwrap();
     let record = parse_hit(document, TIMESTAMP_FIELDS, BODY_FIELDS).unwrap();
 
     assert_eq!(record.timestamp, 1640010678f64);
@@ -136,7 +135,7 @@ fn timestamp_deserializes_from_rfc3339() {
         },
     });
 
-    let document: Hit<Document, Document> = serde_json::from_value(js).unwrap();
+    let document: Hit = serde_json::from_value(js).unwrap();
     let record = parse_hit(document, TIMESTAMP_FIELDS, BODY_FIELDS).unwrap();
 
     assert_eq!(
@@ -149,37 +148,20 @@ fn timestamp_deserializes_from_rfc3339() {
 
 #[test]
 fn sorts_logs_by_timestamp_newest_first() {
-    let hit = |timestamp: &str, body: &str| Hit {
-        index: None,
-        id: "".to_string(),
-        score: None,
-        source: Some(Document {
-            fields: Map::from_iter([
-                ("timestamp".to_string(), json!(timestamp)),
-                ("body".to_string(), json!(body)),
-            ]),
-        }),
-        highlight: Default::default(),
-        inner_hits: None,
-        matched_queries: Default::default(),
-        sort: Default::default(),
-        fields: Default::default(),
+    let hit = |timestamp: &str, body: &str| {
+        let hit = json!({
+            "_source": {
+            "timestamp": timestamp,
+            "body": body,
+            }
+        });
+        serde_json::from_value::<Hit>(hit).unwrap()
     };
-    let response: SearchResponse<Document, Document> = SearchResponse {
-        took: 0,
-        timed_out: false,
-        shards: Shards {
-            skipped: 0,
-            failures: None,
-            total: 0,
-            successful: 0,
-            failed: 0,
-        },
-        aggregations: None,
-        hits: Hits {
-            total: Some(Total {
+    let response: SearchResponse = SearchResponse {
+        hits: HitsMetadata {
+            total: Some(TotalHits {
                 value: 3,
-                relation: Relation::Equal,
+                relation: TotalHitsRelation::Equal,
             }),
             max_score: None,
             hits: vec![
@@ -188,6 +170,7 @@ fn sorts_logs_by_timestamp_newest_first() {
                 hit("2020-12-25T15:59:32.739Z", "1"),
             ],
         },
+        ..Default::default()
     };
     let logs = parse_response(response, TIMESTAMP_FIELDS, BODY_FIELDS).unwrap();
     assert_eq!(logs[0].body, "1");

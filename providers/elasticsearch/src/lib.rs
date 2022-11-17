@@ -41,13 +41,6 @@ struct SearchRequestBody {
     size: Option<u32>,
 }
 
-#[derive(Deserialize, Debug)]
-struct Document {
-    #[serde(flatten)]
-    fields: Map<String, Value>,
-    // TODO parse fields from elastic common schema
-}
-
 #[fp_export_impl(fp_provider_bindings)]
 async fn invoke(request: ProviderRequest, config: ProviderConfig) -> ProviderResponse {
     log(format!(
@@ -139,10 +132,9 @@ async fn fetch_logs(query: QueryLogs, config: Config) -> Result<Vec<LogRecord>, 
 
     // Parse response
     let response = make_http_request(request).await?.body;
-    let response: SearchResponse<Document, Document> =
-        serde_json::from_slice(&response).map_err(|e| Error::Data {
-            message: format!("Error parsing ElasticSearch response: {:?}", e),
-        })?;
+    let response: SearchResponse = serde_json::from_slice(&response).map_err(|e| Error::Data {
+        message: format!("Error parsing ElasticSearch response: {:?}", e),
+    })?;
 
     if response.timed_out {
         return Err(Error::Other {
@@ -150,20 +142,21 @@ async fn fetch_logs(query: QueryLogs, config: Config) -> Result<Vec<LogRecord>, 
         });
     }
 
-    log(format!("Got {} results", response.hits.hits.len()));
+    log(format!(
+        "Got {} query results from Elasticsearch",
+        response.hits.hits.len()
+    ));
 
     parse_response(response, &timestamp_field_names, &body_field_names)
 }
 
 fn parse_response(
-    response: SearchResponse<Document, Document>,
+    response: SearchResponse,
     timestamp_field_names: &[&str],
     body_field_names: &[&str],
 ) -> Result<Vec<LogRecord>, Error> {
-    let mut logs: Vec<LogRecord> = response
-        .hits
-        .hits
-        .into_iter()
+    let hits = response.hits.hits.into_iter();
+    let mut logs: Vec<LogRecord> = hits
         .filter_map(|hit| parse_hit(hit, timestamp_field_names, body_field_names))
         .collect();
     // Sort logs so the newest ones are first
@@ -176,13 +169,21 @@ fn parse_response(
 }
 
 fn parse_hit(
-    hit: Hit<Document, Document>,
+    hit: Hit,
     timestamp_field_names: &[&str],
     body_field_names: &[&str],
 ) -> Option<LogRecord> {
-    let source = hit.source?;
+    let source: Map<String, Value> = hit
+        .source()
+        .map_err(|err| {
+            log(format!(
+                "Error parsing ElasticSearch hit as JSON object: {:?}",
+                err
+            ));
+        })
+        .ok()?;
     let mut flattened_fields = HashMap::new();
-    for (key, val) in source.fields.into_iter() {
+    for (key, val) in source.into_iter() {
         flatten_nested_value(&mut flattened_fields, key, val);
     }
 

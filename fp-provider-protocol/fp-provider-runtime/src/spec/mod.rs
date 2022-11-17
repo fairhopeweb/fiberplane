@@ -50,20 +50,20 @@ pub async fn make_http_request(req: HttpRequest) -> Result<HttpResponse, HttpReq
 
     let response = builder.send().await.map_err(|error| {
         if error.is_timeout() {
-            debug!("HTTP request timed out");
+            debug!("request timed out");
             HttpRequestError::Timeout
         } else {
-            debug!(?error, "HTTP request error");
+            debug!(?error, "request error");
             HttpRequestError::Other {
                 reason: error.to_string(),
             }
         }
     })?;
 
-    trace!(
+    debug!(
         status = ?response.status(),
         content_length = ?response.content_length(),
-        "Got successful HTTP response",
+        "request was successful",
     );
 
     let status_code = response.status().as_u16();
