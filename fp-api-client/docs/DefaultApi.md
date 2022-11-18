@@ -28,6 +28,7 @@ Method | HTTP request | Description
 [**notebook_convert_to_template**](DefaultApi.md#notebook_convert_to_template) | **GET** /api/notebooks/{notebookId}/template.jsonnet | 
 [**notebook_create**](DefaultApi.md#notebook_create) | **POST** /api/workspaces/{workspace_id}/notebooks | 
 [**notebook_delete**](DefaultApi.md#notebook_delete) | **DELETE** /api/notebooks/{notebookId} | 
+[**notebook_duplicate**](DefaultApi.md#notebook_duplicate) | **POST** /api/notebooks/{notebookId}/duplicate | 
 [**notebook_get**](DefaultApi.md#notebook_get) | **GET** /api/notebooks/{notebookId} | 
 [**notebook_list**](DefaultApi.md#notebook_list) | **GET** /api/workspaces/{workspace_id}/notebooks | 
 [**notebook_search**](DefaultApi.md#notebook_search) | **POST** /api/workspaces/{workspace_id}/search/notebooks | 
@@ -811,6 +812,37 @@ Name | Type | Description  | Required | Notes
 
 - **Content-Type**: Not defined
 - **Accept**: Not defined
+
+[[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
+
+
+## notebook_duplicate
+
+> crate::models::Notebook notebook_duplicate(notebook_id, notebook_copy_destination)
+
+
+Create a copy of the notebook
+
+### Parameters
+
+
+Name | Type | Description  | Required | Notes
+------------- | ------------- | ------------- | ------------- | -------------
+**notebook_id** | **String** |  | [required] |
+**notebook_copy_destination** | [**NotebookCopyDestination**](NotebookCopyDestination.md) | copy destination | [required] |
+
+### Return type
+
+[**crate::models::Notebook**](notebook.md)
+
+### Authorization
+
+[userToken](../README.md#userToken)
+
+### HTTP request headers
+
+- **Content-Type**: application/json
+- **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../README.md#documentation-for-api-endpoints) [[Back to Model list]](../README.md#documentation-for-models) [[Back to README]](../README.md)
 

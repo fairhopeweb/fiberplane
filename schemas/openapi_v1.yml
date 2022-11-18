@@ -45,6 +45,17 @@ components:
             $ref: "#/components/schemas/label"
         selectedDataSources:
           $ref: "#/components/schemas/selectedDataSources"
+    notebookCopyDestination:
+      type: object
+      required:
+        - title
+        - workspaceId
+      properties:
+        title:
+          type: string
+        workspaceId:
+          type: string
+          format: base64uuid
     cell:
       oneOf:
         - $ref: "#/components/schemas/checkboxCell"
@@ -1960,6 +1971,26 @@ paths:
       responses:
         "200":
           description: OK
+  /api/notebooks/{notebookId}/duplicate:
+    parameters:
+      - $ref: "#/components/parameters/notebookId"
+    post:
+      operationId: notebook_duplicate
+      description: "Create a copy of the notebook"
+      requestBody:
+        description: copy destination
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/notebookCopyDestination"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/notebook"
   /api/notebooks/{notebookId}/template.jsonnet:
     parameters:
       - $ref: "#/components/parameters/notebookId"

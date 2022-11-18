@@ -65,6 +65,7 @@ docs/NewTrigger.md
 docs/NewWorkspace.md
 docs/NewWorkspaceInvite.md
 docs/Notebook.md
+docs/NotebookCopyDestination.md
 docs/NotebookPatch.md
 docs/NotebookSearch.md
 docs/NotebookSummary.md
@@ -189,6 +190,7 @@ src/models/new_trigger.rs
 src/models/new_workspace.rs
 src/models/new_workspace_invite.rs
 src/models/notebook.rs
+src/models/notebook_copy_destination.rs
 src/models/notebook_patch.rs
 src/models/notebook_search.rs
 src/models/notebook_summary.rs

@@ -120,6 +120,8 @@ pub mod new_workspace_invite;
 pub use self::new_workspace_invite::NewWorkspaceInvite;
 pub mod notebook;
 pub use self::notebook::Notebook;
+pub mod notebook_copy_destination;
+pub use self::notebook_copy_destination::NotebookCopyDestination;
 pub mod notebook_patch;
 pub use self::notebook_patch::NotebookPatch;
 pub mod notebook_search;

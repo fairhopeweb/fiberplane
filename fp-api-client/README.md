@@ -48,6 +48,7 @@ Class | Method | HTTP request | Description
 *DefaultApi* | [**notebook_convert_to_template**](docs/DefaultApi.md#notebook_convert_to_template) | **GET** /api/notebooks/{notebookId}/template.jsonnet | 
 *DefaultApi* | [**notebook_create**](docs/DefaultApi.md#notebook_create) | **POST** /api/workspaces/{workspace_id}/notebooks | 
 *DefaultApi* | [**notebook_delete**](docs/DefaultApi.md#notebook_delete) | **DELETE** /api/notebooks/{notebookId} | 
+*DefaultApi* | [**notebook_duplicate**](docs/DefaultApi.md#notebook_duplicate) | **POST** /api/notebooks/{notebookId}/duplicate | 
 *DefaultApi* | [**notebook_get**](docs/DefaultApi.md#notebook_get) | **GET** /api/notebooks/{notebookId} | 
 *DefaultApi* | [**notebook_list**](docs/DefaultApi.md#notebook_list) | **GET** /api/workspaces/{workspace_id}/notebooks | 
 *DefaultApi* | [**notebook_search**](docs/DefaultApi.md#notebook_search) | **POST** /api/workspaces/{workspace_id}/search/notebooks | 
@@ -165,6 +166,7 @@ Class | Method | HTTP request | Description
  - [NewWorkspace](docs/NewWorkspace.md)
  - [NewWorkspaceInvite](docs/NewWorkspaceInvite.md)
  - [Notebook](docs/Notebook.md)
+ - [NotebookCopyDestination](docs/NotebookCopyDestination.md)
  - [NotebookPatch](docs/NotebookPatch.md)
  - [NotebookSearch](docs/NotebookSearch.md)
  - [NotebookSummary](docs/NotebookSummary.md)
