@@ -14,6 +14,8 @@ pub struct DataSource {
     pub id: String,
     #[serde(rename = "name")]
     pub name: String,
+    #[serde(rename = "protocolVersion")]
+    pub protocol_version: i32,
     #[serde(rename = "proxyName", skip_serializing_if = "Option::is_none")]
     pub proxy_name: Option<String>,
     #[serde(rename = "providerType")]
@@ -33,10 +35,16 @@ pub struct DataSource {
 }
 
 impl DataSource {
-    pub fn new(id: String, name: String, provider_type: String) -> DataSource {
+    pub fn new(
+        id: String,
+        name: String,
+        protocol_version: i32,
+        provider_type: String,
+    ) -> DataSource {
         DataSource {
             id,
             name,
+            protocol_version,
             proxy_name: None,
             provider_type,
             config: None,

@@ -12,6 +12,8 @@
 pub struct NewDataSource {
     #[serde(rename = "name")]
     pub name: String,
+    #[serde(rename = "protocolVersion")]
+    pub protocol_version: i32,
     #[serde(rename = "providerType")]
     pub provider_type: String,
     #[serde(rename = "config")]
@@ -21,9 +23,15 @@ pub struct NewDataSource {
 }
 
 impl NewDataSource {
-    pub fn new(name: String, provider_type: String, config: serde_json::Value) -> NewDataSource {
+    pub fn new(
+        name: String,
+        protocol_version: i32,
+        provider_type: String,
+        config: serde_json::Value,
+    ) -> NewDataSource {
         NewDataSource {
             name,
+            protocol_version,
             provider_type,
             config,
             description: None,

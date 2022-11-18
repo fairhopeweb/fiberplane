@@ -221,6 +221,8 @@ pub struct UpsertProxyDataSource {
     pub name: Name,
     pub description: Option<String>,
     pub provider_type: String,
+    #[serde(default)]
+    pub protocol_version: u8,
     #[serde(flatten)]
     pub status: DataSourceStatus,
 }
@@ -236,12 +238,14 @@ mod tests {
             UpsertProxyDataSource {
                 name: Name::from_static("prometheus-prod"),
                 provider_type: "prometheus".to_string(),
+                protocol_version: 2,
                 description: Some("Production Prometheus".to_string()),
                 status: DataSourceStatus::Connected,
             },
             UpsertProxyDataSource {
                 name: Name::from_static("elasticsearch-prod"),
                 provider_type: "elasticsearch".to_string(),
+                protocol_version: 1,
                 description: None,
                 status: DataSourceStatus::Error(Error::NotFound),
             },

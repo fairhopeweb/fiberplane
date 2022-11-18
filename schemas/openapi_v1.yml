@@ -1058,11 +1058,15 @@ components:
       type: object
       required:
         - name
+        - protocolVersion
         - providerType
         - config
       properties:
         name:
           type: string
+        protocolVersion:
+          type: integer
+          format: uint8
         providerType:
           type: string
         config:
@@ -1080,6 +1084,7 @@ components:
       type: object
       required:
         - name
+        - protocolVersion
         - providerType
         - id
       properties:
@@ -1088,6 +1093,9 @@ components:
           format: base64uuid
         name:
           type: string
+        protocolVersion:
+          type: integer
+          format: uint8
         proxyName:
           type: string
         providerType:

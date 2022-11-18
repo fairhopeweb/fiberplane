@@ -6,6 +6,7 @@ Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **id** | **String** |  | 
 **name** | **String** |  | 
+**protocol_version** | **i32** |  | 
 **proxy_name** | Option<**String**> |  | [optional]
 **provider_type** | **String** |  | 
 **config** | Option<[**serde_json::Value**](.md)> |  | [optional]

@@ -13,6 +13,8 @@ pub struct DataSource {
     pub proxy_name: Option<Name>,
     pub id: Base64Uuid,
     pub provider_type: String,
+    #[serde(default)]
+    pub protocol_version: u8,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
@@ -37,6 +39,8 @@ pub enum DataSourceStatus {
 pub struct NewDataSource {
     pub name: Name,
     pub provider_type: String,
+    #[serde(default)]
+    pub protocol_version: u8,
     pub description: Option<String>,
     pub config: Map<String, Value>,
 }
