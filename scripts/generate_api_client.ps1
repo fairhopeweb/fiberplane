@@ -5,7 +5,9 @@ $script_path = ($PSScriptRoot);
 $root_dir = (Get-Item $script_path ).parent.FullName;
 $api_client_dir = Join-Path $root_dir "fp-api-client";
 
-Remove-Item $api_client_dir -Recurse
+if (Test-Path $api_client_dir) {
+    Remove-Item $api_client_dir -Recurse
+}
 
 docker run --rm `
     -v "${root_dir}:/local" `

@@ -9,6 +9,7 @@ Name | Type | Description | Notes
 **display_name** | **String** |  | 
 **_type** | **String** |  | 
 **default_data_sources** | [**::std::collections::HashMap<String, crate::models::SelectedDataSource>**](selectedDataSource.md) | This is a mapping from the provider type to the data source selected for that type | 
+**owner_id** | **String** |  | 
 **created_at** | **String** |  | 
 **updated_at** | **String** |  | 
 

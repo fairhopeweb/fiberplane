@@ -1715,6 +1715,7 @@ components:
         - createdAt
         - updatedAt
         - defaultDataSources
+        - ownerId
       properties:
         id:
           type: string
@@ -1731,6 +1732,9 @@ components:
             - organization
         defaultDataSources:
           $ref: "#/components/schemas/selectedDataSources"
+        ownerId:
+          type: string
+          format: base64uuid
         createdAt:
           type: string
           format: date-time

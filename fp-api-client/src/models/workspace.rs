@@ -22,6 +22,8 @@ pub struct Workspace {
     #[serde(rename = "defaultDataSources")]
     pub default_data_sources:
         ::std::collections::HashMap<String, crate::models::SelectedDataSource>,
+    #[serde(rename = "ownerId")]
+    pub owner_id: String,
     #[serde(rename = "createdAt")]
     pub created_at: String,
     #[serde(rename = "updatedAt")]
@@ -38,6 +40,7 @@ impl Workspace {
             String,
             crate::models::SelectedDataSource,
         >,
+        owner_id: String,
         created_at: String,
         updated_at: String,
     ) -> Workspace {
@@ -47,6 +50,7 @@ impl Workspace {
             display_name,
             _type,
             default_data_sources,
+            owner_id,
             created_at,
             updated_at,
         }
