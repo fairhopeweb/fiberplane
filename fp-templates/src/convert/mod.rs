@@ -100,14 +100,14 @@ pub fn notebook_to_template(notebook: impl Into<NewNotebook>) -> String {
         if let Some(proxy_name) = &data_source.proxy_name {
             writer.println(format!(
                 ".setDataSourceForProviderType({}, {}, {})",
-                escape_string(&provider_type),
+                escape_string(provider_type),
                 escape_string(data_source.name.as_str()),
                 escape_string(proxy_name.as_str())
             ));
         } else {
             writer.println(format!(
                 ".setDataSourceForProviderType({}, {})",
-                escape_string(&provider_type),
+                escape_string(provider_type),
                 escape_string(data_source.name.as_str())
             ));
         }
@@ -311,7 +311,7 @@ fn format_content(content: &str, mut formatting: Formatting) -> String {
             }
             Annotation::Label(label) => {
                 let args = match label.value.is_empty() {
-                    true => format!("'{}'", label.key.to_string()),
+                    true => format!("'{}'", label.key),
                     false => format!("'{}', '{}'", label.key, label.value),
                 };
                 output.push_str(&format!("fmt.label({}), ", args));
@@ -322,7 +322,7 @@ fn format_content(content: &str, mut formatting: Formatting) -> String {
     // If the content ends with plain text, make sure to add it to the output
     if index < char_count(&content) {
         output.push_str(&escape_string_and_replace_mustache_substitutions(
-            &char_slice_from(content, index),
+            char_slice_from(content, index),
             ", ",
         ));
     }

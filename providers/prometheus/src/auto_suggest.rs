@@ -72,17 +72,14 @@ pub async fn query_suggestions(query_data: Blob, config: Config) -> Result<Blob,
         .collect();
 
     if !identifier.is_empty() {
-        suggestions = suggestions
-            .into_iter()
-            .filter(|suggestion| {
-                suggestion.text.contains(identifier)
-                    || suggestion
-                        .description
-                        .as_ref()
-                        .map(|description| description.contains(identifier))
-                        .unwrap_or_default()
-            })
-            .collect()
+        suggestions.retain(|suggestion| {
+            suggestion.text.contains(identifier)
+                || suggestion
+                    .description
+                    .as_ref()
+                    .map(|description| description.contains(identifier))
+                    .unwrap_or_default()
+        })
     }
     for &function in PROM_QL_FUNCTIONS {
         if identifier.is_empty() || function.contains(identifier) {

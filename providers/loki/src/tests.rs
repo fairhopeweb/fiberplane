@@ -66,7 +66,7 @@ fn test_data_mapper() {
             mapped,
             vec![
                 LogRecord {
-                    timestamp: 1569266497.240578000,
+                    timestamp: 1_569_266_497.240_578,
                     body: "foo".to_owned(),
                     attributes: data[0].labels.clone(),
                     span_id: None,

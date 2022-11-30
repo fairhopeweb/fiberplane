@@ -184,13 +184,13 @@ impl TryFrom<&str> for Base64Uuid {
 
 impl Display for Base64Uuid {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        f.write_str(&encode_base64(&self.0.as_bytes()))
+        f.write_str(&encode_base64(self.0.as_bytes()))
     }
 }
 
 impl Debug for Base64Uuid {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
-        f.write_str(&encode_base64(&self.0.as_bytes()))
+        f.write_str(&encode_base64(self.0.as_bytes()))
     }
 }
 

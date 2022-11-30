@@ -237,7 +237,7 @@ pub mod option {
 
             for test in tests {
                 let sample_struct: Notebook =
-                    serde_json::from_str(&test.input).expect("unable to deserialize");
+                    serde_json::from_str(test.input).expect("unable to deserialize");
                 assert_eq!(sample_struct.id, test.expected_id);
             }
         }

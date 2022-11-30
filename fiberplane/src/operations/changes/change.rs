@@ -91,7 +91,7 @@ pub struct UpdateCellTextChange {
 pub type UpdateNotebookTimeRange = UpdateNotebookTimeRangeChange;
 
 /// Specifies that the time range for a notebook (aka global time) must be updated
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::operations")]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateNotebookTimeRangeChange {

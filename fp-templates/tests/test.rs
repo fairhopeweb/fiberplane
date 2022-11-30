@@ -261,9 +261,7 @@ fn mustache_substitution_with_formatting() {
         labels: Vec::new(),
     };
     let template = notebook_to_template(notebook);
-    assert!(template
-        .find("fmt.bold([personName, ', great to have you'])")
-        .is_some(),);
+    assert!(template.contains("fmt.bold([personName, ', great to have you'])"),);
 }
 
 #[test]

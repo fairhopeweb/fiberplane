@@ -69,9 +69,7 @@ impl From<ProxyToken> for String {
     fn from(token: ProxyToken) -> Self {
         format!(
             "{}:{}:{}",
-            token.workspace_id.to_string(),
-            token.proxy_name.to_string(),
-            token.token
+            token.workspace_id, token.proxy_name, token.token
         )
     }
 }

@@ -236,7 +236,7 @@ pub struct ReplaceTextOperation {
 }
 
 /// Updates the notebook time range.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, Serializable)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Serializable)]
 #[fp(rust_plugin_module = "fiberplane::protocols::operations")]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateNotebookTimeRangeOperation {
