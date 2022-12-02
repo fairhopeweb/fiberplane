@@ -10,9 +10,10 @@ crate-type = ["cdylib"]
 
 [dependencies]
 const_format = "0.2"
-fiberplane = { path = "../../fiberplane" }
 form_urlencoded = "1"
-fp-provider-bindings = { path = "../../fp-provider-protocol/fp-provider-bindings" }
+fiberplane-models = { workspace = true }
+fiberplane-provider-bindings = { workspace = true }
+fiberplane-string-utils = { workspace = true }
 grafana-common = { path = "../grafana-common" }
 rmp-serde = "1"
 rmpv = { version = "1.0.0", features = ["with-serde"] }

@@ -1,4 +1,4 @@
-TEMPLATES_DIR="fp-templates"
+TEMPLATES_DIR="fiberplane-templates"
 if [ -x "$(command -v npx)" ]; then
   npx -y jsdoc-to-markdown -c "$TEMPLATES_DIR/jsdoc.json" "$TEMPLATES_DIR/fiberplane.libsonnet" > "$TEMPLATES_DIR/docs/template_api.md"
 else

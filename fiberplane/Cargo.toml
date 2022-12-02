@@ -5,36 +5,30 @@ authors = { workspace = true }
 edition = { workspace = true }
 rust-version = { workspace = true }
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [lib]
 crate-type = ["lib"]
 
 [features]
-fixtures = []
+api-client = ["fiberplane-api-client"]
+base64uuid-creation = ["base64uuid/creation"]
+fixtures = ["fiberplane-ot?/fixtures"]
+fp-bindgen = ["base64uuid?/fp-bindgen", "fiberplane-models?/fp-bindgen", "fiberplane-ot?/fp-bindgen"]
+markdown = ["fiberplane-markdown"]
+models = ["fiberplane-models"]
+ot = ["fiberplane-ot"]
+provider-bindings = ["fiberplane-provider-bindings"]
+provider-runtime = ["fiberplane-provider-runtime"]
+sqlx = ["base64uuid?/sqlx", "fiberplane-models?/sqlx"]
+string-utils = ["fiberplane-string-utils"]
+templates = ["fiberplane-templates"]
 
 [dependencies]
-base64 = "0.13"
-base64uuid = { path = "../base64uuid", default-features = false, features = ["fp-bindgen"] }
-bytes = { workspace = true }
-clap = { version = "4.0.17", features = ["derive"], optional = true }
-form_urlencoded = "1"
-fp-bindgen = { workspace = true, features = ["bytes-compat", "time-compat"] }
-# fp-bindgen = { path = "../fp-bindgen/fp-bindgen", features = ["time-compat"] }
-once_cell = { workspace = true }
-rmpv = "1"
-rmp-serde = "1.0"
-serde = { workspace = true }
-serde_bytes = "0.11"
-serde_json = { workspace = true }
-# Currently, sqlx does not export the macros without picking a runtime
-# `runtime-tokio-rustls` can be removed once https://github.com/launchbadge/sqlx/issues/1627 is resolved
-sqlx = { version = "0.6", features = ["macros", "runtime-tokio-rustls"], default-features = false, optional = true }
-thiserror = "1.0"
-time = { workspace = true }
-strum = "0.24"
-strum_macros = "0.24"
-
-[dev-dependencies]
-pretty_assertions = "1.3"
-serde_json = "1.0"
+base64uuid = { path = "../base64uuid", default-features = false, optional = true }
+fiberplane-api-client = { path = "../fiberplane-api-client", optional = true }
+fiberplane-markdown = { path = "../fiberplane-markdown", optional = true }
+fiberplane-models = { path = "../fiberplane-models", optional = true }
+fiberplane-ot = { path = "../fiberplane-ot", optional = true }
+fiberplane-provider-bindings = { workspace = true, optional = true }
+fiberplane-provider-runtime = { path = "../fiberplane-provider-protocol/fiberplane-provider-runtime", optional = true }
+fiberplane-string-utils = { path = "../fiberplane-string-utils", optional = true }
+fiberplane-templates = { path = "../fiberplane-templates", optional = true }

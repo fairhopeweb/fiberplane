@@ -1,0 +1,29 @@
+[package]
+name = "fiberplane-templates"
+version = "0.1.0"
+authors = { workspace = true }
+edition = { workspace = true }
+rust-version = { workspace = true }
+
+[features]
+default = ["convert", "expand", "examples"]
+convert = ["once_cell", "regex", "time"]
+expand = ["jrsonnet-evaluator", "jrsonnet-types", "thiserror", "time", "types"]
+types = ["serde", "serde_json"]
+examples = []
+
+[dependencies]
+fiberplane-models = { workspace = true }
+fiberplane-string-utils = { workspace = true }
+once_cell = { workspace = true, optional = true }
+jrsonnet-evaluator =  { version = "0.4.2", optional = true }
+jrsonnet-types = { version = "0.4.2", optional = true }
+regex = { version = "1.5.5", optional = true }
+serde = { workspace = true, optional = true }
+serde_json = { workspace = true, optional = true }
+thiserror = { version = "1.0.30", optional = true }
+time = { workspace = true, optional = true }
+
+[dev-dependencies]
+once_cell = { workspace = true }
+pretty_assertions = "1.3"

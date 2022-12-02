@@ -1,0 +1,34 @@
+[package]
+name = "fiberplane-models"
+version = "0.1.0"
+authors = { workspace = true }
+edition = { workspace = true }
+rust-version = { workspace = true }
+
+[lib]
+crate-type = ["lib"]
+
+[features]
+fp-bindgen = ["base64uuid/fp-bindgen", "dep:fp-bindgen"]
+
+[dependencies]
+base64 = "0.13"
+base64uuid = { path = "../base64uuid", default-features = false }
+bytes = { workspace = true }
+form_urlencoded = "1"
+fp-bindgen = { workspace = true, features = ["bytes-compat", "time-compat"], optional = true }
+rmpv = "1"
+rmp-serde = "1.0"
+serde = { workspace = true }
+serde_bytes = "0.11"
+serde_json = { workspace = true }
+# Currently, sqlx does not export the macros without picking a runtime
+# `runtime-tokio-rustls` can be removed once https://github.com/launchbadge/sqlx/issues/1627 is resolved
+sqlx = { version = "0.6", features = ["macros", "runtime-tokio-rustls"], default-features = false, optional = true }
+thiserror = "1.0"
+time = { workspace = true }
+strum_macros = "0.24"
+
+[dev-dependencies]
+pretty_assertions = "1.3"
+serde_json = "1.0"

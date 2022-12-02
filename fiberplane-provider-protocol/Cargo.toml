@@ -1,0 +1,12 @@
+[package]
+name = "fiberplane-provider-protocol"
+version = "2.0.0"
+authors = { workspace = true }
+edition = { workspace = true }
+rust-version = { workspace = true }
+
+[dependencies]
+bytes = { workspace = true }
+fp-bindgen = { workspace = true, features = ["bytes-compat", "generators"] }
+fiberplane-models = { workspace = true, features = ["fp-bindgen"] }
+serde_json = { workspace = true }

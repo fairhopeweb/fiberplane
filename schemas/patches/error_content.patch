@@ -6,10 +6,10 @@ By default, only the error status code is displayed. This patch adds The
 error message to the display output.
 
 ---
-diff --git a/fp-api-client/src/apis/mod.rs b/fp-api-client/src/apis/mod.rs
+diff --git a/fiberplane-api-client/src/apis/mod.rs b/fiberplane-api-client/src/apis/mod.rs
 index 26cf8cf..e99b47d 100644
---- a/fp-api-client/src/apis/mod.rs
-+++ b/fp-api-client/src/apis/mod.rs
+--- a/fiberplane-api-client/src/apis/mod.rs
++++ b/fiberplane-api-client/src/apis/mod.rs
 @@ -22,7 +22,10 @@ impl<T> fmt::Display for Error<T> {
              Error::Reqwest(e) => ("reqwest", e.to_string()),
              Error::Serde(e) => ("serde", e.to_string()),

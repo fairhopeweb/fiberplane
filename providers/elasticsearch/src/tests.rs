@@ -1,6 +1,6 @@
 use super::*;
 use elasticsearch_dsl::{Hit, HitsMetadata, SearchResponse, TotalHits, TotalHitsRelation};
-use fp_provider_bindings::common::mem::FatPtr;
+use fiberplane_provider_bindings::common::mem::FatPtr;
 use serde_json::json;
 use time::{format_description::well_known::Rfc3339, OffsetDateTime};
 

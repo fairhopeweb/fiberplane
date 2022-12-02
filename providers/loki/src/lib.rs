@@ -1,4 +1,4 @@
-use fp_provider_bindings::{
+use fiberplane_provider_bindings::{
     fp_export_impl, log, Error, LegacyLogRecord as LogRecord,
     LegacyProviderRequest as ProviderRequest, LegacyProviderResponse as ProviderResponse,
     LegacyTimestamp, ProviderConfig, QueryLogs,
@@ -15,7 +15,7 @@ const CONVERSION_FACTOR: f64 = 1e9;
 static COMMIT_HASH: &str = env!("VERGEN_GIT_SHA");
 static BUILD_TIMESTAMP: &str = env!("VERGEN_BUILD_TIMESTAMP");
 
-#[fp_export_impl(fp_provider_bindings)]
+#[fp_export_impl(fiberplane_provider_bindings)]
 async fn invoke(request: ProviderRequest, config: ProviderConfig) -> ProviderResponse {
     log(format!(
         "Loki provider (commit: {}, built at: {}) invoked with request: {:?}",

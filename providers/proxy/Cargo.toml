@@ -9,6 +9,6 @@ rust-version = { workspace = true }
 crate-type = ["cdylib"]
 
 [dependencies]
-fp-provider-bindings = { path = "../../fp-provider-protocol/fp-provider-bindings" }
+fiberplane-provider-bindings = { workspace = true }
 rmp-serde = "1.0.0"
 urlencoding = "2"

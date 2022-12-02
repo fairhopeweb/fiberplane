@@ -1,6 +1,6 @@
 use super::{constants::*, prometheus::*};
-use fiberplane::protocols::providers::{FORM_ENCODED_MIME_TYPE, TIMESERIES_MIME_TYPE};
-use fp_provider_bindings::*;
+use fiberplane_models::providers::{FORM_ENCODED_MIME_TYPE, TIMESERIES_MIME_TYPE};
+use fiberplane_provider_bindings::*;
 use grafana_common::{query_direct_and_proxied, Config};
 use std::time::SystemTime;
 use time::{ext::NumericalDuration, format_description::well_known::Rfc3339, OffsetDateTime};

@@ -2,14 +2,16 @@
 members = [
     "base64uuid",
     "fiberplane",
-    "fp-api-client",
-    "fp-markdown",
-    "fp-provider-protocol",
-    "fp-provider-protocol/fp-provider-bindings",
-    "fp-provider-protocol/fp-provider-runtime",
-    "fp-templates",
+    "fiberplane-api-client",
+    "fiberplane-markdown",
+    "fiberplane-models",
+    "fiberplane-ot",
+    "fiberplane-provider-protocol",
+    "fiberplane-provider-protocol/fiberplane-provider-bindings",
+    "fiberplane-provider-protocol/fiberplane-provider-runtime",
+    "fiberplane-string-utils",
+    "fiberplane-templates",
     "providers/*",
-    "time_util",
 ]
 exclude = [ "providers/.cargo"]
 
@@ -20,9 +22,11 @@ rust-version = "1.64"
 
 [workspace.dependencies]
 bytes = { version = "1", features = ["serde"] }
-fiberplane = { path = "fiberplane" }
 fp-bindgen = { version = "2.4" }
 fp-bindgen-support = { version = "2.4" }
+fiberplane-models = { path = "fiberplane-models" }
+fiberplane-string-utils = { path = "fiberplane-string-utils" }
+fiberplane-provider-bindings = { path = "fiberplane-provider-protocol/fiberplane-provider-bindings" }
 once_cell = { version = "1.8" }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"

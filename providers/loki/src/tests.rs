@@ -1,5 +1,5 @@
 use crate::{data_mapper, Data, QueryData, QueryResponse};
-use fp_provider_bindings::LegacyLogRecord as LogRecord;
+use fiberplane_provider_bindings::LegacyLogRecord as LogRecord;
 use serde::Deserialize;
 use serde_json::Deserializer;
 use std::collections::HashMap;

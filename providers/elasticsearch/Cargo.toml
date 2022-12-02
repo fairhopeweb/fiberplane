@@ -10,7 +10,7 @@ crate-type = ["cdylib"]
 
 [dependencies]
 elasticsearch-dsl = "0.4.9"
-fp-provider-bindings = { path = "../../fp-provider-protocol/fp-provider-bindings" }
+fiberplane-provider-bindings = { workspace = true }
 hex = "0.4.3"
 serde = { workspace = true }
 serde_json = { workspace = true }

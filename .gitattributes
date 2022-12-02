@@ -1,5 +1,5 @@
-fp-api-client/** linguist-generated
-fp-provider-protocol/fp-provider-runtime/src/spec/bindings.rs linguist-generated
-fp-provider-protocol/fp-provider-runtime/src/spec/types.rs linguist-generated
-fp-provider-protocol/fp-provider-bindings/** linguist-generated
-fp-provider-protocol/ts-runtime/** linguist-generated
+fiberplane-api-client/** linguist-generated
+fiberplane-provider-protocol/fiberplane-provider-runtime/src/spec/bindings.rs linguist-generated
+fiberplane-provider-protocol/fiberplane-provider-runtime/src/spec/types.rs linguist-generated
+fiberplane-provider-protocol/fiberplane-provider-bindings/** linguist-generated
+fiberplane-provider-protocol/ts-runtime/** linguist-generated

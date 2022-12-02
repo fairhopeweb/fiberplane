@@ -1,7 +1,7 @@
 mod config;
 
 pub use config::Config;
-use fp_provider_bindings::{
+use fiberplane_provider_bindings::{
     log, make_http_request, Blob, Error, HttpRequest, HttpRequestError, HttpRequestMethod,
 };
 use serde::{de::DeserializeOwned, Deserialize};

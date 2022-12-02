@@ -3,8 +3,8 @@
 * @fiberplane/api-devs @fiberplane/studio-devs
 
 # Provider specific stuff is owned by the plugin team
-/fp-provider-protocol/ @fiberplane/plugin-devs
+/fiberplane-provider-protocol/ @fiberplane/plugin-devs
 /providers/ @fiberplane/plugin-devs
 
 # Templates are owned by the template team
-/fp-templates/ @fiberplane/template-devs
+/fiberplane-templates/ @fiberplane/template-devs

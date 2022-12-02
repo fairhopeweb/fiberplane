@@ -3,7 +3,7 @@
 $start_dir = Get-Location;
 $script_path = ($PSScriptRoot);
 $root_dir = (Get-Item $script_path ).parent.FullName;
-$api_client_dir = Join-Path $root_dir "fp-api-client";
+$api_client_dir = Join-Path $root_dir "fiberplane-api-client";
 
 if (Test-Path $api_client_dir) {
     Remove-Item $api_client_dir -Recurse
@@ -14,9 +14,9 @@ docker run --rm `
     openapitools/openapi-generator-cli:v5.2.1 `
         generate `
             -i /local/schemas/openapi_v1.yml `
-            -p packageName=fp-api-client `
+            -p packageName=fiberplane-api-client `
             -g rust `
-            -o /local/fp-api-client `
+            -o /local/fiberplane-api-client `
             --skip-validate-spec
 
 Set-Location $api_client_dir

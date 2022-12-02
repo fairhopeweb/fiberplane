@@ -1,0 +1,18 @@
+[package]
+name = "fiberplane-markdown"
+description = "Utilities to convert Fiberplane Notebooks to and from Markdown"
+version = "0.1.0"
+authors = { workspace = true }
+edition = { workspace = true }
+rust-version = { workspace = true }
+
+[dependencies]
+fiberplane-models = { workspace = true }
+fiberplane-string-utils = { workspace = true }
+pulldown-cmark = "0.9.1"
+pulldown-cmark-to-cmark = "10.0.1"
+time = { workspace = true }
+tracing = { workspace = true }
+
+[dev-dependencies]
+test-case = "2.0.2"

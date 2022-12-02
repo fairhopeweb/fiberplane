@@ -6,16 +6,16 @@ The OpenAPI client generator for Rust does not handle untagged enums well.
 So instead, we patch in some code based on our `fiberplane-rs` types.
 
 ---
- fp-api-client/src/models/new_time_range.rs | 18 +-
+ fiberplane-api-client/src/models/new_time_range.rs | 18 +-
  1 file changed, 7 insertions(+), 11 deletions(-)
 
-diff --git a/fp-api-client/src/models/new_time_range.rs b/fp-api-client/src/models/new_time_range.rs
+diff --git a/fiberplane-api-client/src/models/new_time_range.rs b/fiberplane-api-client/src/models/new_time_range.rs
 index a6b7d55..e1a5b77 100644
---- a/fp-api-client/src/models/new_time_range.rs
-+++ b/fp-api-client/src/models/new_time_range.rs
+--- a/fiberplane-api-client/src/models/new_time_range.rs
++++ b/fiberplane-api-client/src/models/new_time_range.rs
 @@ -9,17 +9,13 @@
   */
- 
+
  #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 -pub struct NewTimeRange {
 -    #[serde(rename = "from")]
@@ -29,7 +29,7 @@ index a6b7d55..e1a5b77 100644
 +    Absolute(crate::models::TimeRange),
 +    Relative(RelativeTimeRange),
  }
- 
+
 -impl NewTimeRange {
 -    pub fn new(from: String, to: String, relative: i32) -> NewTimeRange {
 -        NewTimeRange { from, to, relative }

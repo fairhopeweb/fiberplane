@@ -23,11 +23,11 @@ jobs:
         go install github.com/google/go-jsonnet/cmd/jsonnet-lint@latest
 
     - name: Lint Jsonnet
-      working-directory: fp-templates
+      working-directory: fiberplane-templates
       run: jsonnet-lint fiberplane.libsonnet
 
     - name: Check Jsonnet format
-      working-directory: fp-templates
+      working-directory: fiberplane-templates
       run: |
         jsonnetfmt -i fiberplane.libsonnet
         if ! git diff --quiet fiberplane.libsonnet ; then
@@ -37,7 +37,7 @@ jobs:
         fi
 
     - name: Verify template docs
-      working-directory: fp-templates
+      working-directory: fiberplane-templates
       run: |
         docker run --rm -v $PWD:$PWD node:17 npx -y jsdoc-to-markdown -c $PWD/jsdoc.json $PWD/fiberplane.libsonnet > docs/template_api.md
         if ! git diff --quiet docs/template_api.md ; then

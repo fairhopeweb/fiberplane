@@ -1,5 +1,5 @@
 use elasticsearch_dsl::{Hit, SearchResponse};
-use fp_provider_bindings::{
+use fiberplane_provider_bindings::{
     fp_export_impl, log, make_http_request, Error, HttpRequest, HttpRequestMethod,
     LegacyLogRecord as LogRecord, LegacyProviderRequest as ProviderRequest,
     LegacyProviderResponse as ProviderResponse, ProviderConfig, QueryLogs,
@@ -41,7 +41,7 @@ struct SearchRequestBody {
     size: Option<u32>,
 }
 
-#[fp_export_impl(fp_provider_bindings)]
+#[fp_export_impl(fiberplane_provider_bindings)]
 async fn invoke(request: ProviderRequest, config: ProviderConfig) -> ProviderResponse {
     log(format!(
         "Elasticsearch provider (commit: {}, built at: {}) invoked with request: {:?}",

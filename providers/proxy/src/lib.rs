@@ -1,9 +1,9 @@
-use fp_provider_bindings::{
+use fiberplane_provider_bindings::{
     LegacyProviderRequest as ProviderRequest, LegacyProviderResponse as ProviderResponse, *,
 };
 use std::collections::HashMap;
 
-#[fp_export_impl(fp_provider_bindings)]
+#[fp_export_impl(fiberplane_provider_bindings)]
 async fn invoke(request: ProviderRequest, _config: ProviderConfig) -> ProviderResponse {
     match request {
         ProviderRequest::Proxy(request) => proxy_request(request).await,

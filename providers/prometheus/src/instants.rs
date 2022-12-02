@@ -1,9 +1,7 @@
 use super::{constants::*, prometheus::*};
-use fiberplane::{
-    protocols::providers::{Metric, FORM_ENCODED_MIME_TYPE},
-    text_util::char_count,
-};
-use fp_provider_bindings::*;
+use fiberplane_models::providers::{Metric, FORM_ENCODED_MIME_TYPE};
+use fiberplane_provider_bindings::*;
+use fiberplane_string_utils::char_count;
 use grafana_common::{query_direct_and_proxied, Config};
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;

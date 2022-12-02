@@ -1,7 +1,5 @@
 use const_format::formatcp;
-use fiberplane::protocols::providers::{
-    CELLS_MIME_TYPE, SUGGESTIONS_MIME_TYPE, TIMESERIES_MIME_TYPE,
-};
+use fiberplane_models::providers::{CELLS_MIME_TYPE, SUGGESTIONS_MIME_TYPE, TIMESERIES_MIME_TYPE};
 
 pub const INSTANTS_QUERY_TYPE: &str = "x-instants";
 

@@ -1,6 +1,6 @@
 use super::{constants::*, prometheus::*};
-use fiberplane::protocols::providers::{AutoSuggestRequest, Suggestion};
-use fp_provider_bindings::*;
+use fiberplane_models::providers::{AutoSuggestRequest, Suggestion};
+use fiberplane_provider_bindings::*;
 use grafana_common::{query_direct_and_proxied, Config};
 
 /// See: https://prometheus.io/docs/prometheus/latest/querying/functions/

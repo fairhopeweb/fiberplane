@@ -6,10 +6,10 @@ mod timeseries;
 
 use auto_suggest::query_suggestions;
 use constants::*;
-use fiberplane::protocols::providers::{
+use fiberplane_models::providers::{
     STATUS_MIME_TYPE, STATUS_QUERY_TYPE, SUGGESTIONS_QUERY_TYPE, TIMESERIES_QUERY_TYPE,
 };
-use fp_provider_bindings::*;
+use fiberplane_provider_bindings::*;
 use grafana_common::{query_direct_and_proxied, Config};
 use instants::query_instants;
 use serde_json::Value;
@@ -19,7 +19,7 @@ use timeseries::{create_graph_cell, query_series};
 static COMMIT_HASH: &str = env!("VERGEN_GIT_SHA");
 static BUILD_TIMESTAMP: &str = env!("VERGEN_BUILD_TIMESTAMP");
 
-#[fp_export_impl(fp_provider_bindings)]
+#[fp_export_impl(fiberplane_provider_bindings)]
 async fn get_supported_query_types(_config: ProviderConfig) -> Vec<SupportedQueryType> {
     vec![
         SupportedQueryType {
@@ -72,7 +72,7 @@ async fn get_supported_query_types(_config: ProviderConfig) -> Vec<SupportedQuer
     ]
 }
 
-#[fp_export_impl(fp_provider_bindings)]
+#[fp_export_impl(fiberplane_provider_bindings)]
 async fn invoke2(request: ProviderRequest) -> Result<Blob, Error> {
     log(format!(
         "Prometheus provider (commit: {}, built at: {}) invoked for query type \"{}\" and query data \"{:?}\"",
@@ -92,7 +92,7 @@ async fn invoke2(request: ProviderRequest) -> Result<Blob, Error> {
     }
 }
 
-#[fp_export_impl(fp_provider_bindings)]
+#[fp_export_impl(fiberplane_provider_bindings)]
 fn create_cells(query_type: String, _response: Blob) -> Result<Vec<Cell>, Error> {
     log(format!("Creating cells for query type: {query_type}"));
 

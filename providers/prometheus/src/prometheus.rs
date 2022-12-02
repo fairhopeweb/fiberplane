@@ -1,9 +1,7 @@
 use super::instants::Instant;
-use fiberplane::protocols::{
-    core::Timestamp,
-    providers::{Metric, OtelMetadata, Timeseries},
-};
-use fp_provider_bindings::Error;
+use fiberplane_models::providers::{Metric, OtelMetadata, Timeseries};
+use fiberplane_models::timestamps::Timestamp;
+use fiberplane_provider_bindings::Error;
 use serde::Deserialize;
 use std::{
     collections::BTreeMap,
