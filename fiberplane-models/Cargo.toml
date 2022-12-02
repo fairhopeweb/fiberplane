@@ -9,12 +9,14 @@ rust-version = { workspace = true }
 crate-type = ["lib"]
 
 [features]
+clap = ["dep:clap"]
 fp-bindgen = ["base64uuid/fp-bindgen", "dep:fp-bindgen"]
 
 [dependencies]
 base64 = "0.13"
 base64uuid = { path = "../base64uuid", default-features = false }
 bytes = { workspace = true }
+clap = { version = "*", default-features = false, features = ["derive", "std"], optional = true }
 form_urlencoded = "1"
 fp-bindgen = { workspace = true, features = ["bytes-compat", "time-compat"], optional = true }
 rmpv = "1"
