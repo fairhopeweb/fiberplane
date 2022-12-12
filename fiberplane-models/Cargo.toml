@@ -29,6 +29,8 @@ serde_json = { workspace = true }
 sqlx = { version = "0.6", features = ["macros", "runtime-tokio-rustls"], default-features = false, optional = true }
 thiserror = "1.0"
 time = { workspace = true }
+url = { workspace = true, features = ["serde"] }
+uuid = { workspace = true, features = ["serde"] }
 strum_macros = "0.24"
 
 [dev-dependencies]

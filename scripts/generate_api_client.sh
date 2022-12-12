@@ -1,23 +1,26 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
-SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+# http://redsymbol.net/articles/unofficial-bash-strict-mode/
+set -euo pipefail
+IFS=$'\n\t'
+
+SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 
 rm -r "$SCRIPT_DIR/../fiberplane-api-client"
 
-docker run --rm \
+if ! command -v fp-openapi-rust-gen &>/dev/null; then
+  # not in path; use docker image
+  docker run --rm \
     -v "$(dirname $SCRIPT_DIR):/local" \
     -u "$(id -u ${USER}):$(id -g ${USER})" \
-    openapitools/openapi-generator-cli:v5.2.1 \
-        generate \
-            -i /local/schemas/openapi_v1.yml \
-            -p packageName=fiberplane-api-client \
-            -g rust \
-            -o /local/fiberplane-api-client \
-            --skip-validate-spec
+    fiberplane/fp-openapi-rust-gen:latest \
+    --output /local/fiberplane-api-client \
+    /local/schemas/openapi_v1.yml \
+    --local
+else
+  # use the one from PATH if its already there
+  fp-openapi-rust-gen --output fiberplane-api-client ./schemas/openapi_v1.yml --local
+fi
 
 cd "$SCRIPT_DIR/../fiberplane-api-client"
 cargo fmt
-
-# Git patches don't apply if we're not in the base directory of the project (where .git lives): https://stackoverflow.com/a/67790361/11494565
-cd "$SCRIPT_DIR/../"
-git apply -v ./schemas/patches/*.patch

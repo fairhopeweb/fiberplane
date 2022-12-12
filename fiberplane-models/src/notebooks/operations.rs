@@ -356,3 +356,52 @@ pub struct ReplaceLabelOperation {
 pub struct RemoveLabelOperation {
     pub label: Label,
 }
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[cfg_attr(
+    feature = "fp-bindgen",
+    derive(Serializable),
+    fp(rust_plugin_module = "fiberplane_models::notebooks::operations")
+)]
+#[serde(rename_all = "camelCase")]
+pub struct CellAppendText {
+    pub content: String,
+    #[serde(default)]
+    pub formatting: Formatting,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[cfg_attr(
+    feature = "fp-bindgen",
+    derive(Serializable),
+    fp(rust_plugin_module = "fiberplane_models::notebooks::operations")
+)]
+#[serde(rename_all = "camelCase")]
+pub struct CellReplaceText {
+    /// Starting offset where we will be replacing the text.
+    ///
+    /// Please be aware this offset refers to the position of a Unicode Scalar Value (non-surrogate
+    /// codepoint) in the cell text, which may require additional effort to determine correctly.
+    pub offset: u32,
+
+    /// The new text value we're inserting.
+    pub new_text: String,
+
+    /// Optional formatting that we wish to apply to the new text.
+    ///
+    /// Offsets in the formatting are relative to the start of the new text.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub new_formatting: Option<Formatting>,
+
+    /// The old text that we're replacing.
+    pub old_text: String,
+
+    /// Optional formatting that was applied to the old text. This should be **all** the formatting
+    /// annotations that were *inside* the `old_text` before this operation was applied. However,
+    /// it is at the operation's discretion whether or not to include annotations that are at the
+    /// old text's boundaries.
+    ///
+    /// Offsets in the formatting are relative to the start of the old text.
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub old_formatting: Option<Formatting>,
+}

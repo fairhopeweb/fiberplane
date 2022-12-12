@@ -5,6 +5,7 @@ use fp_bindgen::prelude::Serializable;
 use serde::{Deserialize, Serialize};
 use serde_json::{Map, Value};
 use std::collections::BTreeMap;
+use strum_macros::Display;
 use time::{serde::rfc3339, OffsetDateTime};
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
@@ -28,7 +29,7 @@ pub struct DataSource {
     pub updated_at: OffsetDateTime,
 }
 
-#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Display)]
 #[serde(tag = "status", content = "error", rename_all = "snake_case")]
 pub enum DataSourceStatus {
     Connected,

@@ -5,6 +5,7 @@ use base64uuid::{Base64Uuid, InvalidId};
 use serde::{Deserialize, Serialize};
 use std::fmt::{self, Debug, Formatter};
 use std::{convert::TryFrom, str::FromStr};
+use strum_macros::Display;
 use time::OffsetDateTime;
 
 #[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Eq)]
@@ -14,14 +15,32 @@ pub struct Proxy {
     pub name: Name,
     pub status: ProxyStatus,
     pub data_sources: Vec<DataSource>,
-    #[serde(skip_deserializing, skip_serializing_if = "Option::is_none")]
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub token: Option<ProxyToken>,
     pub description: Option<String>,
     pub created_at: OffsetDateTime,
     pub updated_at: OffsetDateTime,
 }
 
-#[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone, Copy)]
+#[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Eq)]
+#[serde(rename_all = "camelCase")]
+pub struct ProxySummary {
+    pub id: Base64Uuid,
+    pub name: Name,
+    pub status: ProxyStatus,
+}
+
+impl From<Proxy> for ProxySummary {
+    fn from(proxy: Proxy) -> Self {
+        Self {
+            id: proxy.id,
+            name: proxy.name,
+            status: proxy.status,
+        }
+    }
+}
+
+#[derive(Serialize, Deserialize, Debug, PartialEq, Eq, Clone, Copy, Display)]
 #[serde(rename_all = "snake_case")]
 pub enum ProxyStatus {
     Connected,

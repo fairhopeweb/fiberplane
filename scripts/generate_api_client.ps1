@@ -2,33 +2,32 @@
 
 $start_dir = Get-Location;
 $script_path = ($PSScriptRoot);
-$root_dir = (Get-Item $script_path ).parent.FullName;
+$root_dir = (Get-Item $script_path).parent.FullName;
 $api_client_dir = Join-Path $root_dir "fiberplane-api-client";
 
-if (Test-Path $api_client_dir) {
+if (Test-Path $api_client_dir)
+{
     Remove-Item $api_client_dir -Recurse
 }
 
-docker run --rm `
-    -v "${root_dir}:/local" `
-    openapitools/openapi-generator-cli:v5.2.1 `
-        generate `
-            -i /local/schemas/openapi_v1.yml `
-            -p packageName=fiberplane-api-client `
-            -g rust `
-            -o /local/fiberplane-api-client `
-            --skip-validate-spec
+if ($null -eq (Get-Command "fp-openapi-rust-gen.exe" -ErrorAction SilentlyContinue))
+{
+    # not in path; use docker image
+    docker.exe run --rm `
+        -v "${root_dir}:/local" `
+            fiberplane/fp-openapi-rust-gen:latest `
+            --output /local/fiberplane-api-client `
+            /local/schemas/openapi_v1.yml `
+            --local
+}
+else
+{
+    # use the one from PATH if its already there
+    fp-openapi-rust-gen.exe --output fiberplane-api-client .\schemas\openapi_v1.yml --force --local
+}
 
 Set-Location $api_client_dir
 cargo fmt
 
-# Git patches don't apply if we're not in the base directory of the project (where .git lives): https://stackoverflow.com/a/67790361/11494565
-Set-Location $root_dir
-$files = Get-ChildItem "schemas\patches\*.patch"
-
-foreach ($file in $files) {
-    git apply -v $file
-}
-
-# At the end of the script, get back to the directory that we started in
+# go back to the beginning so our user doesn't get confused as they're in a different directory now
 Set-Location $start_dir

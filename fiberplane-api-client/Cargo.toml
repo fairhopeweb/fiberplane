@@ -1,17 +1,50 @@
 [package]
 name = "fiberplane-api-client"
-version = "1.0.0"
-authors = ["OpenAPI Generator team and contributors"]
-edition = "2018"
+edition = "2021"
+version = "0.1.0"
 
 [dependencies]
-serde = "^1.0"
-serde_derive = "^1.0"
-serde_json = "^1.0"
-url = "^2.2"
-[dependencies.reqwest]
-version = "^0.11"
-default-features = false
-features = ["json", "multipart"]
+anyhow = "1"
+bytes = "1"
+secrecy = "0"
+serde_json = "1"
 
-[dev-dependencies]
+[dependencies.base64uuid]
+path = "../base64uuid"
+features = []
+optional = false
+
+[dependencies.fiberplane-models]
+path = "../fiberplane-models"
+features = []
+optional = false
+
+[dependencies.fiberplane-templates]
+path = "../fiberplane-templates"
+features = ["types"]
+optional = false
+
+[dependencies.reqwest]
+version = "0.11"
+features = ["json", "multipart", "gzip", "rustls-tls"]
+optional = false
+default-features = false
+
+[dependencies.serde]
+version = "1"
+features = ["derive"]
+optional = false
+
+[dependencies.time]
+version = "0.3"
+features = ["parsing", "formatting", "serde-human-readable", "serde-well-known"]
+optional = false
+
+[lib]
+path = "src/lib.rs"
+name = "fiberplane_api_client"
+plugin = false
+proc-macro = false
+edition = "2021"
+crate-type = ["rlib"]
+required-features = []

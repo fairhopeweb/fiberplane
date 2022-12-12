@@ -13,6 +13,7 @@ types = ["serde", "serde_json"]
 examples = []
 
 [dependencies]
+base64uuid = { path = "../base64uuid", default-features = false }
 fiberplane-models = { workspace = true }
 fiberplane-string-utils = { workspace = true }
 once_cell = { workspace = true, optional = true }

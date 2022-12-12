@@ -557,8 +557,8 @@ pub struct FocusInfoMessage {
 )]
 #[serde(rename_all = "camelCase")]
 pub struct UserTypingCommentClientMessage {
-    pub notebook_id: String,
-    pub thread_id: String,
+    pub notebook_id: Base64Uuid,
+    pub thread_id: Base64Uuid,
 
     /// Operation ID. Empty if the user has not provided a op_id.
     #[serde(skip_serializing_if = "Option::is_none")]

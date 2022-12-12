@@ -17,9 +17,9 @@ serde = { workspace = true }
 # `runtime-tokio-rustls` can be removed once https://github.com/launchbadge/sqlx/issues/1627 is resolved
 sqlx = { version = "0.6", features = ["macros", "runtime-tokio-rustls"], default-features = false, optional = true }
 thiserror = { workspace = true }
-uuid = { version = "1" }
+uuid = { workspace = true }
 
 [dev-dependencies]
 rmp-serde = "1.1.0"
 serde_json = "1.0.74"
-uuid = { version = "1", features = ["serde"] }
+uuid = { workspace = true, features = ["serde"] }

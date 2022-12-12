@@ -1,4 +1,5 @@
 use crate::formatting::Formatting;
+use base64uuid::Base64Uuid;
 #[cfg(feature = "fp-bindgen")]
 use fp_bindgen::prelude::Serializable;
 use serde::{Deserialize, Serialize};
@@ -12,7 +13,7 @@ use time::OffsetDateTime;
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Thread {
-    pub id: String,
+    pub id: Base64Uuid,
     pub items: Vec<ThreadItem>,
     pub status: ThreadStatus,
     pub created_by: UserSummary,
@@ -42,7 +43,7 @@ pub enum ThreadStatus {
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ThreadSummary {
-    pub id: String,
+    pub id: Base64Uuid,
     pub item_count: u32,
     pub first_item: Option<ThreadItem>,
     /// These are sorted in chronological order so the last one is the most recent.
@@ -70,11 +71,11 @@ pub enum ThreadItem {
 }
 
 impl ThreadItem {
-    pub fn id(&self) -> &str {
+    pub fn id(&self) -> Base64Uuid {
         match self {
-            ThreadItem::Comment(item) => &item.id,
-            ThreadItem::StatusChange(item) => &item.id,
-            ThreadItem::CommentDelete(item) => &item.id,
+            ThreadItem::Comment(item) => item.id,
+            ThreadItem::StatusChange(item) => item.id,
+            ThreadItem::CommentDelete(item) => item.id,
         }
     }
 
@@ -95,7 +96,7 @@ impl ThreadItem {
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ThreadStatusChange {
-    pub id: String,
+    pub id: Base64Uuid,
     pub status: ThreadStatus,
     pub created_by: UserSummary,
     #[serde(with = "time::serde::rfc3339")]
@@ -110,7 +111,7 @@ pub struct ThreadStatusChange {
 )]
 #[serde(rename_all = "camelCase")]
 pub struct CommentDelete {
-    pub id: String,
+    pub id: Base64Uuid,
     pub created_by: UserSummary,
     /// Timestamp when the original comment was created
     #[serde(with = "time::serde::rfc3339")]
@@ -127,7 +128,7 @@ pub struct CommentDelete {
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Comment {
-    pub id: String,
+    pub id: Base64Uuid,
     pub created_by: UserSummary,
     pub content: String, // limit of 2048 characters
     pub formatting: Formatting,
@@ -147,4 +148,53 @@ pub struct Comment {
 pub struct UserSummary {
     pub id: String,
     pub name: String,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[cfg_attr(
+    feature = "fp-bindgen",
+    derive(Serializable),
+    fp(
+        rust_plugin_module = "fiberplane_models::comments",
+        rust_wasmer_runtime_module = "fiberplane_models::comments"
+    )
+)]
+#[serde(rename_all = "camelCase")]
+pub struct NewComment {
+    pub id: Option<Base64Uuid>,
+    pub content: String,
+    #[serde(default)]
+    pub formatting: Formatting,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[cfg_attr(
+    feature = "fp-bindgen",
+    derive(Serializable),
+    fp(
+        rust_plugin_module = "fiberplane_models::comments",
+        rust_wasmer_runtime_module = "fiberplane_models::comments"
+    )
+)]
+#[serde(rename_all = "camelCase")]
+pub struct UpdateComment {
+    pub content: String,
+    #[serde(default)]
+    pub formatting: Formatting,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[cfg_attr(
+    feature = "fp-bindgen",
+    derive(Serializable),
+    fp(
+        rust_plugin_module = "fiberplane_models::comments",
+        rust_wasmer_runtime_module = "fiberplane_models::comments"
+    )
+)]
+#[serde(rename_all = "camelCase")]
+pub struct NewThread {
+    pub id: Option<Base64Uuid>,
+    pub referenced_cell_id: Option<Base64Uuid>,
+    pub comment: Option<NewComment>,
 }
