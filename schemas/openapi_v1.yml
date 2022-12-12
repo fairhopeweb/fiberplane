@@ -1374,6 +1374,76 @@ components:
         notebookUrl:
           type: string
           format: uri
+    snippet:
+      type: object
+      required:
+        - id
+        - name
+        - description
+        - body
+        - parameters
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: base64uuid
+        name:
+          type: string
+          format: name
+        description:
+          type: string
+        body:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    snippet_summary:
+      type: object
+      required:
+        - id
+        - name
+        - description
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: base64uuid
+        name:
+          type: string
+          format: name
+        description:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    new_snippet:
+      type: object
+      required:
+        - name
+        - body
+      properties:
+        name:
+          type: string
+          format: name
+        description:
+          type: string
+        body:
+          type: string
+    update_snippet:
+      type: object
+      properties:
+        description:
+          type: string
+        body:
+          type: string
     createdBy:
       oneOf:
         - $ref: "#/components/schemas/createdByUser"
@@ -1888,12 +1958,14 @@ components:
       required: true
       schema:
         type: string
+        format: name
     proxy_name:
       in: path
       name: proxy_name
       required: true
       schema:
         type: string
+        format: name
     user_id:
       in: path
       name: user_id
@@ -1902,6 +1974,14 @@ components:
       schema:
         type: string
         format: base64uuid
+    snippet_name:
+      in: path
+      name: snippet_name
+      description: Name of the snippet
+      required: true
+      schema:
+        type: string
+        format: name
   responses:
     thread:
       description: OK
@@ -2009,6 +2089,31 @@ paths:
     get:
       operationId: notebook_convert_to_template
       description: Convert the notebook to a Template
+      responses:
+        "200":
+          content:
+            text/plain:
+              schema:
+                type: string
+          description: OK
+  /api/notebooks/{notebookId}/snippet.jsonnet:
+    parameters:
+      - $ref: "#/components/parameters/notebookId"
+    get:
+      operationId: notebook_convert_to_snippet
+      description: Convert the notebook cells to a snippet
+      parameters:
+        - in: query
+          name: start_cell_id
+          description: Cell ID where the snippet should start
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: end_cell_id
+          required: false
+          schema:
+            type: string
       responses:
         "200":
           content:
@@ -2533,6 +2638,104 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/notebook"
+  /api/workspaces/{workspace_id}/snippets:
+    parameters:
+      - $ref: "#/components/parameters/workspace_id"
+    post:
+      operationId: snippet_create
+      description: Create a new snippet
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/new_snippet"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/snippet"
+    get:
+      operationId: snippet_list
+      description: List the snippets that have been uploaded
+      parameters:
+        - in: query
+          name: sort_by
+          description: Sort the resulting list by the following field (defaults to title)
+          schema:
+            type: string
+            enum:
+              - "title"
+              - "created_at"
+              - "updated_at"
+          required: false
+        - $ref: "#/components/parameters/sortDirection"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/snippet_summary"
+  /api/workspaces/{workspace_id}/snippets/{snippet_name}:
+    parameters:
+      - $ref: "#/components/parameters/workspace_id"
+      - $ref: "#/components/parameters/snippet_name"
+    get:
+      operationId: snippet_get
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/snippet"
+    patch:
+      operationId: snippet_update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/update_snippet"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/snippet"
+    delete:
+      operationId: snippet_delete
+      responses:
+        "200":
+          description: OK
+  /api/workspaces/{workspace_id}/snippets/{snippet_name}/expand:
+    parameters:
+      - $ref: "#/components/parameters/workspace_id"
+      - $ref: "#/components/parameters/snippet_name"
+      - name: notebook_id
+        in: query
+        description: ID of the notebook where the snippet is being expanded
+        schema:
+          type: string
+          format: base64uuid
+    post:
+      operationId: snippet_expand
+      description: Expand the snippet into a notebook
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/cell"
   /api/workspaces/{workspace_id}/triggers:
     parameters:
       - $ref: "#/components/parameters/workspace_id"

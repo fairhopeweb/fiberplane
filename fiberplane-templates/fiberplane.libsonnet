@@ -413,6 +413,7 @@ local cell = {
   // fields into the object returned here.
   local base = function(type, content, readOnly)
     formattedContent(content) + {
+      id: '',
       type: type,
       readOnly: validate.nullOr.boolean('readOnly', readOnly),
       _class:: 'CELL',
@@ -720,6 +721,12 @@ local cell = {
     },
 };
 
+// Create a dummy notebook just to reuse the addCells functionality (which adds cell IDs)
+local snippet = function(cells)
+  notebook.new('')
+  .addCells(cells)
+  .cells;
+
 // Library exports
 {
   /**
@@ -731,6 +738,19 @@ local cell = {
    *  .addCells([...])
    */
   notebook: notebook,
+
+  /**
+   * Function for creating Snippets, or reusable groups of cells.
+   * @function snippet
+   * @param {cell.Cell[]} cells
+   * @returns {cell.Cell[]}
+   *
+   * @example fp.snippet([
+   *  c.text('Hello, world!'),
+   *  c.code('This is a snippet'),
+   * ])
+   */
+  snippet: snippet,
   /**
    * Functions for creating notebook cells
    * @namespace cell

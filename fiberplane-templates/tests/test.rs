@@ -11,17 +11,8 @@ use std::collections::{BTreeMap, HashMap};
 use std::{fs, path::PathBuf};
 use time::macros::datetime;
 
-const NOTEBOOK: Lazy<NewNotebook> = Lazy::new(|| NewNotebook {
-    title: "Incident: 'API Outage'".to_string(),
-    time_range: NewTimeRange::Relative(RelativeTimeRange { minutes: -60 }),
-    selected_data_sources: BTreeMap::from_iter([(
-        "prometheus".to_string(),
-        SelectedDataSource {
-            name: Name::from_static("prometheus"),
-            proxy_name: Some(Name::from_static("dev")),
-        },
-    )]),
-    cells: vec![
+const CELLS: Lazy<Vec<Cell>> = Lazy::new(|| {
+    vec![
         Cell::Text(TextCell {
             id: "1".to_string(),
             content: "Let's debug this incident! foo:bar baz".to_string(),
@@ -167,7 +158,19 @@ let b = \"c\";"
             }],
             ..Default::default()
         }),
-    ],
+    ]
+});
+const NOTEBOOK: Lazy<NewNotebook> = Lazy::new(|| NewNotebook {
+    title: "Incident: 'API Outage'".to_string(),
+    time_range: NewTimeRange::Relative(RelativeTimeRange { minutes: -60 }),
+    selected_data_sources: BTreeMap::from_iter([(
+        "prometheus".to_string(),
+        SelectedDataSource {
+            name: Name::from_static("prometheus"),
+            proxy_name: Some(Name::from_static("dev")),
+        },
+    )]),
+    cells: CELLS.clone(),
     labels: vec![
         Label {
             key: "key1".to_string(),
@@ -292,4 +295,11 @@ fn mustache_substitution_to_function_parameters() {
             ty: TemplateParameterType::String,
         }
     );
+}
+
+#[test]
+fn export_cells_to_snippet_and_back() {
+    let snippet = cells_to_snippet(&CELLS);
+    let actual = expand_snippet(snippet).unwrap();
+    assert_eq!(actual, *CELLS);
 }

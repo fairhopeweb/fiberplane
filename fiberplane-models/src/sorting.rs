@@ -81,6 +81,34 @@ impl SortField for TemplateListSortFields {
 #[cfg_attr(feature = "clap", derive(clap::ValueEnum))]
 #[serde(rename_all = "snake_case")]
 #[strum(serialize_all = "snake_case")]
+pub enum SnippetListSortFields {
+    Name,
+    CreatedAt,
+    UpdatedAt,
+}
+
+impl SnippetListSortFields {
+    #[inline]
+    pub fn to_sql(&self) -> &'static str {
+        match self {
+            SnippetListSortFields::Name => "name",
+            SnippetListSortFields::UpdatedAt => "updated_at",
+            SnippetListSortFields::CreatedAt => "created_at",
+        }
+    }
+}
+
+impl SortField for SnippetListSortFields {
+    #[inline]
+    fn default_sort_field() -> Self {
+        Self::Name
+    }
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone, Copy, PartialEq, Eq, IntoStaticStr)]
+#[cfg_attr(feature = "clap", derive(clap::ValueEnum))]
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
 pub enum EventSortFields {
     Title,
     OccurrenceTime,

@@ -42,6 +42,21 @@ function(incidentName='API Outage')
 
 See the [examples](./examples) for more detailed, use case-specific Templates.
 
+## Snippets
+
+Snippets are smaller pieces of Jsonnet code that produce reusable arrays of Notebook Cells, rather than whole Notebooks.
+
+```jsonnet
+local fp = import 'fiberplane.libsonnet';
+local c = fp.cell;
+local fmt = fp.format;
+
+fp.snippet([
+  c.h2('I am a snippet'),
+  c.code('Here is some code'),
+])
+```
+
 ## [Template API Documentation](./docs/template_api.md)
 
 See the generated API docs [here](./docs/template_api.md).

@@ -6,7 +6,7 @@ IFS=$'\n\t'
 
 SCRIPT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")" &>/dev/null && pwd)"
 
-rm -r "$SCRIPT_DIR/../fiberplane-api-client"
+rm -r "$SCRIPT_DIR/../fiberplane-api-client" || true
 
 if ! command -v fp-openapi-rust-gen &>/dev/null; then
   # not in path; use docker image

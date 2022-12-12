@@ -1,7 +1,12 @@
 #[cfg(feature = "fp-bindgen")]
 use fp_bindgen::prelude::Serializable;
 use serde::{Deserialize, Serialize};
-use std::{fmt, ops::Sub, str::FromStr, time::SystemTime};
+use std::{
+    fmt,
+    ops::{Deref, Sub},
+    str::FromStr,
+    time::SystemTime,
+};
 use time::{
     ext::NumericalDuration, format_description::well_known::Rfc3339, Duration, OffsetDateTime,
 };
@@ -91,6 +96,14 @@ impl Sub<Timestamp> for Timestamp {
 impl From<Timestamp> for OffsetDateTime {
     fn from(timestamp: Timestamp) -> Self {
         timestamp.0
+    }
+}
+
+impl Deref for Timestamp {
+    type Target = OffsetDateTime;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
     }
 }
 

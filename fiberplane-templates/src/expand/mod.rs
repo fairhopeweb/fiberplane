@@ -1,6 +1,6 @@
 use crate::types::{TemplateParameter, TemplateParameterType};
 use crate::FIBERPLANE_LIBRARY_PATH;
-use fiberplane_models::notebooks::NewNotebook;
+use fiberplane_models::notebooks::{Cell, NewNotebook};
 use jrsonnet_evaluator::error::LocError;
 use jrsonnet_evaluator::trace::{CompactFormat, ExplainingFormat, PathResolver, TraceFormat};
 use jrsonnet_evaluator::{EvaluationState, FuncVal, IStr, ImportResolver, ManifestFormat, Val};
@@ -29,7 +29,7 @@ pub enum Error {
     #[error("{0}")]
     Evaluation(String),
 
-    #[error("template did not produce a valid notebook: {0:?}")]
+    #[error("template did not produce valid output: {0:?}")]
     InvalidOutput(#[from] serde_json::Error),
 }
 
@@ -49,6 +49,10 @@ pub fn extract_template_parameters(
     template: impl AsRef<str>,
 ) -> Result<Vec<TemplateParameter>, Error> {
     TemplateExpander::default().extract_template_parameters(template)
+}
+
+pub fn expand_snippet(snippet: impl AsRef<str>) -> Result<Vec<Cell>, Error> {
+    TemplateExpander::default().expand_snippet(snippet)
 }
 
 #[derive(Default)]
@@ -87,6 +91,17 @@ impl TemplateExpander {
         notebook.labels.retain(|label| label.validate().is_ok());
 
         Ok(notebook)
+    }
+
+    /// Expand the given snippet into an array of cells
+    ///
+    /// Note that snippets, unlike templates, do not support top-level arguments
+    /// so the value returned must be the array of cells rather than a function.
+    pub fn expand_snippet(&self, snippet: impl AsRef<str>) -> Result<Vec<Cell>, Error> {
+        let string = self.expand_snippet_to_string(snippet, false)?;
+        let cells: Vec<Cell> = serde_json::from_str(&string)?;
+
+        Ok(cells)
     }
 
     /// Evaluate the template with the given top-level arguments.
@@ -144,6 +159,25 @@ impl TemplateExpander {
         } else {
             result
         };
+
+        Ok(state
+            .manifest(result)
+            .map_err(|err| self.format_trace(&state, err))?
+            .to_string())
+    }
+
+    /// Expand the given snippet into a JSON stringified array of cells
+    ///
+    /// Note that snippets, unlike templates, do not support top-level arguments.
+    pub(crate) fn expand_snippet_to_string(
+        &self,
+        snippet: impl AsRef<str>,
+        pretty_print: bool,
+    ) -> Result<String, Error> {
+        let (state, result) = self.expand_template_inner(snippet)?;
+
+        let num_spaces = if pretty_print { 2 } else { 0 };
+        state.set_manifest_format(ManifestFormat::Json(num_spaces));
 
         Ok(state
             .manifest(result)

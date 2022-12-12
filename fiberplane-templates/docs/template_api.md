@@ -9,6 +9,13 @@
 <dd><p>Functions for formatting text</p></dd>
 </dl>
 
+## Functions
+
+<dl>
+<dt><a href="#snippet">snippet(cells)</a> ⇒ <code><a href="#cell.Cell">Array.&lt;Cell&gt;</a></code></dt>
+<dd><p>Function for creating Snippets, or reusable groups of cells.</p></dd>
+</dl>
+
 <a name="notebook"></a>
 
 ## notebook : <code>object</code>
@@ -751,4 +758,22 @@ fmt.link('Example', 'https://example.com')
 **Example**  
 ```js
 fmt.link('https://example.com')
+```
+<a name="snippet"></a>
+
+## snippet(cells) ⇒ [<code>Array.&lt;Cell&gt;</code>](#cell.Cell)
+<p>Function for creating Snippets, or reusable groups of cells.</p>
+
+**Kind**: global function  
+
+| Param | Type |
+| --- | --- |
+| cells | [<code>Array.&lt;Cell&gt;</code>](#cell.Cell) | 
+
+**Example**  
+```js
+fp.snippet([
+ c.text('Hello, world!'),
+ c.code('This is a snippet'),
+])
 ```

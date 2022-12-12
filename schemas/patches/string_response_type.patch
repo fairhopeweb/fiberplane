@@ -1,0 +1,22 @@
+diff --git a/fiberplane-api-client/src/apis/default_api.rs b/fiberplane-api-client/src/apis/default_api.rs
+index 9124eca..10765ac 100644
+--- a/fiberplane-api-client/src/apis/default_api.rs
++++ b/fiberplane-api-client/src/apis/default_api.rs
+@@ -1606,7 +1606,7 @@ pub async fn notebook_convert_to_snippet(
+     let local_var_content = local_var_resp.text().await?;
+ 
+     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+-        serde_json::from_str(&local_var_content).map_err(Error::from)
++        Ok(local_var_content)
+     } else {
+         let local_var_entity: Option<NotebookConvertToSnippetError> =
+             serde_json::from_str(&local_var_content).ok();
+@@ -1649,7 +1649,7 @@ pub async fn notebook_convert_to_template(
+     let local_var_content = local_var_resp.text().await?;
+ 
+     if !local_var_status.is_client_error() && !local_var_status.is_server_error() {
+-        serde_json::from_str(&local_var_content).map_err(Error::from)
++        Ok(local_var_content)
+     } else {
+         let local_var_entity: Option<NotebookConvertToTemplateError> =
+             serde_json::from_str(&local_var_content).ok();

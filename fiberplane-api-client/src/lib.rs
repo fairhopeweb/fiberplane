@@ -25,6 +25,7 @@ pub(crate) mod models {
     pub use fiberplane_models::proxies::*;
     pub use fiberplane_models::query_data::*;
     pub use fiberplane_models::realtime::*;
+    pub use fiberplane_models::snippets::*;
     pub use fiberplane_models::sorting::*;
     pub use fiberplane_models::timestamps::*;
     pub use fiberplane_models::tokens::*;
@@ -323,6 +324,31 @@ pub async fn file_delete(
     let response = builder.send().await?.error_for_status()?;
 
     Ok(())
+}
+
+/// Convert the notebook cells to a snippet
+pub async fn notebook_convert_to_snippet(
+    client: &ApiClient,
+    notebook_id: base64uuid::Base64Uuid,
+    start_cell_id: Option<String>,
+    end_cell_id: Option<String>,
+) -> Result<String> {
+    let mut builder = client.request(
+        Method::GET,
+        &format!(
+            "/api/notebooks/{notebookId}/snippet.jsonnet",
+            notebookId = notebook_id,
+        ),
+    )?;
+    if let Some(start_cell_id) = start_cell_id {
+        builder = builder.query(&[("start_cell_id", start_cell_id)]);
+    }
+    if let Some(end_cell_id) = end_cell_id {
+        builder = builder.query(&[("end_cell_id", end_cell_id)]);
+    }
+    let response = builder.send().await?.error_for_status()?.text().await?;
+
+    Ok(response)
 }
 
 /// Convert the notebook to a Template
@@ -1147,6 +1173,126 @@ pub async fn notebook_search(
         ),
     )?;
     builder = builder.json(&payload);
+    let response = builder.send().await?.error_for_status()?.json().await?;
+
+    Ok(response)
+}
+
+/// List the snippets that have been uploaded
+pub async fn snippet_list(
+    client: &ApiClient,
+    workspace_id: base64uuid::Base64Uuid,
+    sort_by: Option<String>,
+    sort_direction: Option<String>,
+) -> Result<Vec<models::SnippetSummary>> {
+    let mut builder = client.request(
+        Method::GET,
+        &format!(
+            "/api/workspaces/{workspace_id}/snippets",
+            workspace_id = workspace_id,
+        ),
+    )?;
+    if let Some(sort_by) = sort_by {
+        builder = builder.query(&[("sort_by", sort_by)]);
+    }
+    if let Some(sort_direction) = sort_direction {
+        builder = builder.query(&[("sort_direction", sort_direction)]);
+    }
+    let response = builder.send().await?.error_for_status()?.json().await?;
+
+    Ok(response)
+}
+
+/// Create a new snippet
+pub async fn snippet_create(
+    client: &ApiClient,
+    workspace_id: base64uuid::Base64Uuid,
+    payload: models::NewSnippet,
+) -> Result<models::Snippet> {
+    let mut builder = client.request(
+        Method::POST,
+        &format!(
+            "/api/workspaces/{workspace_id}/snippets",
+            workspace_id = workspace_id,
+        ),
+    )?;
+    builder = builder.json(&payload);
+    let response = builder.send().await?.error_for_status()?.json().await?;
+
+    Ok(response)
+}
+
+pub async fn snippet_get(
+    client: &ApiClient,
+    workspace_id: base64uuid::Base64Uuid,
+    snippet_name: String,
+) -> Result<models::Snippet> {
+    let mut builder = client.request(
+        Method::GET,
+        &format!(
+            "/api/workspaces/{workspace_id}/snippets/{snippet_name}",
+            workspace_id = workspace_id,
+            snippet_name = snippet_name,
+        ),
+    )?;
+    let response = builder.send().await?.error_for_status()?.json().await?;
+
+    Ok(response)
+}
+
+pub async fn snippet_delete(
+    client: &ApiClient,
+    workspace_id: base64uuid::Base64Uuid,
+    snippet_name: String,
+) -> Result<()> {
+    let mut builder = client.request(
+        Method::DELETE,
+        &format!(
+            "/api/workspaces/{workspace_id}/snippets/{snippet_name}",
+            workspace_id = workspace_id,
+            snippet_name = snippet_name,
+        ),
+    )?;
+    let response = builder.send().await?.error_for_status()?;
+
+    Ok(())
+}
+
+pub async fn snippet_update(
+    client: &ApiClient,
+    workspace_id: base64uuid::Base64Uuid,
+    snippet_name: String,
+    payload: models::UpdateSnippet,
+) -> Result<models::Snippet> {
+    let mut builder = client.request(
+        Method::PATCH,
+        &format!(
+            "/api/workspaces/{workspace_id}/snippets/{snippet_name}",
+            workspace_id = workspace_id,
+            snippet_name = snippet_name,
+        ),
+    )?;
+    builder = builder.json(&payload);
+    let response = builder.send().await?.error_for_status()?.json().await?;
+
+    Ok(response)
+}
+
+/// Expand the snippet into a notebook
+pub async fn snippet_expand(
+    client: &ApiClient,
+    workspace_id: base64uuid::Base64Uuid,
+    snippet_name: String,
+    notebook_id: Option<base64uuid::Base64Uuid>,
+) -> Result<Vec<models::Cell>> {
+    let mut builder = client.request(
+        Method::POST,
+        &format!(
+            "/api/workspaces/{workspace_id}/snippets/{snippet_name}/expand",
+            workspace_id = workspace_id,
+            snippet_name = snippet_name,
+        ),
+    )?;
     let response = builder.send().await?.error_for_status()?.json().await?;
 
     Ok(response)

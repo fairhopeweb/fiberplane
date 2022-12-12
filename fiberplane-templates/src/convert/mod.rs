@@ -33,13 +33,7 @@ pub fn notebook_to_template(notebook: impl Into<NewNotebook>) -> String {
     let mut writer = CodeWriter::new();
 
     // Write the preamble
-    writer.println(
-        "// For documentation on Fiberplane Templates, see: https://docs.fiberplane.com/templates",
-    );
-    writer.println(format!("local fp = import '{}';", FIBERPLANE_LIBRARY_PATH));
-    writer.println("local c = fp.cell;");
-    writer.println("local fmt = fp.format;");
-    writer.println("");
+    write_preamble(&mut writer);
     writer.println("function(");
     writer.indent();
 
@@ -117,7 +111,7 @@ pub fn notebook_to_template(notebook: impl Into<NewNotebook>) -> String {
     // Add cells
     writer.println(".addCells([");
     writer.indent();
-    for cell in notebook.cells {
+    for cell in &notebook.cells {
         print_cell(&mut writer, cell);
     }
     writer.dedent();
@@ -127,19 +121,46 @@ pub fn notebook_to_template(notebook: impl Into<NewNotebook>) -> String {
     writer.to_string()
 }
 
+/// Convert the given cells into a Snippet
+pub fn cells_to_snippet(cells: &[Cell]) -> String {
+    let mut writer = CodeWriter::new();
+    write_preamble(&mut writer);
+
+    writer.println("fp.snippet([");
+    writer.indent();
+    for cell in cells {
+        print_cell(&mut writer, cell);
+    }
+    writer.dedent();
+    writer.println("])");
+    writer.println("");
+
+    writer.to_string()
+}
+
+fn write_preamble(writer: &mut CodeWriter) {
+    writer.println(
+        "// For documentation on Fiberplane Templates, see: https://docs.fiberplane.com/templates",
+    );
+    writer.println(format!("local fp = import '{}';", FIBERPLANE_LIBRARY_PATH));
+    writer.println("local c = fp.cell;");
+    writer.println("local fmt = fp.format;");
+    writer.println("");
+}
+
 /// Print the cell.
 ///
 /// We try to print the cell in the most compact form that is still readable.
 /// If it only has 1-2 properties, we print it on a single line.
 /// If it has more, we print it on multiple lines and write out each property name.
-fn print_cell(writer: &mut CodeWriter, cell: Cell) {
+fn print_cell(writer: &mut CodeWriter, cell: &Cell) {
     let mut args = Vec::with_capacity(5);
 
     // Get the helper function name, arguments, and read only property from each cell
     // (read_only is handled separately because every cell has it)
     let (function_name, read_only) = match cell {
         Cell::Checkbox(cell) => {
-            args.push(("content", format_content(&cell.content, cell.formatting)));
+            args.push(("content", format_content(&cell.content, &cell.formatting)));
             args.push(("checked", cell.checked.to_string()));
             if let Some(level) = cell.level {
                 args.push(("level", level.to_string()));
@@ -161,7 +182,7 @@ fn print_cell(writer: &mut CodeWriter, cell: Cell) {
                 HeadingType::H2 => "h2",
                 HeadingType::H3 => "h3",
             };
-            args.push(("content", format_content(&cell.content, cell.formatting)));
+            args.push(("content", format_content(&cell.content, &cell.formatting)));
             (heading_type, cell.read_only)
         }
         Cell::Image(cell) => {
@@ -175,7 +196,7 @@ fn print_cell(writer: &mut CodeWriter, cell: Cell) {
                 ListType::Ordered => "listItem.ordered",
                 ListType::Unordered => "listItem.unordered",
             };
-            args.push(("content", format_content(&cell.content, cell.formatting)));
+            args.push(("content", format_content(&cell.content, &cell.formatting)));
             if let Some(level) = cell.level {
                 args.push(("level", level.to_string()));
             }
@@ -185,14 +206,14 @@ fn print_cell(writer: &mut CodeWriter, cell: Cell) {
             (function_name, cell.read_only)
         }
         Cell::Text(cell) => {
-            args.push(("content", format_content(&cell.content, cell.formatting)));
+            args.push(("content", format_content(&cell.content, &cell.formatting)));
             ("text", cell.read_only)
         }
         Cell::Provider(cell) => {
             args.push(("title", escape_string(&cell.title)));
             args.push(("intent", escape_string(&cell.intent)));
-            if let Some(query_data) = cell.query_data {
-                args.push(("queryData", escape_string(&query_data)));
+            if let Some(query_data) = &cell.query_data {
+                args.push(("queryData", escape_string(query_data)));
             }
             ("provider", cell.read_only)
         }
@@ -227,7 +248,7 @@ fn print_cell(writer: &mut CodeWriter, cell: Cell) {
     };
 }
 
-fn format_content(content: &str, mut formatting: Formatting) -> String {
+fn format_content(content: &str, formatting: &Formatting) -> String {
     if formatting.is_empty() {
         return escape_string(content);
     }
@@ -238,18 +259,20 @@ fn format_content(content: &str, mut formatting: Formatting) -> String {
     let mut start_annotations = 0;
     let mut end_annotations = 0;
 
-    formatting.sort_by_key(|f| f.offset);
+    // Sort the annotations by offset without cloning the annotations themselves
+    let mut sorted: Vec<&AnnotationWithOffset> = formatting.iter().collect();
+    sorted.sort_by_key(|f| f.offset);
 
     // Convert each annotation to a jsonnet helper function
-    for AnnotationWithOffset { offset, annotation } in formatting {
+    for AnnotationWithOffset { offset, annotation } in sorted {
         // Add any content before this annotation to the output
-        if offset > index {
+        if *offset > index {
             output.push_str(&escape_string_and_replace_mustache_substitutions(
-                char_slice(content, index, offset),
+                char_slice(content, index, *offset),
                 ", ",
             ));
             output.push_str(", ");
-            index = offset;
+            index = *offset;
         }
         match annotation {
             Annotation::StartBold => {

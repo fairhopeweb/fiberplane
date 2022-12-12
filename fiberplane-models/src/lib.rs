@@ -11,6 +11,7 @@ pub mod providers;
 pub mod proxies;
 pub mod query_data;
 pub mod realtime;
+pub mod snippets;
 pub mod sorting;
 pub mod timestamps;
 pub mod tokens;
