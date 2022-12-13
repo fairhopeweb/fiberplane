@@ -12,11 +12,9 @@ crate-type = ["lib"]
 api-client = ["fiberplane-api-client"]
 base64uuid-creation = ["base64uuid/creation"]
 clap = ["fiberplane-models?/clap"]
-fixtures = ["fiberplane-ot?/fixtures"]
-fp-bindgen = ["base64uuid?/fp-bindgen", "fiberplane-models?/fp-bindgen", "fiberplane-ot?/fp-bindgen"]
+fp-bindgen = ["base64uuid?/fp-bindgen", "fiberplane-models?/fp-bindgen"]
 markdown = ["fiberplane-markdown"]
 models = ["fiberplane-models"]
-ot = ["fiberplane-ot"]
 provider-bindings = ["fiberplane-provider-bindings"]
 provider-runtime = ["fiberplane-provider-runtime"]
 sqlx = ["base64uuid?/sqlx", "fiberplane-models?/sqlx"]
@@ -28,7 +26,6 @@ base64uuid = { path = "../base64uuid", default-features = false, optional = true
 fiberplane-api-client = { path = "../fiberplane-api-client", optional = true }
 fiberplane-markdown = { path = "../fiberplane-markdown", optional = true }
 fiberplane-models = { path = "../fiberplane-models", optional = true }
-fiberplane-ot = { path = "../fiberplane-ot", optional = true }
 fiberplane-provider-bindings = { workspace = true, optional = true }
 fiberplane-provider-runtime = { path = "../fiberplane-provider-protocol/fiberplane-provider-runtime", optional = true }
 fiberplane-string-utils = { path = "../fiberplane-string-utils", optional = true }
