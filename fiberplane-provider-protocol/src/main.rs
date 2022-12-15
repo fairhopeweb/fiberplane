@@ -23,10 +23,23 @@ fp_import! {
 }
 
 fp_export! {
+    type ConfigSchema = Vec<ConfigField>;
     type Formatting = Vec<AnnotationWithOffset>;
     type LegacyTimestamp = f64;
     type ProviderConfig = Value;
     type QuerySchema = Vec<QueryField>;
+
+    /// Returns the schema for the config consumed by this provider.
+    ///
+    /// Note this schema is only used by Studio to display a configuration form
+    /// in case the provider is configured as a direct data source. The provider
+    /// itself is responsible for validating the contents of its config.
+    /// Assuming the provider uses Serde for parsing the config, validation is
+    /// done at that stage.
+    ///
+    /// This function only needs to be implemented by providers that are
+    /// statically bundled with Studio.
+    fn get_config_schema() -> ConfigSchema;
 
     /// Returns the query types supported by this provider.
     /// This function allows Studio to know upfront which formats will be

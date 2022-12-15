@@ -15,83 +15,83 @@ static COMMIT_HASH: &str = env!("VERGEN_GIT_SHA");
 static BUILD_TIMESTAMP: &str = env!("VERGEN_BUILD_TIMESTAMP");
 
 #[fp_export_impl(fiberplane_provider_bindings)]
+fn get_config_schema() -> ConfigSchema {
+    vec![
+        TextField::new()
+            .with_name("baseUrl")
+            .with_label("Base URL of the API we are interested in")
+            .with_placeholder("Leave empty to allow querying any URL")
+            .into(),
+        TextField::new()
+            .with_name("healthCheckPath")
+            .with_label("Path to the healthcheck or status endpoint, relative to the base URL")
+            .into(),
+        TextField::new()
+            .with_name("username")
+            .with_label("Username for authentication (if the API uses Basic auth)")
+            .into(),
+        TextField::new()
+            .with_name("password")
+            .with_label("Password for authentication (if the API uses Basic auth)")
+            .into(),
+        TextField::new()
+            .with_name("token")
+            .with_label("Token for authentication (if the API uses Bearer auth)")
+            .into(),
+        CheckboxField::new()
+            .with_name("showHeaders")
+            .with_label("Show response headers in the query results")
+            .into(),
+    ]
+}
+
+#[fp_export_impl(fiberplane_provider_bindings)]
 async fn get_supported_query_types(config: ProviderConfig) -> Vec<SupportedQueryType> {
     let config = serde_json::from_value::<Config>(config);
-    let path_label = config
-        .map(|config| {
-            if config.api.is_some() {
-                "Path to query in the API, starting with /".to_string()
-            } else {
-                "Address to query, starting with https://".to_string()
-            }
-        })
-        .unwrap_or_else(|_| "Path to query in the API, starting with /".to_string());
+    let path_label = match config {
+        Ok(config) if config.api.is_some() => "Path to query in the API, starting with /",
+        _ => "Address to query, starting with https://",
+    };
 
     vec![
-        SupportedQueryType {
-            query_type: PERFORM_QUERY_TYPE.to_string(),
-            schema: vec![
+        SupportedQueryType::new(PERFORM_QUERY_TYPE)
+            .with_schema(vec![
                 // TODO: Wait for Studio to implement the select field (FP-2590),
                 // then use a QueryField::Select to implement the type of query
-                QueryField::Text(TextField {
-                    name: HTTP_METHOD_PARAM_NAME.to_string(),
-                    label: "Type of query".to_string(),
-                    multiline: false,
-                    supports_highlighting: false,
-                    prerequisites: Vec::new(),
-                    required: true,
-                }),
-                QueryField::Text(TextField {
-                    name: PATH_PARAM_NAME.to_string(),
-                    label: path_label,
-                    multiline: false,
-                    prerequisites: Vec::new(),
-                    required: true,
-                    supports_highlighting: false,
-                }),
-                QueryField::Text(TextField {
-                    name: QUERY_PARAM_NAME.to_string(),
-                    label: "Query parameters. One pair key=value per line, like 'q=fiberplane'".to_string(),
-                    multiline: true,
-                    prerequisites: Vec::new(),
-                    required: false,
-                    supports_highlighting: false,
-                }),
+                TextField::new()
+                    .with_name(HTTP_METHOD_PARAM_NAME)
+                    .with_label("Type of query")
+                    .required()
+                    .into(),
+                TextField::new()
+                    .with_name(PATH_PARAM_NAME)
+                    .with_label(path_label)
+                    .required()
+                    .into(),
+                TextField::new()
+                    .with_name(QUERY_PARAM_NAME)
+                    .with_label("Query parameters. One pair key=value per line, like 'q=fiberplane'")
+                    .multiline()
+                    .into(),
+                TextField::new()
+                    .with_name(EXTRA_HEADERS_PARAM_NAME)
+                    .with_label("Extra headers to pass. One pair key=value per line, like 'Accept=application/json'")
+                    .multiline()
+                    .into(),
                 // TODO: Wait for Studio to implement the checkbox field (FP-2593)
                 // to add a FORCE_JSON_PARAM_NAME field that is just a
                 // checkbox that adds an 'Accept: application/json' header
-                QueryField::Text(TextField {
-                    name: EXTRA_HEADERS_PARAM_NAME.to_string(),
-                    label: "Extra headers to pass. One pair key=value per line, like 'Accept=application/json'".to_string(),
-                    multiline: true,
-                    supports_highlighting: false,
-                    prerequisites: Vec::new(),
-                    required: false,
-                }),
-            ],
-            mime_types: vec![CELLS_MSGPACK_MIME_TYPE.to_string()],
-        },
-        SupportedQueryType {
-            query_type: STATUS_QUERY_TYPE.to_string(),
-            schema: vec![QueryField::Text(TextField {
-                name: PATH_PARAM_NAME.to_string(),
-                label: "Nothing to see here, needed to trigger a 'Run' button".to_string(),
-                multiline: false,
-                prerequisites: Vec::new(),
-                required: true,
-                supports_highlighting: false,
-            })],
-            mime_types: vec![
-                CELLS_MSGPACK_MIME_TYPE.to_string()],
-        },
+            ])
+            .supporting_mime_types(&[CELLS_MSGPACK_MIME_TYPE]),
+        SupportedQueryType::new(STATUS_QUERY_TYPE).supporting_mime_types(&[STATUS_MIME_TYPE]),
     ]
 }
 
 #[fp_export_impl(fiberplane_provider_bindings)]
 async fn invoke2(request: ProviderRequest) -> Result<Blob, Error> {
     log(format!(
-        "https provider (commit: {}, built at: {}) invoked for query type \"{}\" and query data \"{:?}\"",
-        COMMIT_HASH, BUILD_TIMESTAMP, request.query_type, request.query_data
+        "https provider (commit: {}, built at: {}) invoked for query type \"{}\" and query data \"{:?}\" with config \"{:?}\"",
+        COMMIT_HASH, BUILD_TIMESTAMP, request.query_type, request.query_data, request.config
     ));
 
     let config: Config =
@@ -110,7 +110,7 @@ async fn invoke2(request: ProviderRequest) -> Result<Blob, Error> {
 fn create_cells(query_type: String, response: Blob) -> Result<Vec<Cell>, Error> {
     Err(Error::Invocation {
         message: format!("create_cells is not implemented for this provider, it only returns {} blobs that must be handled by the runtime natively (received a {} blob for {}).", CELLS_MSGPACK_MIME_TYPE, response.mime_type, query_type)
-        })
+    })
 }
 
 /// Send a query to the given URL
@@ -148,24 +148,25 @@ async fn send_query(
 }
 
 async fn check_status(config: Config) -> Result<Blob, Error> {
-    if let Some(api) = config.api {
-        let info = send_query(
-            &api.base_url,
-            &api.health_check_path,
-            HttpRequestMethod::Get,
-            api.to_headers(),
-            None,
-        )
-        .await?;
-        Ok(info.try_into_blob(config.show_headers)?)
-    } else {
-        Ok(HttpsProviderResponse {
+    match config.api {
+        Some(api) if api.health_check_path.is_some() => {
+            let info = send_query(
+                &api.base_url,
+                api.health_check_path.as_deref().unwrap_or_default(),
+                HttpRequestMethod::Get,
+                api.to_headers(),
+                None,
+            )
+            .await?;
+            Ok(info.try_into_blob(config.show_headers)?)
+        }
+        _ => Ok(HttpsProviderResponse {
             status: "ok".to_string(),
             headers: None,
             payload: Vec::new(),
         }
         // We do not care about headers for the Ok status response
-        .try_into_blob(false)?)
+        .try_into_blob(false)?),
     }
 }
 

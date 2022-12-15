@@ -128,6 +128,37 @@ impl Runtime {
         Ok(result)
     }
 
+    /// Returns the schema for the config consumed by this provider.
+    ///
+    /// Note this schema is only used by Studio to display a configuration form
+    /// in case the provider is configured as a direct data source. The provider
+    /// itself is responsible for validating the contents of its config.
+    /// Assuming the provider uses Serde for parsing the config, validation is
+    /// done at that stage.
+    ///
+    /// This function only needs to be implemented by providers that are
+    /// statically bundled with Studio.
+    pub fn get_config_schema(&self) -> Result<ConfigSchema, InvocationError> {
+        let result = self.get_config_schema_raw();
+        let result = result.map(|ref data| deserialize_from_slice(data));
+        result
+    }
+    pub fn get_config_schema_raw(&self) -> Result<Vec<u8>, InvocationError> {
+        let mut env = RuntimeInstanceData::default();
+        let import_object = create_import_object(self.module.store(), &env);
+        let instance = Instance::new(&self.module, &import_object).unwrap();
+        env.init_with_instance(&instance).unwrap();
+        let function = instance
+            .exports
+            .get_native_function::<(), FatPtr>("__fp_gen_get_config_schema")
+            .map_err(|_| {
+                InvocationError::FunctionNotExported("__fp_gen_get_config_schema".to_owned())
+            })?;
+        let result = function.call()?;
+        let result = import_from_guest_raw(&env, result);
+        Ok(result)
+    }
+
     /// Returns the query types supported by this provider.
     /// This function allows Studio to know upfront which formats will be
     /// supported, and which providers (and their query types) are eligible to

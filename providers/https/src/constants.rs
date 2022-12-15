@@ -10,3 +10,5 @@ pub const EXTRA_HEADERS_PARAM_NAME: &str = "extra-headers";
 
 pub const QUERY_DATA_MIME_TYPE: &str = "application/x-www-form-urlencoded";
 pub const CELLS_MSGPACK_MIME_TYPE: &str = formatcp!("{CELLS_MIME_TYPE}+msgpack");
+
+pub const STATUS_MIME_TYPE: &str = "text/plain";

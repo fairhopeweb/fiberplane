@@ -66,25 +66,6 @@ export type Blob = {
     mimeType: string;
 };
 
-export type ButtonField = {
-    /**
-     * Name of the field as it will be included in the encoded query.
-     */
-    name: string;
-
-    /**
-     * Suggested label to display on the button.
-     */
-    label: string;
-
-    /**
-     * Value of the button as it will be included in the encoded query. By
-     * checking whether the field with the given `name` has this `value`,
-     * providers may know which button was pressed.
-     */
-    value: string;
-};
-
 /**
  * Representation of a single notebook cell.
  */
@@ -115,6 +96,14 @@ export type CheckboxCell = {
     readOnly?: boolean;
 };
 
+/**
+ * Defines a field that produces a boolean value.
+ *
+ * For JSON/YAML encoding, the value will be represented as a native boolean.
+ * In the case of "application/x-www-form-urlencoded", it will be represented
+ * by the value defined in the `value` field, which will be either present or
+ * not, similar to the encoding of HTML forms.
+ */
 export type CheckboxField = {
     /**
      * Whether the checkbox should be initially checked if no query data is
@@ -123,18 +112,30 @@ export type CheckboxField = {
     checked: boolean;
 
     /**
-     * Name of the field as it will be included in the encoded query.
-     */
-    name: string;
-
-    /**
      * Suggested label to display along the checkbox.
      */
     label: string;
 
     /**
+     * Name of the field as it will be included in the encoded query or config
+     * object.
+     */
+    name: string;
+
+    /**
+     * Whether the checkbox must be checked.
+     *
+     * This allows for the use case of implementing Terms of Service checkboxes
+     * in config forms.
+     */
+    required: boolean;
+
+    /**
      * Value of the field as it will be included in the encoded query. Note
      * that only checked checkboxes will be included.
+     *
+     * If the data is encoded using either JSON or YAML, the checkbox state is
+     * encoded as a boolean and this value will not be used.
      */
     value: string;
 };
@@ -150,61 +151,39 @@ export type CodeCell = {
     syntax?: string;
 };
 
-/**
- * Defines a field that produces a date value in `YYYY-MM-DD` format.
- */
-export type DateField = {
-    /**
-     * Name of the field as it will be included in the encoded query.
-     */
-    name: string;
+export type ConfigField =
+    | { type: "checkbox" } & CheckboxField
+    | { type: "integer" } & IntegerField
+    | { type: "select" } & SelectField
+    | { type: "text" } & TextField;
 
-    /**
-     * Suggested label to display along the field.
-     */
-    label: string;
-
-    /**
-     * Whether a value is required.
-     */
-    required: boolean;
-};
-
-/**
- * Defines a field that produces a date-time value that is valid RFC 3339 as
- * well as valid ISO 8601-1:2019.
- */
-export type DateTimeField = {
-    /**
-     * Name of the field as it will be included in the encoded query.
-     */
-    name: string;
-
-    /**
-     * Suggested label to display along the field.
-     */
-    label: string;
-
-    /**
-     * Whether a value is required.
-     */
-    required: boolean;
-};
+export type ConfigSchema = Array<ConfigField>;
 
 /**
  * Defines a field that produces two `DateTime` values, a "from" and a "to"
- * value, separated by a space.
+ * value.
+ *
+ * For JSON/YAML encoding, the value will be represented as an object with
+ * `from` and `to` fields. In the case of "application/x-www-form-urlencoded",
+ * it will be represented as a single string and the "from" and "to" parts will
+ * be separated by a space.
  */
 export type DateTimeRangeField = {
-    /**
-     * Name of the field as it will be included in the encoded query.
-     */
-    name: string;
-
     /**
      * Suggested label to display along the field.
      */
     label: string;
+
+    /**
+     * Name of the field as it will be included in the encoded query or config
+     * object.
+     */
+    name: string;
+
+    /**
+     * Suggested placeholder to display when there is no value.
+     */
+    placeholder: string;
 
     /**
      * Whether a value is required.
@@ -263,12 +242,12 @@ export type Error =
 /**
  * Defines a field that allows files to be uploaded as part of the query data.
  *
- * Note that query data that includes files will be encoded as
- * "multipart/form-data".
+ * Query data that includes files will be encoded using "multipart/form-data".
  */
 export type FileField = {
     /**
-     * Name of the field as it will be included in the encoded query.
+     * Name of the field as it will be included in the encoded query or config
+     * object.
      */
     name: string;
 
@@ -392,6 +371,49 @@ export type ImageCell = {
 };
 
 /**
+ * Defines a field that allows integer numbers to be entered.
+ */
+export type IntegerField = {
+    /**
+     * Name of the field as it will be included in the encoded query or config
+     * object.
+     */
+    name: string;
+
+    /**
+     * Suggested label to display along the field.
+     */
+    label: string;
+
+    /**
+     * Optional maximum value to be entered.
+     */
+    max?: number;
+
+    /**
+     * Optional minimal value to be entered.
+     */
+    min?: number;
+
+    /**
+     * Suggested placeholder to display when there is no value.
+     */
+    placeholder: string;
+
+    /**
+     * Whether a value is required.
+     */
+    required: boolean;
+
+    /**
+     * Specifies the granularity that any specified numbers must adhere to.
+     *
+     * If omitted, `step` defaults to "1", meaning only integers are allowed.
+     */
+    step?: number;
+};
+
+/**
  * Labels that are associated with a Notebook.
  */
 export type Label = {
@@ -408,10 +430,16 @@ export type Label = {
 
 /**
  * Defines a field that allows labels to be selected.
+ *
+ * For JSON/YAML encoding, the value will be represented as a string or an
+ * array of strings, depending on the value of the `multiple` field. In the
+ * case of "application/x-www-form-urlencoded", the value is always a single
+ * string and multiple labels will be space-separated.
  */
 export type LabelField = {
     /**
-     * Name of the field as it will be included in the encoded query.
+     * Name of the field as it will be included in the encoded query or config
+     * object.
      */
     name: string;
 
@@ -425,6 +453,11 @@ export type LabelField = {
      * Whether multiple labels may be selected.
      */
     multiple: boolean;
+
+    /**
+     * Suggested placeholder to display when there is no value.
+     */
+    placeholder: string;
 
     /**
      * Whether a value is required.
@@ -541,47 +574,6 @@ export type Mention = {
     userId: string;
 };
 
-/**
- * Defines a field that allows labels to be selected.
- *
- * Note that because the value is encoded as a string anyway, and depending on
- * the chosen `step` this field can be used for either integers or floating
- * point numbers, the values in the schema are simply presented as strings.
- */
-export type NumberField = {
-    /**
-     * Name of the field as it will be included in the encoded query.
-     */
-    name: string;
-
-    /**
-     * Suggested label to display along the field.
-     */
-    label: string;
-
-    /**
-     * Optional maximum value to be selected.
-     */
-    max?: string;
-
-    /**
-     * Optional minimal value to be selected.
-     */
-    min?: string;
-
-    /**
-     * Whether a value is required.
-     */
-    required: boolean;
-
-    /**
-     * Specifies the granularity that any specified numbers must adhere to.
-     *
-     * If omitted, `step` defaults to "1", meaning only integers are allowed.
-     */
-    step?: string;
-};
-
 export type ProviderCell = {
     id: string;
 
@@ -677,14 +669,11 @@ export type ProxyRequest = {
 };
 
 export type QueryField =
-    | { type: "button" } & ButtonField
     | { type: "checkbox" } & CheckboxField
-    | { type: "date" } & DateField
-    | { type: "date_time" } & DateTimeField
     | { type: "date_time_range" } & DateTimeRangeField
     | { type: "file" } & FileField
     | { type: "label" } & LabelField
-    | { type: "number" } & NumberField
+    | { type: "integer" } & IntegerField
     | { type: "select" } & SelectField
     | { type: "text" } & TextField;
 
@@ -712,12 +701,13 @@ export type Result<T, E> =
 /**
  * Defines a field that allows selection from a predefined list of options.
  *
- * Note that values to be selected from can be either hard-coded in the schema,
- * or fetched on-demand the same way as auto-suggestions.
+ * Values to be selected from can be either hard-coded in the schema, or
+ * (only for query forms) fetched on-demand the same way as auto-suggestions.
  */
 export type SelectField = {
     /**
-     * Name of the field as it will be included in the encoded query.
+     * Name of the field as it will be included in the encoded query or config
+     * object.
      */
     name: string;
 
@@ -732,15 +722,22 @@ export type SelectField = {
     multiple: boolean;
 
     /**
-     * A list of options to select from. If empty, the auto-suggest mechanism
-     * is used to fetch options as needed.
+     * A list of options to select from.
+     *
+     * For query forms, if this array is left empty, the auto-suggest mechanism
+     * can fetch options when the user starts typing in this field.
      */
     options: Array<string>;
 
     /**
+     * Suggested placeholder to display when there is no value.
+     */
+    placeholder: string;
+
+    /**
      * An optional list of fields that should be filled in before allowing the
      * user to fill in this field. This forces a certain ordering in the data
-     * entry, which enables richer auto-suggestions, as the filled in
+     * entry, which enables richer auto-suggestions, since the filled in
      * prerequisite fields can provide additional context.
      */
     prerequisites: Array<string>;
@@ -757,9 +754,14 @@ export type StackingType =
     | "percentage";
 
 /**
- * Defines which query types are supported by a provider.
+ * Defines a query type supported by a provider.
  */
 export type SupportedQueryType = {
+    /**
+     * User-friendly label to use for the query type.
+     */
+    label: string;
+
     /**
      * The query type supported by the provider.
      *
@@ -827,30 +829,36 @@ export type TextCell = {
 /**
  * Defines a free-form text entry field.
  *
- * Is commonly used for filter text and query entry. For the latter case,
+ * This is commonly used for filter text and query entry. For the latter case,
  * `supports_highlighting` can be set to `true` if the provider supports syntax
  * highlighting for the query language.
  */
 export type TextField = {
-    /**
-     * Name of the field as it will be included in the encoded query.
-     */
-    name: string;
-
     /**
      * Suggested label to display along the form field.
      */
     label: string;
 
     /**
-     * Suggests whether multi-line input is useful for this provider.
+     * Whether multi-line input is useful for this provider.
      */
     multiline: boolean;
 
     /**
+     * Name of the field as it will be included in the encoded query or config
+     * object.
+     */
+    name: string;
+
+    /**
+     * Suggested placeholder to display when there is no value.
+     */
+    placeholder: string;
+
+    /**
      * An optional list of fields that should be filled in before allowing the
      * user to fill in this field. This forces a certain ordering in the data
-     * entry, which enables richer auto-suggestions, as the filled in
+     * entry, which enables richer auto-suggestions, since the filled in
      * prerequisite fields can provide additional context.
      */
     prerequisites: Array<string>;

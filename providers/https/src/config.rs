@@ -22,7 +22,7 @@ pub struct Api {
     /// The base url of the API we are interested in
     pub base_url: Url,
     /// The path to the healthcheck/status endpoint
-    pub health_check_path: String,
+    pub health_check_path: Option<String>,
     /// Authentication credentials
     #[serde(flatten)]
     pub auth: Option<Auth>,

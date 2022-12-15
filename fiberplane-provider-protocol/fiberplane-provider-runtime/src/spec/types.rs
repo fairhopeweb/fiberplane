@@ -31,21 +31,12 @@ pub use fiberplane_models::notebooks::TableRow;
 pub use fiberplane_models::notebooks::TextCell;
 pub use fiberplane_models::timestamps::Timestamp;
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct ButtonField {
-    /// Name of the field as it will be included in the encoded query.
-    pub name: String,
-
-    /// Suggested label to display on the button.
-    pub label: String,
-
-    /// Value of the button as it will be included in the encoded query. By
-    /// checking whether the field with the given `name` has this `value`,
-    /// providers may know which button was pressed.
-    pub value: String,
-}
-
+/// Defines a field that produces a boolean value.
+///
+/// For JSON/YAML encoding, the value will be represented as a native boolean.
+/// In the case of "application/x-www-form-urlencoded", it will be represented
+/// by the value defined in the `value` field, which will be either present or
+/// not, similar to the encoding of HTML forms.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct CheckboxField {
@@ -53,56 +44,57 @@ pub struct CheckboxField {
     /// present.
     pub checked: bool,
 
-    /// Name of the field as it will be included in the encoded query.
-    pub name: String,
-
     /// Suggested label to display along the checkbox.
     pub label: String,
 
+    /// Name of the field as it will be included in the encoded query or config
+    /// object.
+    pub name: String,
+
+    /// Whether the checkbox must be checked.
+    ///
+    /// This allows for the use case of implementing Terms of Service checkboxes
+    /// in config forms.
+    pub required: bool,
+
     /// Value of the field as it will be included in the encoded query. Note
     /// that only checked checkboxes will be included.
+    ///
+    /// If the data is encoded using either JSON or YAML, the checkbox state is
+    /// encoded as a boolean and this value will not be used.
     pub value: String,
 }
 
-/// Defines a field that produces a date value in `YYYY-MM-DD` format.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct DateField {
-    /// Name of the field as it will be included in the encoded query.
-    pub name: String,
-
-    /// Suggested label to display along the field.
-    pub label: String,
-
-    /// Whether a value is required.
-    pub required: bool,
+#[serde(tag = "type", rename_all = "snake_case")]
+pub enum ConfigField {
+    Checkbox(CheckboxField),
+    Integer(IntegerField),
+    Select(SelectField),
+    Text(TextField),
 }
 
-/// Defines a field that produces a date-time value that is valid RFC 3339 as
-/// well as valid ISO 8601-1:2019.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct DateTimeField {
-    /// Name of the field as it will be included in the encoded query.
-    pub name: String,
-
-    /// Suggested label to display along the field.
-    pub label: String,
-
-    /// Whether a value is required.
-    pub required: bool,
-}
+pub type ConfigSchema = Vec<ConfigField>;
 
 /// Defines a field that produces two `DateTime` values, a "from" and a "to"
-/// value, separated by a space.
+/// value.
+///
+/// For JSON/YAML encoding, the value will be represented as an object with
+/// `from` and `to` fields. In the case of "application/x-www-form-urlencoded",
+/// it will be represented as a single string and the "from" and "to" parts will
+/// be separated by a space.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct DateTimeRangeField {
-    /// Name of the field as it will be included in the encoded query.
-    pub name: String,
-
     /// Suggested label to display along the field.
     pub label: String,
+
+    /// Name of the field as it will be included in the encoded query or config
+    /// object.
+    pub name: String,
+
+    /// Suggested placeholder to display when there is no value.
+    pub placeholder: String,
 
     /// Whether a value is required.
     pub required: bool,
@@ -146,12 +138,12 @@ pub enum Error {
 
 /// Defines a field that allows files to be uploaded as part of the query data.
 ///
-/// Note that query data that includes files will be encoded as
-/// "multipart/form-data".
+/// Query data that includes files will be encoded using "multipart/form-data".
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct FileField {
-    /// Name of the field as it will be included in the encoded query.
+    /// Name of the field as it will be included in the encoded query or config
+    /// object.
     pub name: String,
 
     /// Suggested label to display along the field.
@@ -217,11 +209,49 @@ pub struct HttpResponse {
     pub status_code: u16,
 }
 
+/// Defines a field that allows integer numbers to be entered.
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[serde(rename_all = "camelCase")]
+pub struct IntegerField {
+    /// Name of the field as it will be included in the encoded query or config
+    /// object.
+    pub name: String,
+
+    /// Suggested label to display along the field.
+    pub label: String,
+
+    /// Optional maximum value to be entered.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub max: Option<i32>,
+
+    /// Optional minimal value to be entered.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub min: Option<i32>,
+
+    /// Suggested placeholder to display when there is no value.
+    pub placeholder: String,
+
+    /// Whether a value is required.
+    pub required: bool,
+
+    /// Specifies the granularity that any specified numbers must adhere to.
+    ///
+    /// If omitted, `step` defaults to "1", meaning only integers are allowed.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub step: Option<i32>,
+}
+
 /// Defines a field that allows labels to be selected.
+///
+/// For JSON/YAML encoding, the value will be represented as a string or an
+/// array of strings, depending on the value of the `multiple` field. In the
+/// case of "application/x-www-form-urlencoded", the value is always a single
+/// string and multiple labels will be space-separated.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct LabelField {
-    /// Name of the field as it will be included in the encoded query.
+    /// Name of the field as it will be included in the encoded query or config
+    /// object.
     pub name: String,
 
     /// Suggested label to display along the field (not to be confused with
@@ -230,6 +260,9 @@ pub struct LabelField {
 
     /// Whether multiple labels may be selected.
     pub multiple: bool,
+
+    /// Suggested placeholder to display when there is no value.
+    pub placeholder: String,
 
     /// Whether a value is required.
     pub required: bool,
@@ -282,38 +315,6 @@ pub struct LegacyTimeRange {
 
 pub type LegacyTimestamp = f64;
 
-/// Defines a field that allows labels to be selected.
-///
-/// Note that because the value is encoded as a string anyway, and depending on
-/// the chosen `step` this field can be used for either integers or floating
-/// point numbers, the values in the schema are simply presented as strings.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
-#[serde(rename_all = "camelCase")]
-pub struct NumberField {
-    /// Name of the field as it will be included in the encoded query.
-    pub name: String,
-
-    /// Suggested label to display along the field.
-    pub label: String,
-
-    /// Optional maximum value to be selected.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub max: Option<String>,
-
-    /// Optional minimal value to be selected.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub min: Option<String>,
-
-    /// Whether a value is required.
-    pub required: bool,
-
-    /// Specifies the granularity that any specified numbers must adhere to.
-    ///
-    /// If omitted, `step` defaults to "1", meaning only integers are allowed.
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub step: Option<String>,
-}
-
 pub type ProviderConfig = serde_json::Value;
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -358,14 +359,11 @@ pub struct ProxyRequest {
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum QueryField {
-    Button(ButtonField),
     Checkbox(CheckboxField),
-    Date(DateField),
-    DateTime(DateTimeField),
     DateTimeRange(DateTimeRangeField),
     File(FileField),
     Label(LabelField),
-    Number(NumberField),
+    Integer(IntegerField),
     Select(SelectField),
     Text(TextField),
 }
@@ -383,12 +381,13 @@ pub type QuerySchema = Vec<QueryField>;
 
 /// Defines a field that allows selection from a predefined list of options.
 ///
-/// Note that values to be selected from can be either hard-coded in the schema,
-/// or fetched on-demand the same way as auto-suggestions.
+/// Values to be selected from can be either hard-coded in the schema, or
+/// (only for query forms) fetched on-demand the same way as auto-suggestions.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SelectField {
-    /// Name of the field as it will be included in the encoded query.
+    /// Name of the field as it will be included in the encoded query or config
+    /// object.
     pub name: String,
 
     /// Suggested label to display along the field.
@@ -397,13 +396,18 @@ pub struct SelectField {
     /// Whether multiple values may be selected.
     pub multiple: bool,
 
-    /// A list of options to select from. If empty, the auto-suggest mechanism
-    /// is used to fetch options as needed.
+    /// A list of options to select from.
+    ///
+    /// For query forms, if this array is left empty, the auto-suggest mechanism
+    /// can fetch options when the user starts typing in this field.
     pub options: Vec<String>,
+
+    /// Suggested placeholder to display when there is no value.
+    pub placeholder: String,
 
     /// An optional list of fields that should be filled in before allowing the
     /// user to fill in this field. This forces a certain ordering in the data
-    /// entry, which enables richer auto-suggestions, as the filled in
+    /// entry, which enables richer auto-suggestions, since the filled in
     /// prerequisite fields can provide additional context.
     pub prerequisites: Vec<String>,
 
@@ -411,10 +415,13 @@ pub struct SelectField {
     pub required: bool,
 }
 
-/// Defines which query types are supported by a provider.
+/// Defines a query type supported by a provider.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct SupportedQueryType {
+    /// User-friendly label to use for the query type.
+    pub label: String,
+
     /// The query type supported by the provider.
     ///
     /// There are predefined query types, such as "table" and "log", but
@@ -442,24 +449,28 @@ pub struct SupportedQueryType {
 
 /// Defines a free-form text entry field.
 ///
-/// Is commonly used for filter text and query entry. For the latter case,
+/// This is commonly used for filter text and query entry. For the latter case,
 /// `supports_highlighting` can be set to `true` if the provider supports syntax
 /// highlighting for the query language.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct TextField {
-    /// Name of the field as it will be included in the encoded query.
-    pub name: String,
-
     /// Suggested label to display along the form field.
     pub label: String,
 
-    /// Suggests whether multi-line input is useful for this provider.
+    /// Whether multi-line input is useful for this provider.
     pub multiline: bool,
+
+    /// Name of the field as it will be included in the encoded query or config
+    /// object.
+    pub name: String,
+
+    /// Suggested placeholder to display when there is no value.
+    pub placeholder: String,
 
     /// An optional list of fields that should be filled in before allowing the
     /// user to fill in this field. This forces a certain ordering in the data
-    /// entry, which enables richer auto-suggestions, as the filled in
+    /// entry, which enables richer auto-suggestions, since the filled in
     /// prerequisite fields can provide additional context.
     pub prerequisites: Vec<String>,
 

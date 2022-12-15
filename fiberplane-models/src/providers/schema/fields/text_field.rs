@@ -1,0 +1,103 @@
+#[cfg(feature = "fp-bindgen")]
+use fp_bindgen::prelude::Serializable;
+use serde::{Deserialize, Serialize};
+
+/// Defines a free-form text entry field.
+///
+/// This is commonly used for filter text and query entry. For the latter case,
+/// `supports_highlighting` can be set to `true` if the provider supports syntax
+/// highlighting for the query language.
+#[derive(Debug, Default, Deserialize, Serialize)]
+#[cfg_attr(
+    feature = "fp-bindgen",
+    derive(Serializable),
+    fp(rust_plugin_module = "fiberplane_models::providers")
+)]
+#[non_exhaustive]
+#[serde(rename_all = "camelCase")]
+pub struct TextField {
+    /// Suggested label to display along the form field.
+    pub label: String,
+
+    /// Whether multi-line input is useful for this provider.
+    pub multiline: bool,
+
+    /// Name of the field as it will be included in the encoded query or config
+    /// object.
+    pub name: String,
+
+    /// Suggested placeholder to display when there is no value.
+    pub placeholder: String,
+
+    /// An optional list of fields that should be filled in before allowing the
+    /// user to fill in this field. This forces a certain ordering in the data
+    /// entry, which enables richer auto-suggestions, since the filled in
+    /// prerequisite fields can provide additional context.
+    pub prerequisites: Vec<String>,
+
+    /// Whether a value is required.
+    pub required: bool,
+
+    /// Whether the provider implements syntax highlighting for this field.
+    /// See `highlight_field()` in the protocol definition.
+    pub supports_highlighting: bool,
+}
+
+impl TextField {
+    /// Creates a new text field with all default values.
+    pub fn new() -> Self {
+        Default::default()
+    }
+
+    /// Marks the field as allowing multi-line entry.
+    pub fn multiline(self) -> Self {
+        Self {
+            multiline: true,
+            ..self
+        }
+    }
+
+    /// Marks the field as required.
+    pub fn required(self) -> Self {
+        Self {
+            required: true,
+            ..self
+        }
+    }
+
+    /// Marks the field as supporting syntax highlighting.
+    pub fn with_highlighting(self) -> Self {
+        Self {
+            supports_highlighting: true,
+            ..self
+        }
+    }
+
+    pub fn with_label(self, label: &str) -> Self {
+        Self {
+            label: label.to_owned(),
+            ..self
+        }
+    }
+
+    pub fn with_name(self, name: &str) -> Self {
+        Self {
+            name: name.to_owned(),
+            ..self
+        }
+    }
+
+    pub fn with_placeholder(self, placeholder: &str) -> Self {
+        Self {
+            placeholder: placeholder.to_owned(),
+            ..self
+        }
+    }
+
+    pub fn with_prerequisites(self, prerequisites: &[&str]) -> Self {
+        Self {
+            prerequisites: prerequisites.iter().map(|&s| s.to_owned()).collect(),
+            ..self
+        }
+    }
+}

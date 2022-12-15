@@ -21,11 +21,13 @@ export type Imports = {
 export type Exports = {
     createCells?: (queryType: string, response: types.Blob) => types.Result<Array<types.Cell>, types.Error>;
     extractData?: (response: types.Blob, mimeType: string, query: string | null) => types.Result<Uint8Array, types.Error>;
+    getConfigSchema?: () => types.ConfigSchema;
     getSupportedQueryTypes?: (config: types.ProviderConfig) => Promise<Array<types.SupportedQueryType>>;
     invoke?: (request: types.LegacyProviderRequest, config: types.ProviderConfig) => Promise<types.LegacyProviderResponse>;
     invoke2?: (request: types.ProviderRequest) => Promise<types.Result<types.Blob, types.Error>>;
     createCellsRaw?: (queryType: Uint8Array, response: Uint8Array) => Uint8Array;
     extractDataRaw?: (response: Uint8Array, mimeType: Uint8Array, query: Uint8Array) => Uint8Array;
+    getConfigSchemaRaw?: () => Uint8Array;
     getSupportedQueryTypesRaw?: (config: Uint8Array) => Promise<Uint8Array>;
     invokeRaw?: (request: Uint8Array, config: Uint8Array) => Promise<Uint8Array>;
     invoke2Raw?: (request: Uint8Array) => Promise<Uint8Array>;
@@ -210,6 +212,12 @@ export async function createRuntime(
                 return parseObject<types.Result<Uint8Array, types.Error>>(export_fn(response_ptr, mime_type_ptr, query_ptr));
             };
         })(),
+        getConfigSchema: (() => {
+            const export_fn = instance.exports.__fp_gen_get_config_schema as any;
+            if (!export_fn) return;
+
+            return () => parseObject<types.ConfigSchema>(export_fn());
+        })(),
         getSupportedQueryTypes: (() => {
             const export_fn = instance.exports.__fp_gen_get_supported_query_types as any;
             if (!export_fn) return;
@@ -258,6 +266,12 @@ export async function createRuntime(
                 const query_ptr = exportToMemory(query);
                 return importFromMemory(export_fn(response_ptr, mime_type_ptr, query_ptr));
             };
+        })(),
+        getConfigSchemaRaw: (() => {
+            const export_fn = instance.exports.__fp_gen_get_config_schema as any;
+            if (!export_fn) return;
+
+            return () => importFromMemory(export_fn());
         })(),
         getSupportedQueryTypesRaw: (() => {
             const export_fn = instance.exports.__fp_gen_get_supported_query_types as any;

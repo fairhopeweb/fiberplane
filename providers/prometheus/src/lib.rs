@@ -22,53 +22,35 @@ static BUILD_TIMESTAMP: &str = env!("VERGEN_BUILD_TIMESTAMP");
 #[fp_export_impl(fiberplane_provider_bindings)]
 async fn get_supported_query_types(_config: ProviderConfig) -> Vec<SupportedQueryType> {
     vec![
-        SupportedQueryType {
-            query_type: INSTANTS_QUERY_TYPE.to_owned(),
-            schema: vec![QueryField::Text(TextField {
-                name: QUERY_PARAM_NAME.to_owned(),
-                label: "Enter your Prometheus query".to_owned(),
-                multiline: false,
-                prerequisites: Vec::new(),
-                required: true,
-                supports_highlighting: false,
-            })],
-            mime_types: vec![CELLS_MSGPACK_MIME_TYPE.to_owned()],
-        },
-        SupportedQueryType {
-            query_type: TIMESERIES_QUERY_TYPE.to_owned(),
-            schema: vec![
-                QueryField::Text(TextField {
-                    name: QUERY_PARAM_NAME.to_owned(),
-                    label: "Enter your Prometheus query".to_owned(),
-                    multiline: false,
-                    prerequisites: Vec::new(),
-                    required: true,
-                    supports_highlighting: false,
-                }),
-                QueryField::DateTimeRange(DateTimeRangeField {
-                    name: TIME_RANGE_PARAM_NAME.to_owned(),
-                    label: "Specify a time range".to_owned(),
-                    required: true,
-                }),
-                QueryField::Checkbox(CheckboxField {
-                    name: LIVE_PARAM_NAME.to_owned(),
-                    label: "Enable live mode".to_owned(),
-                    checked: false,
-                    value: "true".to_owned(),
-                }),
-            ],
-            mime_types: vec![TIMESERIES_MSGPACK_MIME_TYPE.to_owned()],
-        },
-        SupportedQueryType {
-            query_type: SUGGESTIONS_QUERY_TYPE.to_owned(),
-            schema: Vec::new(),
-            mime_types: vec![SUGGESTIONS_MSGPACK_MIME_TYPE.to_owned()],
-        },
-        SupportedQueryType {
-            query_type: STATUS_QUERY_TYPE.to_owned(),
-            schema: Vec::new(),
-            mime_types: vec![STATUS_MIME_TYPE.to_owned()],
-        },
+        SupportedQueryType::new(INSTANTS_QUERY_TYPE)
+            .with_schema(vec![TextField::new()
+                .with_name(QUERY_PARAM_NAME)
+                .with_label("Enter your Prometheus query")
+                .required()
+                .into()])
+            .supporting_mime_types(&[CELLS_MSGPACK_MIME_TYPE]),
+        SupportedQueryType::new(TIMESERIES_QUERY_TYPE)
+            .with_schema(vec![
+                TextField::new()
+                    .with_name(QUERY_PARAM_NAME)
+                    .with_label("Enter your Prometheus query")
+                    .required()
+                    .into(),
+                DateTimeRangeField::new()
+                    .with_name(TIME_RANGE_PARAM_NAME)
+                    .with_label("Specify a time range")
+                    .required()
+                    .into(),
+                CheckboxField::new()
+                    .with_name(LIVE_PARAM_NAME)
+                    .with_label("Enable live mode")
+                    .with_value("true")
+                    .into(),
+            ])
+            .supporting_mime_types(&[TIMESERIES_MSGPACK_MIME_TYPE]),
+        SupportedQueryType::new(SUGGESTIONS_QUERY_TYPE)
+            .supporting_mime_types(&[SUGGESTIONS_MSGPACK_MIME_TYPE]),
+        SupportedQueryType::new(STATUS_QUERY_TYPE).supporting_mime_types(&[STATUS_MIME_TYPE]),
     ]
 }
 
