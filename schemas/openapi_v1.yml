@@ -1371,6 +1371,7 @@ components:
           type: string
         notebookId:
           type: string
+          format: base64uuid
         notebookUrl:
           type: string
           format: uri
@@ -2775,6 +2776,7 @@ paths:
         required: true
         schema:
           type: string
+          format: base64uuid
     get:
       operationId: trigger_get
       responses:
@@ -2797,6 +2799,7 @@ paths:
         required: true
         schema:
           type: string
+          format: base64uuid
       - name: secretKey
         in: path
         description: Secret key of the trigger (included in the response when the trigger is first created)

@@ -104,7 +104,7 @@ pub async fn workspace_invite_delete(
 pub async fn workspace_invite_accept(
     client: &ApiClient,
     invitation_id: base64uuid::Base64Uuid,
-    invitation_secret: String,
+    invitation_secret: &str,
 ) -> Result<models::Workspace> {
     let mut builder = client.request(
         Method::POST,
@@ -123,7 +123,7 @@ pub async fn workspace_invite_accept(
 pub async fn workspace_invite_decline(
     client: &ApiClient,
     invitation_id: base64uuid::Base64Uuid,
-    invitation_secret: String,
+    invitation_secret: &str,
 ) -> Result<()> {
     let mut builder = client.request(
         Method::POST,
@@ -212,7 +212,7 @@ pub async fn notebook_cells_append(
 pub async fn notebook_cell_append_text(
     client: &ApiClient,
     notebook_id: base64uuid::Base64Uuid,
-    cell_id: String,
+    cell_id: &str,
     payload: models::CellAppendText,
 ) -> Result<models::Cell> {
     let mut builder = client.request(
@@ -233,7 +233,7 @@ pub async fn notebook_cell_append_text(
 pub async fn notebook_cell_replace_text(
     client: &ApiClient,
     notebook_id: base64uuid::Base64Uuid,
-    cell_id: String,
+    cell_id: &str,
     payload: models::CellReplaceText,
 ) -> Result<models::Cell> {
     let mut builder = client.request(
@@ -292,7 +292,7 @@ pub async fn file_upload(
 pub async fn file_get(
     client: &ApiClient,
     notebook_id: base64uuid::Base64Uuid,
-    file_id: String,
+    file_id: &str,
 ) -> Result<bytes::Bytes> {
     let mut builder = client.request(
         Method::GET,
@@ -311,7 +311,7 @@ pub async fn file_get(
 pub async fn file_delete(
     client: &ApiClient,
     notebook_id: base64uuid::Base64Uuid,
-    file_id: String,
+    file_id: &str,
 ) -> Result<()> {
     let mut builder = client.request(
         Method::DELETE,
@@ -330,8 +330,8 @@ pub async fn file_delete(
 pub async fn notebook_convert_to_snippet(
     client: &ApiClient,
     notebook_id: base64uuid::Base64Uuid,
-    start_cell_id: Option<String>,
-    end_cell_id: Option<String>,
+    start_cell_id: Option<&str>,
+    end_cell_id: Option<&str>,
 ) -> Result<String> {
     let mut builder = client.request(
         Method::GET,
@@ -412,7 +412,7 @@ pub async fn thread_create(
 pub async fn oidc_authorize_google(
     client: &ApiClient,
     cli_redirect_port: Option<i32>,
-    redirect: Option<String>,
+    redirect: Option<&str>,
 ) -> Result<()> {
     let mut builder = client.request(Method::GET, "/api/oidc/authorize/google")?;
     let response = builder.send().await?.error_for_status()?;
@@ -544,8 +544,8 @@ pub async fn thread_resolve(
 /// Gets a list of api tokens
 pub async fn token_list(
     client: &ApiClient,
-    sort_by: Option<String>,
-    sort_direction: Option<String>,
+    sort_by: Option<&str>,
+    sort_direction: Option<&str>,
     page: Option<i32>,
     limit: Option<i32>,
 ) -> Result<Vec<models::TokenSummary>> {
@@ -584,7 +584,10 @@ pub async fn token_delete(client: &ApiClient, id: base64uuid::Base64Uuid) -> Res
     Ok(())
 }
 
-pub async fn trigger_get(client: &ApiClient, trigger_id: String) -> Result<models::Trigger> {
+pub async fn trigger_get(
+    client: &ApiClient,
+    trigger_id: base64uuid::Base64Uuid,
+) -> Result<models::Trigger> {
     let mut builder = client.request(
         Method::GET,
         &format!("/api/triggers/{triggerId}", triggerId = trigger_id,),
@@ -594,7 +597,7 @@ pub async fn trigger_get(client: &ApiClient, trigger_id: String) -> Result<model
     Ok(response)
 }
 
-pub async fn trigger_delete(client: &ApiClient, trigger_id: String) -> Result<()> {
+pub async fn trigger_delete(client: &ApiClient, trigger_id: base64uuid::Base64Uuid) -> Result<()> {
     let mut builder = client.request(
         Method::DELETE,
         &format!("/api/triggers/{triggerId}", triggerId = trigger_id,),
@@ -607,8 +610,8 @@ pub async fn trigger_delete(client: &ApiClient, trigger_id: String) -> Result<()
 /// Invoke a trigger to create a notebook from the associated template
 pub async fn trigger_invoke(
     client: &ApiClient,
-    trigger_id: String,
-    secret_key: String,
+    trigger_id: base64uuid::Base64Uuid,
+    secret_key: &str,
     payload: models::TemplateExpandPayload,
 ) -> Result<models::TriggerInvokeResponse> {
     let mut builder = client.request(
@@ -628,8 +631,8 @@ pub async fn trigger_invoke(
 /// List all workspaces authenticated user has access to
 pub async fn workspace_list(
     client: &ApiClient,
-    sort_by: Option<String>,
-    sort_direction: Option<String>,
+    sort_by: Option<&str>,
+    sort_direction: Option<&str>,
 ) -> Result<Vec<models::Workspace>> {
     let mut builder = client.request(Method::GET, "/api/workspaces")?;
     if let Some(sort_by) = sort_by {
@@ -747,7 +750,7 @@ pub async fn data_source_create(
 pub async fn data_source_get(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
-    data_source_name: String,
+    data_source_name: &fiberplane_models::names::Name,
 ) -> Result<models::DataSource> {
     let mut builder = client.request(
         Method::GET,
@@ -766,7 +769,7 @@ pub async fn data_source_get(
 pub async fn data_source_delete(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
-    data_source_name: String,
+    data_source_name: &fiberplane_models::names::Name,
 ) -> Result<()> {
     let mut builder = client.request(
         Method::DELETE,
@@ -785,7 +788,7 @@ pub async fn data_source_delete(
 pub async fn data_source_update(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
-    data_source_name: String,
+    data_source_name: &fiberplane_models::names::Name,
     payload: models::UpdateDataSource,
 ) -> Result<models::DataSource> {
     let mut builder = client.request(
@@ -809,8 +812,8 @@ pub async fn event_list(
     occurrence_time_start: time::OffsetDateTime,
     occurrence_time_end: time::OffsetDateTime,
     labels: Option<std::collections::HashMap<String, String>>,
-    sort_by: Option<String>,
-    sort_direction: Option<String>,
+    sort_by: Option<&str>,
+    sort_direction: Option<&str>,
     page: Option<i32>,
     limit: Option<i32>,
 ) -> Result<Vec<models::Event>> {
@@ -869,8 +872,8 @@ pub async fn event_create(
 pub async fn workspace_invite_get(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
-    sort_by: Option<String>,
-    sort_direction: Option<String>,
+    sort_by: Option<&str>,
+    sort_direction: Option<&str>,
     page: Option<i32>,
     limit: Option<i32>,
 ) -> Result<Vec<models::WorkspaceInvite>> {
@@ -921,7 +924,7 @@ pub async fn workspace_invite(
 pub async fn label_keys_list(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
-    prefix: Option<String>,
+    prefix: Option<&str>,
 ) -> Result<Vec<String>> {
     let mut builder = client.request(
         Method::GET,
@@ -942,8 +945,8 @@ pub async fn label_keys_list(
 pub async fn label_values_list(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
-    label_key: String,
-    prefix: Option<String>,
+    label_key: &str,
+    prefix: Option<&str>,
 ) -> Result<Vec<String>> {
     let mut builder = client.request(
         Method::GET,
@@ -1107,7 +1110,7 @@ pub async fn proxy_create(
 pub async fn proxy_get(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
-    proxy_name: String,
+    proxy_name: &fiberplane_models::names::Name,
 ) -> Result<models::Proxy> {
     let mut builder = client.request(
         Method::GET,
@@ -1125,7 +1128,7 @@ pub async fn proxy_get(
 pub async fn proxy_delete(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
-    proxy_name: String,
+    proxy_name: &fiberplane_models::names::Name,
 ) -> Result<()> {
     let mut builder = client.request(
         Method::DELETE,
@@ -1144,9 +1147,9 @@ pub async fn proxy_delete(
 pub async fn proxy_relay(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
-    proxy_name: String,
-    data_source_name: String,
-    provider_protocol_version: String,
+    proxy_name: &fiberplane_models::names::Name,
+    data_source_name: &fiberplane_models::names::Name,
+    provider_protocol_version: &str,
     payload: Vec<u8>,
 ) -> Result<bytes::Bytes> {
     let mut builder = client.request(
@@ -1182,8 +1185,8 @@ pub async fn notebook_search(
 pub async fn snippet_list(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
-    sort_by: Option<String>,
-    sort_direction: Option<String>,
+    sort_by: Option<&str>,
+    sort_direction: Option<&str>,
 ) -> Result<Vec<models::SnippetSummary>> {
     let mut builder = client.request(
         Method::GET,
@@ -1225,7 +1228,7 @@ pub async fn snippet_create(
 pub async fn snippet_get(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
-    snippet_name: String,
+    snippet_name: &fiberplane_models::names::Name,
 ) -> Result<models::Snippet> {
     let mut builder = client.request(
         Method::GET,
@@ -1243,7 +1246,7 @@ pub async fn snippet_get(
 pub async fn snippet_delete(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
-    snippet_name: String,
+    snippet_name: &fiberplane_models::names::Name,
 ) -> Result<()> {
     let mut builder = client.request(
         Method::DELETE,
@@ -1261,7 +1264,7 @@ pub async fn snippet_delete(
 pub async fn snippet_update(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
-    snippet_name: String,
+    snippet_name: &fiberplane_models::names::Name,
     payload: models::UpdateSnippet,
 ) -> Result<models::Snippet> {
     let mut builder = client.request(
@@ -1282,7 +1285,7 @@ pub async fn snippet_update(
 pub async fn snippet_expand(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
-    snippet_name: String,
+    snippet_name: &fiberplane_models::names::Name,
     notebook_id: Option<base64uuid::Base64Uuid>,
 ) -> Result<Vec<models::Cell>> {
     let mut builder = client.request(
@@ -1302,8 +1305,8 @@ pub async fn snippet_expand(
 pub async fn template_list(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
-    sort_by: Option<String>,
-    sort_direction: Option<String>,
+    sort_by: Option<&str>,
+    sort_direction: Option<&str>,
 ) -> Result<Vec<models::TemplateSummary>> {
     let mut builder = client.request(
         Method::GET,
@@ -1345,7 +1348,7 @@ pub async fn template_create(
 pub async fn template_get(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
-    template_name: String,
+    template_name: &fiberplane_models::names::Name,
 ) -> Result<models::Template> {
     let mut builder = client.request(
         Method::GET,
@@ -1363,7 +1366,7 @@ pub async fn template_get(
 pub async fn template_delete(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
-    template_name: String,
+    template_name: &fiberplane_models::names::Name,
 ) -> Result<()> {
     let mut builder = client.request(
         Method::DELETE,
@@ -1381,7 +1384,7 @@ pub async fn template_delete(
 pub async fn template_update(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
-    template_name: String,
+    template_name: &fiberplane_models::names::Name,
     payload: models::UpdateTemplate,
 ) -> Result<models::Template> {
     let mut builder = client.request(
@@ -1402,7 +1405,7 @@ pub async fn template_update(
 pub async fn template_expand(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
-    template_name: String,
+    template_name: &fiberplane_models::names::Name,
     payload: models::TemplateExpandPayload,
 ) -> Result<models::Notebook> {
     let mut builder = client.request(
@@ -1458,8 +1461,8 @@ pub async fn trigger_create(
 pub async fn workspace_users_list(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
-    sort_by: Option<String>,
-    sort_direction: Option<String>,
+    sort_by: Option<&str>,
+    sort_direction: Option<&str>,
 ) -> Result<Vec<models::Membership>> {
     let mut builder = client.request(
         Method::GET,
