@@ -326,6 +326,29 @@ pub async fn file_delete(
     Ok(())
 }
 
+/// Expand the snippet and insert the cells into the notebook
+pub async fn notebook_snippet_insert(
+    client: &ApiClient,
+    notebook_id: base64uuid::Base64Uuid,
+    snippet_name: &fiberplane_models::names::Name,
+    cell_id: Option<&str>,
+) -> Result<Vec<models::Cell>> {
+    let mut builder = client.request(
+        Method::POST,
+        &format!(
+            "/api/notebooks/{notebookId}/insert_snippet/{snippet_name}",
+            notebookId = notebook_id,
+            snippet_name = snippet_name,
+        ),
+    )?;
+    if let Some(cell_id) = cell_id {
+        builder = builder.query(&[("cell_id", cell_id)]);
+    }
+    let response = builder.send().await?.error_for_status()?.json().await?;
+
+    Ok(response)
+}
+
 /// Convert the notebook cells to a snippet
 pub async fn notebook_convert_to_snippet(
     client: &ApiClient,
@@ -1276,26 +1299,6 @@ pub async fn snippet_update(
         ),
     )?;
     builder = builder.json(&payload);
-    let response = builder.send().await?.error_for_status()?.json().await?;
-
-    Ok(response)
-}
-
-/// Expand the snippet into a notebook
-pub async fn snippet_expand(
-    client: &ApiClient,
-    workspace_id: base64uuid::Base64Uuid,
-    snippet_name: &fiberplane_models::names::Name,
-    notebook_id: Option<base64uuid::Base64Uuid>,
-) -> Result<Vec<models::Cell>> {
-    let mut builder = client.request(
-        Method::POST,
-        &format!(
-            "/api/workspaces/{workspace_id}/snippets/{snippet_name}/expand",
-            workspace_id = workspace_id,
-            snippet_name = snippet_name,
-        ),
-    )?;
     let response = builder.send().await?.error_for_status()?.json().await?;
 
     Ok(response)

@@ -2146,6 +2146,28 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/cell"
+  /api/notebooks/{notebookId}/insert_snippet/{snippet_name}:
+    parameters:
+      - $ref: "#/components/parameters/notebookId"
+      - $ref: "#/components/parameters/snippet_name"
+    post:
+      operationId: notebook_snippet_insert
+      description: Expand the snippet and insert the cells into the notebook
+      parameters:
+        - name: cell_id
+          in: query
+          description: ID of the cell where the snippet should be inserted
+          schema:
+            type: string
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/cell"
   /api/notebooks/{notebookId}/cells/{cellId}/append:
     parameters:
       - $ref: "#/components/parameters/notebookId"
@@ -2715,28 +2737,6 @@ paths:
       responses:
         "200":
           description: OK
-  /api/workspaces/{workspace_id}/snippets/{snippet_name}/expand:
-    parameters:
-      - $ref: "#/components/parameters/workspace_id"
-      - $ref: "#/components/parameters/snippet_name"
-      - name: notebook_id
-        in: query
-        description: ID of the notebook where the snippet is being expanded
-        schema:
-          type: string
-          format: base64uuid
-    post:
-      operationId: snippet_expand
-      description: Expand the snippet into a notebook
-      responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                type: array
-                items:
-                  $ref: "#/components/schemas/cell"
   /api/workspaces/{workspace_id}/triggers:
     parameters:
       - $ref: "#/components/parameters/workspace_id"
