@@ -19,8 +19,8 @@ if ! command -v fp-openapi-rust-gen &>/dev/null; then
     --local
 else
   # use the one from PATH if its already there
-  fp-openapi-rust-gen --output fiberplane-api-client ./schemas/openapi_v1.yml --local
+  fp-openapi-rust-gen --output fiberplane-api-client "$SCRIPT_DIR/../schemas/openapi_v1.yml" --local
 fi
 
 cd "$SCRIPT_DIR/../fiberplane-api-client"
-cargo fmt
+cargo fmt -p fiberplane-api-client

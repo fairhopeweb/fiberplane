@@ -18,4 +18,7 @@ indicate they don't apply.
 - [ ] PR for CLI is ready and reviewed: (please link)
 - [ ] PR for Proxy is ready and reviewed: (please link)
 
+If adding new `fiberplane-models` module:
+- [ ] PR for fp-openapi-rust-gen is ready and reviewed: (please link)
+
 After merging, please merge related PRs ASAP, so others don't get blocked.

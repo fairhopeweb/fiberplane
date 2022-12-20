@@ -1489,6 +1489,11 @@ components:
           additionalProperties:
             type: string
             nullable: true # this does not seem to have any effect on the generated rust client
+        view:
+          description: Searches for notebooks using a pre-defined view
+          type: string
+          format: name
+          nullable: true
     newEvent:
       type: object
       required:
@@ -1884,6 +1889,75 @@ components:
         - read
         - write
         - admin
+    view:
+      type: object
+      required:
+        - id
+        - name
+        - displayName
+        - description
+        - labels
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: base64uuid
+        name:
+          type: string
+          format: name
+        displayName:
+          type: string
+        description:
+          type: string
+        labels:
+          type: array
+          items:
+            $ref: "#/components/schemas/label"
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    new_view:
+      type: object
+      required:
+        - name
+        - description
+        - labels
+      properties:
+        name:
+          type: string
+          format: name
+        displayName:
+          type: string
+        description:
+          type: string
+        labels:
+          type: array
+          items:
+            $ref: "#/components/schemas/label"
+    update_view:
+      type: object
+      properties:
+        newName:
+          type: string
+          format: name
+        newDisplayName:
+          type: string
+        newDescription:
+          type: string
+        newLabels:
+          type: array
+          items:
+            $ref: "#/components/schemas/label"
+    view_get:
+      type: object
+      properties:
+        name:
+          type: string
+          format: name
   parameters:
     sortDirection:
       in: query
@@ -3355,6 +3429,98 @@ paths:
           multipart/form-data:
             schema:
               $ref: "#/components/schemas/ProfileUploadData"
+      responses:
+        "200":
+          description: OK
+  /api/workspaces/{workspace_id}/views:
+    parameters:
+      - $ref: "#/components/parameters/workspace_id"
+    get:
+      operationId: views_get
+      description: Get all views
+      parameters:
+        - in: query
+          name: sort_by
+          description: Sort the resulting list by the following field (defaults to display_name)
+          schema:
+            type: string
+            enum:
+              - "name"
+              - "display_name"
+              - "description"
+              - "labels"
+              - "created_at"
+              - "updated_at"
+          required: false
+        - $ref: "#/components/parameters/sortDirection"
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/limit"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/view"
+    post:
+      operationId: views_create
+      description: Create a new view
+      requestBody:
+        description: View creation payload
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/new_view"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/view"
+  /api/workspaces/{workspace_id}/views/{view_name}:
+    parameters:
+      - $ref: "#/components/parameters/workspace_id"
+      - name: view_name
+        in: path
+        description: Name of the View
+        required: true
+        schema:
+          type: string
+          format: name
+    get:
+      operationId: view_get
+      description: Gets a single view
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/view"
+    patch:
+      operationId: view_update
+      description: Updates an existing view
+      requestBody:
+        description: View update payload
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/update_view"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/view"
+    delete:
+      operationId: view_delete
+      description: Deletes an existing view
       responses:
         "200":
           description: OK

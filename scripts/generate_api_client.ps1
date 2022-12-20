@@ -27,7 +27,7 @@ else
 }
 
 Set-Location $api_client_dir
-cargo fmt
+cargo fmt -p fiberplane-api-client
 
 # go back to the beginning so our user doesn't get confused as they're in a different directory now
 Set-Location $start_dir

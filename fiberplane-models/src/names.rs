@@ -45,9 +45,18 @@ pub enum InvalidName {
 pub struct Name(String);
 
 impl Name {
+    /// creates a new instance of `Name` while validating the input at the same time.
+    /// the equivalent without checking is [`new_unchecked`][Self::new_unchecked]
     pub fn new(name: impl Into<String>) -> Result<Self, InvalidName> {
         let name = name.into();
         Self::validate(&name).map(|()| Name(name))
+    }
+
+    /// creates a new instance of `Name` without validating the input.
+    /// passing a invalid name is considered undefined behaviour and may cause very weird bugs.
+    /// please exercise caution when using this function, and if in doubt, use [`new`](Self::new)
+    pub fn new_unchecked(name: impl Into<String>) -> Self {
+        Name(name.into())
     }
 
     pub fn into_string(self) -> String {

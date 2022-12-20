@@ -250,7 +250,10 @@ pub struct NotebookSummary {
 )]
 #[serde(rename_all = "camelCase")]
 pub struct NotebookSearch {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub labels: Option<HashMap<String, Option<String>>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub view: Option<Name>,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]

@@ -16,6 +16,7 @@ pub mod sorting;
 pub mod timestamps;
 pub mod tokens;
 pub mod users;
+pub mod views;
 pub mod workspaces;
 
 fn debug_print_bytes(bytes: impl AsRef<[u8]>) -> String {

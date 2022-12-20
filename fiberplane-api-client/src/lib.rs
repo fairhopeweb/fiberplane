@@ -30,6 +30,7 @@ pub(crate) mod models {
     pub use fiberplane_models::timestamps::*;
     pub use fiberplane_models::tokens::*;
     pub use fiberplane_models::users::*;
+    pub use fiberplane_models::views::*;
     pub use fiberplane_models::workspaces::*;
     pub use fiberplane_templates::*;
 }
@@ -1517,6 +1518,117 @@ pub async fn workspace_user_update(
             "/api/workspaces/{workspace_id}/users/{user_id}",
             workspace_id = workspace_id,
             user_id = user_id,
+        ),
+    )?;
+    builder = builder.json(&payload);
+    let response = builder.send().await?.error_for_status()?.json().await?;
+
+    Ok(response)
+}
+
+/// Get all views
+pub async fn views_get(
+    client: &ApiClient,
+    workspace_id: base64uuid::Base64Uuid,
+    sort_by: Option<&str>,
+    sort_direction: Option<&str>,
+    page: Option<i32>,
+    limit: Option<i32>,
+) -> Result<Vec<models::View>> {
+    let mut builder = client.request(
+        Method::GET,
+        &format!(
+            "/api/workspaces/{workspace_id}/views",
+            workspace_id = workspace_id,
+        ),
+    )?;
+    if let Some(sort_by) = sort_by {
+        builder = builder.query(&[("sort_by", sort_by)]);
+    }
+    if let Some(sort_direction) = sort_direction {
+        builder = builder.query(&[("sort_direction", sort_direction)]);
+    }
+    if let Some(page) = page {
+        builder = builder.query(&[("page", page)]);
+    }
+    if let Some(limit) = limit {
+        builder = builder.query(&[("limit", limit)]);
+    }
+    let response = builder.send().await?.error_for_status()?.json().await?;
+
+    Ok(response)
+}
+
+/// Create a new view
+pub async fn views_create(
+    client: &ApiClient,
+    workspace_id: base64uuid::Base64Uuid,
+    payload: models::NewView,
+) -> Result<models::View> {
+    let mut builder = client.request(
+        Method::POST,
+        &format!(
+            "/api/workspaces/{workspace_id}/views",
+            workspace_id = workspace_id,
+        ),
+    )?;
+    builder = builder.json(&payload);
+    let response = builder.send().await?.error_for_status()?.json().await?;
+
+    Ok(response)
+}
+
+/// Gets a single view
+pub async fn view_get(
+    client: &ApiClient,
+    workspace_id: base64uuid::Base64Uuid,
+    view_name: &fiberplane_models::names::Name,
+) -> Result<models::View> {
+    let mut builder = client.request(
+        Method::GET,
+        &format!(
+            "/api/workspaces/{workspace_id}/views/{view_name}",
+            workspace_id = workspace_id,
+            view_name = view_name,
+        ),
+    )?;
+    let response = builder.send().await?.error_for_status()?.json().await?;
+
+    Ok(response)
+}
+
+/// Deletes an existing view
+pub async fn view_delete(
+    client: &ApiClient,
+    workspace_id: base64uuid::Base64Uuid,
+    view_name: &fiberplane_models::names::Name,
+) -> Result<()> {
+    let mut builder = client.request(
+        Method::DELETE,
+        &format!(
+            "/api/workspaces/{workspace_id}/views/{view_name}",
+            workspace_id = workspace_id,
+            view_name = view_name,
+        ),
+    )?;
+    let response = builder.send().await?.error_for_status()?;
+
+    Ok(())
+}
+
+/// Updates an existing view
+pub async fn view_update(
+    client: &ApiClient,
+    workspace_id: base64uuid::Base64Uuid,
+    view_name: &fiberplane_models::names::Name,
+    payload: models::UpdateView,
+) -> Result<models::View> {
+    let mut builder = client.request(
+        Method::PATCH,
+        &format!(
+            "/api/workspaces/{workspace_id}/views/{view_name}",
+            workspace_id = workspace_id,
+            view_name = view_name,
         ),
     )?;
     builder = builder.json(&payload);

@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 use std::borrow::Cow;
 use strum_macros::IntoStaticStr;
 
-#[derive(Debug, Deserialize, Serialize, Clone)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq)]
 #[serde(rename_all = "snake_case")]
 pub struct Sorting<T: SortField> {
     #[serde(default = "T::default_sort_field")]
@@ -47,6 +47,63 @@ pub trait SortField {
     fn default_sort_direction() -> SortDirection {
         SortDirection::Ascending
     }
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq)]
+pub struct Pagination {
+    #[serde(default = "Pagination::default_page")]
+    pub page: u32,
+
+    #[serde(default = "Pagination::default_limit")]
+    pub limit: u32,
+}
+
+impl Pagination {
+    #[inline]
+    fn default_page() -> u32 {
+        0
+    }
+
+    #[inline]
+    fn default_limit() -> u32 {
+        200
+    }
+
+    pub fn limit(&self) -> i64 {
+        self.limit as i64
+    }
+
+    pub fn offset(&self) -> i64 {
+        self.page as i64 * self.limit as i64
+    }
+
+    /// Create a pagination that effectively fetches every item from the
+    /// database (since limit is set to the max value).
+    pub fn max() -> Self {
+        Self {
+            page: 0,
+            limit: u32::MAX,
+        }
+    }
+}
+
+impl Default for Pagination {
+    fn default() -> Self {
+        Self {
+            page: Pagination::default_page(),
+            limit: Pagination::default_limit(),
+        }
+    }
+}
+
+/// Simple struct which includes both `sort` and `pagination`, to be used with `#[serde(flatten)]`
+// Debug will automatically put a bound on the generic param = `T: Debug`: https://stackoverflow.com/a/50322720/11494565
+#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
+pub struct PaginatedSearch<T: SortField> {
+    #[serde(flatten)]
+    pub sort: Sorting<T>,
+    #[serde(flatten)]
+    pub pagination: Pagination,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone, Copy, PartialEq, Eq, IntoStaticStr)]
@@ -309,5 +366,39 @@ impl SortField for DataSourceListingSortFields {
     #[inline]
     fn default_sort_field() -> Self {
         Self::Name
+    }
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone, Copy, PartialEq, Eq, IntoStaticStr)]
+#[cfg_attr(feature = "clap", derive(clap::ValueEnum))]
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum ViewSortFields {
+    Name,
+    DisplayName,
+    Description,
+    Labels,
+    CreatedAt,
+    UpdatedAt,
+}
+
+impl ViewSortFields {
+    #[inline]
+    pub fn to_sql(&self) -> &'static str {
+        match self {
+            ViewSortFields::Name => "name",
+            ViewSortFields::DisplayName => "display_name",
+            ViewSortFields::Description => "description",
+            ViewSortFields::Labels => "labels",
+            ViewSortFields::CreatedAt => "created_at",
+            ViewSortFields::UpdatedAt => "updated_at",
+        }
+    }
+}
+
+impl SortField for ViewSortFields {
+    #[inline]
+    fn default_sort_field() -> Self {
+        Self::DisplayName
     }
 }
