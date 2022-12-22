@@ -147,7 +147,7 @@ pub struct UpdateWorkspace {
         rust_wasmer_runtime_module = "fiberplane_models::workspaces"
     )
 )]
-#[serde(rename_all = "snake_case")]
+#[serde(rename_all = "camelCase")]
 pub struct WorkspaceUserUpdate {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub role: Option<AuthRole>,
@@ -187,7 +187,7 @@ impl Default for AuthRole {
         rust_wasmer_runtime_module = "fiberplane_models::workspaces"
     )
 )]
-#[serde(rename_all = "snake_case")]
+#[serde(rename_all = "camelCase")]
 pub struct WorkspaceInvite {
     pub id: Base64Uuid,
     pub sender: Base64Uuid,
@@ -207,7 +207,7 @@ pub struct WorkspaceInvite {
         rust_wasmer_runtime_module = "fiberplane_models::workspaces"
     )
 )]
-#[serde(rename_all = "snake_case")]
+#[serde(rename_all = "camelCase")]
 pub struct Membership {
     pub id: Base64Uuid,
     pub email: String,
