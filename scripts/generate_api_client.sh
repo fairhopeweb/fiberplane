@@ -10,7 +10,10 @@ rm -r "$SCRIPT_DIR/../fiberplane-api-client" || true
 
 if ! command -v fp-openapi-rust-gen &>/dev/null; then
   # not in path; use docker image
-  docker run --rm \
+  echo "pulling newest docker image for our openapi generator and running it"
+  echo "if this fails, please ensure you have executed 'docker login' with the 'fiberplane' account (creds in 1password)"
+
+  docker run --rm --pull=always \
     -v "$(dirname $SCRIPT_DIR):/local" \
     -u "$(id -u ${USER}):$(id -g ${USER})" \
     fiberplane/fp-openapi-rust-gen:latest \
