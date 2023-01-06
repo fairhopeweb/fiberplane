@@ -66,9 +66,9 @@ pub struct NewView {
 #[serde(rename_all = "camelCase")]
 pub struct UpdateView {
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub new_display_name: Option<String>,
+    pub display_name: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub new_description: Option<String>,
+    pub description: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub new_labels: Option<Vec<Label>>,
+    pub labels: Option<Vec<Label>>,
 }

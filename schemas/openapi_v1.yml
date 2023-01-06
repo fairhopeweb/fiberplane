@@ -1941,23 +1941,17 @@ components:
     update_view:
       type: object
       properties:
-        newName:
-          type: string
-          format: name
-        newDisplayName:
-          type: string
-        newDescription:
-          type: string
-        newLabels:
-          type: array
-          items:
-            $ref: "#/components/schemas/label"
-    view_get:
-      type: object
-      properties:
         name:
           type: string
           format: name
+        displayName:
+          type: string
+        description:
+          type: string
+        labels:
+          type: array
+          items:
+            $ref: "#/components/schemas/label"
   parameters:
     sortDirection:
       in: query
