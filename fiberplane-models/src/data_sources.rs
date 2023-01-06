@@ -30,6 +30,14 @@ pub struct DataSource {
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, PartialEq, Eq, Display)]
+#[cfg_attr(
+    feature = "fp-bindgen",
+    derive(Serializable),
+    fp(
+        rust_plugin_module = "fiberplane_models::data_sources",
+        rust_wasmer_runtime_module = "fiberplane_models::data_sources"
+    )
+)]
 #[serde(tag = "status", content = "error", rename_all = "snake_case")]
 pub enum DataSourceStatus {
     Connected,

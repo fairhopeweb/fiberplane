@@ -5,6 +5,14 @@ use serde::{Deserialize, Serialize};
 use time::OffsetDateTime;
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[cfg_attr(
+    feature = "fp-bindgen",
+    derive(Serializable),
+    fp(
+        rust_plugin_module = "fiberplane_models::tokens",
+        rust_wasmer_runtime_module = "fiberplane_models::tokens"
+    )
+)]
 #[serde(rename_all = "camelCase")]
 pub struct TokenSummary {
     pub id: Base64Uuid,
@@ -38,6 +46,14 @@ impl NewToken {
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[cfg_attr(
+    feature = "fp-bindgen",
+    derive(Serializable),
+    fp(
+        rust_plugin_module = "fiberplane_models::tokens",
+        rust_wasmer_runtime_module = "fiberplane_models::tokens"
+    )
+)]
 #[serde(rename_all = "camelCase")]
 pub struct Token {
     pub id: Base64Uuid,

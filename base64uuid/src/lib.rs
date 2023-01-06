@@ -1,4 +1,6 @@
 use base64::DecodeError;
+#[cfg(feature = "fp-bindgen")]
+use fp_bindgen::prelude::Serializable;
 use serde::{de, Deserialize, Serialize, Serializer};
 use std::borrow::{Borrow, Cow};
 use std::convert::TryFrom;
@@ -279,6 +281,14 @@ impl<'a> PartialEq<Base64Uuid> for Cow<'a, str> {
 }
 
 #[derive(Debug, Error, PartialEq, Eq, Clone, Copy)]
+#[cfg_attr(
+    feature = "fp-bindgen",
+    derive(Serializable),
+    fp(
+        rust_plugin_module = "fiberplane_models",
+        rust_wasmer_runtime_module = "fiberplane_models"
+    )
+)]
 #[error("Invalid Base64Uuid")]
 pub struct InvalidId;
 

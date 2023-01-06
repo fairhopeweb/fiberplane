@@ -6,6 +6,14 @@ use std::collections::HashMap;
 use time::OffsetDateTime;
 
 #[derive(Clone, Deserialize, Eq, PartialEq, Serialize, Debug)]
+#[cfg_attr(
+    feature = "fp-bindgen",
+    derive(Serializable),
+    fp(
+        rust_plugin_module = "fiberplane_models::events",
+        rust_wasmer_runtime_module = "fiberplane_models::events"
+    )
+)]
 #[serde(rename_all = "camelCase")]
 pub struct Event {
     pub id: Base64Uuid,

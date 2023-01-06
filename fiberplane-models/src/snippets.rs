@@ -1,9 +1,19 @@
 use crate::names::Name;
 use crate::timestamps::Timestamp;
 use base64uuid::Base64Uuid;
+#[cfg(feature = "fp-bindgen")]
+use fp_bindgen::prelude::Serializable;
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq)]
+#[cfg_attr(
+    feature = "fp-bindgen",
+    derive(Serializable),
+    fp(
+        rust_plugin_module = "fiberplane_models::snippets",
+        rust_wasmer_runtime_module = "fiberplane_models::snippets"
+    )
+)]
 #[serde(rename_all = "camelCase")]
 pub struct Snippet {
     pub id: Base64Uuid,
@@ -15,6 +25,14 @@ pub struct Snippet {
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq)]
+#[cfg_attr(
+    feature = "fp-bindgen",
+    derive(Serializable),
+    fp(
+        rust_plugin_module = "fiberplane_models::snippets",
+        rust_wasmer_runtime_module = "fiberplane_models::snippets"
+    )
+)]
 #[serde(rename_all = "camelCase")]
 pub struct SnippetSummary {
     pub id: Base64Uuid,
@@ -25,6 +43,14 @@ pub struct SnippetSummary {
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
+#[cfg_attr(
+    feature = "fp-bindgen",
+    derive(Serializable),
+    fp(
+        rust_plugin_module = "fiberplane_models::snippets",
+        rust_wasmer_runtime_module = "fiberplane_models::snippets"
+    )
+)]
 #[serde(rename_all = "camelCase")]
 pub struct NewSnippet {
     pub name: Name,
@@ -34,6 +60,14 @@ pub struct NewSnippet {
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone)]
+#[cfg_attr(
+    feature = "fp-bindgen",
+    derive(Serializable),
+    fp(
+        rust_plugin_module = "fiberplane_models::snippets",
+        rust_wasmer_runtime_module = "fiberplane_models::snippets"
+    )
+)]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateSnippet {
     pub description: Option<String>,
