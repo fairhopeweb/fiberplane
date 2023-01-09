@@ -13,6 +13,7 @@ pub mod query_data;
 pub mod realtime;
 pub mod snippets;
 pub mod sorting;
+pub mod templates;
 pub mod timestamps;
 pub mod tokens;
 pub mod users;

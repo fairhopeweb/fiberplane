@@ -12,5 +12,3 @@ pub static FIBERPLANE_LIBRARY_PATH: &str = "fiberplane.libsonnet";
 pub use convert::*;
 #[cfg(feature = "expand")]
 pub use expand::*;
-#[cfg(feature = "types")]
-pub use types::*;

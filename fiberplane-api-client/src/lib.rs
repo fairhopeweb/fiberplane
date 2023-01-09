@@ -27,12 +27,12 @@ pub(crate) mod models {
     pub use fiberplane_models::realtime::*;
     pub use fiberplane_models::snippets::*;
     pub use fiberplane_models::sorting::*;
+    pub use fiberplane_models::templates::*;
     pub use fiberplane_models::timestamps::*;
     pub use fiberplane_models::tokens::*;
     pub use fiberplane_models::users::*;
     pub use fiberplane_models::views::*;
     pub use fiberplane_models::workspaces::*;
-    pub use fiberplane_templates::*;
 }
 
 pub async fn comment_get(

@@ -1,6 +1,6 @@
-use crate::types::{TemplateParameter, TemplateParameterType};
 use crate::FIBERPLANE_LIBRARY_PATH;
 use fiberplane_models::notebooks::{Cell, NewNotebook};
+use fiberplane_models::templates::{TemplateParameter, TemplateParameterType};
 use jrsonnet_evaluator::error::LocError;
 use jrsonnet_evaluator::trace::{CompactFormat, ExplainingFormat, PathResolver, TraceFormat};
 use jrsonnet_evaluator::{EvaluationState, FuncVal, IStr, ImportResolver, ManifestFormat, Val};
