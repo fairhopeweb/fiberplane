@@ -95,6 +95,7 @@ impl From<Notebook> for NewNotebook {
 pub enum CreatedBy {
     User(UserSummary),
     Trigger(TriggerSummary),
+    Onboarding,
     Unknown,
 }
 
@@ -103,6 +104,7 @@ impl CreatedBy {
         match self {
             CreatedBy::User(user) => user.name.clone(),
             CreatedBy::Trigger(trigger) => trigger.title.clone(),
+            CreatedBy::Onboarding => "Onboarding".to_string(),
             CreatedBy::Unknown => String::from("Unknown"),
         }
     }
