@@ -724,8 +724,9 @@ export type SelectField = {
     /**
      * A list of options to select from.
      *
-     * For query forms, if this array is left empty, the auto-suggest mechanism
-     * can fetch options when the user starts typing in this field.
+     * In addition to the options in this list, the auto-suggest mechanism
+     * can also fetch options when the user starts typing in this field. In
+     * this case, `supports_suggestions` should be set to `true`.
      */
     options: Array<string>;
 
@@ -746,6 +747,11 @@ export type SelectField = {
      * Whether a value is required.
      */
     required: boolean;
+
+    /**
+     * Whether the provider supports auto-suggestions for this field.
+     */
+    supportsSuggestions: boolean;
 };
 
 export type StackingType =
@@ -829,9 +835,7 @@ export type TextCell = {
 /**
  * Defines a free-form text entry field.
  *
- * This is commonly used for filter text and query entry. For the latter case,
- * `supports_highlighting` can be set to `true` if the provider supports syntax
- * highlighting for the query language.
+ * This is commonly used for filter text and query entry.
  */
 export type TextField = {
     /**
@@ -869,10 +873,9 @@ export type TextField = {
     required: boolean;
 
     /**
-     * Whether the provider implements syntax highlighting for this field.
-     * See `highlight_field()` in the protocol definition.
+     * Whether the provider supports auto-suggestions for this field.
      */
-    supportsHighlighting: boolean;
+    supportsSuggestions: boolean;
 };
 
 export type Timestamp = string;

@@ -398,8 +398,9 @@ pub struct SelectField {
 
     /// A list of options to select from.
     ///
-    /// For query forms, if this array is left empty, the auto-suggest mechanism
-    /// can fetch options when the user starts typing in this field.
+    /// In addition to the options in this list, the auto-suggest mechanism
+    /// can also fetch options when the user starts typing in this field. In
+    /// this case, `supports_suggestions` should be set to `true`.
     pub options: Vec<String>,
 
     /// Suggested placeholder to display when there is no value.
@@ -413,6 +414,9 @@ pub struct SelectField {
 
     /// Whether a value is required.
     pub required: bool,
+
+    /// Whether the provider supports auto-suggestions for this field.
+    pub supports_suggestions: bool,
 }
 
 /// Defines a query type supported by a provider.
@@ -449,9 +453,7 @@ pub struct SupportedQueryType {
 
 /// Defines a free-form text entry field.
 ///
-/// This is commonly used for filter text and query entry. For the latter case,
-/// `supports_highlighting` can be set to `true` if the provider supports syntax
-/// highlighting for the query language.
+/// This is commonly used for filter text and query entry.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct TextField {
@@ -477,9 +479,8 @@ pub struct TextField {
     /// Whether a value is required.
     pub required: bool,
 
-    /// Whether the provider implements syntax highlighting for this field.
-    /// See `highlight_field()` in the protocol definition.
-    pub supports_highlighting: bool,
+    /// Whether the provider supports auto-suggestions for this field.
+    pub supports_suggestions: bool,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]

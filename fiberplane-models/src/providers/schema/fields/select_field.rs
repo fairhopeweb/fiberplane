@@ -27,8 +27,9 @@ pub struct SelectField {
 
     /// A list of options to select from.
     ///
-    /// For query forms, if this array is left empty, the auto-suggest mechanism
-    /// can fetch options when the user starts typing in this field.
+    /// In addition to the options in this list, the auto-suggest mechanism
+    /// can also fetch options when the user starts typing in this field. In
+    /// this case, `supports_suggestions` should be set to `true`.
     pub options: Vec<String>,
 
     /// Suggested placeholder to display when there is no value.
@@ -42,6 +43,9 @@ pub struct SelectField {
 
     /// Whether a value is required.
     pub required: bool,
+
+    /// Whether the provider supports auto-suggestions for this field.
+    pub supports_suggestions: bool,
 }
 
 impl SelectField {
@@ -97,6 +101,14 @@ impl SelectField {
     pub fn with_prerequisites(self, prerequisites: &[&str]) -> Self {
         Self {
             prerequisites: prerequisites.iter().map(|&s| s.to_owned()).collect(),
+            ..self
+        }
+    }
+
+    /// Marks the field as supporting auto-suggestions.
+    pub fn with_suggestions(self) -> Self {
+        Self {
+            supports_suggestions: true,
             ..self
         }
     }

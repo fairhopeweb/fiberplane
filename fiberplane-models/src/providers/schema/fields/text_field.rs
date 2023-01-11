@@ -4,9 +4,7 @@ use serde::{Deserialize, Serialize};
 
 /// Defines a free-form text entry field.
 ///
-/// This is commonly used for filter text and query entry. For the latter case,
-/// `supports_highlighting` can be set to `true` if the provider supports syntax
-/// highlighting for the query language.
+/// This is commonly used for filter text and query entry.
 #[derive(Debug, Default, Deserialize, Serialize)]
 #[cfg_attr(
     feature = "fp-bindgen",
@@ -38,9 +36,8 @@ pub struct TextField {
     /// Whether a value is required.
     pub required: bool,
 
-    /// Whether the provider implements syntax highlighting for this field.
-    /// See `highlight_field()` in the protocol definition.
-    pub supports_highlighting: bool,
+    /// Whether the provider supports auto-suggestions for this field.
+    pub supports_suggestions: bool,
 }
 
 impl TextField {
@@ -61,14 +58,6 @@ impl TextField {
     pub fn required(self) -> Self {
         Self {
             required: true,
-            ..self
-        }
-    }
-
-    /// Marks the field as supporting syntax highlighting.
-    pub fn with_highlighting(self) -> Self {
-        Self {
-            supports_highlighting: true,
             ..self
         }
     }
@@ -97,6 +86,14 @@ impl TextField {
     pub fn with_prerequisites(self, prerequisites: &[&str]) -> Self {
         Self {
             prerequisites: prerequisites.iter().map(|&s| s.to_owned()).collect(),
+            ..self
+        }
+    }
+
+    /// Marks the field as supporting auto-suggestions.
+    pub fn with_suggestions(self) -> Self {
+        Self {
+            supports_suggestions: true,
             ..self
         }
     }
