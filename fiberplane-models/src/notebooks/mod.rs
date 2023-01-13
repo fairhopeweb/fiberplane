@@ -326,3 +326,27 @@ pub struct NewTrigger {
     pub template_name: Name,
     pub default_arguments: Option<Map<String, Value>>,
 }
+
+#[derive(Debug, Default, Clone, PartialEq, Eq, Deserialize, Serialize)]
+#[cfg_attr(
+    feature = "fp-bindgen",
+    derive(Serializable),
+    fp(
+        rust_plugin_module = "fiberplane_models::notebooks",
+        rust_wasmer_runtime_module = "fiberplane_models::notebooks"
+    )
+)]
+#[serde(rename_all = "camelCase")]
+/// The query string values that are associated with the notebook_cells_append
+/// endpoint.
+pub struct NotebookCellsAppendQuery {
+    /// Append the provided cells before this cell.
+    /// If the cell is not found it will return a 400. This parameter cannot
+    /// be used together with `after`.
+    pub before: Option<String>,
+
+    /// Append the provided cells after this cell.
+    /// If the cell is not found it will return a 400. This parameter cannot
+    /// be used together with `before`.
+    pub after: Option<String>,
+}

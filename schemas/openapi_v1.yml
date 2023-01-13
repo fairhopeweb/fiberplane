@@ -2195,9 +2195,23 @@ paths:
       - $ref: "#/components/parameters/notebookId"
     post:
       operationId: notebook_cells_append
-      description: Append the given cells to the notebook
+      description: Append the given cells to the notebook. Any cells that have their ID missing will be set on the server.
+      parameters:
+        - in: query
+          name: after
+          description: Append the provided cells after this cell. If the cell is not found it will return a 400. This parameter cannot be used together with `before`.
+          required: false
+          schema:
+            type: string
+        - in: query
+          name: before
+          description: Append the provided cells before this cell. If the cell is not found it will return a 400. This parameter cannot be used together with `after`.
+          required: false
+          schema:
+            type: string
       requestBody:
-        description: Cells to append
+        description: |
+          The cells that will be appended to the notebook.
         required: true
         content:
           application/json:

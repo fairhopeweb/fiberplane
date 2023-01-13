@@ -190,10 +190,12 @@ pub async fn notebook_update(
     Ok(())
 }
 
-/// Append the given cells to the notebook
+/// Append the given cells to the notebook. Any cells that have their ID missing will be set on the server.
 pub async fn notebook_cells_append(
     client: &ApiClient,
     notebook_id: base64uuid::Base64Uuid,
+    after: Option<&str>,
+    before: Option<&str>,
     payload: Vec<models::Cell>,
 ) -> Result<Vec<models::Cell>> {
     let mut builder = client.request(
@@ -203,6 +205,12 @@ pub async fn notebook_cells_append(
             notebookId = notebook_id,
         ),
     )?;
+    if let Some(after) = after {
+        builder = builder.query(&[("after", after)]);
+    }
+    if let Some(before) = before {
+        builder = builder.query(&[("before", before)]);
+    }
     builder = builder.json(&payload);
     let response = builder.send().await?.error_for_status()?.json().await?;
 
