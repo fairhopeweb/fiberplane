@@ -102,7 +102,7 @@ where
                 status_code,
                 response,
             } if *status_code == 400 => Error::Other {
-                message: format!("Query error: {}", String::from_utf8_lossy(response)),
+                message: String::from_utf8_lossy(response).to_string(),
             },
             _ => Error::Http { error },
         })?;

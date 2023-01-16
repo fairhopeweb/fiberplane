@@ -1,7 +1,9 @@
 use super::{constants::*, prometheus::*};
-use fiberplane_models::providers::{FORM_ENCODED_MIME_TYPE, TIMESERIES_MIME_TYPE};
+use fiberplane_models::providers::{Error, FORM_ENCODED_MIME_TYPE, TIMESERIES_MIME_TYPE};
 use fiberplane_provider_bindings::*;
 use grafana_common::{query_direct_and_proxied, Config};
+use serde::Deserialize;
+use serde_json::Result as SerdeResult;
 use std::time::SystemTime;
 use time::{ext::NumericalDuration, format_description::well_known::Rfc3339, OffsetDateTime};
 
@@ -40,6 +42,52 @@ impl StepUnit {
     }
 }
 
+#[derive(Deserialize)]
+#[serde(rename_all = "camelCase")]
+struct ApiResponse {
+    error: Option<String>,
+}
+
+#[derive(Deserialize)]
+enum Status {
+    Error,
+    Success,
+}
+
+fn validate_or_parse_message(query: &str, message: &str) -> Error {
+    // Validate first
+    match prometheus_parser::parse_expr(query) {
+        Ok(_) => {
+            let result: SerdeResult<ApiResponse> = serde_json::from_str(message);
+            if let Ok(response) = result {
+                // No validation error?
+                // Then we should parse the returned result
+                // from Prometheus
+                if let Some(error) = response.error {
+                    return Error::ValidationError {
+                        errors: vec![ValidationError {
+                            field_name: QUERY_PARAM_NAME.to_owned(),
+                            message: error,
+                        }],
+                    };
+                }
+            }
+        }
+        Err(error) => {
+            return Error::ValidationError {
+                errors: vec![ValidationError {
+                    field_name: QUERY_PARAM_NAME.to_owned(),
+                    message: format!("{}", error),
+                }],
+            };
+        }
+    };
+
+    Error::Other {
+        message: message.to_owned(),
+    }
+}
+
 pub async fn query_series(query_data: Blob, config: Config) -> Result<Blob, Error> {
     let request = parse_metrics_request(query_data)?;
     let step = step_for_range(request.from, request.to);
@@ -59,7 +107,12 @@ pub async fn query_series(query_data: Blob, config: Config) -> Result<Blob, Erro
     };
 
     let response: PrometheusResponse =
-        query_direct_and_proxied(&config, "prometheus", "api/v1/query_range", Some(body)).await?;
+        query_direct_and_proxied(&config, "prometheus", "api/v1/query_range", Some(body))
+            .await
+            .map_err(|err| match err {
+                Error::Other { message } => validate_or_parse_message(&request.query, &message),
+                err => err,
+            })?;
 
     let matrix = match response.data {
         PrometheusData::Matrix(response) => response,
@@ -90,7 +143,6 @@ pub fn create_graph_cell() -> Result<Vec<Cell>, Error> {
         read_only: None,
         stacking_type: StackingType::None,
     });
-
     Ok(vec![graph_cell])
 }
 
