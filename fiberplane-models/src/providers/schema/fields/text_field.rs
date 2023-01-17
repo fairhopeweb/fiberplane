@@ -20,6 +20,9 @@ pub struct TextField {
     /// Whether multi-line input is useful for this provider.
     pub multiline: bool,
 
+    /// Whether multiple values may be inserted.
+    pub multiple: bool,
+
     /// Name of the field as it will be included in the encoded query or config
     /// object.
     pub name: String,
@@ -50,6 +53,14 @@ impl TextField {
     pub fn multiline(self) -> Self {
         Self {
             multiline: true,
+            ..self
+        }
+    }
+
+    /// Marks the field as allowing multiple values.
+    pub fn multiple(self) -> Self {
+        Self {
+            multiple: true,
             ..self
         }
     }
