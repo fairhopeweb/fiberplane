@@ -96,7 +96,7 @@ impl Runtime {
         response: Blob,
         mime_type: String,
         query: Option<String>,
-    ) -> Result<Result<bytes::Bytes, Error>, InvocationError> {
+    ) -> Result<Result<Blob, Error>, InvocationError> {
         let response = serialize_to_vec(&response);
         let mime_type = serialize_to_vec(&mime_type);
         let query = serialize_to_vec(&query);

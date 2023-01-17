@@ -20,7 +20,7 @@ export type Imports = {
 
 export type Exports = {
     createCells?: (queryType: string, response: types.Blob) => types.Result<Array<types.Cell>, types.Error>;
-    extractData?: (response: types.Blob, mimeType: string, query: string | null) => types.Result<Uint8Array, types.Error>;
+    extractData?: (response: types.Blob, mimeType: string, query: string | null) => types.Result<types.Blob, types.Error>;
     getConfigSchema?: () => types.ConfigSchema;
     getSupportedQueryTypes?: (config: types.ProviderConfig) => Promise<Array<types.SupportedQueryType>>;
     invoke?: (request: types.LegacyProviderRequest, config: types.ProviderConfig) => Promise<types.LegacyProviderResponse>;
@@ -209,7 +209,7 @@ export async function createRuntime(
                 const response_ptr = serializeObject(response);
                 const mime_type_ptr = serializeObject(mimeType);
                 const query_ptr = serializeObject(query);
-                return parseObject<types.Result<Uint8Array, types.Error>>(export_fn(response_ptr, mime_type_ptr, query_ptr));
+                return parseObject<types.Result<types.Blob, types.Error>>(export_fn(response_ptr, mime_type_ptr, query_ptr));
             };
         })(),
         getConfigSchema: (() => {

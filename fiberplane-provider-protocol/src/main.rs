@@ -1,6 +1,5 @@
 mod legacy;
 
-use bytes::Bytes;
 use fiberplane_models::notebooks::Cell;
 use fiberplane_models::timestamps::Timestamp;
 use fiberplane_models::{blobs::Blob, providers::*};
@@ -82,7 +81,7 @@ fp_export! {
     /// means Studio should be allowed to elide calls to this function if there
     /// is no query string and the MIME type is an exact match. This elision
     /// should not change the outcome.
-    fn extract_data(response: Blob, mime_type: String, query: Option<String>) -> Result<Bytes, Error>;
+    fn extract_data(response: Blob, mime_type: String, query: Option<String>) -> Result<Blob, Error>;
 }
 
 fn main() {
