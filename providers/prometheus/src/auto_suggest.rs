@@ -55,7 +55,7 @@ const PROM_QL_FUNCTIONS: &[&str] = &[
 
 pub async fn query_suggestions(query_data: Blob, config: Config) -> Result<Blob, Error> {
     let query = AutoSuggestRequest::from_query_data(&query_data)?.query;
-    let identifier = extract_identifier(&query);
+    let (identifier, from) = extract_identifier(&query);
 
     let response: PrometheusMetadataResponse =
         query_direct_and_proxied(&config, "prometheus", "api/v1/metadata", None).await?;
@@ -65,6 +65,7 @@ pub async fn query_suggestions(query_data: Blob, config: Config) -> Result<Blob,
         .into_iter()
         .filter_map(|(name, values)| {
             values.into_iter().next().map(|value| Suggestion {
+                from,
                 text: name,
                 description: value.help,
             })
@@ -84,6 +85,7 @@ pub async fn query_suggestions(query_data: Blob, config: Config) -> Result<Blob,
     for &function in PROM_QL_FUNCTIONS {
         if identifier.is_empty() || function.contains(identifier) {
             suggestions.push(Suggestion {
+                from,
                 text: function.to_owned(),
                 description: Some("Function".to_owned()),
             })
@@ -96,10 +98,10 @@ pub async fn query_suggestions(query_data: Blob, config: Config) -> Result<Blob,
     })
 }
 
-/// Extracts the identifier that is currently being typed from the query. This
+/// Extracts the identifier and starting offset that is currently being typed from the query. This
 /// identifier is used to filter the suggestions. If the identifier is empty,
 /// no filtering would be applied.
-fn extract_identifier(query: &str) -> &str {
+fn extract_identifier(query: &str) -> (&str, Option<u32>) {
     let chars: Vec<char> = query.chars().collect();
     if let Some((offset, _)) = chars
         .iter()
@@ -107,9 +109,9 @@ fn extract_identifier(query: &str) -> &str {
         .rev()
         .find(|(_, &c)| !is_identifier_char(c))
     {
-        &query[(offset + 1)..]
+        (&query[(offset + 1)..], Some(offset as u32 + 1))
     } else {
-        query.trim()
+        (query, Some(0))
     }
 }
 
@@ -131,9 +133,9 @@ mod tests {
 
     #[test]
     fn test_extract_identifier() {
-        assert_eq!(extract_identifier("hello"), "hello");
-        assert_eq!(extract_identifier("hello foo"), "foo");
-        assert_eq!(extract_identifier("hello!foo"), "foo");
-        assert_eq!(extract_identifier("##@!"), "");
+        assert_eq!(extract_identifier("hello"), ("hello", Some(0)));
+        assert_eq!(extract_identifier("hello foo"), ("foo", Some(6)));
+        assert_eq!(extract_identifier("hello!foo"), ("foo", Some(6)));
+        assert_eq!(extract_identifier("##@!"), ("", Some(4)));
     }
 }

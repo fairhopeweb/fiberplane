@@ -27,6 +27,7 @@ async fn get_supported_query_types(_config: ProviderConfig) -> Vec<SupportedQuer
                 .with_name(QUERY_PARAM_NAME)
                 .with_label("Enter your Prometheus query")
                 .required()
+                .with_suggestions()
                 .into()])
             .supporting_mime_types(&[CELLS_MSGPACK_MIME_TYPE]),
         SupportedQueryType::new(TIMESERIES_QUERY_TYPE)
@@ -35,6 +36,7 @@ async fn get_supported_query_types(_config: ProviderConfig) -> Vec<SupportedQuer
                     .with_name(QUERY_PARAM_NAME)
                     .with_label("Enter your Prometheus query")
                     .required()
+                    .with_suggestions()
                     .into(),
                 DateTimeRangeField::new()
                     .with_name(TIME_RANGE_PARAM_NAME)

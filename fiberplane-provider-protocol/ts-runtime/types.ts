@@ -849,6 +849,11 @@ export type TextField = {
     multiline: boolean;
 
     /**
+     * Whether multiple values may be inserted.
+     */
+    multiple: boolean;
+
+    /**
      * Name of the field as it will be included in the encoded query or config
      * object.
      */

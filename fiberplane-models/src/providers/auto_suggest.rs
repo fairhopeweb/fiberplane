@@ -57,6 +57,15 @@ impl AutoSuggestRequest {
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Suggestion {
+    /// The offset to start applying the suggestion,
+    ///
+    /// All text should be replaced from that offset up to the end of the
+    /// query in AutoSuggestRequest.
+    ///
+    /// When missing, append the suggestion to the cursor
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub from: Option<u32>,
     pub text: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
 }
