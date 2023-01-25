@@ -7,7 +7,7 @@ use serde::{Deserialize, Serialize};
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::providers")
+    fp(rust_module = "fiberplane_models::providers")
 )]
 #[non_exhaustive]
 #[serde(rename_all = "camelCase")]
@@ -20,9 +20,11 @@ pub struct IntegerField {
     pub label: String,
 
     /// Optional maximum value to be entered.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub max: Option<i32>,
 
     /// Optional minimal value to be entered.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub min: Option<i32>,
 
     /// Suggested placeholder to display when there is no value.
@@ -34,6 +36,7 @@ pub struct IntegerField {
     /// Specifies the granularity that any specified numbers must adhere to.
     ///
     /// If omitted, `step` defaults to "1", meaning only integers are allowed.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub step: Option<i32>,
 }
 

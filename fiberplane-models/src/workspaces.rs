@@ -14,10 +14,7 @@ use time::OffsetDateTime;
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::workspaces",
-        rust_wasmer_runtime_module = "fiberplane_models::workspaces"
-    )
+    fp(rust_module = "fiberplane_models::workspaces")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Workspace {
@@ -36,10 +33,7 @@ pub struct Workspace {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::workspaces",
-        rust_wasmer_runtime_module = "fiberplane_models::workspaces"
-    )
+    fp(rust_module = "fiberplane_models::workspaces")
 )]
 #[serde(rename_all = "snake_case")]
 pub enum WorkspaceType {
@@ -52,10 +46,7 @@ pub enum WorkspaceType {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::workspaces",
-        rust_wasmer_runtime_module = "fiberplane_models::workspaces"
-    )
+    fp(rust_module = "fiberplane_models::workspaces")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct NewWorkspaceInvite {
@@ -78,10 +69,7 @@ impl NewWorkspaceInvite {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::workspaces",
-        rust_wasmer_runtime_module = "fiberplane_models::workspaces"
-    )
+    fp(rust_module = "fiberplane_models::workspaces")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct WorkspaceInviteResponse {
@@ -93,10 +81,7 @@ pub struct WorkspaceInviteResponse {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::workspaces",
-        rust_wasmer_runtime_module = "fiberplane_models::workspaces"
-    )
+    fp(rust_module = "fiberplane_models::workspaces")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct NewWorkspace {
@@ -122,10 +107,7 @@ impl NewWorkspace {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::workspaces",
-        rust_wasmer_runtime_module = "fiberplane_models::workspaces"
-    )
+    fp(rust_module = "fiberplane_models::workspaces")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateWorkspace {
@@ -142,10 +124,7 @@ pub struct UpdateWorkspace {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::workspaces",
-        rust_wasmer_runtime_module = "fiberplane_models::workspaces"
-    )
+    fp(rust_module = "fiberplane_models::workspaces")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct WorkspaceUserUpdate {
@@ -158,10 +137,7 @@ pub struct WorkspaceUserUpdate {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::workspaces",
-        rust_wasmer_runtime_module = "fiberplane_models::workspaces"
-    )
+    fp(rust_module = "fiberplane_models::workspaces")
 )]
 #[serde(rename_all = "snake_case")]
 pub enum AuthRole {
@@ -182,10 +158,7 @@ impl Default for AuthRole {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::workspaces",
-        rust_wasmer_runtime_module = "fiberplane_models::workspaces"
-    )
+    fp(rust_module = "fiberplane_models::workspaces")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct WorkspaceInvite {
@@ -202,10 +175,7 @@ pub struct WorkspaceInvite {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::workspaces",
-        rust_wasmer_runtime_module = "fiberplane_models::workspaces"
-    )
+    fp(rust_module = "fiberplane_models::workspaces")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Membership {

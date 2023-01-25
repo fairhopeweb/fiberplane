@@ -11,10 +11,7 @@ use time::OffsetDateTime;
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::views",
-        rust_wasmer_runtime_module = "fiberplane_models::views"
-    )
+    fp(rust_module = "fiberplane_models::views")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct View {
@@ -40,10 +37,7 @@ pub struct ViewQuery {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::views",
-        rust_wasmer_runtime_module = "fiberplane_models::views"
-    )
+    fp(rust_module = "fiberplane_models::views")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct NewView {
@@ -58,10 +52,7 @@ pub struct NewView {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::views",
-        rust_wasmer_runtime_module = "fiberplane_models::views"
-    )
+    fp(rust_module = "fiberplane_models::views")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateView {

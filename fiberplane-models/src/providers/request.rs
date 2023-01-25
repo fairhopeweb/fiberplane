@@ -9,7 +9,7 @@ pub type ProviderConfig = serde_json::Value;
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::providers")
+    fp(rust_module = "fiberplane_models::providers")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ProviderRequest {

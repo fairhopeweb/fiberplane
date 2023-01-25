@@ -284,10 +284,7 @@ impl<'a> PartialEq<Base64Uuid> for Cow<'a, str> {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models",
-        rust_wasmer_runtime_module = "fiberplane_models"
-    )
+    fp(rust_module = "fiberplane_models")
 )]
 #[error("Invalid Base64Uuid")]
 pub struct InvalidId;

@@ -856,7 +856,7 @@ fn matches_fiberplane_rs() {
     )
     .unwrap();
     let args = HashMap::from([("incidentName", "API Outage")]);
-    let actual = expand_template(&template, args).unwrap();
+    let actual = expand_template(template, args).unwrap();
     assert_eq!(actual, *NOTEBOOK);
 }
 
@@ -902,7 +902,7 @@ fn mustache_substitution_to_function_parameters() {
         labels: Vec::new(),
     };
     let template = notebook_to_template(notebook);
-    let params = extract_template_parameters(&template).unwrap();
+    let params = extract_template_parameters(template).unwrap();
     // Deduplicates the `personName` parameter
     assert_eq!(params.len(), 2);
     assert_eq!(

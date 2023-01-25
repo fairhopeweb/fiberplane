@@ -22,10 +22,7 @@ pub mod operations;
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::notebooks",
-        rust_wasmer_runtime_module = "fiberplane_models::notebooks"
-    )
+    fp(rust_module = "fiberplane_models::notebooks")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Notebook {
@@ -52,10 +49,7 @@ pub struct Notebook {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::notebooks",
-        rust_wasmer_runtime_module = "fiberplane_models::notebooks"
-    )
+    fp(rust_module = "fiberplane_models::notebooks")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct NewNotebook {
@@ -86,10 +80,7 @@ impl From<Notebook> for NewNotebook {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::notebooks",
-        rust_wasmer_runtime_module = "fiberplane_models::notebooks"
-    )
+    fp(rust_module = "fiberplane_models::notebooks")
 )]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum CreatedBy {
@@ -114,10 +105,7 @@ impl CreatedBy {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::notebooks",
-        rust_wasmer_runtime_module = "fiberplane_models::notebooks"
-    )
+    fp(rust_module = "fiberplane_models::notebooks")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct TriggerSummary {
@@ -132,10 +120,7 @@ pub struct TriggerSummary {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::notebooks",
-        rust_wasmer_runtime_module = "fiberplane_models::notebooks"
-    )
+    fp(rust_module = "fiberplane_models::notebooks")
 )]
 #[serde(rename_all = "snake_case")]
 pub enum NotebookVisibility {
@@ -153,10 +138,7 @@ impl Default for NotebookVisibility {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::notebooks",
-        rust_wasmer_runtime_module = "fiberplane_models::notebooks"
-    )
+    fp(rust_module = "fiberplane_models::notebooks")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct NotebookPatch {
@@ -167,10 +149,7 @@ pub struct NotebookPatch {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::notebooks",
-        rust_wasmer_runtime_module = "fiberplane_models::notebooks"
-    )
+    fp(rust_module = "fiberplane_models::notebooks")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct NotebookCopyDestination {
@@ -182,10 +161,7 @@ pub struct NotebookCopyDestination {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::notebooks",
-        rust_wasmer_runtime_module = "fiberplane_models::notebooks"
-    )
+    fp(rust_module = "fiberplane_models::notebooks")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct NewPinnedNotebook {
@@ -221,10 +197,7 @@ pub struct TriggerInvokeResponse {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::notebooks",
-        rust_wasmer_runtime_module = "fiberplane_models::notebooks"
-    )
+    fp(rust_module = "fiberplane_models::notebooks")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct NotebookSummary {
@@ -245,10 +218,7 @@ pub struct NotebookSummary {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::notebooks",
-        rust_wasmer_runtime_module = "fiberplane_models::notebooks"
-    )
+    fp(rust_module = "fiberplane_models::notebooks")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct NotebookSearch {
@@ -262,10 +232,7 @@ pub struct NotebookSearch {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::notebooks",
-        rust_wasmer_runtime_module = "fiberplane_models::notebooks"
-    )
+    fp(rust_module = "fiberplane_models::notebooks")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct TemplateSummary {
@@ -282,10 +249,7 @@ pub struct TemplateSummary {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::notebooks",
-        rust_wasmer_runtime_module = "fiberplane_models::notebooks"
-    )
+    fp(rust_module = "fiberplane_models::notebooks")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct NewTemplate {
@@ -308,10 +272,7 @@ impl NewTemplate {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::notebooks",
-        rust_wasmer_runtime_module = "fiberplane_models::notebooks"
-    )
+    fp(rust_module = "fiberplane_models::notebooks")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateTemplate {

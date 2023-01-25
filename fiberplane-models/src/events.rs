@@ -9,10 +9,7 @@ use time::OffsetDateTime;
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::events",
-        rust_wasmer_runtime_module = "fiberplane_models::events"
-    )
+    fp(rust_module = "fiberplane_models::events")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Event {
@@ -32,10 +29,7 @@ pub struct Event {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::events",
-        rust_wasmer_runtime_module = "fiberplane_models::events"
-    )
+    fp(rust_module = "fiberplane_models::events")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct NewEvent {

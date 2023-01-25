@@ -9,7 +9,7 @@ use super::QuerySchema;
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::providers")
+    fp(rust_module = "fiberplane_models::providers")
 )]
 #[non_exhaustive]
 #[serde(rename_all = "camelCase")]

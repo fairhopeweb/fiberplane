@@ -15,7 +15,7 @@ pub type QuerySchema = Vec<QueryField>;
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::providers")
+    fp(rust_module = "fiberplane_models::providers")
 )]
 #[non_exhaustive]
 #[serde(tag = "type", rename_all = "snake_case")]

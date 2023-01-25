@@ -16,10 +16,7 @@ use time::{
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::timestamps",
-        rust_wasmer_runtime_module = "fiberplane_models::timestamps"
-    )
+    fp(rust_module = "fiberplane_models::timestamps")
 )]
 pub struct TimeRange {
     pub from: Timestamp,
@@ -52,10 +49,7 @@ impl From<NewTimeRange> for TimeRange {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::timestamps",
-        rust_wasmer_runtime_module = "fiberplane_models::timestamps"
-    )
+    fp(rust_module = "fiberplane_models::timestamps")
 )]
 pub struct Timestamp(#[serde(with = "time::serde::rfc3339")] pub OffsetDateTime);
 
@@ -111,10 +105,7 @@ impl Deref for Timestamp {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::timestamps",
-        rust_wasmer_runtime_module = "fiberplane_models::timestamps"
-    )
+    fp(rust_module = "fiberplane_models::timestamps")
 )]
 #[serde(untagged)]
 pub enum NewTimeRange {
@@ -140,10 +131,7 @@ impl From<TimeRange> for NewTimeRange {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::timestamps",
-        rust_wasmer_runtime_module = "fiberplane_models::timestamps"
-    )
+    fp(rust_module = "fiberplane_models::timestamps")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct RelativeTimeRange {

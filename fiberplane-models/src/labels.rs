@@ -13,10 +13,7 @@ const MAX_LABEL_PREFIX_LENGTH: usize = 253;
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::labels",
-        rust_wasmer_runtime_module = "fiberplane_models::labels"
-    )
+    fp(rust_module = "fiberplane_models::labels")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Label {
@@ -129,10 +126,7 @@ impl Display for Label {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::labels",
-        rust_wasmer_runtime_module = "fiberplane_models::labels"
-    )
+    fp(rust_module = "fiberplane_models::labels")
 )]
 #[serde(rename_all = "snake_case")]
 pub enum LabelValidationError {

@@ -8,7 +8,7 @@ use std::num::ParseFloatError;
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::providers")
+    fp(rust_module = "fiberplane_models::providers")
 )]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Error {
@@ -108,7 +108,7 @@ impl From<time::error::Parse> for Error {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::providers")
+    fp(rust_module = "fiberplane_models::providers")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ValidationError {

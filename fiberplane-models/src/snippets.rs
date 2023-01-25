@@ -9,10 +9,7 @@ use serde::{Deserialize, Serialize};
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::snippets",
-        rust_wasmer_runtime_module = "fiberplane_models::snippets"
-    )
+    fp(rust_module = "fiberplane_models::snippets")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Snippet {
@@ -28,10 +25,7 @@ pub struct Snippet {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::snippets",
-        rust_wasmer_runtime_module = "fiberplane_models::snippets"
-    )
+    fp(rust_module = "fiberplane_models::snippets")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SnippetSummary {
@@ -46,10 +40,7 @@ pub struct SnippetSummary {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::snippets",
-        rust_wasmer_runtime_module = "fiberplane_models::snippets"
-    )
+    fp(rust_module = "fiberplane_models::snippets")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct NewSnippet {
@@ -63,13 +54,12 @@ pub struct NewSnippet {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::snippets",
-        rust_wasmer_runtime_module = "fiberplane_models::snippets"
-    )
+    fp(rust_module = "fiberplane_models::snippets")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateSnippet {
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub body: Option<String>,
 }

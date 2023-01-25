@@ -28,10 +28,7 @@ pub struct Proxy {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::proxies",
-        rust_wasmer_runtime_module = "fiberplane_models::proxies"
-    )
+    fp(rust_module = "fiberplane_models::proxies")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ProxySummary {
@@ -54,10 +51,7 @@ impl From<Proxy> for ProxySummary {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::proxies",
-        rust_wasmer_runtime_module = "fiberplane_models::proxies"
-    )
+    fp(rust_module = "fiberplane_models::proxies")
 )]
 #[serde(rename_all = "snake_case")]
 pub enum ProxyStatus {
@@ -69,10 +63,7 @@ pub enum ProxyStatus {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::proxies",
-        rust_wasmer_runtime_module = "fiberplane_models::proxies"
-    )
+    fp(rust_module = "fiberplane_models::proxies")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct NewProxy {
@@ -84,10 +75,7 @@ pub struct NewProxy {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::proxies",
-        rust_wasmer_runtime_module = "fiberplane_models::proxies"
-    )
+    fp(rust_module = "fiberplane_models::proxies")
 )]
 pub enum InvalidProxyToken {
     #[error("Invalid workspace ID")]
@@ -104,10 +92,7 @@ pub enum InvalidProxyToken {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::proxies",
-        rust_wasmer_runtime_module = "fiberplane_models::proxies"
-    )
+    fp(rust_module = "fiberplane_models::proxies")
 )]
 #[serde(try_from = "&str", into = "String")]
 pub struct ProxyToken {
@@ -169,10 +154,7 @@ impl TryFrom<&str> for ProxyToken {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::proxies",
-        rust_wasmer_runtime_module = "fiberplane_models::proxies"
-    )
+    fp(rust_module = "fiberplane_models::proxies")
 )]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum ServerMessage {
@@ -201,10 +183,7 @@ impl ServerMessage {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::proxies",
-        rust_wasmer_runtime_module = "fiberplane_models::proxies"
-    )
+    fp(rust_module = "fiberplane_models::proxies")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct InvokeProxyMessage {
@@ -230,10 +209,7 @@ impl Debug for InvokeProxyMessage {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::proxies",
-        rust_wasmer_runtime_module = "fiberplane_models::proxies"
-    )
+    fp(rust_module = "fiberplane_models::proxies")
 )]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub enum ProxyMessage {
@@ -252,10 +228,7 @@ impl From<ErrorMessage> for ProxyMessage {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::proxies",
-        rust_wasmer_runtime_module = "fiberplane_models::proxies"
-    )
+    fp(rust_module = "fiberplane_models::proxies")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct InvokeProxyResponseMessage {
@@ -277,10 +250,7 @@ impl Debug for InvokeProxyResponseMessage {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::proxies",
-        rust_wasmer_runtime_module = "fiberplane_models::proxies"
-    )
+    fp(rust_module = "fiberplane_models::proxies")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ErrorMessage {
@@ -312,10 +282,7 @@ impl ProxyMessage {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::proxies",
-        rust_wasmer_runtime_module = "fiberplane_models::proxies"
-    )
+    fp(rust_module = "fiberplane_models::proxies")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SetDataSourcesMessage {
@@ -326,10 +293,7 @@ pub struct SetDataSourcesMessage {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::proxies",
-        rust_wasmer_runtime_module = "fiberplane_models::proxies"
-    )
+    fp(rust_module = "fiberplane_models::proxies")
 )]
 #[serde(tag = "type", rename_all = "camelCase")]
 pub struct UpsertProxyDataSource {

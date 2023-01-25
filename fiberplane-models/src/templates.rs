@@ -10,10 +10,7 @@ use time::OffsetDateTime;
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::templates",
-        rust_wasmer_runtime_module = "fiberplane_models::templates"
-    )
+    fp(rust_module = "fiberplane_models::templates")
 )]
 #[serde(rename_all = "camelCase")]
 pub enum TemplateParameterType {
@@ -35,10 +32,7 @@ pub enum TemplateParameterType {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::templates",
-        rust_wasmer_runtime_module = "fiberplane_models::templates"
-    )
+    fp(rust_module = "fiberplane_models::templates")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct TemplateParameter {
@@ -52,10 +46,7 @@ pub struct TemplateParameter {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::templates",
-        rust_wasmer_runtime_module = "fiberplane_models::templates"
-    )
+    fp(rust_module = "fiberplane_models::templates")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Template {

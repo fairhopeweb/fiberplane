@@ -91,7 +91,7 @@ export type CheckboxCell = {
     /**
      * Optional formatting to be applied to the cell's content.
      */
-    formatting: Formatting;
+    formatting?: Formatting;
     level?: number;
     readOnly?: boolean;
 };
@@ -275,7 +275,7 @@ export type GraphCell = {
     /**
      * Links to the data to render in the graph.
      */
-    dataLinks: Array<string>;
+    dataLinks?: Array<string>;
     graphType: GraphType;
     readOnly?: boolean;
     stackingType: StackingType;
@@ -293,7 +293,7 @@ export type HeadingCell = {
     /**
      * Optional formatting to be applied to the cell's content.
      */
-    formatting: Formatting;
+    formatting?: Formatting;
     readOnly?: boolean;
 };
 
@@ -510,7 +510,7 @@ export type ListItemCell = {
     /**
      * Optional formatting to be applied to the cell's content.
      */
-    formatting: Formatting;
+    formatting?: Formatting;
     listType: ListType;
     level?: number;
     readOnly?: boolean;
@@ -527,7 +527,7 @@ export type LogCell = {
     /**
      * Links to the data to render in the log.
      */
-    dataLinks: Array<string>;
+    dataLinks?: Array<string>;
     readOnly?: boolean;
     displayFields?: Array<string>;
     hideSimilarValues?: boolean;
@@ -612,7 +612,7 @@ export type ProviderCell = {
     /**
      * Optional formatting to apply to the title.
      */
-    formatting: Formatting;
+    formatting?: Formatting;
     readOnly?: boolean;
 };
 
@@ -828,7 +828,7 @@ export type TextCell = {
     /**
      * Optional formatting to be applied to the cell's content.
      */
-    formatting: Formatting;
+    formatting?: Formatting;
     readOnly?: boolean;
 };
 

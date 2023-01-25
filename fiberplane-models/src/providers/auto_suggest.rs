@@ -9,7 +9,7 @@ use serde::{Deserialize, Serialize};
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::providers")
+    fp(rust_module = "fiberplane_models::providers")
 )]
 pub struct AutoSuggestRequest {
     /// The query being typed by the user, up to the focus offset.
@@ -53,7 +53,7 @@ impl AutoSuggestRequest {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::providers")
+    fp(rust_module = "fiberplane_models::providers")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Suggestion {
@@ -66,6 +66,6 @@ pub struct Suggestion {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub from: Option<u32>,
     pub text: String,
-    #[serde(skip_serializing_if = "Option::is_none")]
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
 }

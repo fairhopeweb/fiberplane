@@ -14,7 +14,7 @@ use time::OffsetDateTime;
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::realtime")
+    fp(rust_module = "fiberplane_models::realtime")
 )]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum ClientRealtimeMessage {
@@ -71,7 +71,7 @@ impl ClientRealtimeMessage {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::realtime")
+    fp(rust_module = "fiberplane_models::realtime")
 )]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum ServerRealtimeMessage {
@@ -126,7 +126,7 @@ pub enum ServerRealtimeMessage {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::realtime")
+    fp(rust_module = "fiberplane_models::realtime")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct AuthenticateMessage {
@@ -151,7 +151,7 @@ impl Debug for AuthenticateMessage {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::realtime")
+    fp(rust_module = "fiberplane_models::realtime")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SubscribeMessage {
@@ -173,7 +173,7 @@ pub struct SubscribeMessage {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::realtime")
+    fp(rust_module = "fiberplane_models::realtime")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct UnsubscribeMessage {
@@ -189,7 +189,7 @@ pub struct UnsubscribeMessage {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::realtime")
+    fp(rust_module = "fiberplane_models::realtime")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ApplyOperationMessage {
@@ -228,7 +228,7 @@ impl ApplyOperationMessage {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::realtime")
+    fp(rust_module = "fiberplane_models::realtime")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ApplyOperationBatchMessage {
@@ -267,7 +267,7 @@ impl ApplyOperationBatchMessage {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::realtime")
+    fp(rust_module = "fiberplane_models::realtime")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct AckMessage {
@@ -285,7 +285,7 @@ impl AckMessage {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::realtime")
+    fp(rust_module = "fiberplane_models::realtime")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ErrMessage {
@@ -301,7 +301,7 @@ pub struct ErrMessage {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::realtime")
+    fp(rust_module = "fiberplane_models::realtime")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct DebugRequestMessage {
@@ -314,7 +314,7 @@ pub struct DebugRequestMessage {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::realtime")
+    fp(rust_module = "fiberplane_models::realtime")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct DebugResponseMessage {
@@ -333,7 +333,7 @@ pub struct DebugResponseMessage {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::realtime")
+    fp(rust_module = "fiberplane_models::realtime")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct MentionMessage {
@@ -351,7 +351,7 @@ pub struct MentionMessage {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::realtime")
+    fp(rust_module = "fiberplane_models::realtime")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct MentionedBy {
@@ -363,7 +363,7 @@ pub struct MentionedBy {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::realtime")
+    fp(rust_module = "fiberplane_models::realtime")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct RejectedMessage {
@@ -389,7 +389,7 @@ impl RejectedMessage {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::realtime")
+    fp(rust_module = "fiberplane_models::realtime")
 )]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum RejectReason {
@@ -430,7 +430,7 @@ pub enum RejectReason {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::realtime")
+    fp(rust_module = "fiberplane_models::realtime")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct OutdatedRejectReason {
@@ -442,7 +442,7 @@ pub struct OutdatedRejectReason {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::realtime")
+    fp(rust_module = "fiberplane_models::realtime")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct InvalidLabelRejectReason {
@@ -457,7 +457,7 @@ pub struct InvalidLabelRejectReason {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::realtime")
+    fp(rust_module = "fiberplane_models::realtime")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct DuplicateLabelRejectReason {
@@ -469,7 +469,7 @@ pub struct DuplicateLabelRejectReason {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::realtime")
+    fp(rust_module = "fiberplane_models::realtime")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SubscriberAddedMessage {
@@ -502,7 +502,7 @@ pub struct SubscriberAddedMessage {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::realtime")
+    fp(rust_module = "fiberplane_models::realtime")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SubscriberRemovedMessage {
@@ -517,7 +517,7 @@ pub struct SubscriberRemovedMessage {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::realtime")
+    fp(rust_module = "fiberplane_models::realtime")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct User {
@@ -533,7 +533,7 @@ pub struct User {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::realtime")
+    fp(rust_module = "fiberplane_models::realtime")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct FocusInfoMessage {
@@ -553,7 +553,7 @@ pub struct FocusInfoMessage {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::realtime")
+    fp(rust_module = "fiberplane_models::realtime")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct UserTypingCommentClientMessage {
@@ -569,7 +569,7 @@ pub struct UserTypingCommentClientMessage {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::realtime")
+    fp(rust_module = "fiberplane_models::realtime")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SubscribeWorkspaceMessage {
@@ -585,7 +585,7 @@ pub struct SubscribeWorkspaceMessage {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::realtime")
+    fp(rust_module = "fiberplane_models::realtime")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct UnsubscribeWorkspaceMessage {
@@ -601,7 +601,7 @@ pub struct UnsubscribeWorkspaceMessage {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::realtime")
+    fp(rust_module = "fiberplane_models::realtime")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SubscriberChangedFocusMessage {
@@ -625,7 +625,7 @@ pub struct SubscriberChangedFocusMessage {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::realtime")
+    fp(rust_module = "fiberplane_models::realtime")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct FocusPosition {
@@ -656,7 +656,7 @@ pub struct FocusPosition {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::realtime")
+    fp(rust_module = "fiberplane_models::realtime")
 )]
 #[serde(rename_all = "snake_case", tag = "type")]
 pub enum NotebookFocus {
@@ -846,7 +846,7 @@ impl Default for NotebookFocus {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::realtime")
+    fp(rust_module = "fiberplane_models::realtime")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ThreadAddedMessage {
@@ -858,7 +858,7 @@ pub struct ThreadAddedMessage {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::realtime")
+    fp(rust_module = "fiberplane_models::realtime")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ThreadItemAddedMessage {
@@ -871,7 +871,7 @@ pub struct ThreadItemAddedMessage {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::realtime")
+    fp(rust_module = "fiberplane_models::realtime")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ThreadItemUpdatedMessage {
@@ -884,7 +884,7 @@ pub struct ThreadItemUpdatedMessage {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::realtime")
+    fp(rust_module = "fiberplane_models::realtime")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ThreadDeletedMessage {
@@ -896,7 +896,7 @@ pub struct ThreadDeletedMessage {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::realtime")
+    fp(rust_module = "fiberplane_models::realtime")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct UserTypingCommentServerMessage {

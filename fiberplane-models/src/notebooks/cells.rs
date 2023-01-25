@@ -11,10 +11,7 @@ use serde::{Deserialize, Serialize};
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::notebooks",
-        rust_wasmer_runtime_module = "fiberplane_models::notebooks"
-    )
+    fp(rust_module = "fiberplane_models::notebooks")
 )]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Cell {
@@ -389,10 +386,7 @@ impl Cell {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::notebooks",
-        rust_wasmer_runtime_module = "fiberplane_models::notebooks"
-    )
+    fp(rust_module = "fiberplane_models::notebooks")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct CheckboxCell {
@@ -412,10 +406,7 @@ pub struct CheckboxCell {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::notebooks",
-        rust_wasmer_runtime_module = "fiberplane_models::notebooks"
-    )
+    fp(rust_module = "fiberplane_models::notebooks")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct CodeCell {
@@ -432,10 +423,7 @@ pub struct CodeCell {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::notebooks",
-        rust_wasmer_runtime_module = "fiberplane_models::notebooks"
-    )
+    fp(rust_module = "fiberplane_models::notebooks")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct DividerCell {
@@ -449,16 +437,14 @@ pub struct DividerCell {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::notebooks",
-        rust_wasmer_runtime_module = "fiberplane_models::notebooks"
-    )
+    fp(rust_module = "fiberplane_models::notebooks")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct GraphCell {
     pub id: String,
 
     /// Links to the data to render in the graph.
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub data_links: Vec<String>,
 
     pub graph_type: GraphType,
@@ -473,10 +459,7 @@ pub struct GraphCell {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::notebooks",
-        rust_wasmer_runtime_module = "fiberplane_models::notebooks"
-    )
+    fp(rust_module = "fiberplane_models::notebooks")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct HeadingCell {
@@ -494,10 +477,7 @@ pub struct HeadingCell {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::notebooks",
-        rust_wasmer_runtime_module = "fiberplane_models::notebooks"
-    )
+    fp(rust_module = "fiberplane_models::notebooks")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct LogCell {
@@ -533,10 +513,7 @@ pub struct LogCell {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::notebooks",
-        rust_wasmer_runtime_module = "fiberplane_models::notebooks"
-    )
+    fp(rust_module = "fiberplane_models::notebooks")
 )]
 #[serde(rename_all = "snake_case")]
 pub enum LogVisibilityFilter {
@@ -551,10 +528,7 @@ pub enum LogVisibilityFilter {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::notebooks",
-        rust_wasmer_runtime_module = "fiberplane_models::notebooks"
-    )
+    fp(rust_module = "fiberplane_models::notebooks")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct LogRecordIndex {
@@ -569,10 +543,7 @@ pub struct LogRecordIndex {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::notebooks",
-        rust_wasmer_runtime_module = "fiberplane_models::notebooks"
-    )
+    fp(rust_module = "fiberplane_models::notebooks")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ListItemCell {
@@ -594,10 +565,7 @@ pub struct ListItemCell {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::notebooks",
-        rust_wasmer_runtime_module = "fiberplane_models::notebooks"
-    )
+    fp(rust_module = "fiberplane_models::notebooks")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ProviderCell {
@@ -664,10 +632,7 @@ impl ProviderCell {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::notebooks",
-        rust_wasmer_runtime_module = "fiberplane_models::notebooks"
-    )
+    fp(rust_module = "fiberplane_models::notebooks")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct TableCell {
@@ -684,10 +649,7 @@ pub struct TableCell {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::notebooks",
-        rust_wasmer_runtime_module = "fiberplane_models::notebooks"
-    )
+    fp(rust_module = "fiberplane_models::notebooks")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct TableRow {
@@ -699,10 +661,7 @@ pub struct TableRow {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::notebooks",
-        rust_wasmer_runtime_module = "fiberplane_models::notebooks"
-    )
+    fp(rust_module = "fiberplane_models::notebooks")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct TableColumn {
@@ -716,10 +675,7 @@ pub struct TableColumn {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::notebooks",
-        rust_wasmer_runtime_module = "fiberplane_models::notebooks"
-    )
+    fp(rust_module = "fiberplane_models::notebooks")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct TextCell {
@@ -736,10 +692,7 @@ pub struct TextCell {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::notebooks",
-        rust_wasmer_runtime_module = "fiberplane_models::notebooks"
-    )
+    fp(rust_module = "fiberplane_models::notebooks")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ImageCell {
@@ -778,10 +731,7 @@ pub struct ImageCell {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::notebooks",
-        rust_wasmer_runtime_module = "fiberplane_models::notebooks"
-    )
+    fp(rust_module = "fiberplane_models::notebooks")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct DiscussionCell {
@@ -795,10 +745,7 @@ pub struct DiscussionCell {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::notebooks",
-        rust_wasmer_runtime_module = "fiberplane_models::notebooks"
-    )
+    fp(rust_module = "fiberplane_models::notebooks")
 )]
 #[serde(rename_all = "snake_case")]
 pub enum GraphType {
@@ -810,10 +757,7 @@ pub enum GraphType {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::notebooks",
-        rust_wasmer_runtime_module = "fiberplane_models::notebooks"
-    )
+    fp(rust_module = "fiberplane_models::notebooks")
 )]
 #[serde(rename_all = "snake_case")]
 pub enum StackingType {
@@ -826,10 +770,7 @@ pub enum StackingType {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::notebooks",
-        rust_wasmer_runtime_module = "fiberplane_models::notebooks"
-    )
+    fp(rust_module = "fiberplane_models::notebooks")
 )]
 #[serde(rename_all = "snake_case")]
 pub enum HeadingType {
@@ -848,10 +789,7 @@ impl Default for HeadingType {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::notebooks",
-        rust_wasmer_runtime_module = "fiberplane_models::notebooks"
-    )
+    fp(rust_module = "fiberplane_models::notebooks")
 )]
 #[serde(rename_all = "snake_case")]
 pub enum ListType {

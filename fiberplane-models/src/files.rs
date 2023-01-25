@@ -7,10 +7,7 @@ use serde::{Deserialize, Serialize};
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::files",
-        rust_wasmer_runtime_module = "fiberplane_models::files"
-    )
+    fp(rust_module = "fiberplane_models::files")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct UploadData {
@@ -21,10 +18,7 @@ pub struct UploadData {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::files",
-        rust_wasmer_runtime_module = "fiberplane_models::files"
-    )
+    fp(rust_module = "fiberplane_models::files")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ProfileUploadData {
@@ -35,10 +29,7 @@ pub struct ProfileUploadData {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::files",
-        rust_wasmer_runtime_module = "fiberplane_models::files"
-    )
+    fp(rust_module = "fiberplane_models::files")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct FileSummary {

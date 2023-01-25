@@ -10,10 +10,7 @@ use std::collections::HashMap;
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::users",
-        rust_wasmer_runtime_module = "fiberplane_models::users"
-    )
+    fp(rust_module = "fiberplane_models::users")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Profile {

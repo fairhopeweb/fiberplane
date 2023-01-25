@@ -9,7 +9,7 @@ use time::OffsetDateTime;
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::comments")
+    fp(rust_module = "fiberplane_models::comments")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Thread {
@@ -27,7 +27,7 @@ pub struct Thread {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::comments")
+    fp(rust_module = "fiberplane_models::comments")
 )]
 #[serde(rename_all = "snake_case")]
 pub enum ThreadStatus {
@@ -39,7 +39,7 @@ pub enum ThreadStatus {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::comments")
+    fp(rust_module = "fiberplane_models::comments")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ThreadSummary {
@@ -61,7 +61,7 @@ pub struct ThreadSummary {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::comments")
+    fp(rust_module = "fiberplane_models::comments")
 )]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum ThreadItem {
@@ -92,7 +92,7 @@ impl ThreadItem {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::comments")
+    fp(rust_module = "fiberplane_models::comments")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ThreadStatusChange {
@@ -107,7 +107,7 @@ pub struct ThreadStatusChange {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::comments")
+    fp(rust_module = "fiberplane_models::comments")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct CommentDelete {
@@ -124,7 +124,7 @@ pub struct CommentDelete {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::comments")
+    fp(rust_module = "fiberplane_models::comments")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Comment {
@@ -142,7 +142,7 @@ pub struct Comment {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::comments")
+    fp(rust_module = "fiberplane_models::comments")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct UserSummary {
@@ -154,10 +154,7 @@ pub struct UserSummary {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::comments",
-        rust_wasmer_runtime_module = "fiberplane_models::comments"
-    )
+    fp(rust_module = "fiberplane_models::comments")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct NewComment {
@@ -171,10 +168,7 @@ pub struct NewComment {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::comments",
-        rust_wasmer_runtime_module = "fiberplane_models::comments"
-    )
+    fp(rust_module = "fiberplane_models::comments")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateComment {
@@ -187,10 +181,7 @@ pub struct UpdateComment {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::comments",
-        rust_wasmer_runtime_module = "fiberplane_models::comments"
-    )
+    fp(rust_module = "fiberplane_models::comments")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct NewThread {

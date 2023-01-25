@@ -14,11 +14,12 @@ use std::collections::BTreeMap;
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::providers")
+    fp(rust_module = "fiberplane_models::providers")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Event {
     pub time: Timestamp,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub end_time: Option<Timestamp>,
 
     #[serde(flatten)]
@@ -43,7 +44,7 @@ pub struct Event {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::providers")
+    fp(rust_module = "fiberplane_models::providers")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Metric {
@@ -60,7 +61,7 @@ pub struct Metric {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::providers")
+    fp(rust_module = "fiberplane_models::providers")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct OtelMetadata {
@@ -81,7 +82,7 @@ pub struct OtelMetadata {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::providers")
+    fp(rust_module = "fiberplane_models::providers")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct OtelSeverityNumber(pub u8);
@@ -92,7 +93,7 @@ pub struct OtelSeverityNumber(pub u8);
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::providers")
+    fp(rust_module = "fiberplane_models::providers")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct OtelSpanId(pub [u8; 8]);
@@ -103,7 +104,7 @@ pub struct OtelSpanId(pub [u8; 8]);
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::providers")
+    fp(rust_module = "fiberplane_models::providers")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct OtelTraceId(pub [u8; 16]);
@@ -113,7 +114,7 @@ pub struct OtelTraceId(pub [u8; 16]);
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::providers")
+    fp(rust_module = "fiberplane_models::providers")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Timeseries {

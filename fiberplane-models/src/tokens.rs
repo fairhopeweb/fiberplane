@@ -8,10 +8,7 @@ use time::OffsetDateTime;
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::tokens",
-        rust_wasmer_runtime_module = "fiberplane_models::tokens"
-    )
+    fp(rust_module = "fiberplane_models::tokens")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct TokenSummary {
@@ -27,10 +24,7 @@ pub struct TokenSummary {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::tokens",
-        rust_wasmer_runtime_module = "fiberplane_models::tokens"
-    )
+    fp(rust_module = "fiberplane_models::tokens")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct NewToken {
@@ -49,10 +43,7 @@ impl NewToken {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::tokens",
-        rust_wasmer_runtime_module = "fiberplane_models::tokens"
-    )
+    fp(rust_module = "fiberplane_models::tokens")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Token {

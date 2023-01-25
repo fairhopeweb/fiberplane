@@ -43,6 +43,7 @@ pub struct ProxyRequest {
 #[fp(rename_all = "camelCase")]
 pub struct QueryLogs {
     pub query: String,
+    #[fp(default, skip_serializing_if = "Option::is_none")]
     pub limit: Option<u32>,
     pub time_range: LegacyTimeRange,
 }
@@ -73,6 +74,8 @@ pub struct LegacyLogRecord {
     pub resource: HashMap<String, String>,
     // TODO these should really be [u8; 16], but arrays are
     // not currently supported by fp-bindgen
+    #[fp(default, skip_serializing_if = "Option::is_none")]
     pub trace_id: Option<Bytes>,
+    #[fp(default, skip_serializing_if = "Option::is_none")]
     pub span_id: Option<Bytes>,
 }

@@ -17,7 +17,7 @@ use serde::{Deserialize, Serialize};
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::notebooks::operations")
+    fp(rust_module = "fiberplane_models::notebooks::operations")
 )]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Operation {
@@ -37,7 +37,7 @@ pub enum Operation {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::notebooks::operations")
+    fp(rust_module = "fiberplane_models::notebooks::operations")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct MoveCellsOperation {
@@ -67,7 +67,7 @@ pub struct MoveCellsOperation {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::notebooks::operations")
+    fp(rust_module = "fiberplane_models::notebooks::operations")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ReplaceCellsOperation {
@@ -213,7 +213,7 @@ impl ReplaceCellsOperation {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::notebooks::operations")
+    fp(rust_module = "fiberplane_models::notebooks::operations")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ReplaceTextOperation {
@@ -256,7 +256,7 @@ pub struct ReplaceTextOperation {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::notebooks::operations")
+    fp(rust_module = "fiberplane_models::notebooks::operations")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateNotebookTimeRangeOperation {
@@ -269,7 +269,7 @@ pub struct UpdateNotebookTimeRangeOperation {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::notebooks::operations")
+    fp(rust_module = "fiberplane_models::notebooks::operations")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateNotebookTitleOperation {
@@ -281,12 +281,14 @@ pub struct UpdateNotebookTitleOperation {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::notebooks::operations")
+    fp(rust_module = "fiberplane_models::notebooks::operations")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SetSelectedDataSourceOperation {
     pub provider_type: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub old_selected_data_source: Option<SelectedDataSource>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub new_selected_data_source: Option<SelectedDataSource>,
 }
 
@@ -294,7 +296,7 @@ pub struct SetSelectedDataSourceOperation {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::notebooks::operations")
+    fp(rust_module = "fiberplane_models::notebooks::operations")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct CellWithIndex {
@@ -321,7 +323,7 @@ impl CellWithIndex {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::notebooks::operations")
+    fp(rust_module = "fiberplane_models::notebooks::operations")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct AddLabelOperation {
@@ -334,7 +336,7 @@ pub struct AddLabelOperation {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::notebooks::operations")
+    fp(rust_module = "fiberplane_models::notebooks::operations")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ReplaceLabelOperation {
@@ -350,7 +352,7 @@ pub struct ReplaceLabelOperation {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::notebooks::operations")
+    fp(rust_module = "fiberplane_models::notebooks::operations")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct RemoveLabelOperation {
@@ -361,7 +363,7 @@ pub struct RemoveLabelOperation {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::notebooks::operations")
+    fp(rust_module = "fiberplane_models::notebooks::operations")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct CellAppendText {
@@ -374,7 +376,7 @@ pub struct CellAppendText {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::notebooks::operations")
+    fp(rust_module = "fiberplane_models::notebooks::operations")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct CellReplaceText {

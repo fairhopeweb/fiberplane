@@ -33,10 +33,7 @@ pub struct DataSource {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::data_sources",
-        rust_wasmer_runtime_module = "fiberplane_models::data_sources"
-    )
+    fp(rust_module = "fiberplane_models::data_sources")
 )]
 #[serde(tag = "status", content = "error", rename_all = "snake_case")]
 pub enum DataSourceStatus {
@@ -66,10 +63,7 @@ pub struct UpdateDataSource {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::data_sources",
-        rust_wasmer_runtime_module = "fiberplane_models::data_sources"
-    )
+    fp(rust_module = "fiberplane_models::data_sources")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct SelectedDataSource {
@@ -77,6 +71,7 @@ pub struct SelectedDataSource {
     pub name: Name,
 
     /// If this is a proxy data source, the name of the proxy
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub proxy_name: Option<Name>,
 }
 

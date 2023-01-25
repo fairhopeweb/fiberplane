@@ -20,10 +20,7 @@ use std::fmt::{self, Debug, Formatter};
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::blobs",
-        rust_wasmer_runtime_module = "fiberplane_models::blobs"
-    )
+    fp(rust_module = "fiberplane_models::blobs")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Blob {
@@ -77,10 +74,7 @@ impl Debug for Blob {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::blobs",
-        rust_wasmer_runtime_module = "fiberplane_models::blobs"
-    )
+    fp(rust_module = "fiberplane_models::blobs")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct EncodedBlob {

@@ -18,10 +18,7 @@ pub type Formatting = Vec<AnnotationWithOffset>;
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::formatting",
-        rust_wasmer_runtime_module = "fiberplane_models::formatting"
-    )
+    fp(rust_module = "fiberplane_models::formatting")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct AnnotationWithOffset {
@@ -51,10 +48,7 @@ impl AnnotationWithOffset {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::formatting",
-        rust_wasmer_runtime_module = "fiberplane_models::formatting"
-    )
+    fp(rust_module = "fiberplane_models::formatting")
 )]
 #[serde(rename_all = "snake_case", tag = "type")]
 pub enum Annotation {
@@ -118,10 +112,7 @@ impl Annotation {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::formatting",
-        rust_wasmer_runtime_module = "fiberplane_models::formatting"
-    )
+    fp(rust_module = "fiberplane_models::formatting")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ActiveFormatting {
@@ -129,9 +120,11 @@ pub struct ActiveFormatting {
     pub code: bool,
     pub highlight: bool,
     pub italics: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub link: Option<String>,
     pub strikethrough: bool,
     pub underline: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub label: Option<Label>,
 }
 
@@ -234,10 +227,7 @@ impl ActiveFormatting {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::formatting",
-        rust_wasmer_runtime_module = "fiberplane_models::formatting"
-    )
+    fp(rust_module = "fiberplane_models::formatting")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct Mention {

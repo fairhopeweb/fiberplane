@@ -16,10 +16,7 @@ const MIN_LENGTH: usize = 1;
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::names",
-        rust_wasmer_runtime_module = "fiberplane_models::names"
-    )
+    fp(rust_module = "fiberplane_models::names")
 )]
 pub enum InvalidName {
     #[error("name is too long")]
@@ -45,10 +42,7 @@ pub enum InvalidName {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::names",
-        rust_wasmer_runtime_module = "fiberplane_models::names"
-    )
+    fp(rust_module = "fiberplane_models::names")
 )]
 pub struct Name(String);
 

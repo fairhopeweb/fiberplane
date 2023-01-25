@@ -11,13 +11,15 @@ use std::fmt::{self, Debug, Formatter};
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::providers")
+    fp(rust_module = "fiberplane_models::providers")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct HttpRequest {
     pub url: String,
     pub method: HttpRequestMethod,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub headers: Option<HashMap<String, String>>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
     pub body: Option<Bytes>,
 }
 
@@ -26,7 +28,7 @@ pub struct HttpRequest {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::providers")
+    fp(rust_module = "fiberplane_models::providers")
 )]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum HttpRequestError {
@@ -75,7 +77,7 @@ impl Debug for HttpRequestError {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::providers")
+    fp(rust_module = "fiberplane_models::providers")
 )]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum HttpRequestMethod {
@@ -90,7 +92,7 @@ pub enum HttpRequestMethod {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::providers")
+    fp(rust_module = "fiberplane_models::providers")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct HttpResponse {
