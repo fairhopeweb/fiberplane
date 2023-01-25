@@ -3,8 +3,8 @@ mod percent_encode;
 mod sentry;
 
 use config::SentryConfig;
+use fiberplane_models::utils::char_count;
 use fiberplane_provider_bindings::*;
-use fiberplane_string_utils::char_count;
 use futures::future;
 use percent_encode::encode_uri_component;
 use sentry::*;

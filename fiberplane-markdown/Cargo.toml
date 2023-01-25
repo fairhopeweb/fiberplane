@@ -8,7 +8,6 @@ rust-version = { workspace = true }
 
 [dependencies]
 fiberplane-models = { workspace = true }
-fiberplane-string-utils = { workspace = true }
 pulldown-cmark = "0.9.1"
 pulldown-cmark-to-cmark = "10.0.1"
 time = { workspace = true }

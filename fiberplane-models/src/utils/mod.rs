@@ -1,5 +1,7 @@
 use std::borrow::Borrow;
 
+pub mod content_writer;
+
 /// Extension trait that adds methods used for working with Strings
 /// and &strs in terms of their UTF-8 characters, as opposed to bytes
 pub trait StringExt {

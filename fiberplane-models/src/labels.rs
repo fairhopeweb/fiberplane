@@ -119,7 +119,7 @@ impl Display for Label {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         f.write_str(&self.key)?;
         if !self.value.is_empty() {
-            f.write_str(&format!(":{}", &self.value))?;
+            f.write_str(&format!("={}", &self.value))?;
         }
         Ok(())
     }

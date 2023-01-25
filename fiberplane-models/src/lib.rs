@@ -17,6 +17,7 @@ pub mod templates;
 pub mod timestamps;
 pub mod tokens;
 pub mod users;
+pub mod utils;
 pub mod views;
 pub mod workspaces;
 

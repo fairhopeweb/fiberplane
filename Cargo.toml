@@ -9,7 +9,6 @@ members = [
     "fiberplane-provider-protocol",
     "fiberplane-provider-protocol/fiberplane-provider-bindings",
     "fiberplane-provider-protocol/fiberplane-provider-runtime",
-    "fiberplane-string-utils",
     "fiberplane-templates",
     "providers/*",
 ]
@@ -25,7 +24,6 @@ bytes = { version = "1", features = ["serde"] }
 fp-bindgen = { version = "2.4" }
 fp-bindgen-support = { version = "2.4" }
 fiberplane-models = { path = "fiberplane-models" }
-fiberplane-string-utils = { path = "fiberplane-string-utils" }
 fiberplane-provider-bindings = { path = "fiberplane-provider-protocol/fiberplane-provider-bindings" }
 once_cell = { version = "1.8" }
 serde = { version = "1", features = ["derive"] }

@@ -13,7 +13,6 @@ base64 = "0.13"
 const_format = "0.2"
 fiberplane-models = { workspace = true }
 fiberplane-provider-bindings = { workspace = true }
-fiberplane-string-utils = { workspace = true }
 form_urlencoded = "1"
 rmp-serde = "1"
 rmpv = { version = "1.0.0", features = ["with-serde"] }

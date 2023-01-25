@@ -4,7 +4,7 @@ use crate::FIBERPLANE_LIBRARY_PATH;
 use fiberplane_models::formatting::{Annotation, AnnotationWithOffset, Formatting};
 use fiberplane_models::notebooks::{Cell, HeadingType, ListType, NewNotebook};
 use fiberplane_models::timestamps::TimeRange;
-use fiberplane_string_utils::{char_count, char_slice, char_slice_from};
+use fiberplane_models::utils::{char_count, char_slice, char_slice_from};
 use once_cell::sync::Lazy;
 use regex::Regex;
 use std::{collections::BTreeSet, fmt::Write};

@@ -4,7 +4,7 @@ use fiberplane_models::notebooks::{
     ListType, NewNotebook, TextCell,
 };
 use fiberplane_models::timestamps::{NewTimeRange, RelativeTimeRange};
-use fiberplane_string_utils::char_count;
+use fiberplane_models::utils::char_count;
 use pulldown_cmark::{CowStr, Event::*, HeadingLevel, LinkType, Options, Parser, Tag};
 use tracing::warn;
 

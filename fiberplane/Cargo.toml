@@ -18,7 +18,6 @@ models = ["fiberplane-models"]
 provider-bindings = ["fiberplane-provider-bindings"]
 provider-runtime = ["fiberplane-provider-runtime"]
 sqlx = ["base64uuid?/sqlx", "fiberplane-models?/sqlx"]
-string-utils = ["fiberplane-string-utils"]
 templates = ["fiberplane-templates"]
 
 [dependencies]
@@ -28,5 +27,4 @@ fiberplane-markdown = { path = "../fiberplane-markdown", optional = true }
 fiberplane-models = { path = "../fiberplane-models", optional = true }
 fiberplane-provider-bindings = { workspace = true, optional = true }
 fiberplane-provider-runtime = { path = "../fiberplane-provider-protocol/fiberplane-provider-runtime", optional = true }
-fiberplane-string-utils = { path = "../fiberplane-string-utils", optional = true }
 fiberplane-templates = { path = "../fiberplane-templates", optional = true }
