@@ -919,7 +919,7 @@ mod tests {
         let reason = RejectReason::Outdated(reason);
         let result = serde_json::to_string(&reason);
         if let Err(err) = result {
-            panic!("Unexpected error occurred: {:?}", err);
+            panic!("Unexpected error occurred: {err:?}");
         }
     }
 }

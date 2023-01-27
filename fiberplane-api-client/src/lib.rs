@@ -39,20 +39,14 @@ pub async fn comment_get(
     client: &ApiClient,
     comment_id: base64uuid::Base64Uuid,
 ) -> Result<models::Comment> {
-    let mut builder = client.request(
-        Method::GET,
-        &format!("/api/comments/{commentId}", commentId = comment_id,),
-    )?;
+    let mut builder = client.request(Method::GET, &format!("/api/comments/{comment_id}",))?;
     let response = builder.send().await?.error_for_status()?.json().await?;
 
     Ok(response)
 }
 
 pub async fn comment_delete(client: &ApiClient, comment_id: base64uuid::Base64Uuid) -> Result<()> {
-    let mut builder = client.request(
-        Method::DELETE,
-        &format!("/api/comments/{commentId}", commentId = comment_id,),
-    )?;
+    let mut builder = client.request(Method::DELETE, &format!("/api/comments/{comment_id}",))?;
     let response = builder.send().await?.error_for_status()?;
 
     Ok(())
@@ -63,10 +57,7 @@ pub async fn comment_update(
     comment_id: base64uuid::Base64Uuid,
     payload: models::UpdateComment,
 ) -> Result<models::Comment> {
-    let mut builder = client.request(
-        Method::PATCH,
-        &format!("/api/comments/{commentId}", commentId = comment_id,),
-    )?;
+    let mut builder = client.request(Method::PATCH, &format!("/api/comments/{comment_id}",))?;
     builder = builder.json(&payload);
     let response = builder.send().await?.error_for_status()?.json().await?;
 
@@ -75,10 +66,7 @@ pub async fn comment_update(
 
 /// Deletes a event
 pub async fn event_delete(client: &ApiClient, event_id: base64uuid::Base64Uuid) -> Result<()> {
-    let mut builder = client.request(
-        Method::DELETE,
-        &format!("/api/events/{event_id}", event_id = event_id,),
-    )?;
+    let mut builder = client.request(Method::DELETE, &format!("/api/events/{event_id}",))?;
     let response = builder.send().await?.error_for_status()?;
 
     Ok(())
@@ -91,10 +79,7 @@ pub async fn workspace_invite_delete(
 ) -> Result<()> {
     let mut builder = client.request(
         Method::DELETE,
-        &format!(
-            "/api/invitations/{invitation_id}",
-            invitation_id = invitation_id,
-        ),
+        &format!("/api/invitations/{invitation_id}",),
     )?;
     let response = builder.send().await?.error_for_status()?;
 
@@ -109,11 +94,7 @@ pub async fn workspace_invite_accept(
 ) -> Result<models::Workspace> {
     let mut builder = client.request(
         Method::POST,
-        &format!(
-            "/api/invitations/{invitation_id}/{invitation_secret}/accept",
-            invitation_id = invitation_id,
-            invitation_secret = invitation_secret,
-        ),
+        &format!("/api/invitations/{invitation_id}/{invitation_secret}/accept",),
     )?;
     let response = builder.send().await?.error_for_status()?.json().await?;
 
@@ -128,11 +109,7 @@ pub async fn workspace_invite_decline(
 ) -> Result<()> {
     let mut builder = client.request(
         Method::POST,
-        &format!(
-            "/api/invitations/{invitation_id}/{invitation_secret}/decline",
-            invitation_id = invitation_id,
-            invitation_secret = invitation_secret,
-        ),
+        &format!("/api/invitations/{invitation_id}/{invitation_secret}/decline",),
     )?;
     let response = builder.send().await?.error_for_status()?;
 
@@ -152,10 +129,7 @@ pub async fn notebook_get(
     client: &ApiClient,
     notebook_id: base64uuid::Base64Uuid,
 ) -> Result<models::Notebook> {
-    let mut builder = client.request(
-        Method::GET,
-        &format!("/api/notebooks/{notebookId}", notebookId = notebook_id,),
-    )?;
+    let mut builder = client.request(Method::GET, &format!("/api/notebooks/{notebook_id}",))?;
     let response = builder.send().await?.error_for_status()?.json().await?;
 
     Ok(response)
@@ -165,10 +139,7 @@ pub async fn notebook_delete(
     client: &ApiClient,
     notebook_id: base64uuid::Base64Uuid,
 ) -> Result<()> {
-    let mut builder = client.request(
-        Method::DELETE,
-        &format!("/api/notebooks/{notebookId}", notebookId = notebook_id,),
-    )?;
+    let mut builder = client.request(Method::DELETE, &format!("/api/notebooks/{notebook_id}",))?;
     let response = builder.send().await?.error_for_status()?;
 
     Ok(())
@@ -180,10 +151,7 @@ pub async fn notebook_update(
     notebook_id: base64uuid::Base64Uuid,
     payload: models::NotebookPatch,
 ) -> Result<()> {
-    let mut builder = client.request(
-        Method::PATCH,
-        &format!("/api/notebooks/{notebookId}", notebookId = notebook_id,),
-    )?;
+    let mut builder = client.request(Method::PATCH, &format!("/api/notebooks/{notebook_id}",))?;
     builder = builder.json(&payload);
     let response = builder.send().await?.error_for_status()?;
 
@@ -200,10 +168,7 @@ pub async fn notebook_cells_append(
 ) -> Result<Vec<models::Cell>> {
     let mut builder = client.request(
         Method::POST,
-        &format!(
-            "/api/notebooks/{notebookId}/cells",
-            notebookId = notebook_id,
-        ),
+        &format!("/api/notebooks/{notebook_id}/cells",),
     )?;
     if let Some(after) = after {
         builder = builder.query(&[("after", after)]);
@@ -226,11 +191,7 @@ pub async fn notebook_cell_append_text(
 ) -> Result<models::Cell> {
     let mut builder = client.request(
         Method::POST,
-        &format!(
-            "/api/notebooks/{notebookId}/cells/{cellId}/append",
-            notebookId = notebook_id,
-            cellId = cell_id,
-        ),
+        &format!("/api/notebooks/{notebook_id}/cells/{cell_id}/append",),
     )?;
     builder = builder.json(&payload);
     let response = builder.send().await?.error_for_status()?.json().await?;
@@ -247,11 +208,7 @@ pub async fn notebook_cell_replace_text(
 ) -> Result<models::Cell> {
     let mut builder = client.request(
         Method::POST,
-        &format!(
-            "/api/notebooks/{notebookId}/cells/{cellId}/replaceText",
-            notebookId = notebook_id,
-            cellId = cell_id,
-        ),
+        &format!("/api/notebooks/{notebook_id}/cells/{cell_id}/replaceText",),
     )?;
     builder = builder.json(&payload);
     let response = builder.send().await?.error_for_status()?.json().await?;
@@ -267,10 +224,7 @@ pub async fn notebook_duplicate(
 ) -> Result<models::Notebook> {
     let mut builder = client.request(
         Method::POST,
-        &format!(
-            "/api/notebooks/{notebookId}/duplicate",
-            notebookId = notebook_id,
-        ),
+        &format!("/api/notebooks/{notebook_id}/duplicate",),
     )?;
     builder = builder.json(&payload);
     let response = builder.send().await?.error_for_status()?.json().await?;
@@ -286,10 +240,7 @@ pub async fn file_upload(
 ) -> Result<models::FileSummary> {
     let mut builder = client.request(
         Method::POST,
-        &format!(
-            "/api/notebooks/{notebookId}/files",
-            notebookId = notebook_id,
-        ),
+        &format!("/api/notebooks/{notebook_id}/files",),
     )?;
     builder = builder.form(&payload);
     let response = builder.send().await?.error_for_status()?.json().await?;
@@ -305,11 +256,7 @@ pub async fn file_get(
 ) -> Result<bytes::Bytes> {
     let mut builder = client.request(
         Method::GET,
-        &format!(
-            "/api/notebooks/{notebookId}/files/{fileId}",
-            notebookId = notebook_id,
-            fileId = file_id,
-        ),
+        &format!("/api/notebooks/{notebook_id}/files/{file_id}",),
     )?;
     let response = builder.send().await?.error_for_status()?.bytes().await?;
 
@@ -324,11 +271,7 @@ pub async fn file_delete(
 ) -> Result<()> {
     let mut builder = client.request(
         Method::DELETE,
-        &format!(
-            "/api/notebooks/{notebookId}/files/{fileId}",
-            notebookId = notebook_id,
-            fileId = file_id,
-        ),
+        &format!("/api/notebooks/{notebook_id}/files/{file_id}",),
     )?;
     let response = builder.send().await?.error_for_status()?;
 
@@ -344,11 +287,7 @@ pub async fn notebook_snippet_insert(
 ) -> Result<Vec<models::Cell>> {
     let mut builder = client.request(
         Method::POST,
-        &format!(
-            "/api/notebooks/{notebookId}/insert_snippet/{snippet_name}",
-            notebookId = notebook_id,
-            snippet_name = snippet_name,
-        ),
+        &format!("/api/notebooks/{notebook_id}/insert_snippet/{snippet_name}",),
     )?;
     if let Some(cell_id) = cell_id {
         builder = builder.query(&[("cell_id", cell_id)]);
@@ -367,10 +306,7 @@ pub async fn notebook_convert_to_snippet(
 ) -> Result<String> {
     let mut builder = client.request(
         Method::GET,
-        &format!(
-            "/api/notebooks/{notebookId}/snippet.jsonnet",
-            notebookId = notebook_id,
-        ),
+        &format!("/api/notebooks/{notebook_id}/snippet.jsonnet",),
     )?;
     if let Some(start_cell_id) = start_cell_id {
         builder = builder.query(&[("start_cell_id", start_cell_id)]);
@@ -390,10 +326,7 @@ pub async fn notebook_convert_to_template(
 ) -> Result<String> {
     let mut builder = client.request(
         Method::GET,
-        &format!(
-            "/api/notebooks/{notebookId}/template.jsonnet",
-            notebookId = notebook_id,
-        ),
+        &format!("/api/notebooks/{notebook_id}/template.jsonnet",),
     )?;
     let response = builder.send().await?.error_for_status()?.text().await?;
 
@@ -408,10 +341,7 @@ pub async fn threads_list(
 ) -> Result<Vec<models::ThreadSummary>> {
     let mut builder = client.request(
         Method::GET,
-        &format!(
-            "/api/notebooks/{notebookId}/threads",
-            notebookId = notebook_id,
-        ),
+        &format!("/api/notebooks/{notebook_id}/threads",),
     )?;
     if let Some(status) = status {
         builder = builder.query(&[("status", status)]);
@@ -429,10 +359,7 @@ pub async fn thread_create(
 ) -> Result<models::Thread> {
     let mut builder = client.request(
         Method::POST,
-        &format!(
-            "/api/notebooks/{notebookId}/threads",
-            notebookId = notebook_id,
-        ),
+        &format!("/api/notebooks/{notebook_id}/threads",),
     )?;
     builder = builder.json(&payload);
     let response = builder.send().await?.error_for_status()?.json().await?;
@@ -471,10 +398,7 @@ pub async fn pinned_notebook_delete(
 ) -> Result<()> {
     let mut builder = client.request(
         Method::DELETE,
-        &format!(
-            "/api/pinnednotebooks/{notebookId}",
-            notebookId = notebook_id,
-        ),
+        &format!("/api/pinnednotebooks/{notebook_id}",),
     )?;
     let response = builder.send().await?.error_for_status()?;
 
@@ -513,20 +437,14 @@ pub async fn thread_get(
     client: &ApiClient,
     thread_id: base64uuid::Base64Uuid,
 ) -> Result<models::Thread> {
-    let mut builder = client.request(
-        Method::GET,
-        &format!("/api/threads/{threadId}", threadId = thread_id,),
-    )?;
+    let mut builder = client.request(Method::GET, &format!("/api/threads/{thread_id}",))?;
     let response = builder.send().await?.error_for_status()?.json().await?;
 
     Ok(response)
 }
 
 pub async fn thread_delete(client: &ApiClient, thread_id: base64uuid::Base64Uuid) -> Result<()> {
-    let mut builder = client.request(
-        Method::DELETE,
-        &format!("/api/threads/{threadId}", threadId = thread_id,),
-    )?;
+    let mut builder = client.request(Method::DELETE, &format!("/api/threads/{thread_id}",))?;
     let response = builder.send().await?.error_for_status()?;
 
     Ok(())
@@ -537,10 +455,8 @@ pub async fn comment_create(
     thread_id: base64uuid::Base64Uuid,
     payload: models::NewComment,
 ) -> Result<models::Comment> {
-    let mut builder = client.request(
-        Method::POST,
-        &format!("/api/threads/{threadId}/comments", threadId = thread_id,),
-    )?;
+    let mut builder =
+        client.request(Method::POST, &format!("/api/threads/{thread_id}/comments",))?;
     builder = builder.json(&payload);
     let response = builder.send().await?.error_for_status()?.json().await?;
 
@@ -551,10 +467,7 @@ pub async fn thread_reopen(
     client: &ApiClient,
     thread_id: base64uuid::Base64Uuid,
 ) -> Result<models::Thread> {
-    let mut builder = client.request(
-        Method::POST,
-        &format!("/api/threads/{threadId}/reopen", threadId = thread_id,),
-    )?;
+    let mut builder = client.request(Method::POST, &format!("/api/threads/{thread_id}/reopen",))?;
     let response = builder.send().await?.error_for_status()?.json().await?;
 
     Ok(response)
@@ -564,10 +477,8 @@ pub async fn thread_resolve(
     client: &ApiClient,
     thread_id: base64uuid::Base64Uuid,
 ) -> Result<models::Thread> {
-    let mut builder = client.request(
-        Method::POST,
-        &format!("/api/threads/{threadId}/resolve", threadId = thread_id,),
-    )?;
+    let mut builder =
+        client.request(Method::POST, &format!("/api/threads/{thread_id}/resolve",))?;
     let response = builder.send().await?.error_for_status()?.json().await?;
 
     Ok(response)
@@ -610,7 +521,7 @@ pub async fn token_create(client: &ApiClient, payload: models::NewToken) -> Resu
 
 /// Deletes a token
 pub async fn token_delete(client: &ApiClient, id: base64uuid::Base64Uuid) -> Result<()> {
-    let mut builder = client.request(Method::DELETE, &format!("/api/tokens/{id}", id = id,))?;
+    let mut builder = client.request(Method::DELETE, &format!("/api/tokens/{id}",))?;
     let response = builder.send().await?.error_for_status()?;
 
     Ok(())
@@ -620,20 +531,14 @@ pub async fn trigger_get(
     client: &ApiClient,
     trigger_id: base64uuid::Base64Uuid,
 ) -> Result<models::Trigger> {
-    let mut builder = client.request(
-        Method::GET,
-        &format!("/api/triggers/{triggerId}", triggerId = trigger_id,),
-    )?;
+    let mut builder = client.request(Method::GET, &format!("/api/triggers/{trigger_id}",))?;
     let response = builder.send().await?.error_for_status()?.json().await?;
 
     Ok(response)
 }
 
 pub async fn trigger_delete(client: &ApiClient, trigger_id: base64uuid::Base64Uuid) -> Result<()> {
-    let mut builder = client.request(
-        Method::DELETE,
-        &format!("/api/triggers/{triggerId}", triggerId = trigger_id,),
-    )?;
+    let mut builder = client.request(Method::DELETE, &format!("/api/triggers/{trigger_id}",))?;
     let response = builder.send().await?.error_for_status()?;
 
     Ok(())
@@ -648,11 +553,7 @@ pub async fn trigger_invoke(
 ) -> Result<models::TriggerInvokeResponse> {
     let mut builder = client.request(
         Method::POST,
-        &format!(
-            "/api/triggers/{triggerId}/{secretKey}",
-            triggerId = trigger_id,
-            secretKey = secret_key,
-        ),
+        &format!("/api/triggers/{trigger_id}/{secret_key}",),
     )?;
     builder = builder.json(&payload);
     let response = builder.send().await?.error_for_status()?.json().await?;
@@ -695,13 +596,7 @@ pub async fn workspace_get(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
 ) -> Result<models::Workspace> {
-    let mut builder = client.request(
-        Method::GET,
-        &format!(
-            "/api/workspaces/{workspace_id}",
-            workspace_id = workspace_id,
-        ),
-    )?;
+    let mut builder = client.request(Method::GET, &format!("/api/workspaces/{workspace_id}",))?;
     let response = builder.send().await?.error_for_status()?.json().await?;
 
     Ok(response)
@@ -712,13 +607,8 @@ pub async fn workspace_delete(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
 ) -> Result<()> {
-    let mut builder = client.request(
-        Method::DELETE,
-        &format!(
-            "/api/workspaces/{workspace_id}",
-            workspace_id = workspace_id,
-        ),
-    )?;
+    let mut builder =
+        client.request(Method::DELETE, &format!("/api/workspaces/{workspace_id}",))?;
     let response = builder.send().await?.error_for_status()?;
 
     Ok(())
@@ -730,13 +620,7 @@ pub async fn workspace_update(
     workspace_id: base64uuid::Base64Uuid,
     payload: models::UpdateWorkspace,
 ) -> Result<models::Workspace> {
-    let mut builder = client.request(
-        Method::PATCH,
-        &format!(
-            "/api/workspaces/{workspace_id}",
-            workspace_id = workspace_id,
-        ),
-    )?;
+    let mut builder = client.request(Method::PATCH, &format!("/api/workspaces/{workspace_id}",))?;
     builder = builder.json(&payload);
     let response = builder.send().await?.error_for_status()?.json().await?;
 
@@ -749,10 +633,7 @@ pub async fn data_source_list(
 ) -> Result<Vec<models::DataSource>> {
     let mut builder = client.request(
         Method::GET,
-        &format!(
-            "/api/workspaces/{workspace_id}/data_sources",
-            workspace_id = workspace_id,
-        ),
+        &format!("/api/workspaces/{workspace_id}/data_sources",),
     )?;
     let response = builder.send().await?.error_for_status()?.json().await?;
 
@@ -767,10 +648,7 @@ pub async fn data_source_create(
 ) -> Result<models::DataSource> {
     let mut builder = client.request(
         Method::POST,
-        &format!(
-            "/api/workspaces/{workspace_id}/data_sources",
-            workspace_id = workspace_id,
-        ),
+        &format!("/api/workspaces/{workspace_id}/data_sources",),
     )?;
     builder = builder.json(&payload);
     let response = builder.send().await?.error_for_status()?.json().await?;
@@ -786,11 +664,7 @@ pub async fn data_source_get(
 ) -> Result<models::DataSource> {
     let mut builder = client.request(
         Method::GET,
-        &format!(
-            "/api/workspaces/{workspace_id}/data_sources/{data_source_name}",
-            workspace_id = workspace_id,
-            data_source_name = data_source_name,
-        ),
+        &format!("/api/workspaces/{workspace_id}/data_sources/{data_source_name}",),
     )?;
     let response = builder.send().await?.error_for_status()?.json().await?;
 
@@ -805,11 +679,7 @@ pub async fn data_source_delete(
 ) -> Result<()> {
     let mut builder = client.request(
         Method::DELETE,
-        &format!(
-            "/api/workspaces/{workspace_id}/data_sources/{data_source_name}",
-            workspace_id = workspace_id,
-            data_source_name = data_source_name,
-        ),
+        &format!("/api/workspaces/{workspace_id}/data_sources/{data_source_name}",),
     )?;
     let response = builder.send().await?.error_for_status()?;
 
@@ -825,11 +695,7 @@ pub async fn data_source_update(
 ) -> Result<models::DataSource> {
     let mut builder = client.request(
         Method::PATCH,
-        &format!(
-            "/api/workspaces/{workspace_id}/data_sources/{data_source_name}",
-            workspace_id = workspace_id,
-            data_source_name = data_source_name,
-        ),
+        &format!("/api/workspaces/{workspace_id}/data_sources/{data_source_name}",),
     )?;
     builder = builder.json(&payload);
     let response = builder.send().await?.error_for_status()?.json().await?;
@@ -851,10 +717,7 @@ pub async fn event_list(
 ) -> Result<Vec<models::Event>> {
     let mut builder = client.request(
         Method::GET,
-        &format!(
-            "/api/workspaces/{workspace_id}/events",
-            workspace_id = workspace_id,
-        ),
+        &format!("/api/workspaces/{workspace_id}/events",),
     )?;
     builder = builder.query(&[(
         "occurrence_time_start",
@@ -889,10 +752,7 @@ pub async fn event_create(
 ) -> Result<models::Event> {
     let mut builder = client.request(
         Method::POST,
-        &format!(
-            "/api/workspaces/{workspace_id}/events",
-            workspace_id = workspace_id,
-        ),
+        &format!("/api/workspaces/{workspace_id}/events",),
     )?;
     builder = builder.json(&payload);
     let response = builder.send().await?.error_for_status()?.json().await?;
@@ -911,10 +771,7 @@ pub async fn workspace_invite_get(
 ) -> Result<Vec<models::WorkspaceInvite>> {
     let mut builder = client.request(
         Method::GET,
-        &format!(
-            "/api/workspaces/{workspace_id}/invitations",
-            workspace_id = workspace_id,
-        ),
+        &format!("/api/workspaces/{workspace_id}/invitations",),
     )?;
     if let Some(sort_by) = sort_by {
         builder = builder.query(&[("sort_by", sort_by)]);
@@ -941,10 +798,7 @@ pub async fn workspace_invite(
 ) -> Result<models::WorkspaceInviteResponse> {
     let mut builder = client.request(
         Method::POST,
-        &format!(
-            "/api/workspaces/{workspace_id}/invitations",
-            workspace_id = workspace_id,
-        ),
+        &format!("/api/workspaces/{workspace_id}/invitations",),
     )?;
     builder = builder.json(&payload);
     let response = builder.send().await?.error_for_status()?.json().await?;
@@ -960,10 +814,7 @@ pub async fn label_keys_list(
 ) -> Result<Vec<String>> {
     let mut builder = client.request(
         Method::GET,
-        &format!(
-            "/api/workspaces/{workspace_id}/labels/keys",
-            workspace_id = workspace_id,
-        ),
+        &format!("/api/workspaces/{workspace_id}/labels/keys",),
     )?;
     if let Some(prefix) = prefix {
         builder = builder.query(&[("prefix", prefix)]);
@@ -982,11 +833,7 @@ pub async fn label_values_list(
 ) -> Result<Vec<String>> {
     let mut builder = client.request(
         Method::GET,
-        &format!(
-            "/api/workspaces/{workspace_id}/labels/values/{label_key}",
-            workspace_id = workspace_id,
-            label_key = label_key,
-        ),
+        &format!("/api/workspaces/{workspace_id}/labels/values/{label_key}",),
     )?;
     if let Some(prefix) = prefix {
         builder = builder.query(&[("prefix", prefix)]);
@@ -1003,10 +850,7 @@ pub async fn workspace_leave(
 ) -> Result<()> {
     let mut builder = client.request(
         Method::POST,
-        &format!(
-            "/api/workspaces/{workspace_id}/leave",
-            workspace_id = workspace_id,
-        ),
+        &format!("/api/workspaces/{workspace_id}/leave",),
     )?;
     let response = builder.send().await?.error_for_status()?;
 
@@ -1020,10 +864,7 @@ pub async fn notebook_list(
 ) -> Result<Vec<models::NotebookSummary>> {
     let mut builder = client.request(
         Method::GET,
-        &format!(
-            "/api/workspaces/{workspace_id}/notebooks",
-            workspace_id = workspace_id,
-        ),
+        &format!("/api/workspaces/{workspace_id}/notebooks",),
     )?;
     let response = builder.send().await?.error_for_status()?.json().await?;
 
@@ -1038,10 +879,7 @@ pub async fn notebook_create(
 ) -> Result<models::Notebook> {
     let mut builder = client.request(
         Method::POST,
-        &format!(
-            "/api/workspaces/{workspace_id}/notebooks",
-            workspace_id = workspace_id,
-        ),
+        &format!("/api/workspaces/{workspace_id}/notebooks",),
     )?;
     builder = builder.json(&payload);
     let response = builder.send().await?.error_for_status()?.json().await?;
@@ -1056,10 +894,7 @@ pub async fn workspace_picture_get(
 ) -> Result<bytes::Bytes> {
     let mut builder = client.request(
         Method::GET,
-        &format!(
-            "/api/workspaces/{workspace_id}/picture",
-            workspace_id = workspace_id,
-        ),
+        &format!("/api/workspaces/{workspace_id}/picture",),
     )?;
     let response = builder.send().await?.error_for_status()?.bytes().await?;
 
@@ -1074,10 +909,7 @@ pub async fn workspace_picture_update(
 ) -> Result<()> {
     let mut builder = client.request(
         Method::POST,
-        &format!(
-            "/api/workspaces/{workspace_id}/picture",
-            workspace_id = workspace_id,
-        ),
+        &format!("/api/workspaces/{workspace_id}/picture",),
     )?;
     builder = builder.form(&payload);
     let response = builder.send().await?.error_for_status()?;
@@ -1092,10 +924,7 @@ pub async fn pinned_notebook_list(
 ) -> Result<Vec<models::NotebookSummary>> {
     let mut builder = client.request(
         Method::GET,
-        &format!(
-            "/api/workspaces/{workspace_id}/pinnednotebooks",
-            workspace_id = workspace_id,
-        ),
+        &format!("/api/workspaces/{workspace_id}/pinnednotebooks",),
     )?;
     let response = builder.send().await?.error_for_status()?.json().await?;
 
@@ -1109,10 +938,7 @@ pub async fn proxy_list(
 ) -> Result<Vec<models::ProxySummary>> {
     let mut builder = client.request(
         Method::GET,
-        &format!(
-            "/api/workspaces/{workspace_id}/proxies",
-            workspace_id = workspace_id,
-        ),
+        &format!("/api/workspaces/{workspace_id}/proxies",),
     )?;
     let response = builder.send().await?.error_for_status()?.json().await?;
 
@@ -1127,10 +953,7 @@ pub async fn proxy_create(
 ) -> Result<models::Proxy> {
     let mut builder = client.request(
         Method::POST,
-        &format!(
-            "/api/workspaces/{workspace_id}/proxies",
-            workspace_id = workspace_id,
-        ),
+        &format!("/api/workspaces/{workspace_id}/proxies",),
     )?;
     builder = builder.json(&payload);
     let response = builder.send().await?.error_for_status()?.json().await?;
@@ -1146,11 +969,7 @@ pub async fn proxy_get(
 ) -> Result<models::Proxy> {
     let mut builder = client.request(
         Method::GET,
-        &format!(
-            "/api/workspaces/{workspace_id}/proxies/{proxy_name}",
-            workspace_id = workspace_id,
-            proxy_name = proxy_name,
-        ),
+        &format!("/api/workspaces/{workspace_id}/proxies/{proxy_name}",),
     )?;
     let response = builder.send().await?.error_for_status()?.json().await?;
 
@@ -1164,11 +983,7 @@ pub async fn proxy_delete(
 ) -> Result<()> {
     let mut builder = client.request(
         Method::DELETE,
-        &format!(
-            "/api/workspaces/{workspace_id}/proxies/{proxy_name}",
-            workspace_id = workspace_id,
-            proxy_name = proxy_name,
-        ),
+        &format!("/api/workspaces/{workspace_id}/proxies/{proxy_name}",),
     )?;
     let response = builder.send().await?.error_for_status()?;
 
@@ -1186,7 +1001,7 @@ pub async fn proxy_relay(
 ) -> Result<bytes::Bytes> {
     let mut builder = client.request(
         Method::POST,
-        &format!("/api/workspaces/{workspace_id}/proxies/{proxy_name}/data_sources/{data_source_name}/relay", workspace_id = workspace_id, proxy_name = proxy_name, data_source_name = data_source_name, )
+        &format!("/api/workspaces/{workspace_id}/proxies/{proxy_name}/data_sources/{data_source_name}/relay", )
     )?;
     builder = builder.body(payload);
     let response = builder.send().await?.error_for_status()?.bytes().await?;
@@ -1202,10 +1017,7 @@ pub async fn notebook_search(
 ) -> Result<Vec<models::NotebookSummary>> {
     let mut builder = client.request(
         Method::POST,
-        &format!(
-            "/api/workspaces/{workspace_id}/search/notebooks",
-            workspace_id = workspace_id,
-        ),
+        &format!("/api/workspaces/{workspace_id}/search/notebooks",),
     )?;
     builder = builder.json(&payload);
     let response = builder.send().await?.error_for_status()?.json().await?;
@@ -1222,10 +1034,7 @@ pub async fn snippet_list(
 ) -> Result<Vec<models::SnippetSummary>> {
     let mut builder = client.request(
         Method::GET,
-        &format!(
-            "/api/workspaces/{workspace_id}/snippets",
-            workspace_id = workspace_id,
-        ),
+        &format!("/api/workspaces/{workspace_id}/snippets",),
     )?;
     if let Some(sort_by) = sort_by {
         builder = builder.query(&[("sort_by", sort_by)]);
@@ -1246,10 +1055,7 @@ pub async fn snippet_create(
 ) -> Result<models::Snippet> {
     let mut builder = client.request(
         Method::POST,
-        &format!(
-            "/api/workspaces/{workspace_id}/snippets",
-            workspace_id = workspace_id,
-        ),
+        &format!("/api/workspaces/{workspace_id}/snippets",),
     )?;
     builder = builder.json(&payload);
     let response = builder.send().await?.error_for_status()?.json().await?;
@@ -1264,11 +1070,7 @@ pub async fn snippet_get(
 ) -> Result<models::Snippet> {
     let mut builder = client.request(
         Method::GET,
-        &format!(
-            "/api/workspaces/{workspace_id}/snippets/{snippet_name}",
-            workspace_id = workspace_id,
-            snippet_name = snippet_name,
-        ),
+        &format!("/api/workspaces/{workspace_id}/snippets/{snippet_name}",),
     )?;
     let response = builder.send().await?.error_for_status()?.json().await?;
 
@@ -1282,11 +1084,7 @@ pub async fn snippet_delete(
 ) -> Result<()> {
     let mut builder = client.request(
         Method::DELETE,
-        &format!(
-            "/api/workspaces/{workspace_id}/snippets/{snippet_name}",
-            workspace_id = workspace_id,
-            snippet_name = snippet_name,
-        ),
+        &format!("/api/workspaces/{workspace_id}/snippets/{snippet_name}",),
     )?;
     let response = builder.send().await?.error_for_status()?;
 
@@ -1301,11 +1099,7 @@ pub async fn snippet_update(
 ) -> Result<models::Snippet> {
     let mut builder = client.request(
         Method::PATCH,
-        &format!(
-            "/api/workspaces/{workspace_id}/snippets/{snippet_name}",
-            workspace_id = workspace_id,
-            snippet_name = snippet_name,
-        ),
+        &format!("/api/workspaces/{workspace_id}/snippets/{snippet_name}",),
     )?;
     builder = builder.json(&payload);
     let response = builder.send().await?.error_for_status()?.json().await?;
@@ -1322,10 +1116,7 @@ pub async fn template_list(
 ) -> Result<Vec<models::TemplateSummary>> {
     let mut builder = client.request(
         Method::GET,
-        &format!(
-            "/api/workspaces/{workspace_id}/templates",
-            workspace_id = workspace_id,
-        ),
+        &format!("/api/workspaces/{workspace_id}/templates",),
     )?;
     if let Some(sort_by) = sort_by {
         builder = builder.query(&[("sort_by", sort_by)]);
@@ -1346,10 +1137,7 @@ pub async fn template_create(
 ) -> Result<models::Template> {
     let mut builder = client.request(
         Method::POST,
-        &format!(
-            "/api/workspaces/{workspace_id}/templates",
-            workspace_id = workspace_id,
-        ),
+        &format!("/api/workspaces/{workspace_id}/templates",),
     )?;
     builder = builder.json(&payload);
     let response = builder.send().await?.error_for_status()?.json().await?;
@@ -1364,11 +1152,7 @@ pub async fn template_get(
 ) -> Result<models::Template> {
     let mut builder = client.request(
         Method::GET,
-        &format!(
-            "/api/workspaces/{workspace_id}/templates/{templateName}",
-            workspace_id = workspace_id,
-            templateName = template_name,
-        ),
+        &format!("/api/workspaces/{workspace_id}/templates/{template_name}",),
     )?;
     let response = builder.send().await?.error_for_status()?.json().await?;
 
@@ -1382,11 +1166,7 @@ pub async fn template_delete(
 ) -> Result<()> {
     let mut builder = client.request(
         Method::DELETE,
-        &format!(
-            "/api/workspaces/{workspace_id}/templates/{templateName}",
-            workspace_id = workspace_id,
-            templateName = template_name,
-        ),
+        &format!("/api/workspaces/{workspace_id}/templates/{template_name}",),
     )?;
     let response = builder.send().await?.error_for_status()?;
 
@@ -1401,11 +1181,7 @@ pub async fn template_update(
 ) -> Result<models::Template> {
     let mut builder = client.request(
         Method::PATCH,
-        &format!(
-            "/api/workspaces/{workspace_id}/templates/{templateName}",
-            workspace_id = workspace_id,
-            templateName = template_name,
-        ),
+        &format!("/api/workspaces/{workspace_id}/templates/{template_name}",),
     )?;
     builder = builder.json(&payload);
     let response = builder.send().await?.error_for_status()?.json().await?;
@@ -1422,11 +1198,7 @@ pub async fn template_expand(
 ) -> Result<models::Notebook> {
     let mut builder = client.request(
         Method::POST,
-        &format!(
-            "/api/workspaces/{workspace_id}/templates/{templateName}/expand",
-            workspace_id = workspace_id,
-            templateName = template_name,
-        ),
+        &format!("/api/workspaces/{workspace_id}/templates/{template_name}/expand",),
     )?;
     builder = builder.json(&payload);
     let response = builder.send().await?.error_for_status()?.json().await?;
@@ -1440,10 +1212,7 @@ pub async fn trigger_list(
 ) -> Result<Vec<models::Trigger>> {
     let mut builder = client.request(
         Method::GET,
-        &format!(
-            "/api/workspaces/{workspace_id}/triggers",
-            workspace_id = workspace_id,
-        ),
+        &format!("/api/workspaces/{workspace_id}/triggers",),
     )?;
     let response = builder.send().await?.error_for_status()?.json().await?;
 
@@ -1458,10 +1227,7 @@ pub async fn trigger_create(
 ) -> Result<models::Trigger> {
     let mut builder = client.request(
         Method::POST,
-        &format!(
-            "/api/workspaces/{workspace_id}/triggers",
-            workspace_id = workspace_id,
-        ),
+        &format!("/api/workspaces/{workspace_id}/triggers",),
     )?;
     builder = builder.json(&payload);
     let response = builder.send().await?.error_for_status()?.json().await?;
@@ -1478,10 +1244,7 @@ pub async fn workspace_users_list(
 ) -> Result<Vec<models::Membership>> {
     let mut builder = client.request(
         Method::GET,
-        &format!(
-            "/api/workspaces/{workspace_id}/users",
-            workspace_id = workspace_id,
-        ),
+        &format!("/api/workspaces/{workspace_id}/users",),
     )?;
     if let Some(sort_by) = sort_by {
         builder = builder.query(&[("sort_by", sort_by)]);
@@ -1502,11 +1265,7 @@ pub async fn workspace_user_remove(
 ) -> Result<()> {
     let mut builder = client.request(
         Method::DELETE,
-        &format!(
-            "/api/workspaces/{workspace_id}/users/{user_id}",
-            workspace_id = workspace_id,
-            user_id = user_id,
-        ),
+        &format!("/api/workspaces/{workspace_id}/users/{user_id}",),
     )?;
     let response = builder.send().await?.error_for_status()?;
 
@@ -1522,11 +1281,7 @@ pub async fn workspace_user_update(
 ) -> Result<models::User> {
     let mut builder = client.request(
         Method::PATCH,
-        &format!(
-            "/api/workspaces/{workspace_id}/users/{user_id}",
-            workspace_id = workspace_id,
-            user_id = user_id,
-        ),
+        &format!("/api/workspaces/{workspace_id}/users/{user_id}",),
     )?;
     builder = builder.json(&payload);
     let response = builder.send().await?.error_for_status()?.json().await?;
@@ -1545,10 +1300,7 @@ pub async fn views_get(
 ) -> Result<Vec<models::View>> {
     let mut builder = client.request(
         Method::GET,
-        &format!(
-            "/api/workspaces/{workspace_id}/views",
-            workspace_id = workspace_id,
-        ),
+        &format!("/api/workspaces/{workspace_id}/views",),
     )?;
     if let Some(sort_by) = sort_by {
         builder = builder.query(&[("sort_by", sort_by)]);
@@ -1575,10 +1327,7 @@ pub async fn views_create(
 ) -> Result<models::View> {
     let mut builder = client.request(
         Method::POST,
-        &format!(
-            "/api/workspaces/{workspace_id}/views",
-            workspace_id = workspace_id,
-        ),
+        &format!("/api/workspaces/{workspace_id}/views",),
     )?;
     builder = builder.json(&payload);
     let response = builder.send().await?.error_for_status()?.json().await?;
@@ -1594,11 +1343,7 @@ pub async fn view_get(
 ) -> Result<models::View> {
     let mut builder = client.request(
         Method::GET,
-        &format!(
-            "/api/workspaces/{workspace_id}/views/{view_name}",
-            workspace_id = workspace_id,
-            view_name = view_name,
-        ),
+        &format!("/api/workspaces/{workspace_id}/views/{view_name}",),
     )?;
     let response = builder.send().await?.error_for_status()?.json().await?;
 
@@ -1613,11 +1358,7 @@ pub async fn view_delete(
 ) -> Result<()> {
     let mut builder = client.request(
         Method::DELETE,
-        &format!(
-            "/api/workspaces/{workspace_id}/views/{view_name}",
-            workspace_id = workspace_id,
-            view_name = view_name,
-        ),
+        &format!("/api/workspaces/{workspace_id}/views/{view_name}",),
     )?;
     let response = builder.send().await?.error_for_status()?;
 
@@ -1633,11 +1374,7 @@ pub async fn view_update(
 ) -> Result<models::View> {
     let mut builder = client.request(
         Method::PATCH,
-        &format!(
-            "/api/workspaces/{workspace_id}/views/{view_name}",
-            workspace_id = workspace_id,
-            view_name = view_name,
-        ),
+        &format!("/api/workspaces/{workspace_id}/views/{view_name}",),
     )?;
     builder = builder.json(&payload);
     let response = builder.send().await?.error_for_status()?.json().await?;

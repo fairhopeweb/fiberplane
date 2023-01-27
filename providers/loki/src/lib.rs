@@ -18,8 +18,7 @@ static BUILD_TIMESTAMP: &str = env!("VERGEN_BUILD_TIMESTAMP");
 #[fp_export_impl(fiberplane_provider_bindings)]
 async fn invoke(request: ProviderRequest, config: ProviderConfig) -> ProviderResponse {
     log(format!(
-        "Loki provider (commit: {}, built at: {}) invoked with request: {:?}",
-        COMMIT_HASH, BUILD_TIMESTAMP, request
+        "Loki provider (commit: {COMMIT_HASH}, built at: {BUILD_TIMESTAMP}) invoked with request: {request:?}"
     ));
 
     let config: Config = match serde_json::from_value(config) {
@@ -27,7 +26,7 @@ async fn invoke(request: ProviderRequest, config: ProviderConfig) -> ProviderRes
         Err(err) => {
             return ProviderResponse::Error {
                 error: Error::Config {
-                    message: format!("Error parsing config: {:?}", err),
+                    message: format!("Error parsing config: {err:?}"),
                 },
             }
         }
@@ -117,7 +116,7 @@ async fn fetch_logs(query: QueryLogs, config: Config) -> Result<Vec<LogRecord>, 
         .flat_map(data_mapper)
         .collect::<Result<Vec<LogRecord>, _>>()
         .map_err(|e| Error::Data {
-            message: format!("Failed to parse data, got error: {:?}", e),
+            message: format!("Failed to parse data, got error: {e:?}"),
         })?;
 
     Ok(logs)

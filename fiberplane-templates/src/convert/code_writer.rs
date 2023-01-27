@@ -39,7 +39,7 @@ impl CodeWriter {
 impl Display for CodeWriter {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         for line in &self.buffer {
-            write!(f, "{}", line)?;
+            write!(f, "{line}")?;
         }
         Ok(())
     }

@@ -63,7 +63,7 @@ impl ApiClientBuilder {
         if let Some(bearer) = &self.bearer_token {
             headers.insert(
                 header::AUTHORIZATION,
-                header::HeaderValue::from_str(&format!("Bearer {}", bearer))?,
+                header::HeaderValue::from_str(&format!("Bearer {bearer}"))?,
             );
         }
 

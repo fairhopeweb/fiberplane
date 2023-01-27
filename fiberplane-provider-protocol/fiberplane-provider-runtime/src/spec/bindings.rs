@@ -11,42 +11,38 @@ use fp_bindgen_support::{
         runtime::RuntimeInstanceData,
     },
 };
-use std::sync::Arc;
-use wasmer::{
-    imports, AsStoreMut, Function, FunctionEnv, FunctionEnvMut, Imports, Instance, Module,
-    Singlepass, Store,
-};
+use std::cell::RefCell;
+use wasmer::{imports, Function, ImportObject, Instance, Module, Store, WasmerEnv};
 
+#[derive(Clone)]
 pub struct Runtime {
-    store: Store,
     instance: Instance,
-    env: FunctionEnv<Arc<RuntimeInstanceData>>,
+    env: RuntimeInstanceData,
 }
 
 impl Runtime {
     pub fn new(wasm_module: impl AsRef<[u8]>) -> Result<Self, RuntimeError> {
-        let mut store = Self::default_store();
+        let store = Self::default_store();
         let module = Module::new(&store, wasm_module)?;
-        let env = FunctionEnv::new(&mut store, Arc::new(RuntimeInstanceData::default()));
-        let import_object = create_imports(&mut store, &env);
-        let instance = Instance::new(&mut store, &module, &import_object).unwrap();
-        let env_from_instance = RuntimeInstanceData::from_instance(&mut store, &instance);
-        Arc::get_mut(env.as_mut(&mut store))
-            .unwrap()
-            .copy_from(env_from_instance);
-        Ok(Self {
-            store,
-            instance,
-            env,
-        })
+        let mut env = RuntimeInstanceData::default();
+        let import_object = create_import_object(module.store(), &env);
+        let instance = Instance::new(&module, &import_object).unwrap();
+        env.init_with_instance(&instance).unwrap();
+        Ok(Self { instance, env })
     }
 
+    #[cfg(any(target_arch = "arm", target_arch = "aarch64"))]
     fn default_store() -> wasmer::Store {
-        Store::new(Singlepass::default())
+        let compiler = wasmer::Cranelift::default();
+        let engine = wasmer::Universal::new(compiler).engine();
+        Store::new(&engine)
     }
 
-    fn function_env_mut(&mut self) -> FunctionEnvMut<Arc<RuntimeInstanceData>> {
-        self.env.clone().into_mut(&mut self.store)
+    #[cfg(not(any(target_arch = "arm", target_arch = "aarch64")))]
+    fn default_store() -> wasmer::Store {
+        let compiler = wasmer::Singlepass::default();
+        let engine = wasmer::Universal::new(compiler).engine();
+        Store::new(&engine)
     }
 
     /// Creates output cells based on the response.
@@ -64,7 +60,7 @@ impl Runtime {
     /// `+msgpack`), Studio will elide the call to `create_cells()` and simply
     /// parse the data directly to a `Vec<Cell>`.
     pub fn create_cells(
-        &mut self,
+        &self,
         query_type: String,
         response: Blob,
     ) -> Result<Result<Vec<Cell>, Error>, InvocationError> {
@@ -75,24 +71,21 @@ impl Runtime {
         result
     }
     pub fn create_cells_raw(
-        &mut self,
+        &self,
         query_type: Vec<u8>,
         response: Vec<u8>,
     ) -> Result<Vec<u8>, InvocationError> {
-        let query_type = export_to_guest_raw(&mut self.function_env_mut(), query_type);
-        let response = export_to_guest_raw(&mut self.function_env_mut(), response);
+        let query_type = export_to_guest_raw(&self.env, query_type);
+        let response = export_to_guest_raw(&self.env, response);
         let function = self
             .instance
             .exports
-            .get_typed_function::<(FatPtr, FatPtr), FatPtr>(
-                &mut self.store,
-                "__fp_gen_create_cells",
-            )
+            .get_native_function::<(FatPtr, FatPtr), FatPtr>("__fp_gen_create_cells")
             .map_err(|_| {
                 InvocationError::FunctionNotExported("__fp_gen_create_cells".to_owned())
             })?;
-        let result = function.call(&mut self.store, query_type.to_abi(), response.to_abi())?;
-        let result = import_from_guest_raw(&mut self.function_env_mut(), result);
+        let result = function.call(query_type.to_abi(), response.to_abi())?;
+        let result = import_from_guest_raw(&self.env, result);
         Ok(result)
     }
 
@@ -110,7 +103,7 @@ impl Runtime {
     /// is no query string and the MIME type is an exact match. This elision
     /// should not change the outcome.
     pub fn extract_data(
-        &mut self,
+        &self,
         response: Blob,
         mime_type: String,
         query: Option<String>,
@@ -123,31 +116,23 @@ impl Runtime {
         result
     }
     pub fn extract_data_raw(
-        &mut self,
+        &self,
         response: Vec<u8>,
         mime_type: Vec<u8>,
         query: Vec<u8>,
     ) -> Result<Vec<u8>, InvocationError> {
-        let response = export_to_guest_raw(&mut self.function_env_mut(), response);
-        let mime_type = export_to_guest_raw(&mut self.function_env_mut(), mime_type);
-        let query = export_to_guest_raw(&mut self.function_env_mut(), query);
+        let response = export_to_guest_raw(&self.env, response);
+        let mime_type = export_to_guest_raw(&self.env, mime_type);
+        let query = export_to_guest_raw(&self.env, query);
         let function = self
             .instance
             .exports
-            .get_typed_function::<(FatPtr, FatPtr, FatPtr), FatPtr>(
-                &mut self.store,
-                "__fp_gen_extract_data",
-            )
+            .get_native_function::<(FatPtr, FatPtr, FatPtr), FatPtr>("__fp_gen_extract_data")
             .map_err(|_| {
                 InvocationError::FunctionNotExported("__fp_gen_extract_data".to_owned())
             })?;
-        let result = function.call(
-            &mut self.store,
-            response.to_abi(),
-            mime_type.to_abi(),
-            query.to_abi(),
-        )?;
-        let result = import_from_guest_raw(&mut self.function_env_mut(), result);
+        let result = function.call(response.to_abi(), mime_type.to_abi(), query.to_abi())?;
+        let result = import_from_guest_raw(&self.env, result);
         Ok(result)
     }
 
@@ -161,21 +146,21 @@ impl Runtime {
     ///
     /// This function only needs to be implemented by providers that are
     /// statically bundled with Studio.
-    pub fn get_config_schema(&mut self) -> Result<ConfigSchema, InvocationError> {
+    pub fn get_config_schema(&self) -> Result<ConfigSchema, InvocationError> {
         let result = self.get_config_schema_raw();
         let result = result.map(|ref data| deserialize_from_slice(data));
         result
     }
-    pub fn get_config_schema_raw(&mut self) -> Result<Vec<u8>, InvocationError> {
+    pub fn get_config_schema_raw(&self) -> Result<Vec<u8>, InvocationError> {
         let function = self
             .instance
             .exports
-            .get_typed_function::<(), FatPtr>(&mut self.store, "__fp_gen_get_config_schema")
+            .get_native_function::<(), FatPtr>("__fp_gen_get_config_schema")
             .map_err(|_| {
                 InvocationError::FunctionNotExported("__fp_gen_get_config_schema".to_owned())
             })?;
-        let result = function.call(&mut self.store)?;
-        let result = import_from_guest_raw(&mut self.function_env_mut(), result);
+        let result = function.call()?;
+        let result = import_from_guest_raw(&self.env, result);
         Ok(result)
     }
 
@@ -184,7 +169,7 @@ impl Runtime {
     /// supported, and which providers (and their query types) are eligible to
     /// be selected for certain use cases.
     pub async fn get_supported_query_types(
-        &mut self,
+        &self,
         config: ProviderConfig,
     ) -> Result<Vec<SupportedQueryType>, InvocationError> {
         let config = serialize_to_vec(&config);
@@ -194,30 +179,27 @@ impl Runtime {
         result
     }
     pub async fn get_supported_query_types_raw(
-        &mut self,
+        &self,
         config: Vec<u8>,
     ) -> Result<Vec<u8>, InvocationError> {
-        let config = export_to_guest_raw(&mut self.function_env_mut(), config);
+        let config = export_to_guest_raw(&self.env, config);
         let function = self
             .instance
             .exports
-            .get_typed_function::<FatPtr, FatPtr>(
-                &mut self.store,
-                "__fp_gen_get_supported_query_types",
-            )
+            .get_native_function::<FatPtr, FatPtr>("__fp_gen_get_supported_query_types")
             .map_err(|_| {
                 InvocationError::FunctionNotExported(
                     "__fp_gen_get_supported_query_types".to_owned(),
                 )
             })?;
-        let result = function.call(&mut self.store, config.to_abi())?;
-        let result = ModuleRawFuture::new(self.function_env_mut(), result).await;
+        let result = function.call(config.to_abi())?;
+        let result = ModuleRawFuture::new(self.env.clone(), result).await;
         Ok(result)
     }
 
     /// Legacy invoke function.
     pub async fn invoke(
-        &mut self,
+        &self,
         request: LegacyProviderRequest,
         config: ProviderConfig,
     ) -> Result<LegacyProviderResponse, InvocationError> {
@@ -229,25 +211,25 @@ impl Runtime {
         result
     }
     pub async fn invoke_raw(
-        &mut self,
+        &self,
         request: Vec<u8>,
         config: Vec<u8>,
     ) -> Result<Vec<u8>, InvocationError> {
-        let request = export_to_guest_raw(&mut self.function_env_mut(), request);
-        let config = export_to_guest_raw(&mut self.function_env_mut(), config);
+        let request = export_to_guest_raw(&self.env, request);
+        let config = export_to_guest_raw(&self.env, config);
         let function = self
             .instance
             .exports
-            .get_typed_function::<(FatPtr, FatPtr), FatPtr>(&mut self.store, "__fp_gen_invoke")
+            .get_native_function::<(FatPtr, FatPtr), FatPtr>("__fp_gen_invoke")
             .map_err(|_| InvocationError::FunctionNotExported("__fp_gen_invoke".to_owned()))?;
-        let result = function.call(&mut self.store, request.to_abi(), config.to_abi())?;
-        let result = ModuleRawFuture::new(self.function_env_mut(), result).await;
+        let result = function.call(request.to_abi(), config.to_abi())?;
+        let result = ModuleRawFuture::new(self.env.clone(), result).await;
         Ok(result)
     }
 
     /// Invokes the provider to perform a data request.
     pub async fn invoke2(
-        &mut self,
+        &self,
         request: ProviderRequest,
     ) -> Result<Result<Blob, Error>, InvocationError> {
         let request = serialize_to_vec(&request);
@@ -256,71 +238,57 @@ impl Runtime {
         let result = result.map(|ref data| deserialize_from_slice(data));
         result
     }
-    pub async fn invoke2_raw(&mut self, request: Vec<u8>) -> Result<Vec<u8>, InvocationError> {
-        let request = export_to_guest_raw(&mut self.function_env_mut(), request);
+    pub async fn invoke2_raw(&self, request: Vec<u8>) -> Result<Vec<u8>, InvocationError> {
+        let request = export_to_guest_raw(&self.env, request);
         let function = self
             .instance
             .exports
-            .get_typed_function::<FatPtr, FatPtr>(&mut self.store, "__fp_gen_invoke2")
+            .get_native_function::<FatPtr, FatPtr>("__fp_gen_invoke2")
             .map_err(|_| InvocationError::FunctionNotExported("__fp_gen_invoke2".to_owned()))?;
-        let result = function.call(&mut self.store, request.to_abi())?;
-        let result = ModuleRawFuture::new(self.function_env_mut(), result).await;
+        let result = function.call(request.to_abi())?;
+        let result = ModuleRawFuture::new(self.env.clone(), result).await;
         Ok(result)
     }
 }
 
-fn create_imports(store: &mut Store, env: &FunctionEnv<Arc<RuntimeInstanceData>>) -> Imports {
+fn create_import_object(store: &Store, env: &RuntimeInstanceData) -> ImportObject {
     imports! {
         "fp" => {
-            "__fp_host_resolve_async_value" => Function::new_typed_with_env(store, env, resolve_async_value),
-            "__fp_gen_log" => Function::new_typed_with_env(store, env, _log),
-            "__fp_gen_make_http_request" => Function::new_typed_with_env(store, env, _make_http_request),
-            "__fp_gen_now" => Function::new_typed_with_env(store, env, _now),
-            "__fp_gen_random" => Function::new_typed_with_env(store, env, _random),
+            "__fp_host_resolve_async_value" => Function::new_native_with_env(store, env.clone(), resolve_async_value),
+            "__fp_gen_log" => Function::new_native_with_env(store, env.clone(), _log),
+            "__fp_gen_make_http_request" => Function::new_native_with_env(store, env.clone(), _make_http_request),
+            "__fp_gen_now" => Function::new_native_with_env(store, env.clone(), _now),
+            "__fp_gen_random" => Function::new_native_with_env(store, env.clone(), _random),
         }
     }
 }
 
-pub fn _log(mut env: FunctionEnvMut<Arc<RuntimeInstanceData>>, message: FatPtr) {
-    let message = import_from_guest::<String>(&mut env, message);
+pub fn _log(env: &RuntimeInstanceData, message: FatPtr) {
+    let message = import_from_guest::<String>(env, message);
     let result = super::log(message);
 }
 
-pub fn _make_http_request(
-    mut env: FunctionEnvMut<Arc<RuntimeInstanceData>>,
-    request: FatPtr,
-) -> FatPtr {
-    let request = import_from_guest::<HttpRequest>(&mut env, request);
+pub fn _make_http_request(env: &RuntimeInstanceData, request: FatPtr) -> FatPtr {
+    let request = import_from_guest::<HttpRequest>(env, request);
     let result = super::make_http_request(request);
-    let async_ptr = create_future_value(&mut env);
-    let result: Vec<u8> = std::thread::spawn(|| {
-        let rt = tokio::runtime::Builder::new_current_thread()
-            .enable_all()
-            .build()
-            .unwrap();
-        rt.block_on(async move { rmp_serde::to_vec(&result.await).unwrap() })
-    })
-    .join()
-    .unwrap();
-
-    let result_ptr = export_to_guest_raw(&mut env, &result);
-    env.data()
-        .clone()
-        .guest_resolve_async_value(&mut env.as_store_mut(), async_ptr, result_ptr);
-
+    let env = env.clone();
+    let async_ptr = create_future_value(&env);
+    let handle = tokio::runtime::Handle::current();
+    handle.spawn(async move {
+        let result = result.await;
+        let result_ptr = export_to_guest(&env, &result);
+        env.guest_resolve_async_value(async_ptr, result_ptr);
+    });
     async_ptr
 }
 
-pub fn _now(mut env: FunctionEnvMut<Arc<RuntimeInstanceData>>) -> FatPtr {
+pub fn _now(env: &RuntimeInstanceData) -> FatPtr {
     let result = super::now();
-    export_to_guest(&mut env, &result)
+    export_to_guest(env, &result)
 }
 
-pub fn _random(
-    mut env: FunctionEnvMut<Arc<RuntimeInstanceData>>,
-    len: <u32 as WasmAbi>::AbiType,
-) -> FatPtr {
+pub fn _random(env: &RuntimeInstanceData, len: <u32 as WasmAbi>::AbiType) -> FatPtr {
     let len = WasmAbi::from_abi(len);
     let result = super::random(len);
-    export_to_guest(&mut env, &result)
+    export_to_guest(env, &result)
 }

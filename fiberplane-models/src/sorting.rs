@@ -233,8 +233,8 @@ pub enum WorkspaceMembershipSortFields {
 impl WorkspaceMembershipSortFields {
     pub fn to_sql(&self, users_table_alias: &'static str) -> Cow<str> {
         match self {
-            WorkspaceMembershipSortFields::Name => format!("{}.name", users_table_alias).into(),
-            WorkspaceMembershipSortFields::Email => format!("{}.email", users_table_alias).into(),
+            WorkspaceMembershipSortFields::Name => format!("{users_table_alias}.name").into(),
+            WorkspaceMembershipSortFields::Email => format!("{users_table_alias}.email").into(),
             WorkspaceMembershipSortFields::JoinedAt => "created_at".into(),
         }
     }

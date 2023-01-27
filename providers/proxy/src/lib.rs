@@ -36,7 +36,7 @@ async fn proxy_request(request: ProxyRequest) -> ProviderResponse {
         Ok(response) => {
             rmp_serde::from_slice(&response.body).unwrap_or_else(|err| ProviderResponse::Error {
                 error: Error::Deserialization {
-                    message: format!("Error deserializing proxy response: {:?}", err),
+                    message: format!("Error deserializing proxy response: {err:?}"),
                 },
             })
         }

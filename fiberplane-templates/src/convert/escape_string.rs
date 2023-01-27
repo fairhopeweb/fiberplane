@@ -23,9 +23,9 @@ pub fn escape_string(input: impl AsRef<str>) -> String {
     if single_quotes && double_quotes {
         format!("'{}'", input.replace('\'', "\\'"))
     } else if single_quotes {
-        format!("\"{}\"", input)
+        format!("\"{input}\"")
     } else {
-        format!("'{}'", input)
+        format!("'{input}'")
     }
 }
 

@@ -218,8 +218,7 @@ mod tests {
         for key in keys.into_iter() {
             assert!(
                 Label::validate_key(key).is_ok(),
-                "Key \"{}\" should have passed validation",
-                key
+                "Key \"{key}\" should have passed validation"
             );
         }
     }
@@ -239,8 +238,7 @@ mod tests {
         for key in keys.into_iter() {
             assert!(
                 Label::validate_key(key).is_err(),
-                "Key \"{}\" should have failed validation",
-                key
+                "Key \"{key}\" should have failed validation"
             );
         }
     }
@@ -257,8 +255,7 @@ mod tests {
         for value in values.into_iter() {
             assert!(
                 Label::validate_value(value).is_ok(),
-                "Value \"{}\" should have passed validation",
-                value
+                "Value \"{value}\" should have passed validation"
             );
         }
     }
@@ -273,8 +270,7 @@ mod tests {
         for value in values.into_iter() {
             assert!(
                 Label::validate_key(value).is_err(),
-                "Value \"{}\" should have failed validation",
-                value
+                "Value \"{value}\" should have failed validation"
             );
         }
     }

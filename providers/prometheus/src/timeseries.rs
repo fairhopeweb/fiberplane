@@ -77,7 +77,7 @@ fn validate_or_parse_message(query: &str, message: &str) -> Error {
             return Error::ValidationError {
                 errors: vec![ValidationError {
                     field_name: QUERY_PARAM_NAME.to_owned(),
-                    message: format!("{}", error),
+                    message: format!("{error}"),
                 }],
             };
         }

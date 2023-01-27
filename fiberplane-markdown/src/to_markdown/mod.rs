@@ -310,7 +310,7 @@ impl<'a> NotebookConverter<'a> {
                     };
 
                     self.events
-                        .push(Html(format!("<mark>{}</mark>", text).into()));
+                        .push(Html(format!("<mark>{text}</mark>").into()));
                 }
                 // These are handled in the start annotation
                 Annotation::EndCode | Annotation::EndHighlight => {}

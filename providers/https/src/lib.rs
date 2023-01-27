@@ -96,7 +96,7 @@ async fn invoke2(request: ProviderRequest) -> Result<Blob, Error> {
 
     let config: Config =
         serde_json::from_value(request.config.clone()).map_err(|err| Error::Config {
-            message: format!("Error parsing config: {:?}", err),
+            message: format!("Error parsing config: {err:?}"),
         })?;
 
     match request.query_type.as_str() {
@@ -124,7 +124,7 @@ async fn send_query(
     let url = url
         .join(path_and_query)
         .map_err(|e| Error::Config {
-            message: format!("Invalid URL: {:?}", e),
+            message: format!("Invalid URL: {e:?}"),
         })?
         .to_string();
 

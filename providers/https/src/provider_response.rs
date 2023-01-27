@@ -41,7 +41,7 @@ impl TryFrom<HttpRequestError> for HttpsProviderResponse {
         } else {
             serde_json::to_value(err)
                 .map_err(|e| Error::Data {
-                    message: format!("Error serializing http error: {:?}", e),
+                    message: format!("Error serializing http error: {e:?}"),
                 })?
                 .to_string()
         };

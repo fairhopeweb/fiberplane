@@ -44,8 +44,7 @@ struct SearchRequestBody {
 #[fp_export_impl(fiberplane_provider_bindings)]
 async fn invoke(request: ProviderRequest, config: ProviderConfig) -> ProviderResponse {
     log(format!(
-        "Elasticsearch provider (commit: {}, built at: {}) invoked with request: {:?}",
-        COMMIT_HASH, BUILD_TIMESTAMP, request
+        "Elasticsearch provider (commit: {COMMIT_HASH}, built at: {BUILD_TIMESTAMP}) invoked with request: {request:?}"
     ));
 
     let config: Config = match serde_json::from_value(config) {
@@ -53,7 +52,7 @@ async fn invoke(request: ProviderRequest, config: ProviderConfig) -> ProviderRes
         Err(err) => {
             return ProviderResponse::Error {
                 error: Error::Config {
-                    message: format!("Error parsing config: {:?}", err),
+                    message: format!("Error parsing config: {err:?}"),
                 },
             }
         }
@@ -100,7 +99,7 @@ async fn fetch_logs(query: QueryLogs, config: Config) -> Result<Vec<LogRecord>, 
 
     let mut headers = HashMap::new();
     if let Some(api_key) = config.api_key {
-        headers.insert("Authorization".to_string(), format!("ApiKey {}", api_key));
+        headers.insert("Authorization".to_string(), format!("ApiKey {api_key}"));
     }
     headers.insert("Content-Type".to_string(), "application/json".to_string());
 
@@ -121,7 +120,7 @@ async fn fetch_logs(query: QueryLogs, config: Config) -> Result<Vec<LogRecord>, 
         body: Some(
             serde_json::to_vec(&body)
                 .map_err(|e| Error::Data {
-                    message: format!("Error serializing query: {:?}", e),
+                    message: format!("Error serializing query: {e:?}"),
                 })?
                 .into(),
         ),
@@ -133,7 +132,7 @@ async fn fetch_logs(query: QueryLogs, config: Config) -> Result<Vec<LogRecord>, 
     // Parse response
     let response = make_http_request(request).await?.body;
     let response: SearchResponse = serde_json::from_slice(&response).map_err(|e| Error::Data {
-        message: format!("Error parsing ElasticSearch response: {:?}", e),
+        message: format!("Error parsing ElasticSearch response: {e:?}"),
     })?;
 
     if response.timed_out {
@@ -177,8 +176,7 @@ fn parse_hit(
         .source()
         .map_err(|err| {
             log(format!(
-                "Error parsing ElasticSearch hit as JSON object: {:?}",
-                err
+                "Error parsing ElasticSearch hit as JSON object: {err:?}"
             ));
         })
         .ok()?;
@@ -193,7 +191,7 @@ fn parse_hit(
             if let Ok(bytes) = hex::decode(val.to_string().replace('-', "")) {
                 Some(bytes.into())
             } else {
-                log(format!("unable to decode ID as hex in log: {}", val));
+                log(format!("unable to decode ID as hex in log: {val}"));
                 // Put the value back if we were unable to parse it
                 flattened_fields.insert(key, val);
                 None
@@ -258,13 +256,13 @@ fn flatten_nested_value(output: &mut HashMap<String, String>, key: String, value
     match value {
         Value::Object(v) => {
             for (sub_key, val) in v.into_iter() {
-                flatten_nested_value(output, format!("{}.{}", key, sub_key), val);
+                flatten_nested_value(output, format!("{key}.{sub_key}"), val);
             }
         }
         Value::Array(v) => {
             for (index, val) in v.into_iter().enumerate() {
                 // TODO should the separator be dots instead?
-                flatten_nested_value(output, format!("{}[{}]", key, index), val);
+                flatten_nested_value(output, format!("{key}[{index}]"), val);
             }
         }
         Value::String(v) => {

@@ -68,7 +68,7 @@ where
     let url = url
         .join(path_and_query)
         .map_err(|e| Error::Config {
-            message: format!("Invalid URL: {:?}", e),
+            message: format!("Invalid URL: {e:?}"),
         })?
         .to_string();
 
@@ -108,7 +108,7 @@ where
         })?;
 
     serde_json::from_slice(&response.body).map_err(|e| Error::Data {
-        message: format!("Error parsing response: {:?}", e),
+        message: format!("Error parsing response: {e:?}"),
     })
 }
 
@@ -124,7 +124,7 @@ async fn get_grafana_datasource_proxy_url(
         .url
         .join("api/datasources")
         .map_err(|e| Error::Config {
-            message: format!("Invalid URL: {:?}", e),
+            message: format!("Invalid URL: {e:?}"),
         })?;
     let response = make_http_request(HttpRequest {
         body: None,
@@ -135,7 +135,7 @@ async fn get_grafana_datasource_proxy_url(
     .await?;
     let data_sources: Vec<Datasource> =
         serde_json::from_slice(&response.body).map_err(|e| Error::Deserialization {
-            message: format!("Could not parse Grafana datasources response: {:?}", e),
+            message: format!("Could not parse Grafana datasources response: {e:?}"),
         })?;
 
     // Find one of type "loki"
@@ -143,16 +143,16 @@ async fn get_grafana_datasource_proxy_url(
         .into_iter()
         .find(|ds| ds.ty == data_source_type)
         .ok_or_else(|| Error::Other {
-            message: format!("No {} data source found in grafana", data_source_type),
+            message: format!("No {data_source_type} data source found in grafana"),
         })?;
 
-    log(format!("Found loki data source: {:?}", loki_data_source));
+    log(format!("Found loki data source: {loki_data_source:?}"));
 
     // Construct the proxy URL
     config
         .url
         .join(&format!("api/datasources/proxy/{}/", loki_data_source.id))
         .map_err(|e| Error::Config {
-            message: format!("Invalid URL: {:?}", e),
+            message: format!("Invalid URL: {e:?}"),
         })
 }

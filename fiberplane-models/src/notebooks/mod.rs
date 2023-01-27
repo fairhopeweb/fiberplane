@@ -292,10 +292,7 @@ pub struct NewTrigger {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(
-        rust_plugin_module = "fiberplane_models::notebooks",
-        rust_wasmer_runtime_module = "fiberplane_models::notebooks"
-    )
+    fp(rust_module = "fiberplane_models::notebooks")
 )]
 #[serde(rename_all = "camelCase")]
 /// The query string values that are associated with the notebook_cells_append

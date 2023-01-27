@@ -61,7 +61,7 @@ async fn invoke2(request: ProviderRequest) -> Result<Blob, Error> {
 
     let config: SentryConfig =
         serde_json::from_value(request.config).map_err(|err| Error::Config {
-            message: format!("Error parsing config: {:?}", err),
+            message: format!("Error parsing config: {err:?}"),
         })?;
 
     match request.query_type.as_str() {

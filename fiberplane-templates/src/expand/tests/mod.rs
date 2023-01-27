@@ -371,7 +371,7 @@ fn returns_helpful_error_if_missing_argument() {
     match expand_template(template, args) {
         Ok(_) => panic!("Should have errored"),
         Err(Error::MissingArgument(parameter)) => assert_eq!(parameter, "title"),
-        Err(err) => panic!("wrong error: {:?}", err),
+        Err(err) => panic!("wrong error: {err:?}"),
     }
 }
 

@@ -34,14 +34,11 @@ impl Api {
         match &self.auth {
             Some(Auth::Basic { username, password }) => Some(HashMap::from([(
                 "Authorization".to_string(),
-                format!(
-                    "Basic {}",
-                    base64::encode(format!("{}:{}", username, password))
-                ),
+                format!("Basic {}", base64::encode(format!("{username}:{password}"))),
             )])),
             Some(Auth::Bearer { token }) => Some(HashMap::from([(
                 "Authorization".to_string(),
-                format!("Bearer {}", token),
+                format!("Bearer {token}"),
             )])),
             None => None,
         }

@@ -142,7 +142,7 @@ fn write_preamble(writer: &mut CodeWriter) {
     writer.println(
         "// For documentation on Fiberplane Templates, see: https://docs.fiberplane.com/templates",
     );
-    writer.println(format!("local fp = import '{}';", FIBERPLANE_LIBRARY_PATH));
+    writer.println(format!("local fp = import '{FIBERPLANE_LIBRARY_PATH}';"));
     writer.println("local c = fp.cell;");
     writer.println("local fmt = fp.format;");
     writer.println("");
@@ -229,7 +229,7 @@ fn print_cell(writer: &mut CodeWriter, cell: &Cell) {
     // Print the cell on one line or multiple depending on how many properties it has
     let first_param = args.first().map(|(name, _)| *name);
     match (args.len(), first_param) {
-        (0, _) => writer.println(format!("c.{}(),", function_name)),
+        (0, _) => writer.println(format!("c.{function_name}(),")),
         (1, Some("content")) => writer.println(format!("c.{}({}),", function_name, args[0].1)),
         (1, _) => writer.println(format!("c.{}({}={}),", function_name, args[0].0, args[0].1)),
         (2, Some("content")) => writer.println(format!(
@@ -237,10 +237,10 @@ fn print_cell(writer: &mut CodeWriter, cell: &Cell) {
             function_name, args[0].1, args[1].0, args[1].1
         )),
         _ => {
-            writer.println(format!("c.{}(", function_name));
+            writer.println(format!("c.{function_name}("));
             writer.indent();
             for (param, val) in args {
-                writer.println(format!("{}={},", param, val));
+                writer.println(format!("{param}={val},"));
             }
             writer.dedent();
             writer.println("),")
@@ -329,7 +329,7 @@ fn format_content(content: &str, formatting: &Formatting) -> String {
                 let formatted = timestamp
                     .format(&Rfc3339)
                     .expect("Invalid timestamp format");
-                write!(output, "fmt.timestamp('{}'), ", formatted)
+                write!(output, "fmt.timestamp('{formatted}'), ")
                     .expect("Cannot write timestamp instruction");
                 index += char_count(&formatted);
             }
@@ -338,7 +338,7 @@ fn format_content(content: &str, formatting: &Formatting) -> String {
                     true => format!("'{}'", label.key),
                     false => format!("'{}', '{}'", label.key, label.value),
                 };
-                output.push_str(&format!("fmt.label({}), ", args));
+                output.push_str(&format!("fmt.label({args}), "));
                 index += char_count(&label.to_string())
             }
         }
@@ -374,33 +374,13 @@ fn finish_enclosure(string: &mut String, brackets: &str) {
 fn escape_string_and_replace_mustache_substitutions(content: &str, separator: &str) -> String {
     let escaped = escape_string(content);
     if let Some(quote) = escaped.chars().next() {
-        let replaced = MUSTACHE_SUBSTITUTION.replace_all(
-            &escaped,
-            format!(
-                "{quote}{separator}$1{separator}{quote}",
-                quote = quote,
-                separator = separator
-            ),
-        );
+        let replaced = MUSTACHE_SUBSTITUTION
+            .replace_all(&escaped, format!("{quote}{separator}$1{separator}{quote}"));
         // Remove empty strings (which can happen if the mustache substitution happens at the beginning or
         // end of the string, or if there are multiple substitutions in a row)
         replaced
-            .replace(
-                &format!(
-                    "{quote}{quote}{separator}",
-                    quote = quote,
-                    separator = separator
-                ),
-                "",
-            )
-            .replace(
-                &format!(
-                    "{separator}{quote}{quote}",
-                    quote = quote,
-                    separator = separator
-                ),
-                "",
-            )
+            .replace(&format!("{quote}{quote}{separator}"), "")
+            .replace(&format!("{separator}{quote}{quote}"), "")
     } else {
         escaped
     }
@@ -425,7 +405,7 @@ fn parse_template_function_parameters<'a>(
             let variable = variable.as_str();
             if unique_parameters.insert(variable) {
                 // This will print "variable={{variable}}" (the extra braces are for escaping the braces)
-                Some(format!("{}='{{{{{}}}}}',", variable, variable))
+                Some(format!("{variable}='{{{{{variable}}}}}',"))
             } else {
                 None
             }

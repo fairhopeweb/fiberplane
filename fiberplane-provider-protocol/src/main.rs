@@ -128,7 +128,7 @@ fn main() {
             }),
             path,
         });
-        println!("Rust plugin bindings written to `{}/`.", path);
+        println!("Rust plugin bindings written to `{path}/`.");
     }
 
     {
@@ -137,7 +137,7 @@ fn main() {
             bindings_type: BindingsType::RustWasmerRuntime,
             path,
         });
-        println!("Rust Wasmer runtime bindings written to `{}/`.", path);
+        println!("Rust Wasmer runtime bindings written to `{path}/`.");
     }
 
     {
@@ -148,6 +148,6 @@ fn main() {
             ),
             path,
         });
-        println!("TypeScript runtime bindings written to `{}/`.", path);
+        println!("TypeScript runtime bindings written to `{path}/`.");
     }
 }

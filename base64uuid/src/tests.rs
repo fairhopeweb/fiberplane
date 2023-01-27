@@ -54,7 +54,7 @@ fn deserialization() {
 #[test]
 fn debug_format() {
     let uuid = Base64Uuid::parse_str("b0c1ee86-6f46-4f1b-8d8b-7849e75dbcee").unwrap();
-    let debug = format!("{:?}", uuid);
+    let debug = format!("{uuid:?}");
     assert_eq!(&debug, "sMHuhm9GTxuNi3hJ51287g")
 }
 
