@@ -18,6 +18,11 @@ pub use cells::*;
 
 pub mod operations;
 
+/// A JSON object which may or may not contain well known keys.
+/// More information in the [RFC](https://www.notion.so/fiberplane/RFC-58-Front-matter-Specialization-Front-matter-a9b3b51614ee48a19ec416c02a9fd647)
+// this is on purpose a `Map<String, Value>` instead of a `Value` to disallow top level arrays
+pub type FrontMatter = Map<String, Value>;
+
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
 #[cfg_attr(
     feature = "fp-bindgen",
@@ -43,6 +48,9 @@ pub struct Notebook {
 
     #[serde(default)]
     pub labels: Vec<Label>,
+
+    #[serde(default)]
+    pub front_matter: FrontMatter,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
@@ -62,6 +70,9 @@ pub struct NewNotebook {
 
     #[serde(default)]
     pub labels: Vec<Label>,
+
+    #[serde(default)]
+    pub front_matter: FrontMatter,
 }
 
 impl From<Notebook> for NewNotebook {
@@ -72,6 +83,7 @@ impl From<Notebook> for NewNotebook {
             time_range: notebook.time_range.into(),
             selected_data_sources: notebook.selected_data_sources,
             labels: notebook.labels,
+            front_matter: notebook.front_matter,
         }
     }
 }

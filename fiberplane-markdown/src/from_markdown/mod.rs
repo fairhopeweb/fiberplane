@@ -63,6 +63,7 @@ impl<'a> MarkdownConverter<'a> {
             selected_data_sources: Default::default(),
             labels: Default::default(),
             time_range: NewTimeRange::Relative(RelativeTimeRange { minutes: -60 }),
+            front_matter: Default::default(),
         }
     }
 

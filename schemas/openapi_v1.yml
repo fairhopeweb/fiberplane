@@ -45,6 +45,8 @@ components:
             $ref: "#/components/schemas/label"
         selectedDataSources:
           $ref: "#/components/schemas/selectedDataSources"
+        frontMatter:
+          $ref: "#/components/schemas/front_matter"
     notebookCopyDestination:
       type: object
       required:
@@ -456,6 +458,7 @@ components:
         - updatedAt
         - labels
         - selectedDataSources
+        - frontMatter
       properties:
         id:
           type: string
@@ -490,6 +493,8 @@ components:
             $ref: "#/components/schemas/label"
         selectedDataSources:
           $ref: "#/components/schemas/selectedDataSources"
+        frontMatter:
+          $ref: "#/components/schemas/front_matter"
     notebookPatch:
       type: object
       properties:
@@ -1952,6 +1957,8 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/label"
+    front_matter:
+      type: object
   parameters:
     sortDirection:
       in: query
@@ -2334,6 +2341,29 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/threadSummary"
+  /api/notebooks/{notebookId}/front_matter:
+    parameters:
+      - $ref: "#/components/parameters/notebookId"
+    patch:
+      operationId: front_matter_update
+      description: Updates front matter data for notebook
+      requestBody:
+        description: Front matter object to merge with existing notebook front matter data
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/front_matter"
+      responses:
+        "200":
+          description: OK
+    delete:
+      operationId: front_matter_delete
+      description: |
+        Deletes *all* front matter data for notebook. If you wish to delete a single key instead of the whole object, use the `patch` endpoint with value: `null`
+      responses:
+        "200":
+          description: OK
   /api/workspaces/{workspace_id}/data_sources:
     parameters:
       - $ref: "#/components/parameters/workspace_id"

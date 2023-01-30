@@ -278,6 +278,42 @@ pub async fn file_delete(
     Ok(())
 }
 
+/// Deletes *all* front matter data for notebook. If you wish to delete a single key instead of the whole object, use the `patch` endpoint with value: `null`
+pub async fn front_matter_delete(
+    client: &ApiClient,
+    notebook_id: base64uuid::Base64Uuid,
+) -> Result<()> {
+    let mut builder = client.request(
+        Method::DELETE,
+        &format!(
+            "/api/notebooks/{notebookId}/front_matter",
+            notebookId = notebook_id,
+        ),
+    )?;
+    let response = builder.send().await?.error_for_status()?;
+
+    Ok(())
+}
+
+/// Updates front matter data for notebook
+pub async fn front_matter_update(
+    client: &ApiClient,
+    notebook_id: base64uuid::Base64Uuid,
+    payload: models::FrontMatter,
+) -> Result<()> {
+    let mut builder = client.request(
+        Method::PATCH,
+        &format!(
+            "/api/notebooks/{notebookId}/front_matter",
+            notebookId = notebook_id,
+        ),
+    )?;
+    builder = builder.json(&payload);
+    let response = builder.send().await?.error_for_status()?;
+
+    Ok(())
+}
+
 /// Expand the snippet and insert the cells into the notebook
 pub async fn notebook_snippet_insert(
     client: &ApiClient,

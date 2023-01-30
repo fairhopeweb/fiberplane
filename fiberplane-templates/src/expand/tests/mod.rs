@@ -200,6 +200,7 @@ const NOTEBOOK: Lazy<NewNotebook> = Lazy::new(|| NewNotebook {
             value: "".to_string(),
         },
     ],
+    front_matter: FrontMatter::new(),
 });
 
 #[test]
@@ -875,6 +876,7 @@ fn mustache_substitution_in_title() {
         selected_data_sources: Default::default(),
         time_range: NewTimeRange::Relative(RelativeTimeRange { minutes: -60 }),
         labels: Vec::new(),
+        front_matter: FrontMatter::new(),
     };
     let template = notebook_to_template(notebook);
     let notebook = expand_template(
@@ -900,6 +902,7 @@ fn mustache_substitution_to_function_parameters() {
         selected_data_sources: Default::default(),
         time_range: NewTimeRange::Relative(RelativeTimeRange { minutes: -60 }),
         labels: Vec::new(),
+        front_matter: FrontMatter::new(),
     };
     let template = notebook_to_template(notebook);
     let params = extract_template_parameters(template).unwrap();

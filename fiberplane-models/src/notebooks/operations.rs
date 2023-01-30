@@ -1,6 +1,6 @@
 use crate::data_sources::SelectedDataSource;
 use crate::formatting::Formatting;
-use crate::notebooks::{Cell, Label};
+use crate::notebooks::{Cell, FrontMatter, Label};
 use crate::timestamps::TimeRange;
 #[cfg(feature = "fp-bindgen")]
 use fp_bindgen::prelude::*;
@@ -30,6 +30,8 @@ pub enum Operation {
     AddLabel(AddLabelOperation),
     ReplaceLabel(ReplaceLabelOperation),
     RemoveLabel(RemoveLabelOperation),
+    UpdateFrontMatter(UpdateFrontMatterOperation),
+    ClearFrontMatter(ClearFrontMatterOperation),
 }
 
 /// Moves one or more cells.
@@ -357,6 +359,31 @@ pub struct ReplaceLabelOperation {
 #[serde(rename_all = "camelCase")]
 pub struct RemoveLabelOperation {
     pub label: Label,
+}
+
+/// Replaces front matter in a notebook
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[cfg_attr(
+    feature = "fp-bindgen",
+    derive(Serializable),
+    fp(rust_plugin_module = "fiberplane_models::notebooks::operations")
+)]
+#[serde(rename_all = "camelCase")]
+pub struct UpdateFrontMatterOperation {
+    pub old_front_matter: FrontMatter,
+    pub new_front_matter: FrontMatter,
+}
+
+/// Removes front matter in a notebook
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[cfg_attr(
+    feature = "fp-bindgen",
+    derive(Serializable),
+    fp(rust_plugin_module = "fiberplane_models::notebooks::operations")
+)]
+#[serde(rename_all = "camelCase")]
+pub struct ClearFrontMatterOperation {
+    pub front_matter: FrontMatter,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
