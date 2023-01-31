@@ -18,11 +18,6 @@ pub mod models {
     pub use fiberplane_models::*;
 }
 
-#[cfg(feature = "ot")]
-pub mod ot {
-    pub use fiberplane_ot::*;
-}
-
 #[cfg(feature = "provider-bindings")]
 pub mod provider_bindings {
     pub use fiberplane_provider_bindings::*;

@@ -366,7 +366,7 @@ pub struct RemoveLabelOperation {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::notebooks::operations")
+    fp(rust_module = "fiberplane_models::notebooks::operations")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateFrontMatterOperation {
@@ -379,7 +379,7 @@ pub struct UpdateFrontMatterOperation {
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
-    fp(rust_plugin_module = "fiberplane_models::notebooks::operations")
+    fp(rust_module = "fiberplane_models::notebooks::operations")
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ClearFrontMatterOperation {

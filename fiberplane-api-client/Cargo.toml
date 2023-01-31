@@ -1,7 +1,12 @@
 [package]
 name = "fiberplane-api-client"
 edition = "2021"
-version = "0.1.0"
+
+[package.version]
+workspace = true
+
+[package.license]
+workspace = true
 
 [dependencies]
 anyhow = "1"
@@ -10,36 +15,31 @@ secrecy = "0"
 serde_json = "1"
 
 [dependencies.base64uuid]
-path = "../base64uuid"
 features = []
-optional = false
+workspace = true
 
 [dependencies.fiberplane-models]
-path = "../fiberplane-models"
 features = []
-optional = false
+workspace = true
 
 [dependencies.reqwest]
 version = "0.11"
-features = ["json", "multipart", "gzip", "rustls-tls"]
-optional = false
+features = ["gzip", "json", "multipart", "rustls-tls"]
 default-features = false
 
 [dependencies.serde]
 version = "1"
 features = ["derive"]
-optional = false
+default-features = false
 
 [dependencies.time]
 version = "0.3"
-features = ["parsing", "formatting", "serde-human-readable", "serde-well-known"]
-optional = false
+features = ["formatting", "parsing", "serde-human-readable", "serde-well-known"]
+default-features = false
 
 [lib]
 path = "src/lib.rs"
 name = "fiberplane_api_client"
-plugin = false
-proc-macro = false
 edition = "2021"
 crate-type = ["rlib"]
 required-features = []

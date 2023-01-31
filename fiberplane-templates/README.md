@@ -1,24 +1,32 @@
 # Fiberplane Templates
 
-> Programmatically generate Fiberplane Notebooks for repeatable workflows.
+> Programmatically generate Fiberplane Notebooks for repeatable workflows
 
 ## Overview
 
-Fiberplane Templates are built with the [Jsonnet](https://jsonnet.org/) data templating language.
+Fiberplane Templates are built with the [Jsonnet](https://jsonnet.org/) data
+templating language.
 
-This repository includes:
+This crate includes:
 
-- Fiberplane [Jsonnet library](./fiberplane.libsonnet) with functions for creating Notebooks ([API Docs](./docs/template_api.md))
-- [Example Templates](./examples) for various use cases (incident response, root cause analysis, etc)
-- Rust library for expanding Templates into Notebooks and for converting existing Notebooks into Templates
+- Fiberplane [Jsonnet library](./fiberplane.libsonnet) with functions for
+  creating notebooks ([API Docs](./docs/template_api.md))
+- [Example Templates](./examples) for various use cases (incident response, root
+  cause analysis, etc)
+- Rust library for expanding templates into notebooks and for converting
+  existing notebooks into templates
 
 ## Quickstart
 
-The [Fiberplane CLI](https://github.com/fiberplane/fp) is the recommended way to interact with Templates (see the [docs](https://github.com/fiberplane/fp#templates) or run `fp help templates`).
+The [Fiberplane CLI](https://github.com/fiberplane/fp) is the recommended way to
+interact with Templates (see the
+[docs](https://github.com/fiberplane/fp#templates) or run `fp help templates`).
 
 ## Structure of a Template
 
-Most Fiberplane Templates export a Jsonnet function that accepts some parameters and creates a Notebook using the helper functions provided by the Fiberplane Jsonnet library.
+Most Fiberplane Templates export a Jsonnet function that accepts some parameters
+and creates a notebook using the helper functions provided by the Fiberplane
+Jsonnet library.
 
 ```jsonnet
 local fp = import 'fiberplane.libsonnet';
@@ -40,11 +48,12 @@ function(incidentName='API Outage')
     ])
 ```
 
-See the [examples](./examples) for more detailed, use case-specific Templates.
+See the [examples](./examples) for more detailed, use-case-specific templates.
 
 ## Snippets
 
-Snippets are smaller pieces of Jsonnet code that produce reusable arrays of Notebook Cells, rather than whole Notebooks.
+Snippets are smaller pieces of Jsonnet code that produce reusable arrays of
+notebook cells, rather than whole notebooks.
 
 ```jsonnet
 local fp = import 'fiberplane.libsonnet';
@@ -65,10 +74,14 @@ See the generated API docs [here](./docs/template_api.md).
 
 ### VS Code
 
-If you want to edit Jsonnet files in VS Code, you can use the [Jsonnet NG](https://marketplace.visualstudio.com/items?itemName=Sebbia.jsonnetng) extension.
+If you want to edit Jsonnet files in VS Code, you can use the
+[Jsonnet NG](https://marketplace.visualstudio.com/items?itemName=Sebbia.jsonnetng)
+extension.
 
-You should add the following to your VS Code `settings.json` file to edit Template files without it showing errors.
-This includes the Fiberplane Jsonnet library and external variables normally provided by the Template expansion functions.
+You should add the following to your VS Code `settings.json` file to edit
+template files without it showing errors. This includes the Fiberplane Jsonnet
+library and external variables normally provided by the template expansion
+functions.
 
 ```json
 {
@@ -86,7 +99,10 @@ cargo test --lib --examples
 
 ### Generating Documentation
 
-The Jsonnet library API documentation is generated from [JSDoc](https://jsdoc.app/) comments in [fiberplane.libsonnet](./fiberplane.libsonnet) using [jsdoc-to-markdown](https://github.com/jsdoc2md/jsdoc-to-markdown).
+The Jsonnet library API documentation is generated from
+[JSDoc](https://jsdoc.app/) comments in
+[fiberplane.libsonnet](./fiberplane.libsonnet) using
+[jsdoc-to-markdown](https://github.com/jsdoc2md/jsdoc-to-markdown).
 
 To (re)generate the documentation, you can use this Docker command:
 

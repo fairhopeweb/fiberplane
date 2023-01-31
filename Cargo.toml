@@ -5,40 +5,52 @@ members = [
     "fiberplane-api-client",
     "fiberplane-markdown",
     "fiberplane-models",
-    "fiberplane-ot",
     "fiberplane-provider-protocol",
     "fiberplane-provider-protocol/fiberplane-provider-bindings",
     "fiberplane-provider-protocol/fiberplane-provider-runtime",
     "fiberplane-templates",
     "providers/*",
 ]
-exclude = [ "providers/.cargo"]
+exclude = ["providers/.cargo"]
 
 [workspace.package]
+version = "1.0.0-alpha.2"
 authors = ["Fiberplane <info@fiberplane.com>"]
 edition = "2021"
 rust-version = "1.64"
+license = "MIT OR Apache-2.0"
 
 [workspace.dependencies]
+base64uuid = { version = "1.0.0-alpha.2", registry = "artifactory", path = "base64uuid", default-features = false }
 bytes = { version = "1", features = ["serde"] }
-fp-bindgen = { version = "2.4" }
-fp-bindgen-support = { version = "2.4" }
-fiberplane-models = { path = "fiberplane-models" }
-fiberplane-provider-bindings = { path = "fiberplane-provider-protocol/fiberplane-provider-bindings" }
+fp-bindgen = { version = "3.0.0-alpha.1" }
+fp-bindgen-support = { version = "3.0.0-alpha.1" }
+fiberplane = { version = "1.0.0-alpha.2", registry = "artifactory", path = "fiberplane" }
+fiberplane-api-client = { version = "1.0.0-alpha.2", registry = "artifactory", path = "fiberplane-api-client" }
+fiberplane-markdown = { version = "1.0.0-alpha.2", registry = "artifactory", path = "fiberplane-markdown" }
+fiberplane-models = { version = "1.0.0-alpha.2", registry = "artifactory", path = "fiberplane-models" }
+fiberplane-provider-bindings = { version = "2.0.0-alpha.1", registry = "artifactory", path = "fiberplane-provider-protocol/fiberplane-provider-bindings" }
+fiberplane-provider-runtime = { version = "2.0.0-alpha.1", registry = "artifactory", path = "fiberplane-provider-protocol/fiberplane-provider-runtime" }
+fiberplane-templates = { version = "1.0.0-alpha.2", registry = "artifactory", path = "fiberplane-templates" }
 once_cell = { version = "1.8" }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 thiserror = "1.0.37"
-time = { version = "0.3.15", features = [ "macros", "serde-human-readable", "serde-well-known" ] }
+time = { version = "0.3.15", features = [
+    "macros",
+    "serde-human-readable",
+    "serde-well-known",
+] }
 tracing = "0.1.37"
 url = { version = "2.2.2", features = ["serde"] }
-uuid = "1"
-vergen = { version = "7.4.2", default-features = false, features = ["build", "git"] }
+uuid = { version = "1", default-features = false }
+vergen = { version = "7.4.2", default-features = false, features = [
+    "build",
+    "git",
+] }
 
 [patch.crates-io]
-#fp-bindgen = { path = "../fp-bindgen/fp-bindgen"}
-#fp-bindgen-macros = { path = "../fp-bindgen/macros"}
-#fp-bindgen-support = { path = "../fp-bindgen/fp-bindgen-support"}
-fp-bindgen = { git = "ssh://git@github.com/fiberplane/fp-bindgen.git", branch = "main" }
-fp-bindgen-macros = { git = "ssh://git@github.com/fiberplane/fp-bindgen.git", branch = "main" }
-fp-bindgen-support = { git = "ssh://git@github.com/fiberplane/fp-bindgen.git", branch = "main" }
+#fp-bindgen = { git = "ssh://git@github.com/fiberplane/fp-bindgen.git", branch = "main" }
+#fp-bindgen-support = { git = "ssh://git@github.com/fiberplane/fp-bindgen.git", branch = "main" }
+#fp-bindgen = { path = "../fp-bindgen/fp-bindgen" }
+#fp-bindgen-support = { path = "../fp-bindgen/fp-bindgen-support" }

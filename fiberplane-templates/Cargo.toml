@@ -1,9 +1,10 @@
 [package]
 name = "fiberplane-templates"
-version = "0.1.0"
+version = { workspace = true }
 authors = { workspace = true }
 edition = { workspace = true }
 rust-version = { workspace = true }
+license = { workspace = true }
 
 [features]
 default = ["convert", "expand", "examples"]
@@ -13,10 +14,10 @@ types = ["serde", "serde_json"]
 examples = []
 
 [dependencies]
-base64uuid = { path = "../base64uuid", default-features = false }
+base64uuid = { workspace = true, default-features = false }
 fiberplane-models = { workspace = true }
 once_cell = { workspace = true, optional = true }
-jrsonnet-evaluator =  { version = "0.4.2", optional = true }
+jrsonnet-evaluator = { version = "0.4.2", optional = true }
 jrsonnet-types = { version = "0.4.2", optional = true }
 regex = { version = "1.5.5", optional = true }
 serde = { workspace = true, optional = true }

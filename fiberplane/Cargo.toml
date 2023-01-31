@@ -1,9 +1,10 @@
 [package]
 name = "fiberplane"
-version = "0.1.0"
+version = { workspace = true }
 authors = { workspace = true }
 edition = { workspace = true }
 rust-version = { workspace = true }
+license = { workspace = true }
 
 [lib]
 crate-type = ["lib"]
@@ -21,10 +22,10 @@ sqlx = ["base64uuid?/sqlx", "fiberplane-models?/sqlx"]
 templates = ["fiberplane-templates"]
 
 [dependencies]
-base64uuid = { path = "../base64uuid", default-features = false, optional = true }
-fiberplane-api-client = { path = "../fiberplane-api-client", optional = true }
-fiberplane-markdown = { path = "../fiberplane-markdown", optional = true }
-fiberplane-models = { path = "../fiberplane-models", optional = true }
+base64uuid = { workspace = true, default-features = false, optional = true }
+fiberplane-api-client = { workspace = true, optional = true }
+fiberplane-markdown = { workspace = true, optional = true }
+fiberplane-models = { workspace = true, optional = true }
 fiberplane-provider-bindings = { workspace = true, optional = true }
-fiberplane-provider-runtime = { path = "../fiberplane-provider-protocol/fiberplane-provider-runtime", optional = true }
-fiberplane-templates = { path = "../fiberplane-templates", optional = true }
+fiberplane-provider-runtime = { workspace = true, optional = true }
+fiberplane-templates = { workspace = true, optional = true }

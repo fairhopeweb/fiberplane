@@ -87,34 +87,12 @@ fp_export! {
 fn main() {
     {
         let dependencies = BTreeMap::from([
-            (
-                "bytes",
-                CargoDependency {
-                    version: Some("1"),
-                    ..Default::default()
-                },
-            ),
-            (
-                "fiberplane-models",
-                fp_bindgen::types::CargoDependency {
-                    workspace: Some(true),
-                    ..Default::default()
-                },
-            ),
-            (
-                "once_cell",
-                fp_bindgen::types::CargoDependency {
-                    workspace: Some(true),
-                    ..Default::default()
-                },
-            ),
+            ("bytes", CargoDependency::with_version("1")),
+            ("fiberplane-models", CargoDependency::from_workspace()),
+            ("once_cell", CargoDependency::from_workspace()),
             (
                 "rmpv",
-                CargoDependency {
-                    version: Some("1.0.0"),
-                    features: BTreeSet::from(["with-serde"]),
-                    ..Default::default()
-                },
+                CargoDependency::with_version_and_features("1.0.0", BTreeSet::from(["with-serde"])),
             ),
         ]);
 

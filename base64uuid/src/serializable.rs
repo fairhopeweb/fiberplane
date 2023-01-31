@@ -14,11 +14,7 @@ impl Serializable for Base64Uuid {
             rs_ty: "base64uuid::Base64Uuid".to_owned(),
             rs_dependencies: BTreeMap::from([(
                 "base64uuid",
-                CargoDependency {
-                    git: Some("ssh://git@github.com/fiberplane/fiberplane-rs.git"),
-                    branch: Some("main"),
-                    ..Default::default()
-                },
+                CargoDependency::with_version(env!("CARGO_PKG_VERSION")),
             )]),
             serde_attrs: Default::default(),
             ts_ty: "string".to_owned(),

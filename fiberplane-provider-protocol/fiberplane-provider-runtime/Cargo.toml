@@ -1,15 +1,18 @@
 [package]
 name = "fiberplane-provider-runtime"
-version = "2.0.0"
+version = "2.0.0-alpha.1"
 authors = { workspace = true }
 edition = { workspace = true }
+license = { workspace = true }
 
 [dependencies]
 bytes = { workspace = true }
 fp-bindgen-support = { workspace = true, features = ["async", "host"] }
 fiberplane-models = { workspace = true }
 rand = "0.8.0"
-reqwest = { version = "0.11.4", default-features = false, features = [ "rustls-tls" ] }
+reqwest = { version = "0.11.4", default-features = false, features = [
+    "rustls-tls",
+] }
 rmp-serde = "1.0.0"
 rmpv = { version = "1.0.0", features = ["with-serde"] }
 serde = { workspace = true }

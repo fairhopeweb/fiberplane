@@ -1,4 +1,5 @@
 # Fiberplane Markdown Conversion
+
 > Convert Fiberplane notebooks to and from Markdown
 
 ## Unsupported Features
@@ -14,8 +15,10 @@
 ### Notebook to Markdown
 
 - Images
-- Code-formatting or highlighted text that *also* as other formatting applied (e.g. bold inside inline code)
+- Code-formatting or highlighted text that _also_ has other formatting applied
+  (e.g. bold inside inline code)
 - Underlined text (uses italics instead)
 - Graphs
 - Tables
 - Logs
+- Discussions

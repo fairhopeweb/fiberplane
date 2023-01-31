@@ -4,7 +4,9 @@ use serde::{Deserializer, Serializer};
 use std::fmt;
 use uuid::Uuid;
 
-/// Serializes [Uuid](uuid:Uuid) as [Base64Uuid](crate::Base64Uuid) without the need of manually converting.
+/// Serializes [Uuid](uuid::Uuid) as [Base64Uuid](crate::Base64Uuid) without the
+/// need of manually converting.
+///
 /// For usage with Serde's `#[serde(serialize_with = "")]` field attribute.
 ///
 /// # Example
@@ -17,7 +19,8 @@ use uuid::Uuid;
 ///
 /// #[derive(Serialize, Debug)]
 /// struct Notebook {
-///     #[serde(with = "base64uuid::serde_uuid")] // or #[serde(serialize_with = "base64uuid::serde_uuid::serialize")]
+///     #[serde(with = "base64uuid::serde_uuid")]
+///     // or: #[serde(serialize_with = "base64uuid::serde_uuid::serialize")]
 ///     id: Uuid
 /// }
 ///
@@ -39,7 +42,9 @@ pub fn serialize<S: Serializer>(uuid: &Uuid, serializer: S) -> Result<S::Ok, S::
     }
 }
 
-/// Deserializes [Base64Uuid](crate::Base64Uuid) as [Uuid](uuid:Uuid) without the need of manually converting.
+/// Deserializes [Base64Uuid](crate::Base64Uuid) as [Uuid](uuid::Uuid) without
+/// the need of manually converting.
+///
 /// For usage with Serde's `#[serde(deserialize_with = "")]` field attribute.
 ///
 /// # Example
@@ -51,7 +56,8 @@ pub fn serialize<S: Serializer>(uuid: &Uuid, serializer: S) -> Result<S::Ok, S::
 ///
 /// #[derive(Deserialize, Debug)]
 /// struct Notebook {
-///     #[serde(with = "base64uuid::serde_uuid")] // or #[serde(deserialize_with = "base64uuid::serde_uuid::deserialize")]
+///     #[serde(with = "base64uuid::serde_uuid")]
+///     // or: #[serde(deserialize_with = "base64uuid::serde_uuid::deserialize")]
 ///     id: Uuid
 /// }
 ///
@@ -103,7 +109,9 @@ pub mod option {
     use std::fmt;
     use uuid::Uuid;
 
-    /// Serializes [Uuid](uuid:Uuid) as [Base64Uuid](crate::Base64Uuid) without the need of manually converting.
+    /// Serializes [Uuid](uuid::Uuid) as [Base64Uuid](crate::Base64Uuid) without
+    /// the need of manually converting.
+    ///
     /// For usage with Serde's `#[serde(serialize_with = "")]` field attribute.
     ///
     /// # Example
@@ -116,7 +124,8 @@ pub mod option {
     ///
     /// #[derive(Serialize, Debug)]
     /// struct Notebook {
-    ///     #[serde(with = "base64uuid::serde_uuid::option")] // or #[serde(serialize_with = "base64uuid::serde_uuid::option::serialize")]
+    ///     #[serde(with = "base64uuid::serde_uuid::option")]
+    ///     // or: #[serde(serialize_with = "base64uuid::serde_uuid::option::serialize")]
     ///     id: Option<Uuid>
     /// }
     ///
@@ -140,7 +149,10 @@ pub mod option {
         }
     }
 
-    /// Deserializes an optional [Base64Uuid](crate::Base64Uuid) as [Option](std::Option) of [Uuid](uuid:Uuid) without the need of manually converting.
+    /// Deserializes an optional [Base64Uuid](crate::Base64Uuid) as
+    /// [Option](std::Option) of [Uuid](uuid::Uuid) without the need of manually
+    /// converting.
+    ///
     /// For usage with Serde's `#[serde(deserialize_with = "")]` field attribute.
     ///
     /// # Example
@@ -152,7 +164,8 @@ pub mod option {
     ///
     /// #[derive(Deserialize, Debug)]
     /// struct Notebook {
-    ///     #[serde(with = "base64uuid::serde_uuid::option")] // or #[serde(deserialize_with = "base64uuid::serde_uuid::option::deserialize")]
+    ///     #[serde(with = "base64uuid::serde_uuid::option")]
+    ///     // or: #[serde(deserialize_with = "base64uuid::serde_uuid::option::deserialize")]
     ///     id: Option<Uuid>
     /// }
     ///

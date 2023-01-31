@@ -1,6 +1,6 @@
 [package]
 name = "base64uuid"
-version = "0.1.0"
+version = "1.0.0-alpha.2"
 authors = { workspace = true }
 edition = { workspace = true }
 rust-version = { workspace = true }
@@ -15,7 +15,10 @@ fp-bindgen = { workspace = true, optional = true }
 serde = { workspace = true }
 # Currently, sqlx does not export the macros without picking a runtime
 # `runtime-tokio-rustls` can be removed once https://github.com/launchbadge/sqlx/issues/1627 is resolved
-sqlx = { version = "0.6", features = ["macros", "runtime-tokio-rustls"], default-features = false, optional = true }
+sqlx = { version = "0.6", default-features = false, optional = true, features = [
+    "macros",
+    "runtime-tokio-rustls",
+] }
 thiserror = { workspace = true }
 uuid = { workspace = true }
 
