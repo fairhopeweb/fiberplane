@@ -2849,6 +2849,22 @@ paths:
       responses:
         "200":
           description: OK
+  /api/workspaces/{workspace_id}/snippets/{snippet_name}/expand:
+    parameters:
+      - $ref: "#/components/parameters/workspace_id"
+      - $ref: "#/components/parameters/snippet_name"
+    get:
+      operationId: snippet_expand
+      description: Expand the snippet and return the array of cells (without inserting them into a specific notebook)
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/cell"
   /api/workspaces/{workspace_id}/triggers:
     parameters:
       - $ref: "#/components/parameters/workspace_id"

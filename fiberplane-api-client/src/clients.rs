@@ -33,7 +33,7 @@ pub fn production_client() -> Result<ApiClient> {
 
 pub fn non_production_client(env: Option<&str>) -> Result<ApiClient> {
     let env = env.unwrap_or("dev");
-    let url = &format!("https://{env}.fiberplane.io/");
+    let url = &format!("https://{env}.fiberplane.io/", env = env);
 
     let config = default_config(Some(Duration::from_secs(30)), None, None)?;
 
