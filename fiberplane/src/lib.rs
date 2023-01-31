@@ -28,11 +28,6 @@ pub mod provider_runtime {
     pub use fiberplane_provider_runtime::*;
 }
 
-#[cfg(feature = "string-utils")]
-pub mod string_utils {
-    pub use fiberplane_string_utils::*;
-}
-
 #[cfg(feature = "templates")]
 pub mod templates {
     pub use fiberplane_templates::*;
