@@ -280,6 +280,17 @@ components:
           $ref: "#/components/schemas/formatting"
         readOnly:
           type: boolean
+    blob:
+      type: object
+      required:
+        - data
+        - mimeType
+      properties:
+        data:
+          type: string
+          format: binary
+        mimeType:
+          type: string
     encodedBlob:
       type: object
       required:
@@ -1957,6 +1968,45 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/label"
+    createCellsRequest:
+      type: object
+      required:
+        - response
+        - query_type
+      properties:
+        response:
+          $ref: "#/components/schemas/blob"
+        query_type:
+          type: string
+    extractDataRequest:
+      type: object
+      required:
+        - response
+        - mime_type
+      properties:
+        response:
+          $ref: "#/components/schemas/blob"
+        query:
+          type: string
+        mime_type:
+          type: string
+    providerRequest:
+      type: object
+      required:
+        - query_type
+        - query_data
+        - config
+      properties:
+        previous_response:
+          $ref: "#/components/schemas/blob"
+        query_type:
+          type: string
+        query_data:
+          $ref: "#/components/schemas/blob"
+        config:
+          $ref: "#/components/schemas/providerConfig"
+    providerConfig:
+      description: "Can be any JSON value (string, number, object, array, ...) including 'null'"
     front_matter:
       type: object
   parameters:
@@ -2497,7 +2547,8 @@ paths:
             - "2"
     post:
       operationId: proxy_relay
-      description: "Relay a query to a remote proxy"
+      description: "Relay a query to invoke a provider on a remote proxy"
+      deprecated: true
       requestBody:
         description: Message to send to the proxy
         required: true
@@ -2509,6 +2560,116 @@ paths:
       responses:
         "200":
           description: OK
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+  /api/workspaces/{workspace_id}/proxies/{proxy_name}/data_sources/{data_source_name}/relay/v2/invoke:
+    parameters:
+      - $ref: "#/components/parameters/workspace_id"
+      - $ref: "#/components/parameters/proxy_name"
+      - $ref: "#/components/parameters/data_source_name"
+    post:
+      operationId: proxy_invoke
+      description: "Relay a query to invoke a provider on a remote proxy"
+      requestBody:
+        description: Message to send to the proxy
+        required: true
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+              # TODO: enable schema once we have support in api client generator
+              # $ref: "#/components/schema/providerRequest"
+      responses:
+        "200":
+          description: "A msgpack serialized ProviderResponse"
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+  /api/workspaces/{workspace_id}/proxies/{proxy_name}/data_sources/{data_source_name}/relay/v2/create_cells:
+    parameters:
+      - $ref: "#/components/parameters/workspace_id"
+      - $ref: "#/components/parameters/proxy_name"
+      - $ref: "#/components/parameters/data_source_name"
+    post:
+      operationId: proxy_create_cells
+      description: "Relay a query to call 'create_cells' from a provider on a remote proxy"
+      requestBody:
+        description: Message to send to the proxy
+        required: true
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+              # TODO: enable schema once we have support in api client generator
+              # $ref: "#/components/schema/createCellsRequest"
+      responses:
+        "200":
+          description: "A msgpack serialized Result<Vec<Cell>, Error>"
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+  /api/workspaces/{workspace_id}/proxies/{proxy_name}/data_sources/{data_source_name}/relay/v2/extract_data:
+    parameters:
+      - $ref: "#/components/parameters/workspace_id"
+      - $ref: "#/components/parameters/proxy_name"
+      - $ref: "#/components/parameters/data_source_name"
+    post:
+      operationId: proxy_extract_data
+      description: "Relay a query to call 'extract_data' from a provider on a remote proxy"
+      requestBody:
+        description: Message to send to the proxy
+        required: true
+        content:
+          application/octet-stream:
+            schema:
+              type: string
+              format: binary
+              # TODO: enable schema once we have support in api client generator
+              # $ref: "#/components/schema/extractDataRequest"
+      responses:
+        "200":
+          description: "A msgpack serialized Result<Blob, Error>"
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+  /api/workspaces/{workspace_id}/proxies/{proxy_name}/data_sources/{data_source_name}/relay/v2/supported_query_types:
+    parameters:
+      - $ref: "#/components/parameters/workspace_id"
+      - $ref: "#/components/parameters/proxy_name"
+      - $ref: "#/components/parameters/data_source_name"
+    get:
+      operationId: proxy_supported_query_types
+      description: "Relay a query to call 'get_supported_query_types' from a provider on a remote proxy"
+      responses:
+        "200":
+          description: "A msgpack serialized Vec<SupportedQueryType>"
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+  /api/workspaces/{workspace_id}/proxies/{proxy_name}/data_sources/{data_source_name}/relay/v2/config_schema:
+    parameters:
+      - $ref: "#/components/parameters/workspace_id"
+      - $ref: "#/components/parameters/proxy_name"
+      - $ref: "#/components/parameters/data_source_name"
+    get:
+      operationId: proxy_config_schema
+      description: "Relay a query to call 'get_config_schema' from a provider on a remote proxy"
+      responses:
+        "200":
+          description: "A msgpack serialized ConfigSchema"
           content:
             application/octet-stream:
               schema:

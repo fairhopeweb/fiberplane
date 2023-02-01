@@ -1212,7 +1212,7 @@ pub async fn proxy_delete(
     Ok(())
 }
 
-/// Relay a query to a remote proxy
+/// Relay a query to invoke a provider on a remote proxy
 pub async fn proxy_relay(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
@@ -1226,6 +1226,92 @@ pub async fn proxy_relay(
         &format!("/api/workspaces/{workspace_id}/proxies/{proxy_name}/data_sources/{data_source_name}/relay", workspace_id = workspace_id, proxy_name = proxy_name, data_source_name = data_source_name, )
     )?;
     builder = builder.body(payload);
+    let response = builder.send().await?.error_for_status()?.bytes().await?;
+
+    Ok(response)
+}
+
+/// Relay a query to call 'get_config_schema' from a provider on a remote proxy
+pub async fn proxy_config_schema(
+    client: &ApiClient,
+    workspace_id: base64uuid::Base64Uuid,
+    proxy_name: &fiberplane_models::names::Name,
+    data_source_name: &fiberplane_models::names::Name,
+) -> Result<bytes::Bytes> {
+    let mut builder = client.request(
+        Method::GET,
+        &format!("/api/workspaces/{workspace_id}/proxies/{proxy_name}/data_sources/{data_source_name}/relay/v2/config_schema", workspace_id = workspace_id, proxy_name = proxy_name, data_source_name = data_source_name, )
+    )?;
+    let response = builder.send().await?.error_for_status()?.bytes().await?;
+
+    Ok(response)
+}
+
+/// Relay a query to call 'create_cells' from a provider on a remote proxy
+pub async fn proxy_create_cells(
+    client: &ApiClient,
+    workspace_id: base64uuid::Base64Uuid,
+    proxy_name: &fiberplane_models::names::Name,
+    data_source_name: &fiberplane_models::names::Name,
+    payload: Vec<u8>,
+) -> Result<bytes::Bytes> {
+    let mut builder = client.request(
+        Method::POST,
+        &format!("/api/workspaces/{workspace_id}/proxies/{proxy_name}/data_sources/{data_source_name}/relay/v2/create_cells", workspace_id = workspace_id, proxy_name = proxy_name, data_source_name = data_source_name, )
+    )?;
+    builder = builder.body(payload);
+    let response = builder.send().await?.error_for_status()?.bytes().await?;
+
+    Ok(response)
+}
+
+/// Relay a query to call 'extract_data' from a provider on a remote proxy
+pub async fn proxy_extract_data(
+    client: &ApiClient,
+    workspace_id: base64uuid::Base64Uuid,
+    proxy_name: &fiberplane_models::names::Name,
+    data_source_name: &fiberplane_models::names::Name,
+    payload: Vec<u8>,
+) -> Result<bytes::Bytes> {
+    let mut builder = client.request(
+        Method::POST,
+        &format!("/api/workspaces/{workspace_id}/proxies/{proxy_name}/data_sources/{data_source_name}/relay/v2/extract_data", workspace_id = workspace_id, proxy_name = proxy_name, data_source_name = data_source_name, )
+    )?;
+    builder = builder.body(payload);
+    let response = builder.send().await?.error_for_status()?.bytes().await?;
+
+    Ok(response)
+}
+
+/// Relay a query to invoke a provider on a remote proxy
+pub async fn proxy_invoke(
+    client: &ApiClient,
+    workspace_id: base64uuid::Base64Uuid,
+    proxy_name: &fiberplane_models::names::Name,
+    data_source_name: &fiberplane_models::names::Name,
+    payload: Vec<u8>,
+) -> Result<bytes::Bytes> {
+    let mut builder = client.request(
+        Method::POST,
+        &format!("/api/workspaces/{workspace_id}/proxies/{proxy_name}/data_sources/{data_source_name}/relay/v2/invoke", workspace_id = workspace_id, proxy_name = proxy_name, data_source_name = data_source_name, )
+    )?;
+    builder = builder.body(payload);
+    let response = builder.send().await?.error_for_status()?.bytes().await?;
+
+    Ok(response)
+}
+
+/// Relay a query to call 'get_supported_query_types' from a provider on a remote proxy
+pub async fn proxy_supported_query_types(
+    client: &ApiClient,
+    workspace_id: base64uuid::Base64Uuid,
+    proxy_name: &fiberplane_models::names::Name,
+    data_source_name: &fiberplane_models::names::Name,
+) -> Result<bytes::Bytes> {
+    let mut builder = client.request(
+        Method::GET,
+        &format!("/api/workspaces/{workspace_id}/proxies/{proxy_name}/data_sources/{data_source_name}/relay/v2/supported_query_types", workspace_id = workspace_id, proxy_name = proxy_name, data_source_name = data_source_name, )
+    )?;
     let response = builder.send().await?.error_for_status()?.bytes().await?;
 
     Ok(response)

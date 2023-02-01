@@ -1,6 +1,9 @@
 use super::data_sources::{DataSource, DataSourceStatus};
 use super::names::{InvalidName, Name};
 use super::providers::Error;
+use crate::blobs::Blob;
+use crate::notebooks::Cell;
+use crate::providers::{ConfigSchema, ProviderConfig, SupportedQueryType};
 use base64uuid::{Base64Uuid, InvalidId};
 #[cfg(feature = "fp-bindgen")]
 use fp_bindgen::prelude::Serializable;
@@ -149,6 +152,38 @@ impl TryFrom<&str> for ProxyToken {
     }
 }
 
+#[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Eq)]
+#[cfg_attr(
+    feature = "fp-bindgen",
+    derive(Serializable),
+    fp(
+        rust_plugin_module = "fiberplane_models::proxies",
+        rust_wasmer_runtime_module = "fiberplane_models::proxies"
+    )
+)]
+#[serde(rename_all = "camelCase")]
+pub struct CreateCellsApiRequest {
+    pub response: Blob,
+    pub query_type: String,
+}
+
+#[derive(Clone, Serialize, Deserialize, Debug, PartialEq, Eq)]
+#[cfg_attr(
+    feature = "fp-bindgen",
+    derive(Serializable),
+    fp(
+        rust_plugin_module = "fiberplane_models::proxies",
+        rust_wasmer_runtime_module = "fiberplane_models::proxies"
+    )
+)]
+#[serde(rename_all = "camelCase")]
+pub struct ExtractDataApiRequest {
+    pub response: Blob,
+    pub mime_type: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub query: Option<String>,
+}
+
 /// Messages sent to the Proxy
 #[derive(Debug, Deserialize, Serialize)]
 #[cfg_attr(
@@ -156,9 +191,13 @@ impl TryFrom<&str> for ProxyToken {
     derive(Serializable),
     fp(rust_module = "fiberplane_models::proxies")
 )]
-#[serde(tag = "type", rename_all = "camelCase")]
-pub enum ServerMessage {
-    InvokeProxy(InvokeProxyMessage),
+#[serde(rename_all = "camelCase")]
+pub struct ServerMessage {
+    pub op_id: Base64Uuid,
+    pub data_source_name: Name,
+    pub protocol_version: u8,
+    #[serde(flatten)]
+    pub payload: ServerMessagePayload,
 }
 
 impl ServerMessage {
@@ -173,9 +212,144 @@ impl ServerMessage {
     }
 
     pub fn op_id(&self) -> Option<Base64Uuid> {
-        match self {
-            ServerMessage::InvokeProxy(message) => Some(message.op_id),
+        Some(self.op_id)
+    }
+
+    fn payload_with_header(
+        payload: ServerMessagePayload,
+        data_source_name: Name,
+        protocol_version: u8,
+        op_id: Base64Uuid,
+    ) -> Self {
+        Self {
+            op_id,
+            data_source_name,
+            protocol_version,
+            payload,
         }
+    }
+
+    pub fn new_invoke_proxy_request(
+        data: Vec<u8>,
+        data_source_name: Name,
+        protocol_version: u8,
+        op_id: Base64Uuid,
+    ) -> Self {
+        Self::payload_with_header(
+            ServerMessagePayload::Invoke(InvokeRequest { data }),
+            data_source_name,
+            protocol_version,
+            op_id,
+        )
+    }
+    pub fn new_create_cells_request(
+        data: Blob,
+        query_type: String,
+        data_source_name: Name,
+        protocol_version: u8,
+        op_id: Base64Uuid,
+    ) -> Self {
+        Self::payload_with_header(
+            ServerMessagePayload::CreateCells(CreateCellsRequest {
+                response: data,
+                query_type,
+            }),
+            data_source_name,
+            protocol_version,
+            op_id,
+        )
+    }
+    pub fn new_extract_data_request(
+        data: Blob,
+        mime_type: String,
+        query: Option<String>,
+        data_source_name: Name,
+        protocol_version: u8,
+        op_id: Base64Uuid,
+    ) -> Self {
+        Self::payload_with_header(
+            ServerMessagePayload::ExtractData(ExtractDataRequest {
+                response: data,
+                mime_type,
+                query,
+            }),
+            data_source_name,
+            protocol_version,
+            op_id,
+        )
+    }
+    pub fn new_get_config_schema_request(
+        data_source_name: Name,
+        protocol_version: u8,
+        op_id: Base64Uuid,
+    ) -> Self {
+        Self::payload_with_header(
+            ServerMessagePayload::GetConfigSchema(GetConfigSchemaRequest {}),
+            data_source_name,
+            protocol_version,
+            op_id,
+        )
+    }
+    pub fn new_get_supported_query_types_request(
+        config: ProviderConfig,
+        data_source_name: Name,
+        protocol_version: u8,
+        op_id: Base64Uuid,
+    ) -> Self {
+        Self::payload_with_header(
+            ServerMessagePayload::GetSupportedQueryTypes(GetSupportedQueryTypesRequest { config }),
+            data_source_name,
+            protocol_version,
+            op_id,
+        )
+    }
+}
+
+/// Messages sent to the Proxy
+#[derive(Debug, Deserialize, Serialize)]
+#[cfg_attr(
+    feature = "fp-bindgen",
+    derive(Serializable),
+    fp(
+        rust_plugin_module = "fiberplane_models::proxies",
+        rust_wasmer_runtime_module = "fiberplane_models::proxies"
+    )
+)]
+#[serde(tag = "type", rename_all = "camelCase")]
+pub enum ServerMessagePayload {
+    /// A request to call the `invoke` or `invoke2` exported binding
+    #[serde(rename = "invokeProxy")] // Backwards compatibility alias
+    Invoke(InvokeRequest),
+    /// A request to call the `create_cells` exported binding
+    CreateCells(CreateCellsRequest),
+    /// A request to call the `extract_data` exported binding
+    ExtractData(ExtractDataRequest),
+    /// A request to call the `get_config_schema` exported binding
+    GetConfigSchema(GetConfigSchemaRequest),
+    /// A request to call the `get_supported_query_types` exported binding
+    GetSupportedQueryTypes(GetSupportedQueryTypesRequest),
+}
+
+#[derive(Deserialize, Serialize)]
+#[cfg_attr(
+    feature = "fp-bindgen",
+    derive(Serializable),
+    fp(
+        rust_plugin_module = "fiberplane_models::proxies",
+        rust_wasmer_runtime_module = "fiberplane_models::proxies"
+    )
+)]
+#[serde(rename_all = "camelCase")]
+pub struct InvokeRequest {
+    #[serde(with = "serde_bytes")]
+    pub data: Vec<u8>,
+}
+
+impl Debug for InvokeRequest {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("InvokeRequest")
+            .field("data", &format!("[{} bytes]", self.data.len()))
+            .finish()
     }
 }
 
@@ -186,21 +360,153 @@ impl ServerMessage {
     fp(rust_module = "fiberplane_models::proxies")
 )]
 #[serde(rename_all = "camelCase")]
-pub struct InvokeProxyMessage {
-    pub op_id: Base64Uuid,
-    pub data_source_name: Name,
-    #[serde(with = "serde_bytes")]
-    pub data: Vec<u8>,
-    pub protocol_version: u8,
+pub struct CreateCellsRequest {
+    pub response: Blob,
+    pub query_type: String,
 }
 
-impl Debug for InvokeProxyMessage {
+impl Debug for CreateCellsRequest {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("InvokeProxyMessage")
-            .field("op_id", &self.op_id)
-            .field("data_source_name", &self.data_source_name)
-            .field("data", &format!("[{} bytes]", self.data.len()))
+        f.debug_struct("CreateCellsRequest")
+            .field("query_type", &self.query_type)
+            .field("response", &format!("[{} bytes]", self.response.data.len()))
             .finish()
+    }
+}
+
+#[derive(Deserialize, Serialize)]
+#[cfg_attr(
+    feature = "fp-bindgen",
+    derive(Serializable),
+    fp(
+        rust_plugin_module = "fiberplane_models::proxies",
+        rust_wasmer_runtime_module = "fiberplane_models::proxies"
+    )
+)]
+#[serde(rename_all = "camelCase")]
+pub struct ExtractDataRequest {
+    pub response: Blob,
+    pub mime_type: String,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub query: Option<String>,
+}
+
+impl Debug for ExtractDataRequest {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("ExtractDataRequest")
+            .field("mime_type", &self.mime_type)
+            .field("query", &self.query)
+            .field("response", &format!("[{} bytes]", self.response.data.len()))
+            .finish()
+    }
+}
+
+#[derive(Deserialize, Serialize)]
+#[cfg_attr(
+    feature = "fp-bindgen",
+    derive(Serializable),
+    fp(
+        rust_plugin_module = "fiberplane_models::proxies",
+        rust_wasmer_runtime_module = "fiberplane_models::proxies"
+    )
+)]
+#[serde(rename_all = "camelCase")]
+pub struct GetConfigSchemaRequest {}
+
+impl Debug for GetConfigSchemaRequest {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("ConfigSchemaRequest").finish()
+    }
+}
+
+#[derive(Deserialize, Serialize, Debug)]
+#[cfg_attr(
+    feature = "fp-bindgen",
+    derive(Serializable),
+    fp(
+        rust_plugin_module = "fiberplane_models::proxies",
+        rust_wasmer_runtime_module = "fiberplane_models::proxies"
+    )
+)]
+#[serde(rename_all = "camelCase")]
+pub struct GetSupportedQueryTypesRequest {
+    pub config: ProviderConfig,
+}
+
+/// Messages sent from the Proxy
+#[derive(Debug, Deserialize, Serialize)]
+#[cfg_attr(
+    feature = "fp-bindgen",
+    derive(Serializable),
+    fp(
+        rust_plugin_module = "fiberplane_models::proxies",
+        rust_wasmer_runtime_module = "fiberplane_models::proxies"
+    )
+)]
+#[serde(rename_all = "camelCase")]
+pub struct ProxyMessage {
+    pub op_id: Option<Base64Uuid>,
+    #[serde(flatten)]
+    pub payload: ProxyMessagePayload,
+}
+
+impl ProxyMessage {
+    fn response(payload: ProxyMessagePayload, op_id: Base64Uuid) -> Self {
+        Self {
+            op_id: Some(op_id),
+            payload,
+        }
+    }
+
+    fn notification(payload: ProxyMessagePayload) -> Self {
+        Self {
+            op_id: None,
+            payload,
+        }
+    }
+
+    pub fn new_error_response(error: Error, op_id: Base64Uuid) -> Self {
+        Self::response(ProxyMessagePayload::Error(ErrorMessage { error }), op_id)
+    }
+    pub fn new_invoke_proxy_response(data: Vec<u8>, op_id: Base64Uuid) -> Self {
+        Self::response(
+            ProxyMessagePayload::InvokeProxyResponse(InvokeProxyResponseMessage { data }),
+            op_id,
+        )
+    }
+    pub fn new_create_cells_response(cells: Result<Vec<Cell>, Error>, op_id: Base64Uuid) -> Self {
+        Self::response(
+            ProxyMessagePayload::CreateCellsResponse(CreateCellsResponseMessage { cells }),
+            op_id,
+        )
+    }
+    pub fn new_extract_data_response(data: Result<Blob, Error>, op_id: Base64Uuid) -> Self {
+        Self::response(
+            ProxyMessagePayload::ExtractDataResponse(ExtractDataResponseMessage { data }),
+            op_id,
+        )
+    }
+    pub fn new_config_schema_response(schema: ConfigSchema, op_id: Base64Uuid) -> Self {
+        Self::response(
+            ProxyMessagePayload::GetConfigSchemaResponse(GetConfigSchemaResponseMessage { schema }),
+            op_id,
+        )
+    }
+    pub fn new_supported_query_types_response(
+        queries: Vec<SupportedQueryType>,
+        op_id: Base64Uuid,
+    ) -> Self {
+        Self::response(
+            ProxyMessagePayload::GetSupportedQueryTypesResponse(
+                GetSupportedQueryTypesResponseMessage { queries },
+            ),
+            op_id,
+        )
+    }
+    pub fn new_set_data_sources_notification(data_sources: Vec<UpsertProxyDataSource>) -> Self {
+        Self::notification(ProxyMessagePayload::SetDataSources(SetDataSourcesMessage {
+            data_sources,
+        }))
     }
 }
 
@@ -212,15 +518,19 @@ impl Debug for InvokeProxyMessage {
     fp(rust_module = "fiberplane_models::proxies")
 )]
 #[serde(tag = "type", rename_all = "camelCase")]
-pub enum ProxyMessage {
+pub enum ProxyMessagePayload {
     SetDataSources(SetDataSourcesMessage),
     InvokeProxyResponse(InvokeProxyResponseMessage),
+    CreateCellsResponse(CreateCellsResponseMessage),
+    ExtractDataResponse(ExtractDataResponseMessage),
+    GetConfigSchemaResponse(GetConfigSchemaResponseMessage),
+    GetSupportedQueryTypesResponse(GetSupportedQueryTypesResponseMessage),
     Error(ErrorMessage),
 }
 
-impl From<ErrorMessage> for ProxyMessage {
-    fn from(message: ErrorMessage) -> Self {
-        ProxyMessage::Error(message)
+impl From<(ErrorMessage, Base64Uuid)> for ProxyMessage {
+    fn from((message, op_id): (ErrorMessage, Base64Uuid)) -> Self {
+        Self::response(ProxyMessagePayload::Error(message), op_id)
     }
 }
 
@@ -232,7 +542,6 @@ impl From<ErrorMessage> for ProxyMessage {
 )]
 #[serde(rename_all = "camelCase")]
 pub struct InvokeProxyResponseMessage {
-    pub op_id: Base64Uuid,
     #[serde(with = "serde_bytes")]
     pub data: Vec<u8>,
 }
@@ -240,10 +549,65 @@ pub struct InvokeProxyResponseMessage {
 impl Debug for InvokeProxyResponseMessage {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         f.debug_struct("InvokeProxyResponseMessage")
-            .field("op_id", &self.op_id)
             .field("data", &format!("[{} bytes]", self.data.len()))
             .finish()
     }
+}
+
+#[derive(Deserialize, Serialize, Debug)]
+#[cfg_attr(
+    feature = "fp-bindgen",
+    derive(Serializable),
+    fp(
+        rust_plugin_module = "fiberplane_models::proxies",
+        rust_wasmer_runtime_module = "fiberplane_models::proxies"
+    )
+)]
+#[serde(rename_all = "camelCase")]
+pub struct ExtractDataResponseMessage {
+    pub data: Result<Blob, Error>,
+}
+
+#[derive(Deserialize, Serialize, Debug)]
+#[cfg_attr(
+    feature = "fp-bindgen",
+    derive(Serializable),
+    fp(
+        rust_plugin_module = "fiberplane_models::proxies",
+        rust_wasmer_runtime_module = "fiberplane_models::proxies"
+    )
+)]
+#[serde(rename_all = "camelCase")]
+pub struct CreateCellsResponseMessage {
+    pub cells: Result<Vec<Cell>, Error>,
+}
+
+#[derive(Deserialize, Serialize, Debug)]
+#[cfg_attr(
+    feature = "fp-bindgen",
+    derive(Serializable),
+    fp(
+        rust_plugin_module = "fiberplane_models::proxies",
+        rust_wasmer_runtime_module = "fiberplane_models::proxies"
+    )
+)]
+#[serde(rename_all = "camelCase")]
+pub struct GetConfigSchemaResponseMessage {
+    pub schema: ConfigSchema,
+}
+
+#[derive(Deserialize, Serialize, Debug)]
+#[cfg_attr(
+    feature = "fp-bindgen",
+    derive(Serializable),
+    fp(
+        rust_plugin_module = "fiberplane_models::proxies",
+        rust_wasmer_runtime_module = "fiberplane_models::proxies"
+    )
+)]
+#[serde(rename_all = "camelCase")]
+pub struct GetSupportedQueryTypesResponseMessage {
+    pub queries: Vec<SupportedQueryType>,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
@@ -254,7 +618,6 @@ impl Debug for InvokeProxyResponseMessage {
 )]
 #[serde(rename_all = "camelCase")]
 pub struct ErrorMessage {
-    pub op_id: Base64Uuid,
     pub error: Error,
 }
 
@@ -270,11 +633,7 @@ impl ProxyMessage {
     }
 
     pub fn op_id(&self) -> Option<Base64Uuid> {
-        match self {
-            ProxyMessage::InvokeProxyResponse(message) => Some(message.op_id),
-            ProxyMessage::Error(error) => Some(error.op_id),
-            ProxyMessage::SetDataSources(_) => None,
-        }
+        self.op_id
     }
 }
 
@@ -329,15 +688,69 @@ mod tests {
                 status: DataSourceStatus::Error(Error::NotFound),
             },
         ];
-        let message = ProxyMessage::SetDataSources(SetDataSourcesMessage {
-            data_sources: data_sources.clone(),
-        });
+        let message = ProxyMessage::new_set_data_sources_notification(data_sources.clone());
         let serialized = message.serialize_msgpack();
         let deserialized = ProxyMessage::deserialize_msgpack(serialized).unwrap();
-        if let ProxyMessage::SetDataSources(set_data_sources) = deserialized {
+        if let ProxyMessage {
+            op_id: None,
+            payload: ProxyMessagePayload::SetDataSources(set_data_sources),
+        } = deserialized
+        {
             assert_eq!(set_data_sources.data_sources, data_sources)
         } else {
             panic!("Unexpected message type");
+        }
+    }
+
+    #[test]
+    fn backwards_compatibility() {
+        // The test checks that an old message can be deserialized into a new one
+        mod old {
+            use crate::names::Name;
+            use base64uuid::Base64Uuid;
+            use serde::{Deserialize, Serialize};
+
+            #[derive(Debug, Deserialize, Serialize)]
+            #[serde(tag = "type", rename_all = "camelCase")]
+            pub enum ServerMessage {
+                InvokeProxy(InvokeProxyMessage),
+            }
+
+            #[derive(Debug, Deserialize, Serialize, Clone)]
+            #[serde(rename_all = "camelCase")]
+            pub struct InvokeProxyMessage {
+                pub op_id: Base64Uuid,
+                pub data_source_name: Name,
+                #[serde(with = "serde_bytes")]
+                pub data: Vec<u8>,
+                pub protocol_version: u8,
+            }
+        }
+
+        let op_id = Base64Uuid::parse_str("34edc58d-f8ec-4c95-bce0-c2ae8800e6ef").unwrap();
+        let data_source_name = Name::from_static("test-name");
+        let data = b"aieu".to_vec();
+        let old_message = old::InvokeProxyMessage {
+            op_id,
+            data_source_name,
+            protocol_version: 12,
+            data,
+        };
+
+        let new_message: ServerMessage = rmp_serde::from_slice(
+            &rmp_serde::to_vec_named(&old::ServerMessage::InvokeProxy(old_message.clone()))
+                .unwrap(),
+        )
+        .unwrap();
+
+        assert_eq!(new_message.op_id, old_message.op_id);
+        assert_eq!(new_message.data_source_name, old_message.data_source_name);
+        assert_eq!(new_message.protocol_version, old_message.protocol_version);
+
+        if let ServerMessagePayload::Invoke(response) = new_message.payload {
+            assert_eq!(response.data, old_message.data)
+        } else {
+            panic!("Wrong variant of ServerMessage deserialized. Expecting Invoke")
         }
     }
 }
