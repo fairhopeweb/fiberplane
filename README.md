@@ -19,6 +19,9 @@ product.
 - [fiberplane-models](fiberplane-models/) - Our core data models, ranging from
   notebook and cell definitions, to types used in the provider protocol as well
   as those for our real-time operations.
+- [fiberplane-provider-protocol](fiberplane-provider-protocol/) - The definition
+  for our low-level provider protocol and the bindings that are generated from
+  it.
 - [fiberplane-templates](fiberplane-templates/) - Our Jsonnet template engine.
 
 ## Getting Help

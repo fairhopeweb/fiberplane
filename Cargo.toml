@@ -9,9 +9,7 @@ members = [
     "fiberplane-provider-protocol/fiberplane-provider-bindings",
     "fiberplane-provider-protocol/fiberplane-provider-runtime",
     "fiberplane-templates",
-    "providers/*",
 ]
-exclude = ["providers/.cargo"]
 
 [workspace.package]
 version = "1.0.0-alpha.2"
