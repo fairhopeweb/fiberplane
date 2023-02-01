@@ -1,0 +1,19 @@
+---
+name: Sync OpenAPI reference to readme
+
+on:
+  workflow_dispatch:
+
+env:
+  API_DEFINITION_ID: 63d93703167244000ce4542c
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Sync openapi reference to readme
+        uses: readmeio/rdme@v8
+        with:
+          rdme: openapi ./schemas/openapi_v1.yml --key=${{ secrets.README_API_KEY }} --id=${API_DEFINITION_ID}
