@@ -5,6 +5,7 @@ use crate::query_data::{has_query_data, set_query_field, unset_query_field};
 #[cfg(feature = "fp-bindgen")]
 use fp_bindgen::prelude::Serializable;
 use serde::{Deserialize, Serialize};
+use std::collections::BTreeMap;
 
 /// Representation of a single notebook cell.
 #[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
@@ -628,7 +629,7 @@ impl ProviderCell {
     }
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
@@ -641,34 +642,44 @@ pub struct TableCell {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub read_only: Option<bool>,
 
-    /// The rows that make up the content of the table.
-    pub rows: Vec<TableRow>,
+    /// Describes which key in the TableRow element to render
+    /// and the order of definitions also determines the order
+    /// of the columns
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub column_defs: Vec<TableColumnDefinition>,
+
+    /// Holds the values/data
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub rows: Vec<TableRowData>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+pub type TableRowData = BTreeMap<String, TableCellValue>;
+
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::notebooks")
 )]
 #[serde(rename_all = "camelCase")]
-pub struct TableRow {
-    /// The columns that make up the content of this table row.
-    pub cols: Vec<TableColumn>,
+pub struct TableColumnDefinition {
+    /// Key under which data for this colum is stored in the row data
+    pub key: String,
+
+    /// Table heading text.
+    pub title: String,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::notebooks")
 )]
-#[serde(rename_all = "camelCase")]
-pub struct TableColumn {
-    #[serde(default, skip_serializing_if = "Option::is_none")]
-    pub formatting: Option<Formatting>,
-
-    pub text: String,
+#[serde(tag = "type", rename_all = "snake_case")]
+pub enum TableCellValue {
+    Empty,
+    Cell { cell: Cell },
 }
 
 #[derive(Clone, Debug, Default, Deserialize, PartialEq, Eq, Serialize)]

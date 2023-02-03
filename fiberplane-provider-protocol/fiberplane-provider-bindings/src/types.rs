@@ -1,6 +1,6 @@
 #![allow(unused_imports)]
 use serde::{Deserialize, Serialize};
-use std::collections::HashMap;
+use std::{collections::BTreeMap, collections::HashMap};
 
 pub use fiberplane_models::formatting::Annotation;
 pub use fiberplane_models::formatting::AnnotationWithOffset;
@@ -41,8 +41,8 @@ pub use fiberplane_models::providers::SelectField;
 pub use fiberplane_models::notebooks::StackingType;
 pub use fiberplane_models::providers::SupportedQueryType;
 pub use fiberplane_models::notebooks::TableCell;
-pub use fiberplane_models::notebooks::TableColumn;
-pub use fiberplane_models::notebooks::TableRow;
+pub use fiberplane_models::notebooks::TableCellValue;
+pub use fiberplane_models::notebooks::TableColumnDefinition;
 pub use fiberplane_models::notebooks::TextCell;
 pub use fiberplane_models::providers::TextField;
 pub use fiberplane_models::timestamps::Timestamp;
@@ -121,3 +121,5 @@ pub struct QueryLogs {
 }
 
 pub type QuerySchema = Vec<QueryField>;
+
+pub type TableRowData = BTreeMap<String, TableCellValue>;

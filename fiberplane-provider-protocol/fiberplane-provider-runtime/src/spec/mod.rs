@@ -8,7 +8,7 @@ mod bindings;
 pub mod types;
 
 pub use bindings::*;
-use types::*;
+pub use types::*;
 
 const MAX_HTTP_RESPONSE_SIZE: usize = 1024 * 1024 * 2; // 2MiB
 const TCP_KEEPALIVE: Duration = Duration::from_secs(60);

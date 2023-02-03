@@ -1,5 +1,6 @@
 use crate::formatting::{ActiveFormatting, AnnotationWithOffset, Formatting};
 use crate::notebooks::{CheckboxCell, HeadingCell, ListItemCell, TextCell};
+use crate::timestamps::Timestamp;
 use crate::utils::char_count;
 use crate::workspaces::Label;
 
@@ -67,6 +68,22 @@ impl ContentWriter {
     pub fn write_label(self, label: Label) -> Self {
         let text = label.to_string();
         self.set_label(label).write_text(text).unset_label()
+    }
+
+    pub fn write_timestamp(self, timestamp: Timestamp) -> Self {
+        self.set_timestamp(timestamp)
+            .write_text(timestamp.to_string())
+            .unset_timestamp()
+    }
+
+    fn set_timestamp(mut self, timestamp: Timestamp) -> Self {
+        self.active_formatting.timestamp = Some(timestamp);
+        self
+    }
+
+    fn unset_timestamp(mut self) -> Self {
+        self.active_formatting.timestamp = None;
+        self
     }
 
     pub fn set_link(mut self, url: impl Into<String>) -> Self {
@@ -187,6 +204,12 @@ impl ContentWriter {
             formatting,
             ..Default::default()
         }
+    }
+}
+
+impl Default for ContentWriter {
+    fn default() -> Self {
+        Self::new()
     }
 }
 

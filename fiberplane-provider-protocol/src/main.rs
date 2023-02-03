@@ -27,6 +27,7 @@ fp_export! {
     type LegacyTimestamp = f64;
     type ProviderConfig = Value;
     type QuerySchema = Vec<QueryField>;
+    type TableRowData = BTreeMap<String, TableCellValue>;
 
     /// Returns the schema for the config consumed by this provider.
     ///

@@ -7,6 +7,7 @@ use fiberplane_models::timestamps::TimeRange;
 use fiberplane_models::utils::{char_count, char_slice, char_slice_from};
 use once_cell::sync::Lazy;
 use regex::Regex;
+use std::cell;
 use std::{collections::BTreeSet, fmt::Write};
 use time::{format_description::well_known::Rfc3339, Duration};
 

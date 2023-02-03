@@ -315,25 +315,53 @@ components:
         readOnly:
           type: boolean
         rows:
-          $ref: "#/components/schemas/tableRow"
-    tableRow:
-      type: object
-      required:
-        - cols
-      properties:
-        cols:
           type: array
           items:
-            $ref: "#/components/schemas/tableColumn"
-    tableColumn:
+            $ref: "#/components/schemas/tableRowData"
+        columnDefs:
+          type: array
+          items:
+            $ref: "#/components/schemas/tableColumnDefinition"
+    tableColumnDefinition:
       type: object
       required:
-        - text
+        - key
+        - title
       properties:
-        formatting:
-          $ref: "#/components/schemas/formatting"
-        text:
+        key:
           type: string
+        title:
+          type: string
+    tableCellValue:
+      oneOf:
+        - $ref: "#/components/schemas/tableCellValueEmpty"
+        - $ref: "#/components/schemas/tableCellValueCell"
+      discriminator:
+        propertyName: type
+        mapping:
+          empty: "#/components/schemas/tableCellValueEmpty"
+          cell: "#/components/schemas/tableCellValueCell"
+    tableCellValueEmpty:
+      type: object
+      required:
+        - type
+      properties:
+        type:
+          $ref: "#/components/schemas/tableCellValue"
+    tableCellValueCell:
+      type: object
+      required:
+        - type
+        - cell
+      properties:
+        type:
+          $ref: "#/components/schemas/tableCellValue"
+        cell:
+          $ref: "#/components/schemas/cell"
+    tableRowData:
+      type: object
+      additionalProperties:
+        $ref: "#/components/schemas/tableCellValue"
     logCell:
       type: object
       required:

@@ -1,4 +1,4 @@
-use crate::notebooks::Label;
+use crate::{notebooks::Label, timestamps::Timestamp};
 #[cfg(feature = "fp-bindgen")]
 use fp_bindgen::prelude::Serializable;
 use serde::{Deserialize, Serialize};
@@ -126,6 +126,8 @@ pub struct ActiveFormatting {
     pub underline: bool,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub label: Option<Label>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub timestamp: Option<Timestamp>,
 }
 
 impl ActiveFormatting {
@@ -187,6 +189,13 @@ impl ActiveFormatting {
                 annotations.push(Annotation::Label(label.clone()))
             }
         }
+        if self.timestamp != reference.timestamp {
+            if let Some(timestamp) = self.timestamp {
+                annotations.push(Annotation::Timestamp {
+                    timestamp: *timestamp,
+                })
+            }
+        }
         annotations
     }
 
@@ -204,7 +213,7 @@ impl ActiveFormatting {
             Annotation::StartLink { .. } => self.link.is_some(),
             Annotation::EndLink => self.link.is_none(),
             Annotation::Mention(_) => false,
-            Annotation::Timestamp { .. } => false,
+            Annotation::Timestamp { .. } => self.timestamp.is_some(),
             Annotation::StartStrikethrough => self.strikethrough,
             Annotation::EndStrikethrough => !self.strikethrough,
             Annotation::StartUnderline => self.underline,

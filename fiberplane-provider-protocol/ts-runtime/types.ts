@@ -804,22 +804,35 @@ export type TableCell = {
     readOnly?: boolean;
 
     /**
-     * The rows that make up the content of the table.
+     * Describes which key in the TableRow element to render
+     * and the order of definitions also determines the order
+     * of the columns
      */
-    rows: Array<TableRow>;
-};
+    columnDefs?: Array<TableColumnDefinition>;
 
-export type TableColumn = {
-    formatting?: Formatting;
-    text: string;
-};
-
-export type TableRow = {
     /**
-     * The columns that make up the content of this table row.
+     * Holds the values/data
      */
-    cols: Array<TableColumn>;
+    rows?: Array<TableRowData>;
 };
+
+export type TableCellValue =
+    | { type: "empty" }
+    | { type: "cell"; cell: Cell };
+
+export type TableColumnDefinition = {
+    /**
+     * Key under which data for this colum is stored in the row data
+     */
+    key: string;
+
+    /**
+     * Table heading text.
+     */
+    title: string;
+};
+
+export type TableRowData = Record<string, TableCellValue>;
 
 export type TextCell = {
     id: string;
