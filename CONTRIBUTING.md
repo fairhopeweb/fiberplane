@@ -29,3 +29,9 @@ to main.
 [registries.artifactory]
 token = "Bearer <TOKEN>"
 ```
+
+4. The first time you try to fetch something from Artifactory, it will also
+   prompt you for a username and password. The username you should provide is
+   your full email address, and the password is the same token you used above.
+   * If you receive a 500 error when trying to access the Artifactory registry,
+     you probably used the correct token, but not the right username.

@@ -1,8 +1,11 @@
 [package]
 name = "base64uuid"
+description = "Type for representing base64url-encoded UUIDs"
 version = "1.0.0-alpha.2"
 authors = { workspace = true }
 edition = { workspace = true }
+license = { workspace = true }
+repository = { workspace = true }
 rust-version = { workspace = true }
 
 [features]

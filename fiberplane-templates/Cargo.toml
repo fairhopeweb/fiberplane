@@ -1,10 +1,12 @@
 [package]
 name = "fiberplane-templates"
-version = { workspace = true }
+description = "Programmatically generate Fiberplane Notebooks for repeatable workflows"
 authors = { workspace = true }
 edition = { workspace = true }
-rust-version = { workspace = true }
 license = { workspace = true }
+repository = { workspace = true }
+rust-version = { workspace = true }
+version = { workspace = true }
 
 [features]
 default = ["convert", "expand", "examples"]
