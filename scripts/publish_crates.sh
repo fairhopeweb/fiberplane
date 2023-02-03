@@ -72,7 +72,7 @@ function publish_crate() {
         # at the end of the script.
         local base_version=`echo $repo_version | sed 's/-.*//'`
         local version="${base_version}-${curr_commit}"
-        $dasel put -f Cargo.toml -s ".workspace.dependencies.$crate.version" -v $version
+        $dasel put -f Cargo.toml -s ".workspace.dependencies.$crate.version" -v "=$version"
         $dasel put -f Cargo.toml -s ".workspace.dependencies.$crate.registry" -v $registry
 
         $dasel put -f "$crate_dir/Cargo.toml" -s ".package.version" -v $version
@@ -86,11 +86,6 @@ function publish_crate() {
     echo "Publishing $crate v$version..."
     pushd $crate_dir
     cargo publish --registry=$registry $allow_dirty
-
-    if [[ $registry == "artifactory" ]]; then
-        git restore "Cargo.toml"
-    fi
-
     popd
 }
 
@@ -103,6 +98,10 @@ function check_dasel_install() {
     dasel="$local_bin/dasel"
 
     local version=$(curl -s https://api.github.com/repos/tomwright/dasel/releases/latest | jq -r '.tag_name')
+    # Sometimes the GitHub API gives a `null` response, in which case we'll just try again...
+    if [[ $version == "null" ]]; then
+        version=$(curl -s https://api.github.com/repos/tomwright/dasel/releases/latest | jq -r '.tag_name')
+    fi
     echo "Installing dasel $version to $local_bin..."
 
     mkdir -p $local_bin
@@ -143,7 +142,11 @@ for crate_dir in ${CRATES[@]}; do
 done
 
 if [[ $did_publish == "true" ]]; then
-    git restore Cargo.toml
+    if [[ $registry == "artifactory" ]]; then
+        git restore Cargo.toml
+        git restore */Cargo.toml
+        git restore */*/Cargo.toml
+    fi
 else
     echo "No crates needed publishing."
 fi

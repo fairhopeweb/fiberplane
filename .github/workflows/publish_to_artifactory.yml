@@ -2,7 +2,7 @@ name: Publish to Artifactory
 
 on:
   push:
-    branches: ["Publish-to-Artifactory"]
+    branches: ["main"]
 
 env:
   CARGO_TERM_COLOR: always
