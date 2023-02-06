@@ -35,6 +35,7 @@ pub(crate) mod models {
     pub use fiberplane_models::workspaces::*;
 }
 
+/// Retrieves a comment from a discussion thread by comment ID
 pub async fn comment_get(
     client: &ApiClient,
     comment_id: base64uuid::Base64Uuid,
@@ -48,6 +49,7 @@ pub async fn comment_get(
     Ok(response)
 }
 
+/// Deletes a comment in a discussion thread by comment ID
 pub async fn comment_delete(client: &ApiClient, comment_id: base64uuid::Base64Uuid) -> Result<()> {
     let mut builder = client.request(
         Method::DELETE,
@@ -58,6 +60,7 @@ pub async fn comment_delete(client: &ApiClient, comment_id: base64uuid::Base64Uu
     Ok(())
 }
 
+/// Updates a comment in a discussion thread by comment ID
 pub async fn comment_update(
     client: &ApiClient,
     comment_id: base64uuid::Base64Uuid,
@@ -84,7 +87,7 @@ pub async fn event_delete(client: &ApiClient, event_id: base64uuid::Base64Uuid) 
     Ok(())
 }
 
-/// Delete a pending workspace invitation
+/// Deletes a pending workspace invitation
 pub async fn workspace_invite_delete(
     client: &ApiClient,
     invitation_id: base64uuid::Base64Uuid,
@@ -101,7 +104,7 @@ pub async fn workspace_invite_delete(
     Ok(())
 }
 
-/// Accept the workspace invitation
+/// Accepts the workspace invitation
 pub async fn workspace_invite_accept(
     client: &ApiClient,
     invitation_id: base64uuid::Base64Uuid,
@@ -120,7 +123,7 @@ pub async fn workspace_invite_accept(
     Ok(response)
 }
 
-/// Decline the workspace invitation
+/// Declines the workspace invitation
 pub async fn workspace_invite_decline(
     client: &ApiClient,
     invitation_id: base64uuid::Base64Uuid,
@@ -147,7 +150,7 @@ pub async fn logout(client: &ApiClient) -> Result<()> {
     Ok(())
 }
 
-/// Fetch a single notebook
+/// Retrieves a single notebook (both its metadata and content)
 pub async fn notebook_get(
     client: &ApiClient,
     notebook_id: base64uuid::Base64Uuid,
@@ -161,6 +164,7 @@ pub async fn notebook_get(
     Ok(response)
 }
 
+/// Deletes a notebook
 pub async fn notebook_delete(
     client: &ApiClient,
     notebook_id: base64uuid::Base64Uuid,
@@ -259,7 +263,7 @@ pub async fn notebook_cell_replace_text(
     Ok(response)
 }
 
-/// Create a copy of the notebook
+/// Creates a copy of the specified notebook
 pub async fn notebook_duplicate(
     client: &ApiClient,
     notebook_id: base64uuid::Base64Uuid,
@@ -297,7 +301,7 @@ pub async fn file_upload(
     Ok(response)
 }
 
-/// Get a file
+/// Get a file from a notebook
 pub async fn file_get(
     client: &ApiClient,
     notebook_id: base64uuid::Base64Uuid,
@@ -316,7 +320,7 @@ pub async fn file_get(
     Ok(response)
 }
 
-/// Delete a file
+/// Delete a file from a notebook
 pub async fn file_delete(
     client: &ApiClient,
     notebook_id: base64uuid::Base64Uuid,
@@ -353,7 +357,7 @@ pub async fn front_matter_delete(
     Ok(())
 }
 
-/// Updates front matter data for notebook
+/// Updates front matter for a given notebook
 pub async fn front_matter_update(
     client: &ApiClient,
     notebook_id: base64uuid::Base64Uuid,
@@ -420,7 +424,7 @@ pub async fn notebook_convert_to_snippet(
     Ok(response)
 }
 
-/// Convert the notebook to a Template
+/// Downloads the specified notebooks as a Jsonnet template.
 pub async fn notebook_convert_to_template(
     client: &ApiClient,
     notebook_id: base64uuid::Base64Uuid,
@@ -458,7 +462,7 @@ pub async fn threads_list(
     Ok(response)
 }
 
-/// Create a new comment thread
+/// Creates a new comment thread in a notebook
 pub async fn thread_create(
     client: &ApiClient,
     notebook_id: base64uuid::Base64Uuid,
@@ -477,7 +481,7 @@ pub async fn thread_create(
     Ok(response)
 }
 
-/// Start the Google OAuth flow to authenticate a user
+/// Start the Google OAuth flow to authenticate a user (used only with the Studio) for authenticating with the API see the Authentication section in the docs
 pub async fn oidc_authorize_google(
     client: &ApiClient,
     cli_redirect_port: Option<i32>,
@@ -489,7 +493,7 @@ pub async fn oidc_authorize_google(
     Ok(())
 }
 
-/// Pin a notebook
+/// Pins a notebook
 pub async fn pinned_notebook_create(
     client: &ApiClient,
     payload: models::NewPinnedNotebook,
@@ -501,7 +505,7 @@ pub async fn pinned_notebook_create(
     Ok(())
 }
 
-/// Unpin a notebook
+/// Unpins a notebook
 pub async fn pinned_notebook_delete(
     client: &ApiClient,
     notebook_id: base64uuid::Base64Uuid,
@@ -546,6 +550,7 @@ pub async fn profile_picture_update(
     Ok(())
 }
 
+/// Retrieves a discussion thread by ID
 pub async fn thread_get(
     client: &ApiClient,
     thread_id: base64uuid::Base64Uuid,
@@ -559,6 +564,7 @@ pub async fn thread_get(
     Ok(response)
 }
 
+/// Deletes a discussion thread by ID
 pub async fn thread_delete(client: &ApiClient, thread_id: base64uuid::Base64Uuid) -> Result<()> {
     let mut builder = client.request(
         Method::DELETE,
@@ -569,6 +575,7 @@ pub async fn thread_delete(client: &ApiClient, thread_id: base64uuid::Base64Uuid
     Ok(())
 }
 
+/// Creates a comment in a discussion thread by ID
 pub async fn comment_create(
     client: &ApiClient,
     thread_id: base64uuid::Base64Uuid,
@@ -584,6 +591,7 @@ pub async fn comment_create(
     Ok(response)
 }
 
+/// Reopens a discussion thread by ID
 pub async fn thread_reopen(
     client: &ApiClient,
     thread_id: base64uuid::Base64Uuid,
@@ -597,6 +605,7 @@ pub async fn thread_reopen(
     Ok(response)
 }
 
+/// Resolves a discussion thread by ID
 pub async fn thread_resolve(
     client: &ApiClient,
     thread_id: base64uuid::Base64Uuid,
@@ -610,7 +619,7 @@ pub async fn thread_resolve(
     Ok(response)
 }
 
-/// Gets a list of api tokens
+/// Retrieves a list of all API tokens
 pub async fn token_list(
     client: &ApiClient,
     sort_by: Option<&str>,
@@ -653,6 +662,7 @@ pub async fn token_delete(client: &ApiClient, id: base64uuid::Base64Uuid) -> Res
     Ok(())
 }
 
+/// Retrieves a trigger from a workspace by its ID
 pub async fn trigger_get(
     client: &ApiClient,
     trigger_id: base64uuid::Base64Uuid,
@@ -666,6 +676,7 @@ pub async fn trigger_get(
     Ok(response)
 }
 
+/// Deletes a trigger from a workspace by its ID
 pub async fn trigger_delete(client: &ApiClient, trigger_id: base64uuid::Base64Uuid) -> Result<()> {
     let mut builder = client.request(
         Method::DELETE,
@@ -715,7 +726,7 @@ pub async fn workspace_list(
     Ok(response)
 }
 
-/// Create a new workspace
+/// Creates a new workspace
 pub async fn workspace_create(
     client: &ApiClient,
     payload: models::NewWorkspace,
@@ -744,7 +755,7 @@ pub async fn workspace_get(
     Ok(response)
 }
 
-/// Delete workspace
+/// Permanently deletes a specified workspace
 pub async fn workspace_delete(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
@@ -937,7 +948,7 @@ pub async fn event_create(
     Ok(response)
 }
 
-/// Get a list of pending workspace invitations
+/// Retrieves a list of pending workspace invitations
 pub async fn workspace_invite_get(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
@@ -970,7 +981,7 @@ pub async fn workspace_invite_get(
     Ok(response)
 }
 
-/// Invite a user to a workspace
+/// Invites a user to a workspace
 pub async fn workspace_invite(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
@@ -1010,7 +1021,7 @@ pub async fn label_keys_list(
     Ok(response)
 }
 
-/// Retrieve all label values for a specific key
+/// Retrieve all label values
 pub async fn label_values_list(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
@@ -1033,7 +1044,7 @@ pub async fn label_values_list(
     Ok(response)
 }
 
-/// Leave a workspace
+/// Leaves a workspace
 pub async fn workspace_leave(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
@@ -1050,7 +1061,7 @@ pub async fn workspace_leave(
     Ok(())
 }
 
-/// List all accessible notebooks
+/// Retrieves all Notebooks available to the workspace
 pub async fn notebook_list(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
@@ -1103,7 +1114,7 @@ pub async fn workspace_picture_get(
     Ok(response)
 }
 
-/// Upload workspace image
+/// Uploads a workspace image
 pub async fn workspace_picture_update(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
@@ -1380,6 +1391,7 @@ pub async fn snippet_create(
     Ok(response)
 }
 
+/// Retrieves a specified snippet from a workspace
 pub async fn snippet_get(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
@@ -1398,6 +1410,7 @@ pub async fn snippet_get(
     Ok(response)
 }
 
+/// Deletes a specified snippet from a workspace
 pub async fn snippet_delete(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
@@ -1416,6 +1429,7 @@ pub async fn snippet_delete(
     Ok(())
 }
 
+/// Updates a specified snippet from a workspace
 pub async fn snippet_update(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
@@ -1455,7 +1469,7 @@ pub async fn snippet_expand(
     Ok(response)
 }
 
-/// List the templates that have been uploaded
+/// Retrieve all the templates that have been uploaded
 pub async fn template_list(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
@@ -1499,6 +1513,7 @@ pub async fn template_create(
     Ok(response)
 }
 
+/// Retrieves a specified template
 pub async fn template_get(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
@@ -1517,6 +1532,7 @@ pub async fn template_get(
     Ok(response)
 }
 
+/// Deletes a specified template
 pub async fn template_delete(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
@@ -1535,6 +1551,7 @@ pub async fn template_delete(
     Ok(())
 }
 
+/// Updates a specified template
 pub async fn template_update(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
@@ -1576,6 +1593,7 @@ pub async fn template_expand(
     Ok(response)
 }
 
+/// List all created triggers in the workspace
 pub async fn trigger_list(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
@@ -1592,7 +1610,7 @@ pub async fn trigger_list(
     Ok(response)
 }
 
-/// Create a new trigger
+/// Creates a new trigger for a template
 pub async fn trigger_create(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
@@ -1636,7 +1654,7 @@ pub async fn workspace_users_list(
     Ok(response)
 }
 
-/// Remove a user from the workspace
+/// Removes a user from the workspace
 pub async fn workspace_user_remove(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
@@ -1655,7 +1673,7 @@ pub async fn workspace_user_remove(
     Ok(())
 }
 
-/// Update the user within a workspace
+/// Updates the user within a workspace
 pub async fn workspace_user_update(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
@@ -1676,7 +1694,7 @@ pub async fn workspace_user_update(
     Ok(response)
 }
 
-/// Get all views
+/// Retrieves all views
 pub async fn views_get(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
@@ -1709,7 +1727,7 @@ pub async fn views_get(
     Ok(response)
 }
 
-/// Create a new view
+/// Creates a new view
 pub async fn views_create(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
@@ -1728,7 +1746,7 @@ pub async fn views_create(
     Ok(response)
 }
 
-/// Gets a single view
+/// Retrieves a single view
 pub async fn view_get(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,

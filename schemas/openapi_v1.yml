@@ -2159,7 +2159,10 @@ paths:
       - $ref: "#/components/parameters/workspace_id"
     get:
       operationId: notebook_list
-      description: "List all accessible notebooks"
+      summary: "List all notebooks"
+      description: "Retrieves all Notebooks available to the workspace"
+      tags:
+        - Notebooks
       responses:
         "200":
           description: OK
@@ -2171,7 +2174,10 @@ paths:
                   $ref: "#/components/schemas/notebookSummary"
     post:
       operationId: notebook_create
+      summary: "Create a new notebook"
       description: "Create a new notebook"
+      tags:
+        - Notebooks
       requestBody:
         description: new notebook
         required: true
@@ -2191,7 +2197,10 @@ paths:
       - $ref: "#/components/parameters/notebookId"
     get:
       operationId: notebook_get
-      description: "Fetch a single notebook"
+      summary: "Retrieve a single notebook"
+      description: "Retrieves a single notebook (both its metadata and content)"
+      tags:
+        - Notebooks
       responses:
         "200":
           content:
@@ -2201,12 +2210,19 @@ paths:
           description: OK
     delete:
       operationId: notebook_delete
+      summary: "Deletes a notebook"
+      description: "Deletes a notebook"
+      tags: 
+        - Notebooks
       responses:
         "200":
           description: OK
     patch:
       operationId: notebook_update
+      summary: "Modifies individual properties of a single notebook"
       description: "Modifies individual properties of a single notebook"
+      tags: 
+        - Notebooks
       requestBody:
         description: updated properties
         required: true
@@ -2222,7 +2238,10 @@ paths:
       - $ref: "#/components/parameters/notebookId"
     post:
       operationId: notebook_duplicate
-      description: "Create a copy of the notebook"
+      summary: "Create a copy of the notebook"
+      description: "Creates a copy of the specified notebook"
+      tags: 
+        - Notebooks
       requestBody:
         description: copy destination
         required: true
@@ -2242,7 +2261,10 @@ paths:
       - $ref: "#/components/parameters/notebookId"
     get:
       operationId: notebook_convert_to_template
-      description: Convert the notebook to a Template
+      summary: Gets the notebook as a template
+      description: Downloads the specified notebooks as a Jsonnet template.
+      tags:
+        - Notebooks
       responses:
         "200":
           content:
@@ -2255,7 +2277,10 @@ paths:
       - $ref: "#/components/parameters/notebookId"
     get:
       operationId: notebook_convert_to_snippet
+      summary: Convert selected notebook cells to a snippet
       description: Convert the notebook cells to a snippet
+      tags:
+        - Notebooks
       parameters:
         - in: query
           name: start_cell_id
@@ -2280,7 +2305,10 @@ paths:
       - $ref: "#/components/parameters/notebookId"
     post:
       operationId: notebook_cells_append
+      summary: Append cells to Notebook
       description: Append the given cells to the notebook. Any cells that have their ID missing will be set on the server.
+      tags:
+        - Notebooks
       parameters:
         - in: query
           name: after
@@ -2319,7 +2347,10 @@ paths:
       - $ref: "#/components/parameters/snippet_name"
     post:
       operationId: notebook_snippet_insert
+      summary: Expand the snippet and insert the cells into the notebook
       description: Expand the snippet and insert the cells into the notebook
+      tags:
+        - Snippets
       parameters:
         - name: cell_id
           in: query
@@ -2346,7 +2377,10 @@ paths:
           type: string
     post:
       operationId: notebook_cell_append_text
+      summary: Append text (with formatting) to the specified cell
       description: Append the given text and optional formatting to the specified cell
+      tags:
+        - Notebooks
       requestBody:
         description: Content and optional formatting to append
         required: true
@@ -2372,7 +2406,10 @@ paths:
           type: string
     post:
       operationId: notebook_cell_replace_text
+      summary: Replace text and formatting in a cell
       description: Replace some text and formatting in the specified cell
+      tags:
+        - Notebooks
       requestBody:
         required: true
         content:
@@ -2391,7 +2428,10 @@ paths:
       - $ref: "#/components/parameters/notebookId"
     post:
       operationId: thread_create
-      description: Create a new comment thread
+      summary: Create a new comment thread
+      description: Creates a new comment thread in a notebook
+      tags:
+        - Notebooks
       requestBody:
         required: true
         content:
@@ -2403,7 +2443,10 @@ paths:
           $ref: "#/components/responses/thread"
     get:
       operationId: threads_list
+      summary: List all the threads in the given notebook
       description: List the threads in the given notebook
+      tags:
+        - Notebooks
       parameters:
         - name: status
           in: query
@@ -2424,7 +2467,10 @@ paths:
       - $ref: "#/components/parameters/notebookId"
     patch:
       operationId: front_matter_update
-      description: Updates front matter data for notebook
+      summary: Updates front matter for a given notebook
+      description: Updates front matter for a given notebook
+      tags:
+        - Notebooks
       requestBody:
         description: Front matter object to merge with existing notebook front matter data
         required: true
@@ -2437,8 +2483,11 @@ paths:
           description: OK
     delete:
       operationId: front_matter_delete
+      summary: Delete all front matter data for a notebook
       description: |
         Deletes *all* front matter data for notebook. If you wish to delete a single key instead of the whole object, use the `patch` endpoint with value: `null`
+      tags:
+        - Notebooks
       responses:
         "200":
           description: OK
@@ -2447,7 +2496,10 @@ paths:
       - $ref: "#/components/parameters/workspace_id"
     post:
       operationId: data_source_create
-      description: "Create an workspace data-source"
+      summary: "Create a workspace data source"
+      description: "Creates a workspace data source"
+      tags:
+        - Workspaces
       requestBody:
         description: New data source
         required: true
@@ -2464,6 +2516,10 @@ paths:
                 $ref: "#/components/schemas/dataSource"
     get:
       operationId: data_source_list
+      summary: Get all workspace data sources
+      description: Get all workspace data sources
+      tags:
+        - Workspaces
       responses:
         "200":
           description: OK
@@ -2479,7 +2535,10 @@ paths:
       - $ref: "#/components/parameters/data_source_name"
     get:
       operationId: data_source_get
+      summary: Get the data source's details
       description: Get the data source's details
+      tags:
+        - Proxies
       responses:
         "200":
           description: OK
@@ -2489,7 +2548,10 @@ paths:
                 $ref: "#/components/schemas/dataSource"
     patch:
       operationId: data_source_update
+      summary: Update a data source
       description: Update a data source
+      tags:
+        - Proxies
       requestBody:
         required: true
         content:
@@ -2505,7 +2567,10 @@ paths:
                 $ref: "#/components/schemas/dataSource"
     delete:
       operationId: data_source_delete
+      summary: Delete a data source
       description: Delete a data source
+      tags:
+        - Proxies
       responses:
         "200":
           description: OK
@@ -2514,7 +2579,10 @@ paths:
       - $ref: "#/components/parameters/workspace_id"
     get:
       operationId: proxy_list
+      summary: "List all proxies"
       description: "List all proxies"
+      tags:
+        - Proxies
       responses:
         "200":
           description: OK
@@ -2526,7 +2594,10 @@ paths:
                   $ref: "#/components/schemas/proxySummary"
     post:
       operationId: proxy_create
+      summary: "Create a new proxy"
       description: "Create a new proxy"
+      tags:
+        - Proxies
       requestBody:
         description: new proxy
         required: true
@@ -2547,12 +2618,19 @@ paths:
       - $ref: "#/components/parameters/proxy_name"
     delete:
       operationId: proxy_delete
+      summary: "Delete a single proxy"
+      description: "Deletes a single proxy"
+      tags:
+        - Proxies
       responses:
         "200":
           description: OK
     get:
       operationId: proxy_get
+      summary: "Retrieve a single proxy"
       description: "Retrieve a single proxy"
+      tags:
+        - Proxies
       responses:
         "200":
           description: OK
@@ -2575,7 +2653,10 @@ paths:
             - "2"
     post:
       operationId: proxy_relay
-      description: "Relay a query to invoke a provider on a remote proxy"
+      summary: "Invoke a provider on remote proxy"
+      description: "Relays a query to invoke a provider on a remote proxy"
+      tags:
+        - Proxies
       deprecated: true
       requestBody:
         description: Message to send to the proxy
@@ -2600,7 +2681,10 @@ paths:
       - $ref: "#/components/parameters/data_source_name"
     post:
       operationId: proxy_invoke
-      description: "Relay a query to invoke a provider on a remote proxy"
+      summary: "Invoke a provider on remote proxy"
+      description: "Relays a query to invoke a provider on a remote proxy"
+      tags:
+        - Proxies
       requestBody:
         description: Message to send to the proxy
         required: true
@@ -2626,7 +2710,10 @@ paths:
       - $ref: "#/components/parameters/data_source_name"
     post:
       operationId: proxy_create_cells
+      summary: Call `create_cells` from a provider on proxy
       description: "Relay a query to call 'create_cells' from a provider on a remote proxy"
+      tags:
+        - Proxies
       requestBody:
         description: Message to send to the proxy
         required: true
@@ -2652,7 +2739,10 @@ paths:
       - $ref: "#/components/parameters/data_source_name"
     post:
       operationId: proxy_extract_data
+      summary: "Call `extract_data` from a provider on proxy"
       description: "Relay a query to call 'extract_data' from a provider on a remote proxy"
+      tags:
+        - Proxies
       requestBody:
         description: Message to send to the proxy
         required: true
@@ -2678,7 +2768,10 @@ paths:
       - $ref: "#/components/parameters/data_source_name"
     get:
       operationId: proxy_supported_query_types
+      summary: "Call `get_supported_query_types` from provider on proxy"
       description: "Relay a query to call 'get_supported_query_types' from a provider on a remote proxy"
+      tags:
+        - Proxies
       responses:
         "200":
           description: "A msgpack serialized Vec<SupportedQueryType>"
@@ -2694,7 +2787,10 @@ paths:
       - $ref: "#/components/parameters/data_source_name"
     get:
       operationId: proxy_config_schema
+      summary: "Call `get_config_schema` from a provider on proxy"
       description: "Relay a query to call 'get_config_schema' from a provider on a remote proxy"
+      tags:
+        - Proxies
       responses:
         "200":
           description: "A msgpack serialized ConfigSchema"
@@ -2708,7 +2804,10 @@ paths:
       - $ref: "#/components/parameters/notebookId"
     post:
       operationId: file_upload
+      summary: "Upload a file to a notebook"
       description: "upload a file"
+      tags:
+        - Notebooks
       requestBody:
         description: a file
         required: true
@@ -2734,13 +2833,19 @@ paths:
           type: string
     delete:
       operationId: file_delete
-      description: "Delete a file"
+      summary: "Delete a file from a notebook"
+      description: "Delete a file from a notebook"
+      tags:
+        - Notebooks
       responses:
         "200":
           description: OK
     get:
       operationId: file_get
-      description: "Get a file"
+      summary: "Get a file from a notebook"
+      description: "Get a file from a notebook"
+      tags:
+        - Notebooks
       # images are accessible to anonymous users for public notebooks
       security: []
       responses:
@@ -2755,6 +2860,8 @@ paths:
     get:
       operationId: profile_get
       description: "Fetch the profile of the authenticated user"
+      tags:
+        - Miscellaneous
       responses:
         "200":
           content:
@@ -2765,7 +2872,10 @@ paths:
   /api/profile/picture:
     get:
       operationId: profile_picture_get
+      summary: "Retrieve profile image"
       description: "Retrieve profile image"
+      tags:
+        - Miscellaneous
       # can be unauthenticated
       security: []
       responses:
@@ -2778,7 +2888,10 @@ paths:
                 format: binary
     post:
       operationId: profile_picture_update
+      summary: "Upload profile image"
       description: "Upload profile image"
+      tags:
+        - Miscellaneous
       requestBody:
         description: a file
         required: true
@@ -2794,7 +2907,10 @@ paths:
       - $ref: "#/components/parameters/workspace_id"
     get:
       operationId: pinned_notebook_list
+      summary: "List all pinned notebooks"
       description: "List all pinned notebooks for a specific workspace"
+      tags:
+        - Notebooks
       responses:
         "200":
           description: OK
@@ -2807,7 +2923,10 @@ paths:
   /api/pinnednotebooks:
     post:
       operationId: pinned_notebook_create
-      description: "Pin a notebook"
+      summary: "Pin a notebook"
+      description: "Pins a notebook"
+      tags:
+        - Notebooks
       requestBody:
         description: new notebook
         required: true
@@ -2823,7 +2942,10 @@ paths:
       - $ref: "#/components/parameters/notebookId"
     delete:
       operationId: pinned_notebook_delete
-      description: "Unpin a notebook"
+      summary: "Unpin a notebook"
+      description: "Unpins a notebook"
+      tags:
+        - Notebooks
       responses:
         "200":
           description: OK
@@ -2843,14 +2965,19 @@ paths:
           type: string
     get:
       operationId: oidc_authorize_google
-      description: Start the Google OAuth flow to authenticate a user
+      description: Start the Google OAuth flow to authenticate a user (used only with the Studio) for authenticating with the API see the Authentication section in the docs
+      tags:
+        - Internal
       responses:
         "307":
           description: Redirect to Google
   /api/logout:
     post:
       operationId: logout
+      summary: Log out
       description: Log out of Fiberplane
+      tags:
+        - Miscellaneous
       responses:
         "200":
           description: OK
@@ -2859,7 +2986,10 @@ paths:
       - $ref: "#/components/parameters/workspace_id"
     post:
       operationId: template_create
+      summary: Create a new template
       description: Create a new template
+      tags:
+        - Templates
       requestBody:
         required: true
         content:
@@ -2875,7 +3005,10 @@ paths:
                 $ref: "#/components/schemas/template"
     get:
       operationId: template_list
-      description: List the templates that have been uploaded
+      summary: List all templates
+      description: Retrieve all the templates that have been uploaded
+      tags:
+        - Templates
       parameters:
         - in: query
           name: sort_by
@@ -2909,6 +3042,10 @@ paths:
           format: name
     get:
       operationId: template_get
+      summary: Retrieve a template
+      description: Retrieves a specified template
+      tags:
+        - Templates
       responses:
         "200":
           description: OK
@@ -2918,6 +3055,10 @@ paths:
                 $ref: "#/components/schemas/template"
     patch:
       operationId: template_update
+      summary: Update a template
+      description: Updates a specified template
+      tags:
+        - Templates
       requestBody:
         required: true
         content:
@@ -2933,6 +3074,10 @@ paths:
                 $ref: "#/components/schemas/template"
     delete:
       operationId: template_delete
+      summary: Delete a template
+      description: Deletes a specified template
+      tags:
+        - Templates
       responses:
         "200":
           description: OK
@@ -2948,7 +3093,10 @@ paths:
           format: name
     post:
       operationId: template_expand
+      summary: Expand the template
       description: Expand the template into a notebook
+      tags:
+        - Templates
       requestBody:
         description: Parameters to pass to the template
         content:
@@ -2967,7 +3115,10 @@ paths:
       - $ref: "#/components/parameters/workspace_id"
     post:
       operationId: snippet_create
+      summary: Create a new snippet
       description: Create a new snippet
+      tags:
+        - Snippets
       requestBody:
         required: true
         content:
@@ -2983,7 +3134,10 @@ paths:
                 $ref: "#/components/schemas/snippet"
     get:
       operationId: snippet_list
+      summary: List all snippets
       description: List the snippets that have been uploaded
+      tags:
+        - Snippets
       parameters:
         - in: query
           name: sort_by
@@ -3011,6 +3165,10 @@ paths:
       - $ref: "#/components/parameters/snippet_name"
     get:
       operationId: snippet_get
+      summary: Retrieve a snippet
+      description: Retrieves a specified snippet from a workspace
+      tags:
+        - Snippets
       responses:
         "200":
           description: OK
@@ -3020,6 +3178,10 @@ paths:
                 $ref: "#/components/schemas/snippet"
     patch:
       operationId: snippet_update
+      summary: Update a snippet
+      description: Updates a specified snippet from a workspace
+      tags:
+        - Snippets
       requestBody:
         required: true
         content:
@@ -3035,6 +3197,10 @@ paths:
                 $ref: "#/components/schemas/snippet"
     delete:
       operationId: snippet_delete
+      summary: Delete a snippet
+      description: Deletes a specified snippet from a workspace
+      tags:
+        - Snippets
       responses:
         "200":
           description: OK
@@ -3044,7 +3210,10 @@ paths:
       - $ref: "#/components/parameters/snippet_name"
     get:
       operationId: snippet_expand
+      summary: Expand the snippet
       description: Expand the snippet and return the array of cells (without inserting them into a specific notebook)
+      tags:
+        - Snippets
       responses:
         "200":
           description: OK
@@ -3059,6 +3228,10 @@ paths:
       - $ref: "#/components/parameters/workspace_id"
     get:
       operationId: trigger_list
+      summary: List all triggers
+      description: List all created triggers in the workspace
+      tags:
+        - Triggers
       responses:
         "200":
           description: OK
@@ -3070,7 +3243,10 @@ paths:
                   $ref: "#/components/schemas/trigger"
     post:
       operationId: trigger_create
-      description: Create a new trigger
+      summary: Create a new trigger for a template
+      description: Creates a new trigger for a template
+      tags:
+        - Triggers
       requestBody:
         required: true
         description: Template URL or body
@@ -3096,6 +3272,10 @@ paths:
           format: base64uuid
     get:
       operationId: trigger_get
+      summary: Retrieve a trigger
+      description: Retrieves a trigger from a workspace by its ID
+      tags:
+        - Triggers
       responses:
         "200":
           description: OK
@@ -3105,6 +3285,10 @@ paths:
                 $ref: "#/components/schemas/trigger"
     delete:
       operationId: trigger_delete
+      summary: Delete a trigger
+      description: Deletes a trigger from a workspace by its ID
+      tags:
+        - Triggers
       responses:
         "200":
           description: OK
@@ -3127,7 +3311,10 @@ paths:
       # This does not require normal authentication but uses the secretKey URL parameter
       security: []
       operationId: trigger_invoke
+      summary: "Invoke a trigger"
       description: "Invoke a trigger to create a notebook from the associated template"
+      tags:
+        - Triggers
       requestBody:
         description: Parameters to pass to the template
         content:
@@ -3146,7 +3333,10 @@ paths:
       - $ref: "#/components/parameters/workspace_id"
     get:
       operationId: label_keys_list
+      summary: Retrieve all label keys
       description: Retrieve all label keys
+      tags:
+        - Labels
       parameters:
         - name: prefix
           in: query
@@ -3174,7 +3364,10 @@ paths:
           type: string
     get:
       operationId: label_values_list
-      description: Retrieve all label values for a specific key
+      summary: Retrieve all label values
+      description: Retrieve all label values
+      tags:
+        - Labels
       parameters:
         - name: prefix
           in: query
@@ -3196,7 +3389,10 @@ paths:
       - $ref: "#/components/parameters/workspace_id"
     post:
       operationId: notebook_search
+      summary: Search notebooks
       description: Search for notebooks
+      tags:
+        - Notebooks
       requestBody:
         required: true
         description: Notebook search payload
@@ -3218,7 +3414,10 @@ paths:
       - $ref: "#/components/parameters/workspace_id"
     get:
       operationId: event_list
+      summary: Retrieve all events matching the query
       description: Get a list of all events matching the query
+      tags:
+        - Events
       parameters:
         - in: query
           name: occurrence_time_start
@@ -3264,7 +3463,10 @@ paths:
                   $ref: "#/components/schemas/event"
     post:
       operationId: event_create
+      summary: Creates a new event
       description: Creates a new event
+      tags:
+        - Events
       requestBody:
         required: true
         description: Event creation payload
@@ -3290,14 +3492,20 @@ paths:
           format: base64uuid
     delete:
       operationId: event_delete
+      summary: Delete a event
       description: Deletes a event
+      tags:
+        - Events
       responses:
         "200":
           description: OK
   /api/tokens:
     get:
       operationId: token_list
-      description: Gets a list of api tokens
+      summary: Retrieve all API tokens
+      description: Retrieves a list of all API tokens
+      tags:
+        - Authentication
       parameters:
         - in: query
           name: sort_by
@@ -3323,7 +3531,10 @@ paths:
                   $ref: "#/components/schemas/tokenSummary"
     post:
       operationId: token_create
+      summary: Create a new API token
       description: Creates a new token
+      tags:
+        - Authentication
       requestBody:
         required: true
         description: Token creation payload
@@ -3354,7 +3565,10 @@ paths:
           format: base64uuid
     delete:
       operationId: token_delete
+      summary: "Delete an API token"
       description: Deletes a token
+      tags:
+        - Authentication
       responses:
         "200":
           description: OK
@@ -3363,11 +3577,19 @@ paths:
       - $ref: "#/components/parameters/threadId"
     get:
       operationId: thread_get
+      summary: Retrieve a discussion thread
+      description: Retrieves a discussion thread by ID
+      tags:
+        - Threads
       responses:
         "200":
           $ref: "#/components/responses/thread"
     delete:
       operationId: thread_delete
+      summary: Delete a discussion thread
+      description: Deletes a discussion thread by ID
+      tags:
+        - Threads
       responses:
         "200":
           description: OK
@@ -3376,6 +3598,10 @@ paths:
       - $ref: "#/components/parameters/threadId"
     post:
       operationId: thread_resolve
+      summary: Resolve a discussion thread
+      description: Resolves a discussion thread by ID
+      tags:
+        - Threads
       responses:
         "200":
           $ref: "#/components/responses/thread"
@@ -3384,6 +3610,10 @@ paths:
       - $ref: "#/components/parameters/threadId"
     post:
       operationId: thread_reopen
+      summary: Reopen a discussion thread
+      description: Reopens a discussion thread by ID
+      tags:
+        - Threads
       responses:
         "200":
           $ref: "#/components/responses/thread"
@@ -3392,6 +3622,10 @@ paths:
       - $ref: "#/components/parameters/threadId"
     post:
       operationId: comment_create
+      summary: Create a comment
+      description: Creates a comment in a discussion thread by ID
+      tags:
+        - Threads
       requestBody:
         required: true
         content:
@@ -3406,11 +3640,19 @@ paths:
       - $ref: "#/components/parameters/commentId"
     get:
       operationId: comment_get
+      summary: Retrieve a comment
+      description: Retrieves a comment from a discussion thread by comment ID
+      tags:
+        - Threads
       responses:
         "200":
           $ref: "#/components/responses/comment"
     patch:
       operationId: comment_update
+      summary: Update a comment
+      description: Updates a comment in a discussion thread by comment ID
+      tags:
+        - Threads
       requestBody:
         required: true
         content:
@@ -3422,6 +3664,10 @@ paths:
           $ref: "#/components/responses/comment"
     delete:
       operationId: comment_delete
+      summary: Delete a comment
+      description: Deletes a comment in a discussion thread by comment ID
+      tags:
+        - Threads
       responses:
         "200":
           description: OK
@@ -3430,7 +3676,10 @@ paths:
       - $ref: "#/components/parameters/workspace_id"
     get:
       operationId: workspace_users_list
+      summary: List all users
       description: List all users for a workspace
+      tags:
+        - Workspaces
       parameters:
         - in: query
           name: sort_by
@@ -3455,7 +3704,10 @@ paths:
   /api/workspaces:
     get:
       operationId: workspace_list
+      summary: List all workspaces
       description: List all workspaces authenticated user has access to
+      tags:
+        - Workspaces
       parameters:
         - in: query
           name: sort_by
@@ -3479,7 +3731,10 @@ paths:
                   $ref: "#/components/schemas/workspace"
     post:
       operationId: workspace_create
-      description: Create a new workspace
+      summary: Create a new workspace
+      description: Creates a new workspace
+      tags:
+        - Workspaces
       requestBody:
         required: true
         description: Workspace creation payload
@@ -3499,7 +3754,10 @@ paths:
       - $ref: "#/components/parameters/workspace_id"
     get:
       operationId: workspace_get
+      summary: Get the workspace details
       description: Get the workspace details
+      tags:
+        - Workspaces
       responses:
         "200":
           description: OK
@@ -3509,7 +3767,10 @@ paths:
                 $ref: "#/components/schemas/workspace"
     patch:
       operationId: workspace_update
+      summary: "Update workspace settings"
       description: "Update workspace settings"
+      tags:
+        - Workspaces
       requestBody:
         required: true
         description: Workspace update payload
@@ -3526,7 +3787,10 @@ paths:
                 $ref: "#/components/schemas/workspace"
     delete:
       operationId: workspace_delete
-      description: Delete workspace
+      summary: Delete a workspace
+      description: Permanently deletes a specified workspace
+      tags:
+        - Workspaces
       responses:
         "200":
           description: OK
@@ -3535,7 +3799,10 @@ paths:
       - $ref: "#/components/parameters/workspace_id"
     get:
       operationId: workspace_invite_get
-      description: Get a list of pending workspace invitations
+      summary: Retrieve pending workspace invitations
+      description: Retrieves a list of pending workspace invitations
+      tags:
+        - Workspaces
       parameters:
         - in: query
           name: sort_by
@@ -3563,7 +3830,10 @@ paths:
                   $ref: "#/components/schemas/workspace_invite"
     post:
       operationId: workspace_invite
-      description: Invite a user to a workspace
+      summary: Invite a user to workspace
+      description: Invites a user to a workspace
+      tags:
+        - Workspaces
       requestBody:
         required: true
         description: Workspace invitation payload
@@ -3583,7 +3853,10 @@ paths:
       - $ref: "#/components/parameters/invitation_id"
     delete:
       operationId: workspace_invite_delete
-      description: Delete a pending workspace invitation
+      summary: Delete a pending workspace invitation
+      description: Deletes a pending workspace invitation
+      tags:
+        - Workspaces
       responses:
         "200":
           description: OK
@@ -3593,7 +3866,10 @@ paths:
       - $ref: "#/components/parameters/invitation_secret"
     post:
       operationId: workspace_invite_accept
-      description: "Accept the workspace invitation"
+      summary: "Accept the workspace invitation"
+      description: "Accepts the workspace invitation"
+      tags:
+        - Workspaces
       responses:
         "200":
           description: OK
@@ -3607,7 +3883,10 @@ paths:
       - $ref: "#/components/parameters/invitation_secret"
     post:
       operationId: workspace_invite_decline
-      description: "Decline the workspace invitation"
+      summary: "Decline the workspace invitation"
+      description: "Declines the workspace invitation"
+      tags:
+        - Workspaces
       responses:
         "200":
           description: OK
@@ -3616,7 +3895,10 @@ paths:
       - $ref: "#/components/parameters/workspace_id"
     post:
       operationId: workspace_leave
-      description: "Leave a workspace"
+      summary: "Leave a workspace"
+      description: "Leaves a workspace"
+      tags:
+        - Workspaces
       responses:
         "200":
           description: OK
@@ -3626,7 +3908,10 @@ paths:
       - $ref: "#/components/parameters/user_id"
     patch:
       operationId: workspace_user_update
-      description: Update the user within a workspace
+      summary: Update user in a workspace
+      description: Updates the user within a workspace
+      tags:
+        - Workspaces
       requestBody:
         description: Workspace user update payload
         required: true
@@ -3643,7 +3928,10 @@ paths:
                 $ref: "#/components/schemas/user"
     delete:
       operationId: workspace_user_remove
-      description: "Remove a user from the workspace"
+      summary: "Remove user from workspace"
+      description: "Removes a user from the workspace"
+      tags:
+        - Workspaces
       responses:
         "200":
           description: OK
@@ -3652,7 +3940,10 @@ paths:
       - $ref: "#/components/parameters/workspace_id"
     get:
       operationId: workspace_picture_get
-      description: Retrieve workspace image
+      summary: Retrieve workspace image
+      description: Retrieves a workspace image
+      tags:
+        - Workspaces
       security: []
       responses:
         "200":
@@ -3664,7 +3955,10 @@ paths:
                 format: binary
     post:
       operationId: workspace_picture_update
-      description: Upload workspace image
+      summary: Upload workspace image
+      description: Uploads a workspace image
+      tags:
+        - Workspaces
       requestBody:
         description: file
         required: true
@@ -3680,7 +3974,10 @@ paths:
       - $ref: "#/components/parameters/workspace_id"
     get:
       operationId: views_get
-      description: Get all views
+      summary: Retrieve all views
+      description: Retrieves all views
+      tags:
+        - Views
       parameters:
         - in: query
           name: sort_by
@@ -3709,7 +4006,10 @@ paths:
                   $ref: "#/components/schemas/view"
     post:
       operationId: views_create
-      description: Create a new view
+      summary: Create a new view
+      description: Creates a new view
+      tags:
+        - Views
       requestBody:
         description: View creation payload
         required: true
@@ -3736,7 +4036,10 @@ paths:
           format: name
     get:
       operationId: view_get
-      description: Gets a single view
+      summary: Retrieve a single view
+      description: Retrieves a single view
+      tags:
+        - Views
       responses:
         "200":
           description: OK
@@ -3746,7 +4049,10 @@ paths:
                 $ref: "#/components/schemas/view"
     patch:
       operationId: view_update
+      summary: Update an existing view
       description: Updates an existing view
+      tags:
+        - Views
       requestBody:
         description: View update payload
         required: true
@@ -3763,7 +4069,10 @@ paths:
                 $ref: "#/components/schemas/view"
     delete:
       operationId: view_delete
+      summary: Delete an existing view
       description: Deletes an existing view
+      tags:
+        - Views
       responses:
         "200":
           description: OK
