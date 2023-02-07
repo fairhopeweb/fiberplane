@@ -39,7 +39,7 @@ jobs:
     - name: Verify template docs
       working-directory: fiberplane-templates
       run: |
-        docker run --rm -v $PWD:$PWD node:17 npx -y jsdoc-to-markdown -c $PWD/jsdoc.json $PWD/fiberplane.libsonnet > docs/template_api.md
+        scripts/generate_template_docs.sh
         if ! git diff --quiet docs/template_api.md ; then
           echo "::error file=docs/template_api.md::Out of date documentation, did you forgot to regenerate it?";
           git diff;

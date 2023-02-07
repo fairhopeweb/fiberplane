@@ -1,5 +1,5 @@
 ---
-name: Sync OpenAPI reference to ReadMe
+name: Generate and sync Templates reference to ReadMe
 
 on:
   workflow_dispatch:
@@ -13,17 +13,20 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Prepare documentation
+        run: cat fiberplane-templates/docs/front-matter.txt fiberplane-templates/docs/template_api.md  > templates_reference.md
 
-      - name: Sync dryRun
+
+      - name: Dry run sync to ReadMe
         uses: readmeio/rdme@v8
         env:
           RDME_API_KEY: ${{ secrets.README_API_KEY }}
         with:
-          rdme: openapi ./schemas/openapi_v1.yml --id=${API_DEFINITION_ID} --dryRun
+          rdme: docs templates_reference.md --dryRun
 
       - name: Sync openapi reference to ReadMe
         uses: readmeio/rdme@v8
         env:
           RDME_API_KEY: ${{ secrets.README_API_KEY }}
         with:
-          rdme: openapi ./schemas/openapi_v1.yml --id=${API_DEFINITION_ID}
+          rdme: docs templates_reference.md
