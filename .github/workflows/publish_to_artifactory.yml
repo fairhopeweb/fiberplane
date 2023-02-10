@@ -44,4 +44,4 @@ jobs:
           echo -e "[registries.artifactory]\ntoken = \"Bearer ${{ secrets.ARTIFACTORY_ACCESS_TOKEN }}\"" > ~/.cargo/credentials.toml
 
       - name: Publish changed crates
-        run: scripts/publish_crates.sh --registry=artifactory
+        run: scripts/publish_crates.sh --registry=artifactory --all

@@ -85,7 +85,7 @@ function publish_crate() {
     # Publish
     echo "Publishing $crate v$version..."
     pushd $crate_dir
-    cargo publish --registry=$registry $allow_dirty
+    cargo publish --registry=$registry $allow_dirty || (echo "ignore errors" > /dev/null)
     popd
 }
 
