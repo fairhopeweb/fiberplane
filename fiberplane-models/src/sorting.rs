@@ -1,8 +1,10 @@
 use serde::{Deserialize, Serialize};
 use std::borrow::Cow;
 use strum_macros::IntoStaticStr;
+use typed_builder::TypedBuilder;
 
-#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq, TypedBuilder)]
+#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 pub struct Sorting<T: SortField> {
     #[serde(default = "T::default_sort_field")]
@@ -49,7 +51,8 @@ pub trait SortField {
     }
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq, TypedBuilder)]
+#[non_exhaustive]
 pub struct Pagination {
     #[serde(default = "Pagination::default_page")]
     pub page: u32,
@@ -108,6 +111,7 @@ pub struct PaginatedSearch<T: SortField> {
 
 #[derive(Debug, Deserialize, Serialize, Clone, Copy, PartialEq, Eq, IntoStaticStr)]
 #[cfg_attr(feature = "clap", derive(clap::ValueEnum))]
+#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 #[strum(serialize_all = "snake_case")]
 pub enum TemplateListSortFields {
@@ -136,6 +140,7 @@ impl SortField for TemplateListSortFields {
 
 #[derive(Debug, Deserialize, Serialize, Clone, Copy, PartialEq, Eq, IntoStaticStr)]
 #[cfg_attr(feature = "clap", derive(clap::ValueEnum))]
+#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 #[strum(serialize_all = "snake_case")]
 pub enum SnippetListSortFields {
@@ -164,6 +169,7 @@ impl SortField for SnippetListSortFields {
 
 #[derive(Debug, Deserialize, Serialize, Clone, Copy, PartialEq, Eq, IntoStaticStr)]
 #[cfg_attr(feature = "clap", derive(clap::ValueEnum))]
+#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 #[strum(serialize_all = "snake_case")]
 pub enum EventSortFields {
@@ -194,6 +200,7 @@ impl SortField for EventSortFields {
 
 #[derive(Debug, Deserialize, Serialize, Clone, Copy, PartialEq, Eq, IntoStaticStr)]
 #[cfg_attr(feature = "clap", derive(clap::ValueEnum))]
+#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 #[strum(serialize_all = "snake_case")]
 pub enum TokenListSortFields {
@@ -222,6 +229,7 @@ impl SortField for TokenListSortFields {
 
 #[derive(Debug, Deserialize, Serialize, Clone, Copy, PartialEq, Eq, IntoStaticStr)]
 #[cfg_attr(feature = "clap", derive(clap::ValueEnum))]
+#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 #[strum(serialize_all = "snake_case")]
 pub enum WorkspaceMembershipSortFields {
@@ -249,6 +257,7 @@ impl SortField for WorkspaceMembershipSortFields {
 
 #[derive(Debug, Deserialize, Serialize, Clone, Copy, PartialEq, Eq, IntoStaticStr)]
 #[cfg_attr(feature = "clap", derive(clap::ValueEnum))]
+#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 #[strum(serialize_all = "snake_case")]
 pub enum WorkspaceListingSortFields {
@@ -276,6 +285,7 @@ impl SortField for WorkspaceListingSortFields {
 
 #[derive(Debug, Deserialize, Serialize, Clone, Copy, PartialEq, Eq, IntoStaticStr)]
 #[cfg_attr(feature = "clap", derive(clap::ValueEnum))]
+#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 #[strum(serialize_all = "snake_case")]
 pub enum WorkspaceInviteListingSortFields {
@@ -307,6 +317,7 @@ impl SortField for WorkspaceInviteListingSortFields {
 
 #[derive(Debug, Deserialize, Serialize, Clone, Copy, PartialEq, Eq, IntoStaticStr)]
 #[cfg_attr(feature = "clap", derive(clap::ValueEnum))]
+#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 #[strum(serialize_all = "snake_case")]
 pub enum ProxyListingSortFields {
@@ -338,6 +349,7 @@ impl SortField for ProxyListingSortFields {
 
 #[derive(Debug, Deserialize, Serialize, Clone, Copy, PartialEq, Eq, IntoStaticStr)]
 #[cfg_attr(feature = "clap", derive(clap::ValueEnum))]
+#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 #[strum(serialize_all = "snake_case")]
 pub enum DataSourceListingSortFields {
@@ -371,6 +383,7 @@ impl SortField for DataSourceListingSortFields {
 
 #[derive(Debug, Deserialize, Serialize, Clone, Copy, PartialEq, Eq, IntoStaticStr)]
 #[cfg_attr(feature = "clap", derive(clap::ValueEnum))]
+#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 #[strum(serialize_all = "snake_case")]
 pub enum ViewSortFields {

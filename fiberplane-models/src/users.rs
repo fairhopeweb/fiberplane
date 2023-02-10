@@ -5,13 +5,15 @@ use base64uuid::Base64Uuid;
 use fp_bindgen::prelude::Serializable;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
+use typed_builder::TypedBuilder;
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::users")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct Profile {
     pub id: Base64Uuid,

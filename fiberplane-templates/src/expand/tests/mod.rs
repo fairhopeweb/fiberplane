@@ -20,187 +20,152 @@ use time::OffsetDateTime;
 
 const CELLS: Lazy<Vec<Cell>> = Lazy::new(|| {
     vec![
-        Cell::Text(TextCell {
-            id: "1".to_string(),
-            content: "Let's debug this incident! foo:bar baz".to_string(),
-            formatting: vec![
-                AnnotationWithOffset {
-                    annotation: Annotation::StartItalics,
-                    offset: 6,
-                },
-                AnnotationWithOffset {
-                    annotation: Annotation::EndItalics,
-                    offset: 11,
-                },
-                AnnotationWithOffset {
-                    annotation: Annotation::StartBold,
-                    offset: 17,
-                },
-                AnnotationWithOffset {
-                    annotation: Annotation::EndBold,
-                    offset: 26,
-                },
-                AnnotationWithOffset {
-                    annotation: Annotation::Label(Label {
-                        key: "foo".to_string(),
-                        value: "bar".to_string(),
-                    }),
-                    offset: 27,
-                },
-                AnnotationWithOffset {
-                    annotation: Annotation::Label(Label {
-                        key: "baz".to_string(),
-                        value: "".to_string(),
-                    }),
-                    offset: 35,
-                },
-            ],
-            ..Default::default()
-        }),
-        Cell::Heading(HeadingCell {
-            id: "2".to_string(),
-            content: "TODOs:".to_string(),
-            heading_type: HeadingType::H2,
-            read_only: Some(true),
-            ..Default::default()
-        }),
-        Cell::Checkbox(CheckboxCell {
-            id: "3".to_string(),
-            content: "Investigate".to_string(),
-            ..Default::default()
-        }),
-        Cell::Code(CodeCell {
-            id: "4".to_string(),
-            content: "// Some code to run
+        Cell::Text(
+            TextCell::builder()
+                .id("1")
+                .content("Let's debug this incident! foo:bar baz")
+                .formatting(vec![
+                    AnnotationWithOffset::new(6, Annotation::StartItalics),
+                    AnnotationWithOffset::new(11, Annotation::EndItalics),
+                    AnnotationWithOffset::new(17, Annotation::StartBold),
+                    AnnotationWithOffset::new(26, Annotation::EndBold),
+                    AnnotationWithOffset::new(27, Annotation::Label(Label::new("foo", "bar"))),
+                    AnnotationWithOffset::new(35, Annotation::Label(Label::new("baz", ""))),
+                ])
+                .build(),
+        ),
+        Cell::Heading(
+            HeadingCell::builder()
+                .id("2")
+                .content("TODOs:")
+                .heading_type(HeadingType::H2)
+                .read_only(true)
+                .build(),
+        ),
+        Cell::Checkbox(
+            CheckboxCell::builder()
+                .id("3")
+                .content("Investigate")
+                .build(),
+        ),
+        Cell::Code(
+            CodeCell::builder()
+                .id("4")
+                .content(
+                    "// Some code to run
 let a = 'b';
-let b = \"c\";"
-                .to_string(),
-            ..Default::default()
-        }),
-        Cell::Checkbox(CheckboxCell {
-            id: "5".to_string(),
-            content: "Resolve".to_string(),
-            ..Default::default()
-        }),
-        Cell::Checkbox(CheckboxCell {
-            id: "6".to_string(),
-            content: "Profit".to_string(),
-            ..Default::default()
-        }),
-        Cell::Heading(HeadingCell {
-            id: "7".to_string(),
-            content: "Hypotheses".to_string(),
-            heading_type: HeadingType::H2,
-            read_only: Some(true),
-            ..Default::default()
-        }),
-        Cell::Provider(ProviderCell {
-            id: "8".to_string(),
-            intent: "loki,events".to_string(),
-            query_data: Some("application/x-www-form-urlencoded,query=loki+query".to_string()),
-            ..Default::default()
-        }),
-        Cell::ListItem(ListItemCell {
-            id: "9".to_string(),
-            content: "Step 1".to_string(),
-            list_type: ListType::Ordered,
-            level: None,
-            start_number: Some(1),
-            read_only: None,
-            ..Default::default()
-        }),
-        Cell::Code(CodeCell {
-            id: "10".to_string(),
-            content: "Some code".to_string(),
-            ..Default::default()
-        }),
-        Cell::ListItem(ListItemCell {
-            id: "11".to_string(),
-            content: "Step 2".to_string(),
-            list_type: ListType::Ordered,
-            start_number: Some(2),
-            ..Default::default()
-        }),
-        Cell::ListItem(ListItemCell {
-            id: "12".to_string(),
-            content: "Bullet 1".to_string(),
-            list_type: ListType::Unordered,
-            level: Some(1),
-            start_number: Some(1),
-            ..Default::default()
-        }),
-        Cell::ListItem(ListItemCell {
-            id: "13".to_string(),
-            content: "Bullet 2".to_string(),
-            list_type: ListType::Unordered,
-            level: Some(1),
-            start_number: Some(2),
-            ..Default::default()
-        }),
-        Cell::Image(ImageCell {
-            id: "14".to_string(),
-            url: Some("http://example.com/image.png".to_string()),
-            ..Default::default()
-        }),
-        Cell::Provider(ProviderCell {
-            id: "15".to_string(),
-            intent: "prometheus,timeseries".to_string(),
-            query_data: Some("application/x-www-form-urlencoded,query=http_requests".to_string()),
-            title: "sample title".to_string(),
-            ..Default::default()
-        }),
-        Cell::Provider(ProviderCell {
-            id: "16".to_string(),
-            intent: "prometheus,timeseries".to_string(),
-            ..Default::default()
-        }),
-        Cell::Text(TextCell {
-            id: "17".to_string(),
-            content: "Prefix: 2022-10-24T10:42:10.977Z - error triggered".to_string(),
-            formatting: vec![AnnotationWithOffset {
-                offset: 8,
-                annotation: Annotation::Timestamp {
-                    timestamp: datetime!(2022-10-24 10:42:10.977 UTC),
-                },
-            }],
-            ..Default::default()
-        }),
+let b = \"c\";",
+                )
+                .build(),
+        ),
+        Cell::Checkbox(CheckboxCell::builder().id("5").content("Resolve").build()),
+        Cell::Checkbox(CheckboxCell::builder().id("6").content("Profit").build()),
+        Cell::Heading(
+            HeadingCell::builder()
+                .id("7")
+                .content("Hypotheses")
+                .heading_type(HeadingType::H2)
+                .read_only(true)
+                .build(),
+        ),
+        Cell::Provider(
+            ProviderCell::builder()
+                .id("8")
+                .intent("loki,events")
+                .query_data("application/x-www-form-urlencoded,query=loki+query")
+                .build(),
+        ),
+        Cell::ListItem(
+            ListItemCell::builder()
+                .id("9")
+                .content("Step 1")
+                .list_type(ListType::Ordered)
+                .start_number(1)
+                .build(),
+        ),
+        Cell::Code(CodeCell::builder().id("10").content("Some code").build()),
+        Cell::ListItem(
+            ListItemCell::builder()
+                .id("11")
+                .content("Step 2")
+                .list_type(ListType::Ordered)
+                .start_number(2)
+                .build(),
+        ),
+        Cell::ListItem(
+            ListItemCell::builder()
+                .id("12")
+                .content("Bullet 1")
+                .list_type(ListType::Unordered)
+                .level(1)
+                .start_number(1)
+                .build(),
+        ),
+        Cell::ListItem(
+            ListItemCell::builder()
+                .id("13")
+                .content("Bullet 2")
+                .list_type(ListType::Unordered)
+                .level(1)
+                .start_number(2)
+                .build(),
+        ),
+        Cell::Image(
+            ImageCell::builder()
+                .id("14")
+                .url("http://example.com/image.png")
+                .build(),
+        ),
+        Cell::Provider(
+            ProviderCell::builder()
+                .id("15")
+                .intent("prometheus,timeseries")
+                .query_data("application/x-www-form-urlencoded,query=http_requests")
+                .title("sample title")
+                .build(),
+        ),
+        Cell::Provider(
+            ProviderCell::builder()
+                .id("16")
+                .intent("prometheus,timeseries")
+                .build(),
+        ),
+        Cell::Text(
+            TextCell::builder()
+                .id("17")
+                .content("Prefix: 2022-10-24T10:42:10.977Z - error triggered")
+                .formatting(vec![AnnotationWithOffset::new(
+                    8,
+                    Annotation::Timestamp {
+                        timestamp: datetime!(2022-10-24 10:42:10.977 UTC),
+                    },
+                )])
+                .build(),
+        ),
     ]
 });
-const NOTEBOOK: Lazy<NewNotebook> = Lazy::new(|| NewNotebook {
-    title: "Incident: 'API Outage'".to_string(),
-    time_range: NewTimeRange::Relative(RelativeTimeRange { minutes: -60 }),
-    selected_data_sources: BTreeMap::from_iter([(
-        "prometheus".to_string(),
-        SelectedDataSource {
-            name: Name::from_static("prometheus"),
-            proxy_name: Some(Name::from_static("dev")),
-        },
-    )]),
-    cells: CELLS.clone(),
-    labels: vec![
-        Label {
-            key: "key1".to_string(),
-            value: "".to_string(),
-        },
-        Label {
-            key: "key2".to_string(),
-            value: "value2".to_string(),
-        },
-        Label {
-            key: "key3".to_string(),
-            value: "".to_string(),
-        },
-        Label {
-            key: "key4".to_string(),
-            value: "value4".to_string(),
-        },
-        Label {
-            key: "key5".to_string(),
-            value: "".to_string(),
-        },
-    ],
-    front_matter: FrontMatter::new(),
+const NOTEBOOK: Lazy<NewNotebook> = Lazy::new(|| {
+    NewNotebook::builder()
+        .title("Incident: 'API Outage'")
+        .time_range(NewTimeRange::Relative(
+            RelativeTimeRange::builder().minutes(-60).build(),
+        ))
+        .selected_data_sources(BTreeMap::from_iter([(
+            "prometheus".to_string(),
+            SelectedDataSource::builder()
+                .name(Name::from_static("prometheus"))
+                .proxy_name(Name::from_static("dev"))
+                .build(),
+        )]))
+        .cells(CELLS.clone())
+        .labels(vec![
+            Label::new("key1", ""),
+            Label::new("key2", "value2"),
+            Label::new("key3", ""),
+            Label::new("key4", "value4"),
+            Label::new("key5", ""),
+        ])
+        .build()
 });
 
 #[test]
@@ -288,45 +253,40 @@ fn expands_nested_lists() {
     assert_eq!(
         cells,
         &[
-            ListItemCell {
-                id: "1".to_string(),
-                content: "A".to_string(),
-                list_type: ListType::Ordered,
-                start_number: Some(1),
-                ..Default::default()
-            },
-            ListItemCell {
-                id: "2".to_string(),
-                content: "1".to_string(),
-                list_type: ListType::Ordered,
-                level: Some(1),
-                start_number: Some(1),
-                ..Default::default()
-            },
-            ListItemCell {
-                id: "3".to_string(),
-                content: "2".to_string(),
-                list_type: ListType::Ordered,
-                level: Some(1),
-                start_number: Some(2),
-                ..Default::default()
-            },
-            ListItemCell {
-                id: "4".to_string(),
-                content: "i".to_string(),
-                list_type: ListType::Ordered,
-                level: Some(2),
-                start_number: Some(1),
-                ..Default::default()
-            },
-            ListItemCell {
-                id: "5".to_string(),
-                content: "ii".to_string(),
-                list_type: ListType::Ordered,
-                level: Some(2),
-                start_number: Some(2),
-                ..Default::default()
-            }
+            ListItemCell::builder()
+                .id("1")
+                .content("A")
+                .list_type(ListType::Ordered)
+                .start_number(1)
+                .build(),
+            ListItemCell::builder()
+                .id("2")
+                .content("1")
+                .list_type(ListType::Ordered)
+                .level(1)
+                .start_number(1)
+                .build(),
+            ListItemCell::builder()
+                .id("3")
+                .content("2")
+                .list_type(ListType::Ordered)
+                .level(1)
+                .start_number(2)
+                .build(),
+            ListItemCell::builder()
+                .id("4")
+                .content("i")
+                .list_type(ListType::Ordered)
+                .level(2)
+                .start_number(1)
+                .build(),
+            ListItemCell::builder()
+                .id("5")
+                .content("ii")
+                .list_type(ListType::Ordered)
+                .level(2)
+                .start_number(2)
+                .build()
         ]
     );
 }
@@ -338,16 +298,7 @@ fn filters_out_invalid_labels() {
     let notebook = expand_template(template, EMPTY_ARGS).unwrap();
     assert_eq!(
         notebook.labels,
-        &[
-            Label {
-                key: "a".to_string(),
-                value: "b".to_string(),
-            },
-            Label {
-                key: "e".to_string(),
-                value: "f".to_string(),
-            }
-        ]
+        &[Label::new("a", "b"), Label::new("e", "f"),]
     );
 }
 
@@ -398,19 +349,11 @@ fn extract_template_parameters_required() {
     assert_eq!(params.len(), 2);
     assert_eq!(
         params[0],
-        TemplateParameter {
-            name: "requiredParam1".to_string(),
-            ty: TemplateParameterType::Unknown,
-            default_value: None
-        }
+        TemplateParameter::builder().name("requiredParam1").build()
     );
     assert_eq!(
         params[1],
-        TemplateParameter {
-            name: "requiredParam2".to_string(),
-            ty: TemplateParameterType::Unknown,
-            default_value: None
-        }
+        TemplateParameter::builder().name("requiredParam2").build()
     );
 }
 
@@ -428,51 +371,51 @@ fn extract_template_parameters_optional() {
     assert_eq!(params.len(), 6);
     assert_eq!(
         params[0],
-        TemplateParameter {
-            name: "optionalString".to_string(),
-            ty: TemplateParameterType::String,
-            default_value: Some(Value::String("test".to_string()))
-        }
+        TemplateParameter::builder()
+            .name("optionalString")
+            .ty(TemplateParameterType::String)
+            .default_value(Value::String("test".to_string()))
+            .build()
     );
     assert_eq!(
         params[1],
-        TemplateParameter {
-            name: "optionalNumber".to_string(),
-            ty: TemplateParameterType::Number,
-            default_value: Some(Value::Number(Number::from_f64(1.0).unwrap()))
-        }
+        TemplateParameter::builder()
+            .name("optionalNumber")
+            .ty(TemplateParameterType::Number)
+            .default_value(Value::Number(Number::from_f64(1.0).unwrap()))
+            .build()
     );
     assert_eq!(
         params[2],
-        TemplateParameter {
-            name: "optionalBoolean".to_string(),
-            ty: TemplateParameterType::Boolean,
-            default_value: Some(Value::Bool(true))
-        }
+        TemplateParameter::builder()
+            .name("optionalBoolean")
+            .ty(TemplateParameterType::Boolean)
+            .default_value(Value::Bool(true))
+            .build()
     );
     assert_eq!(
         params[3],
-        TemplateParameter {
-            name: "optionalObject".to_string(),
-            ty: TemplateParameterType::Object,
-            default_value: Some(Value::Object(Map::new()))
-        }
+        TemplateParameter::builder()
+            .name("optionalObject")
+            .ty(TemplateParameterType::Object)
+            .default_value(Value::Object(Map::new()))
+            .build()
     );
     assert_eq!(
         params[4],
-        TemplateParameter {
-            name: "optionalArray".to_string(),
-            ty: TemplateParameterType::Array,
-            default_value: Some(Value::Array(vec![]))
-        }
+        TemplateParameter::builder()
+            .name("optionalArray")
+            .ty(TemplateParameterType::Array)
+            .default_value(Value::Array(vec![]))
+            .build()
     );
     assert_eq!(
         params[5],
-        TemplateParameter {
-            name: "optionalNull".to_string(),
-            ty: TemplateParameterType::Unknown,
-            default_value: Some(Value::Null)
-        }
+        TemplateParameter::builder()
+            .name("optionalNull")
+            .ty(TemplateParameterType::Unknown)
+            .default_value(Value::Null)
+            .build()
     );
 }
 
@@ -482,14 +425,14 @@ fn extract_template_parameters_ignores_non_serializable_types() {
     let params = extract_template_parameters(template).unwrap();
     assert_eq!(
         params[0],
-        TemplateParameter {
-            name: "optionalObject".to_string(),
-            ty: TemplateParameterType::Object,
-            default_value: Some(json!({
+        TemplateParameter::builder()
+            .name("optionalObject")
+            .ty(TemplateParameterType::Object)
+            .default_value(json!({
                 "b": 2.0,
                 "c": "three"
             }))
-        }
+            .build()
     );
 }
 
@@ -503,21 +446,21 @@ fn extract_template_parameters_value_from_context() {
     assert_eq!(
         params,
         vec![
-            TemplateParameter {
-                name: "x".to_string(),
-                ty: TemplateParameterType::Number,
-                default_value: Some(Value::Number(Number::from_f64(1.0).unwrap()))
-            },
-            TemplateParameter {
-                name: "y".to_string(),
-                ty: TemplateParameterType::Number,
-                default_value: Some(Value::Number(Number::from_f64(2.0).unwrap()))
-            },
-            TemplateParameter {
-                name: "z".to_string(),
-                ty: TemplateParameterType::String,
-                default_value: Some(Value::String("three".to_string()))
-            }
+            TemplateParameter::builder()
+                .name("x")
+                .ty(TemplateParameterType::Number)
+                .default_value(Value::Number(Number::from_f64(1.0).unwrap()))
+                .build(),
+            TemplateParameter::builder()
+                .name("y")
+                .ty(TemplateParameterType::Number)
+                .default_value(Value::Number(Number::from_f64(2.0).unwrap()))
+                .build(),
+            TemplateParameter::builder()
+                .name("z")
+                .ty(TemplateParameterType::String)
+                .default_value(Value::String("three".to_string()))
+                .build()
         ]
     );
 }
@@ -561,148 +504,105 @@ fn formatting_basic() {
     assert_eq!(
         &cells[0].formatting,
         &[
-            AnnotationWithOffset {
-                annotation: Annotation::StartBold,
-                offset: 0,
-            },
-            AnnotationWithOffset {
-                annotation: Annotation::EndBold,
-                offset: 14,
-            },
+            AnnotationWithOffset::new(0, Annotation::StartBold),
+            AnnotationWithOffset::new(14, Annotation::EndBold),
         ]
     );
     assert_eq!(cells[1].content, "some code");
     assert_eq!(
         &cells[1].formatting,
         &[
-            AnnotationWithOffset {
-                annotation: Annotation::StartCode,
-                offset: 0,
-            },
-            AnnotationWithOffset {
-                annotation: Annotation::EndCode,
-                offset: 9,
-            },
+            AnnotationWithOffset::new(0, Annotation::StartCode),
+            AnnotationWithOffset::new(9, Annotation::EndCode),
         ]
     );
     assert_eq!(cells[2].content, "some highlighted text");
     assert_eq!(
         &cells[2].formatting,
         &[
-            AnnotationWithOffset {
-                annotation: Annotation::StartHighlight,
-                offset: 0,
-            },
-            AnnotationWithOffset {
-                annotation: Annotation::EndHighlight,
-                offset: 21,
-            },
+            AnnotationWithOffset::new(0, Annotation::StartHighlight),
+            AnnotationWithOffset::new(21, Annotation::EndHighlight),
         ]
     );
     assert_eq!(cells[3].content, "some italicized text");
     assert_eq!(
         &cells[3].formatting,
         &[
-            AnnotationWithOffset {
-                annotation: Annotation::StartItalics,
-                offset: 0,
-            },
-            AnnotationWithOffset {
-                annotation: Annotation::EndItalics,
-                offset: 20,
-            },
+            AnnotationWithOffset::new(0, Annotation::StartItalics),
+            AnnotationWithOffset::new(20, Annotation::EndItalics),
         ]
     );
     assert_eq!(cells[4].content, "Fiberplane");
     assert_eq!(
         &cells[4].formatting,
         &[
-            AnnotationWithOffset {
-                annotation: Annotation::StartLink {
+            AnnotationWithOffset::new(
+                0,
+                Annotation::StartLink {
                     url: "https://fiberplane.com".to_string()
-                },
-                offset: 0,
-            },
-            AnnotationWithOffset {
-                annotation: Annotation::EndLink,
-                offset: 10,
-            },
+                }
+            ),
+            AnnotationWithOffset::new(10, Annotation::EndLink),
         ]
     );
     assert_eq!(cells[5].content, "some strikethrough text");
     assert_eq!(
         &cells[5].formatting,
         &[
-            AnnotationWithOffset {
-                annotation: Annotation::StartStrikethrough,
-                offset: 0,
-            },
-            AnnotationWithOffset {
-                annotation: Annotation::EndStrikethrough,
-                offset: 23,
-            },
+            AnnotationWithOffset::new(0, Annotation::StartStrikethrough),
+            AnnotationWithOffset::new(23, Annotation::EndStrikethrough),
         ]
     );
     assert_eq!(cells[6].content, "some underlined text");
     assert_eq!(
         &cells[6].formatting,
         &[
-            AnnotationWithOffset {
-                annotation: Annotation::StartUnderline,
-                offset: 0,
-            },
-            AnnotationWithOffset {
-                annotation: Annotation::EndUnderline,
-                offset: 20,
-            },
+            AnnotationWithOffset::new(0, Annotation::StartUnderline),
+            AnnotationWithOffset::new(20, Annotation::EndUnderline),
         ]
     );
 
     assert_eq!(cells[7].content, "@Bob");
     assert_eq!(
         &cells[7].formatting,
-        &[AnnotationWithOffset {
-            annotation: Annotation::Mention(Mention {
-                name: "Bob Bobsen".to_owned(),
-                user_id: "Bob".to_owned(),
-            }),
-            offset: 0,
-        }]
+        &[AnnotationWithOffset::new(
+            0,
+            Annotation::Mention(
+                Mention::builder()
+                    .name("Bob Bobsen".to_owned())
+                    .user_id("Bob".to_owned())
+                    .build()
+            ),
+        )]
     );
 
     assert_eq!(cells[8].content, "2020-01-01T00:00:00Z");
     assert_eq!(
         &cells[8].formatting,
-        &[AnnotationWithOffset {
-            annotation: Timestamp {
+        &[AnnotationWithOffset::new(
+            0,
+            Timestamp {
                 timestamp: OffsetDateTime::parse("2020-01-01T00:00:00Z", &Rfc3339).unwrap()
             },
-            offset: 0,
-        }]
+        )]
     );
 
     assert_eq!(cells[9].content, "foo:bar");
     assert_eq!(
         &cells[9].formatting,
-        &[AnnotationWithOffset {
-            annotation: Annotation::Label(Label {
-                key: "foo".to_owned(),
-                value: "bar".to_owned(),
-            }),
-            offset: 0,
-        }]
+        &[AnnotationWithOffset::new(
+            0,
+            Annotation::Label(Label::new("foo", "bar"))
+        )]
     );
 
     assert_eq!(cells[10].content, "foo");
     assert_eq!(
         &cells[10].formatting,
-        &[AnnotationWithOffset {
-            annotation: Annotation::Label(Label {
-                key: "foo".to_owned(),
-                value: "".to_owned(),
-            }),
-            offset: 0,
-        }]
+        &[AnnotationWithOffset::new(
+            0,
+            Annotation::Label(Label::new("foo", ""))
+        )]
     );
 }
 
@@ -725,22 +625,10 @@ fn formatting_nested() {
         assert_eq!(
             &cell.formatting,
             &[
-                AnnotationWithOffset {
-                    annotation: Annotation::StartBold,
-                    offset: 13,
-                },
-                AnnotationWithOffset {
-                    annotation: Annotation::StartItalics,
-                    offset: 24,
-                },
-                AnnotationWithOffset {
-                    annotation: Annotation::EndItalics,
-                    offset: 48,
-                },
-                AnnotationWithOffset {
-                    annotation: Annotation::EndBold,
-                    offset: 48,
-                },
+                AnnotationWithOffset::new(13, Annotation::StartBold),
+                AnnotationWithOffset::new(24, Annotation::StartItalics),
+                AnnotationWithOffset::new(48, Annotation::EndItalics),
+                AnnotationWithOffset::new(48, Annotation::EndBold),
             ]
         );
     } else {
@@ -767,22 +655,10 @@ fn formatting_builder() {
         assert_eq!(
             &cell.formatting,
             &[
-                AnnotationWithOffset {
-                    annotation: Annotation::StartBold,
-                    offset: 13,
-                },
-                AnnotationWithOffset {
-                    annotation: Annotation::EndBold,
-                    offset: 24,
-                },
-                AnnotationWithOffset {
-                    annotation: Annotation::StartItalics,
-                    offset: 24,
-                },
-                AnnotationWithOffset {
-                    annotation: Annotation::EndItalics,
-                    offset: 43,
-                },
+                AnnotationWithOffset::new(13, Annotation::StartBold),
+                AnnotationWithOffset::new(24, Annotation::EndBold),
+                AnnotationWithOffset::new(24, Annotation::StartItalics),
+                AnnotationWithOffset::new(43, Annotation::EndItalics),
             ]
         );
     } else {
@@ -811,14 +687,8 @@ fn format_list() {
         assert_eq!(
             &cell.formatting,
             &[
-                AnnotationWithOffset {
-                    annotation: Annotation::StartBold,
-                    offset: 13,
-                },
-                AnnotationWithOffset {
-                    annotation: Annotation::EndBold,
-                    offset: 26,
-                }
+                AnnotationWithOffset::new(13, Annotation::StartBold),
+                AnnotationWithOffset::new(26, Annotation::EndBold),
             ]
         );
     } else {
@@ -829,14 +699,8 @@ fn format_list() {
         assert_eq!(
             &cell.formatting,
             &[
-                AnnotationWithOffset {
-                    annotation: Annotation::StartBold,
-                    offset: 0,
-                },
-                AnnotationWithOffset {
-                    annotation: Annotation::EndBold,
-                    offset: 9,
-                }
+                AnnotationWithOffset::new(0, Annotation::StartBold),
+                AnnotationWithOffset::new(9, Annotation::EndBold),
             ]
         );
     } else {
@@ -870,14 +734,12 @@ fn export_notebook_to_template_and_back() {
 
 #[test]
 fn mustache_substitution_in_title() {
-    let notebook = NewNotebook {
-        title: r#"Hello {{personName}}, this is a {{notebookCategory}}"#.to_string(),
-        cells: Vec::new(),
-        selected_data_sources: Default::default(),
-        time_range: NewTimeRange::Relative(RelativeTimeRange { minutes: -60 }),
-        labels: Vec::new(),
-        front_matter: FrontMatter::new(),
-    };
+    let notebook = NewNotebook::builder()
+        .title(r#"Hello {{personName}}, this is a {{notebookCategory}}"#.to_string())
+        .time_range(NewTimeRange::Relative(
+            RelativeTimeRange::builder().minutes(-60).build(),
+        ))
+        .build();
     let template = notebook_to_template(notebook);
     let notebook = expand_template(
         template,
@@ -892,37 +754,37 @@ fn mustache_substitution_in_title() {
 
 #[test]
 fn mustache_substitution_to_function_parameters() {
-    let notebook = NewNotebook {
-        title: r#"Hello {{personName}}"#.to_string(),
-        cells: vec![Cell::Text(TextCell {
-            id: "1".to_string(),
-            content: r#"{{greeting}} {{personName}}, great to have you"#.to_string(),
-            ..Default::default()
-        })],
-        selected_data_sources: Default::default(),
-        time_range: NewTimeRange::Relative(RelativeTimeRange { minutes: -60 }),
-        labels: Vec::new(),
-        front_matter: FrontMatter::new(),
-    };
+    let notebook = NewNotebook::builder()
+        .title(r#"Hello {{personName}}"#.to_string())
+        .cells(vec![Cell::Text(
+            TextCell::builder()
+                .id("1")
+                .content(r#"{{greeting}} {{personName}}, great to have you"#)
+                .build(),
+        )])
+        .time_range(NewTimeRange::Relative(
+            RelativeTimeRange::builder().minutes(-60).build(),
+        ))
+        .build();
     let template = notebook_to_template(notebook);
     let params = extract_template_parameters(template).unwrap();
     // Deduplicates the `personName` parameter
     assert_eq!(params.len(), 2);
     assert_eq!(
         params[0],
-        TemplateParameter {
-            name: "personName".to_string(),
-            default_value: Some(Value::String(r#"{{personName}}"#.to_string())),
-            ty: TemplateParameterType::String,
-        }
+        TemplateParameter::builder()
+            .name("personName".to_string())
+            .default_value(Value::String(r#"{{personName}}"#.to_string()))
+            .ty(TemplateParameterType::String)
+            .build()
     );
     assert_eq!(
         params[1],
-        TemplateParameter {
-            name: "greeting".to_string(),
-            default_value: Some(Value::String(r#"{{greeting}}"#.to_string())),
-            ty: TemplateParameterType::String,
-        }
+        TemplateParameter::builder()
+            .name("greeting".to_string())
+            .default_value(Value::String(r#"{{greeting}}"#.to_string()))
+            .ty(TemplateParameterType::String)
+            .build()
     );
 }
 

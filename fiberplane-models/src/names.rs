@@ -18,6 +18,7 @@ const MIN_LENGTH: usize = 1;
     derive(Serializable),
     fp(rust_module = "fiberplane_models::names")
 )]
+#[non_exhaustive]
 pub enum InvalidName {
     #[error("name is too long")]
     TooLong,
@@ -44,6 +45,7 @@ pub enum InvalidName {
     derive(Serializable),
     fp(rust_module = "fiberplane_models::names")
 )]
+#[non_exhaustive]
 pub struct Name(String);
 
 impl Name {

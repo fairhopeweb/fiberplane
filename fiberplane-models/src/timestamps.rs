@@ -10,6 +10,7 @@ use std::{
 use time::{
     ext::NumericalDuration, format_description::well_known::Rfc3339, Duration, OffsetDateTime,
 };
+use typed_builder::TypedBuilder;
 
 /// A range in time from a given timestamp (inclusive) up to another timestamp (exclusive).
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -107,6 +108,7 @@ impl Deref for Timestamp {
     derive(Serializable),
     fp(rust_module = "fiberplane_models::timestamps")
 )]
+#[non_exhaustive]
 #[serde(untagged)]
 pub enum NewTimeRange {
     Absolute(TimeRange),
@@ -127,13 +129,20 @@ impl From<TimeRange> for NewTimeRange {
 ///
 /// Relative time ranges are expanded to absolute time ranges upon instantiation
 /// of a notebook.
-#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::timestamps")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct RelativeTimeRange {
     pub minutes: i32,
+}
+
+impl RelativeTimeRange {
+    pub fn from_minutes(minutes: i32) -> RelativeTimeRange {
+        RelativeTimeRange { minutes }
+    }
 }

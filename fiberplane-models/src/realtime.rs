@@ -8,6 +8,7 @@ use serde::{Deserialize, Serialize};
 use std::cmp::Ordering;
 use std::fmt::Debug;
 use time::OffsetDateTime;
+use typed_builder::TypedBuilder;
 
 /// Real-time message sent by the client over a WebSocket connection.
 #[derive(Clone, Debug, Deserialize, Serialize)]
@@ -16,6 +17,7 @@ use time::OffsetDateTime;
     derive(Serializable),
     fp(rust_module = "fiberplane_models::realtime")
 )]
+#[non_exhaustive]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum ClientRealtimeMessage {
     /// Authenticate this client
@@ -73,6 +75,7 @@ impl ClientRealtimeMessage {
     derive(Serializable),
     fp(rust_module = "fiberplane_models::realtime")
 )]
+#[non_exhaustive]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum ServerRealtimeMessage {
     /// Apply an operation to a specific Notebook.
@@ -122,18 +125,21 @@ pub enum ServerRealtimeMessage {
     UserTypingComment(UserTypingCommentServerMessage),
 }
 
-#[derive(Clone, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::realtime")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct AuthenticateMessage {
     /// Bearer token
+    #[builder(setter(into))]
     pub token: String,
 
     /// Operation ID
+    #[builder(default, setter(into, strip_option))]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub op_id: Option<String>,
 }
@@ -147,53 +153,62 @@ impl Debug for AuthenticateMessage {
     }
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::realtime")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct SubscribeMessage {
     /// ID of the notebook
+    #[builder(setter(into))]
     pub notebook_id: String,
 
     /// The current revision that the client knows about. If this is not the
     /// current revision according to the server, than the server will sent
     /// all operations starting from this revision.
+    #[builder(default, setter(into))]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub revision: Option<u32>,
 
     /// Operation ID
+    #[builder(default, setter(into, strip_option))]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub op_id: Option<String>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::realtime")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct UnsubscribeMessage {
     /// ID of the notebook
+    #[builder(setter(into))]
     pub notebook_id: String,
 
     /// Operation ID
+    #[builder(default, setter(into, strip_option))]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub op_id: Option<String>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::realtime")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct ApplyOperationMessage {
     /// ID of the notebook
+    #[builder(setter(into))]
     pub notebook_id: String,
 
     /// Operation
@@ -204,6 +219,7 @@ pub struct ApplyOperationMessage {
     pub revision: u32,
 
     /// Operation ID
+    #[builder(default, setter(into))]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub op_id: Option<String>,
 }
@@ -224,18 +240,21 @@ impl ApplyOperationMessage {
     }
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::realtime")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct ApplyOperationBatchMessage {
     /// ID of the notebook
+    #[builder(setter(into))]
     pub notebook_id: String,
 
     /// Operation
+    #[builder(default)]
     pub operations: Vec<Operation>,
 
     /// Revision, this will be the revision of the first operation. The other
@@ -243,6 +262,7 @@ pub struct ApplyOperationBatchMessage {
     pub revision: u32,
 
     /// Operation ID
+    #[builder(default, setter(into, strip_option))]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub op_id: Option<String>,
 }
@@ -263,12 +283,13 @@ impl ApplyOperationBatchMessage {
     }
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::realtime")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct AckMessage {
     /// Operation ID.
@@ -281,28 +302,32 @@ impl AckMessage {
     }
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::realtime")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct ErrMessage {
     /// Error message.
+    #[builder(setter(into))]
     pub error_message: String,
 
     /// Operation ID. Empty if the user has not provided a op_id.
+    #[builder(default, setter(into))]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub op_id: Option<String>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::realtime")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct DebugRequestMessage {
     /// Operation ID.
@@ -310,31 +335,35 @@ pub struct DebugRequestMessage {
     pub op_id: Option<String>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::realtime")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct DebugResponseMessage {
     /// Session ID.
     pub sid: String,
 
     /// Notebooks that the user is subscribed to.
+    #[builder(default)]
     pub subscribed_notebooks: Vec<String>,
 
     /// Operation ID. Empty if the user has not provided a op_id.
+    #[builder(default, setter(into))]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub op_id: Option<String>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::realtime")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct MentionMessage {
     /// ID of the notebook in which the user was mentioned.
@@ -347,24 +376,26 @@ pub struct MentionMessage {
     pub mentioned_by: MentionedBy,
 }
 
-#[derive(Debug, Clone, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Debug, Clone, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::realtime")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct MentionedBy {
     pub name: String,
 }
 
 /// Message sent when an apply operation was rejected by the server.
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::realtime")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct RejectedMessage {
     /// The reason why the apply operation was rejected.
@@ -391,6 +422,7 @@ impl RejectedMessage {
     derive(Serializable),
     fp(rust_module = "fiberplane_models::realtime")
 )]
+#[non_exhaustive]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum RejectReason {
     /// The operation referenced an invalid cell index.
@@ -426,24 +458,26 @@ pub enum RejectReason {
     Outdated(OutdatedRejectReason),
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::realtime")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct OutdatedRejectReason {
     /// The current revision for the notebook.
     pub current_revision: u32,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::realtime")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct InvalidLabelRejectReason {
     /// The key of the label that was invalid.
@@ -453,40 +487,46 @@ pub struct InvalidLabelRejectReason {
     pub validation_error: LabelValidationError,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::realtime")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct DuplicateLabelRejectReason {
     /// The key of the label that was already present.
     pub key: String,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::realtime")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct SubscriberAddedMessage {
     /// The ID of the notebook that the user subscribed to.
+    #[builder(setter(into))]
     pub notebook_id: String,
 
     /// ID associated with the newly connected session. There can be multiple
     /// sessions for a single (notebook|user) pair. The ID can be used multiple
     /// times for different (notebook|user) pairs. The combination of notebook,
     /// user and session will be unique.
+    #[builder(setter(into))]
     pub session_id: String,
 
     /// The moment the session was created.
+    #[builder(setter(into))]
     #[serde(with = "time::serde::rfc3339")]
     pub created_at: OffsetDateTime,
 
     /// The last time the user was active in this session.
+    #[builder(setter(into))]
     #[serde(with = "time::serde::rfc3339")]
     pub updated_at: OffsetDateTime,
 
@@ -494,16 +534,18 @@ pub struct SubscriberAddedMessage {
     pub user: User,
 
     /// User's focus within the notebook.
+    #[builder(default)]
     #[serde(default)]
     pub focus: NotebookFocus,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::realtime")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct SubscriberRemovedMessage {
     /// The ID of the notebook that the user unsubscribed from.
@@ -513,80 +555,94 @@ pub struct SubscriberRemovedMessage {
     pub session_id: String,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::realtime")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct User {
     /// The ID of the user. Will always be the same for the same user, so can be
     /// used for de-dupping or input for color generation.
+    #[builder(setter(into))]
     pub id: String,
 
     /// Name of the user
+    #[builder(setter(into))]
     pub name: String,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::realtime")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct FocusInfoMessage {
     /// ID of the notebook.
+    #[builder(setter(into))]
     pub notebook_id: String,
 
     /// User's focus within the notebook.
+    #[builder(default)]
     #[serde(default)]
     pub focus: NotebookFocus,
 
     /// Operation ID. Empty if the user has not provided a op_id.
+    #[builder(default, setter(into, strip_option))]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub op_id: Option<String>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::realtime")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct UserTypingCommentClientMessage {
+    #[builder(setter(into))]
     pub notebook_id: Base64Uuid,
+    #[builder(setter(into))]
     pub thread_id: Base64Uuid,
 
     /// Operation ID. Empty if the user has not provided a op_id.
+    #[builder(default, setter(into, strip_option))]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub op_id: Option<String>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::realtime")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct SubscribeWorkspaceMessage {
     /// ID of the workspace
     pub workspace_id: Base64Uuid,
 
     /// Operation ID
+    #[builder(default, setter(into, strip_option))]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub op_id: Option<String>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::realtime")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct UnsubscribeWorkspaceMessage {
     /// ID of the workspace
@@ -597,12 +653,13 @@ pub struct UnsubscribeWorkspaceMessage {
     pub op_id: Option<String>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::realtime")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct SubscriberChangedFocusMessage {
     /// ID of the session.
@@ -621,18 +678,20 @@ pub struct SubscriberChangedFocusMessage {
 /// Focus can be placed within a cell, and optionally within separate fields
 /// within the cell. An offset can be specified to indicate the exact position
 /// of the cursor within a text field.
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::realtime")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct FocusPosition {
     /// ID of the focused cell.
     ///
     /// May be the ID of an actual cell, or a so-called "surrogate ID", such as
     /// the ID that indicates focus is on the title field.
+    #[builder(setter(into))]
     pub cell_id: String,
 
     /// Key to identify which field inside a cell has focus.
@@ -658,6 +717,7 @@ pub struct FocusPosition {
     derive(Serializable),
     fp(rust_module = "fiberplane_models::realtime")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "snake_case", tag = "type")]
 pub enum NotebookFocus {
     /// The user has no focus within the notebook.
@@ -842,24 +902,26 @@ impl Default for NotebookFocus {
     }
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::realtime")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct ThreadAddedMessage {
     pub notebook_id: String,
     pub thread: Thread,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::realtime")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct ThreadItemAddedMessage {
     pub notebook_id: String,
@@ -867,12 +929,13 @@ pub struct ThreadItemAddedMessage {
     pub thread_item: ThreadItem,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::realtime")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct ThreadItemUpdatedMessage {
     pub notebook_id: String,
@@ -880,24 +943,26 @@ pub struct ThreadItemUpdatedMessage {
     pub thread_item: ThreadItem,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::realtime")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct ThreadDeletedMessage {
     pub notebook_id: String,
     pub thread_id: String,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::realtime")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct UserTypingCommentServerMessage {
     pub notebook_id: String,

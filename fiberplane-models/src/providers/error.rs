@@ -3,6 +3,7 @@ use super::HttpRequestError;
 use fp_bindgen::prelude::Serializable;
 use serde::{Deserialize, Serialize};
 use std::num::ParseFloatError;
+use typed_builder::TypedBuilder;
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize, thiserror::Error)]
 #[cfg_attr(
@@ -10,6 +11,7 @@ use std::num::ParseFloatError;
     derive(Serializable),
     fp(rust_module = "fiberplane_models::providers")
 )]
+#[non_exhaustive]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Error {
     #[error("unsupported request")]
@@ -104,12 +106,13 @@ impl From<time::error::Parse> for Error {
     }
 }
 
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::providers")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct ValidationError {
     /// Refers to a field from the query schema.

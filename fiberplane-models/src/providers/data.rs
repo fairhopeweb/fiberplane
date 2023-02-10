@@ -4,35 +4,42 @@ use fp_bindgen::prelude::Serializable;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use std::collections::BTreeMap;
+use typed_builder::TypedBuilder;
 
 /// A single event.
 ///
 /// Events occur at a given time and optionally last until a given end time.
 /// They may contain both event-specific metadata as well as OpenTelemetry
 /// metadata.
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::providers")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct Event {
     pub time: Timestamp,
+    #[builder(default)]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub end_time: Option<Timestamp>,
 
+    #[builder(default)]
     #[serde(flatten)]
     pub otel: OtelMetadata,
 
     pub title: String,
 
+    #[builder(default)]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub description: Option<String>,
 
+    #[builder(default)]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub severity: Option<OtelSeverityNumber>,
 
+    #[builder(default)]
     pub labels: BTreeMap<String, String>,
 }
 
@@ -40,12 +47,13 @@ pub struct Event {
 ///
 /// Metric values are taken at a specific timestamp and contain a floating-point
 /// value as well as OpenTelemetry metadata.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::providers")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct Metric {
     pub time: Timestamp,
@@ -57,12 +65,13 @@ pub struct Metric {
 }
 
 /// Metadata following the OpenTelemetry metadata spec.
-#[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::providers")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct OtelMetadata {
     pub attributes: BTreeMap<String, Value>,
@@ -84,6 +93,7 @@ pub struct OtelMetadata {
     derive(Serializable),
     fp(rust_module = "fiberplane_models::providers")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct OtelSeverityNumber(pub u8);
 
@@ -95,8 +105,15 @@ pub struct OtelSeverityNumber(pub u8);
     derive(Serializable),
     fp(rust_module = "fiberplane_models::providers")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct OtelSpanId(pub [u8; 8]);
+
+impl OtelSpanId {
+    pub fn new(data: [u8; 8]) -> Self {
+        Self(data)
+    }
+}
 
 /// Trace ID, as specified by OpenTelemetry:
 ///  https://opentelemetry.io/docs/reference/specification/overview/#spancontext
@@ -106,16 +123,24 @@ pub struct OtelSpanId(pub [u8; 8]);
     derive(Serializable),
     fp(rust_module = "fiberplane_models::providers")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct OtelTraceId(pub [u8; 16]);
 
+impl OtelTraceId {
+    pub fn new(data: [u8; 16]) -> Self {
+        Self(data)
+    }
+}
+
 /// A series of metrics over time, with metadata.
-#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::providers")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct Timeseries {
     pub name: String,

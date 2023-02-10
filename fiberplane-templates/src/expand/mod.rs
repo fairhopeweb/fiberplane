@@ -212,18 +212,17 @@ impl TemplateExpander {
                                     ValType::Null => TemplateParameterType::Unknown,
                                     ValType::Func => TemplateParameterType::Unknown,
                                 };
-                                return TemplateParameter {
-                                    name: param.0.to_string(),
-                                    default_value: jsonnet_val_to_json_value(val),
-                                    ty,
-                                };
+                                return TemplateParameter::builder()
+                                    .name(param.0.to_string())
+                                    .default_value(jsonnet_val_to_json_value(val))
+                                    .ty(ty)
+                                    .build();
                             }
                         }
-                        TemplateParameter {
-                            name: param.0.to_string(),
-                            default_value: None,
-                            ty: TemplateParameterType::Unknown,
-                        }
+                        TemplateParameter::builder()
+                            .name(param.0.to_string())
+                            .ty(TemplateParameterType::Unknown)
+                            .build()
                     })
                     .collect());
             }

@@ -8,22 +8,10 @@ use super::*;
 fn formatting_basic() {
     let content = "some normal, some bold, and some italicized text";
     let formatting = vec![
-        AnnotationWithOffset {
-            annotation: Annotation::StartBold,
-            offset: 13,
-        },
-        AnnotationWithOffset {
-            annotation: Annotation::EndBold,
-            offset: 24,
-        },
-        AnnotationWithOffset {
-            annotation: Annotation::StartItalics,
-            offset: 24,
-        },
-        AnnotationWithOffset {
-            annotation: Annotation::EndItalics,
-            offset: 43,
-        },
+        AnnotationWithOffset::new(13, Annotation::StartBold),
+        AnnotationWithOffset::new(24, Annotation::EndBold),
+        AnnotationWithOffset::new(24, Annotation::StartItalics),
+        AnnotationWithOffset::new(43, Annotation::EndItalics),
     ];
     let actual = format_content(content, &formatting);
     // alternative: "fmt.raw('some normal, ').bold('some bold, ').italics('and some italicized text')"
@@ -37,22 +25,10 @@ fn formatting_basic() {
 fn formatting_nested() {
     let content = "some normal, some bold, and some bold italicized text";
     let formatting = vec![
-        AnnotationWithOffset {
-            annotation: Annotation::StartBold,
-            offset: 13,
-        },
-        AnnotationWithOffset {
-            annotation: Annotation::StartItalics,
-            offset: 24,
-        },
-        AnnotationWithOffset {
-            annotation: Annotation::EndItalics,
-            offset: 48,
-        },
-        AnnotationWithOffset {
-            annotation: Annotation::EndBold,
-            offset: 48,
-        },
+        AnnotationWithOffset::new(13, Annotation::StartBold),
+        AnnotationWithOffset::new(24, Annotation::StartItalics),
+        AnnotationWithOffset::new(48, Annotation::EndItalics),
+        AnnotationWithOffset::new(48, Annotation::EndBold),
     ];
     let actual = format_content(content, &formatting);
     assert_eq!(actual, "['some normal, ', fmt.bold(['some bold, ', fmt.italics(['and some bold italicized'])]), ' text']");
@@ -62,16 +38,13 @@ fn formatting_nested() {
 fn format_link() {
     let content = "see here for more";
     let formatting = vec![
-        AnnotationWithOffset {
-            annotation: Annotation::StartLink {
+        AnnotationWithOffset::new(
+            4,
+            Annotation::StartLink {
                 url: "https://example.com/more".to_string(),
             },
-            offset: 4,
-        },
-        AnnotationWithOffset {
-            annotation: Annotation::EndLink,
-            offset: 8,
-        },
+        ),
+        AnnotationWithOffset::new(8, Annotation::EndLink),
     ];
     let actual = format_content(content, &formatting);
     assert_eq!(
@@ -83,10 +56,7 @@ fn format_link() {
 #[test]
 fn format_unclosed() {
     let content = "some normal, some bold";
-    let formatting = vec![AnnotationWithOffset {
-        annotation: Annotation::StartBold,
-        offset: 13,
-    }];
+    let formatting = vec![AnnotationWithOffset::new(13, Annotation::StartBold)];
     let actual = format_content(content, &formatting);
     assert_eq!(actual, "['some normal, ', fmt.bold(['some bold'])]");
 }
@@ -94,13 +64,15 @@ fn format_unclosed() {
 #[test]
 fn format_mention() {
     let content = "hi @Bob Bobsen mention";
-    let formatting = vec![AnnotationWithOffset {
-        annotation: Annotation::Mention(Mention {
-            name: "Bob Bobsen".to_string(),
-            user_id: "1234".to_string(),
-        }),
-        offset: 3,
-    }];
+    let formatting = vec![AnnotationWithOffset::new(
+        3,
+        Annotation::Mention(
+            Mention::builder()
+                .name("Bob Bobsen".to_string())
+                .user_id("1234".to_string())
+                .build(),
+        ),
+    )];
     let actual = format_content(content, &formatting);
     assert_eq!(
         actual,
@@ -111,12 +83,12 @@ fn format_mention() {
 #[test]
 fn format_timestamp() {
     let content = "hi 2020-01-01T00:00:00Z timestamp";
-    let formatting = vec![AnnotationWithOffset {
-        annotation: Annotation::Timestamp {
+    let formatting = vec![AnnotationWithOffset::new(
+        3,
+        Annotation::Timestamp {
             timestamp: OffsetDateTime::parse("2020-01-01T00:00:00Z", &Rfc3339).unwrap(),
         },
-        offset: 3,
-    }];
+    )];
     let actual = format_content(content, &formatting);
     assert_eq!(
         actual,
@@ -127,13 +99,10 @@ fn format_timestamp() {
 #[test]
 fn format_label() {
     let content = "hi foo:bar label";
-    let formatting = vec![AnnotationWithOffset {
-        annotation: Annotation::Label(Label {
-            key: "foo".to_string(),
-            value: "bar".to_string(),
-        }),
-        offset: 3,
-    }];
+    let formatting = vec![AnnotationWithOffset::new(
+        3,
+        Annotation::Label(Label::new("foo", "bar")),
+    )];
     let actual = format_content(content, &formatting);
     assert_eq!(actual, "['hi ', fmt.label('foo', 'bar'), ' label']");
 }
@@ -143,11 +112,12 @@ fn print_text_cell() {
     let mut writer = CodeWriter::new();
     print_cell(
         &mut writer,
-        &Cell::Text(TextCell {
-            id: "c1".to_owned(),
-            content: "I'm a text cell".to_owned(),
-            ..Default::default()
-        }),
+        &Cell::Text(
+            TextCell::builder()
+                .id("c1")
+                .content("I'm a text cell")
+                .build(),
+        ),
     );
     assert_eq!(writer.to_string(), "c.text(\"I'm a text cell\"),\n");
 }
@@ -157,10 +127,7 @@ fn print_divider_cell() {
     let mut writer = CodeWriter::new();
     print_cell(
         &mut writer,
-        &Cell::Divider(DividerCell {
-            id: "c2".to_owned(),
-            read_only: None,
-        }),
+        &Cell::Divider(DividerCell::builder().id("c2".to_owned()).build()),
     );
     assert_eq!(writer.to_string(), "c.divider(),\n");
 }
@@ -168,10 +135,11 @@ fn print_divider_cell() {
 #[test]
 fn print_cell_handles_unicode() {
     let mut writer = CodeWriter::new();
-    let cell = Cell::Text(TextCell {
-        content: "👀 I'm a text cell with unicode 🦀".to_owned(),
-        ..Default::default()
-    });
+    let cell = Cell::Text(
+        TextCell::builder()
+            .content("👀 I'm a text cell with unicode 🦀")
+            .build(),
+    );
     print_cell(&mut writer, &cell);
     assert_eq!(
         writer.to_string(),
@@ -182,14 +150,15 @@ fn print_cell_handles_unicode() {
 #[test]
 fn print_cell_handles_formatted_unicode() {
     let mut writer = CodeWriter::new();
-    let cell = Cell::Text(TextCell {
-        content: "👀".to_owned(),
-        formatting: vec![
-            AnnotationWithOffset::new(0, Annotation::StartHighlight),
-            AnnotationWithOffset::new(1, Annotation::EndHighlight),
-        ],
-        ..Default::default()
-    });
+    let cell = Cell::Text(
+        TextCell::builder()
+            .content("👀")
+            .formatting(vec![
+                AnnotationWithOffset::new(0, Annotation::StartHighlight),
+                AnnotationWithOffset::new(1, Annotation::EndHighlight),
+            ])
+            .build(),
+    );
     print_cell(&mut writer, &cell);
     assert_eq!(writer.to_string(), "c.text([fmt.highlight(['👀'])]),\n");
 }

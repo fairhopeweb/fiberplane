@@ -3,13 +3,15 @@ use base64uuid::Base64Uuid;
 use fp_bindgen::prelude::Serializable;
 use serde::{Deserialize, Serialize};
 use time::OffsetDateTime;
+use typed_builder::TypedBuilder;
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::tokens")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct TokenSummary {
     pub id: Base64Uuid,
@@ -20,12 +22,13 @@ pub struct TokenSummary {
     pub expires_at: Option<OffsetDateTime>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::tokens")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct NewToken {
     pub title: String,
@@ -39,12 +42,13 @@ impl NewToken {
     }
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::tokens")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct Token {
     pub id: Base64Uuid,

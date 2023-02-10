@@ -2,17 +2,19 @@ use super::Error;
 #[cfg(feature = "fp-bindgen")]
 use fp_bindgen::prelude::Serializable;
 use serde::{Deserialize, Serialize};
+use typed_builder::TypedBuilder;
 
 /// Response type for status requests.
 ///
 /// To be serialized using the `application/vnd.fiberplane.provider-status`
 /// MIME type.
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::providers")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct ProviderStatus {
     /// Indicates whether the provider is available to be queried.

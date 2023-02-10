@@ -75,6 +75,10 @@ impl<'a> NotebookConverter<'a> {
                         HeadingType::H1 => HeadingLevel::H2,
                         HeadingType::H2 => HeadingLevel::H3,
                         HeadingType::H3 => HeadingLevel::H4,
+                        _ => {
+                            warn!("Unknown HeadingType, falling back to default");
+                            HeadingLevel::H2
+                        }
                     };
                     let tag = Tag::Heading(level, None, Vec::new());
                     self.events.push(Start(tag.clone()));
@@ -142,6 +146,7 @@ impl<'a> NotebookConverter<'a> {
                 Cell::Discussion(_) => {
                     warn!("Ignoring Discussion cell because they are not yet supported")
                 }
+                _ => warn!("Unknown Cell type"),
             }
         }
     }
@@ -176,8 +181,13 @@ impl<'a> NotebookConverter<'a> {
         formatting.sort_by_key(|a| a.offset);
 
         let mut formatting = formatting.into_iter().peekable();
-        while let (Some(AnnotationWithOffset { offset, annotation }), next, content) =
-            (formatting.next(), formatting.peek(), &mut content)
+        while let (
+            Some(AnnotationWithOffset {
+                offset, annotation, ..
+            }),
+            next,
+            content,
+        ) = (formatting.next(), formatting.peek(), &mut content)
         {
             let offset = offset as usize;
             if offset > current_offset {
@@ -322,6 +332,9 @@ impl<'a> NotebookConverter<'a> {
                     self.text(content.take(label_length).collect::<String>());
                     self.events.push(End(Tag::Strong));
                 }
+                _ => {
+                    warn!("Unknown annotation: {:?}", annotation);
+                }
             }
         }
 
@@ -352,6 +365,7 @@ impl<'a> NotebookConverter<'a> {
         let start_tag = match cell.list_type {
             ListType::Ordered => Tag::List(Some(cell.start_number.unwrap_or(1) as u64)),
             ListType::Unordered => Tag::List(None),
+            _ => panic!("Unknown ListType"),
         };
         let level = cell.level.unwrap_or_default();
 

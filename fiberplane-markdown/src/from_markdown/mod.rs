@@ -57,14 +57,13 @@ impl<'a> MarkdownConverter<'a> {
     }
 
     fn convert_to_notebook(mut self) -> NewNotebook {
-        NewNotebook {
-            title: self.parse_title(),
-            cells: self.parse_cells(),
-            selected_data_sources: Default::default(),
-            labels: Default::default(),
-            time_range: NewTimeRange::Relative(RelativeTimeRange { minutes: -60 }),
-            front_matter: Default::default(),
-        }
+        NewNotebook::builder()
+            .title(self.parse_title())
+            .cells(self.parse_cells())
+            .time_range(NewTimeRange::Relative(
+                RelativeTimeRange::builder().minutes(-60).build(),
+            ))
+            .build()
     }
 
     /// Parse the title from the markdown heading or first paragraph.
@@ -159,22 +158,27 @@ impl<'a> MarkdownConverter<'a> {
                     // Task list markers follow Start(Tag::Item) events so we need to convert
                     // the current cell to a checkbox if we see this event
                     self.current_cell = match self.current_cell.take() {
-                        Some(Cell::ListItem(cell)) => Some(Cell::Checkbox(CheckboxCell {
-                            checked,
-                            id: cell.id,
-                            content: cell.content,
-                            read_only: cell.read_only,
-                            formatting: cell.formatting,
-                            level: cell.level,
-                        })),
+                        Some(Cell::ListItem(cell)) => {
+                            let builder = CheckboxCell::builder()
+                                .checked(checked)
+                                .id(cell.id)
+                                .content(cell.content)
+                                .read_only(cell.read_only.is_some())
+                                .formatting(cell.formatting);
+                            let checkbox = if let Some(level) = cell.level {
+                                builder.level(level).build()
+                            } else {
+                                builder.build()
+                            };
+                            Some(Cell::Checkbox(checkbox))
+                        }
                         cell => cell,
                     };
                 }
                 Html(code) => {
-                    self.new_cell(Cell::Code(CodeCell {
-                        content: code.to_string(),
-                        ..Default::default()
-                    }));
+                    self.new_cell(Cell::Code(
+                        CodeCell::builder().content(code.to_string()).build(),
+                    ));
                 }
                 FootnoteReference(_) => {}
             }
@@ -213,10 +217,7 @@ impl<'a> MarkdownConverter<'a> {
                     }
                 };
                 let cell = if let Some(heading_type) = heading_type {
-                    Cell::Heading(HeadingCell {
-                        heading_type,
-                        ..Default::default()
-                    })
+                    Cell::Heading(HeadingCell::builder().heading_type(heading_type).build())
                 } else {
                     // We don't currently support levels 4-6 so we'll just treat those as text cells
                     Cell::Text(TextCell::default())
@@ -248,12 +249,18 @@ impl<'a> MarkdownConverter<'a> {
             }
             Tag::Item => {
                 if let Some(details) = self.lists.last_mut() {
-                    let cell = Cell::ListItem(ListItemCell {
-                        level: details.level,
-                        start_number: details.start_number,
-                        list_type: details.list_type,
-                        ..Default::default()
-                    });
+                    let builder = ListItemCell::builder().list_type(details.list_type);
+
+                    let item = match (details.start_number, details.level) {
+                        (Some(start_number), Some(level)) => {
+                            builder.start_number(start_number).level(level).build()
+                        }
+                        (Some(start_number), None) => builder.start_number(start_number).build(),
+                        (None, Some(level)) => builder.level(level).build(),
+                        (None, None) => builder.build(),
+                    };
+
+                    let cell = Cell::ListItem(item);
                     if let Some(ref mut start_number) = details.start_number {
                         *start_number += 1;
                     }
@@ -261,10 +268,9 @@ impl<'a> MarkdownConverter<'a> {
                 }
             }
             Tag::Image(_link_type, url, _title) => {
-                self.new_cell(Cell::Image(ImageCell {
-                    url: Some(url.to_string()),
-                    ..Default::default()
-                }));
+                self.new_cell(Cell::Image(
+                    ImageCell::builder().url(url.to_string()).build(),
+                ));
             }
             // Formatting annotations
             Tag::Emphasis
@@ -355,10 +361,7 @@ impl<'a> MarkdownConverter<'a> {
     }
 
     fn new_text_cell(&mut self, content: String) -> &mut Cell {
-        let cell = Cell::Text(TextCell {
-            content,
-            ..Default::default()
-        });
+        let cell = Cell::Text(TextCell::builder().content(content).build());
         self.new_cell(cell)
     }
 }

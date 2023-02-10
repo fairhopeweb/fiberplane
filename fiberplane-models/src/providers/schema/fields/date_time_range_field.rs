@@ -1,6 +1,7 @@
 #[cfg(feature = "fp-bindgen")]
 use fp_bindgen::prelude::Serializable;
 use serde::{Deserialize, Serialize};
+use typed_builder::TypedBuilder;
 
 /// Defines a field that produces two `DateTime` values, a "from" and a "to"
 /// value.
@@ -9,7 +10,7 @@ use serde::{Deserialize, Serialize};
 /// `from` and `to` fields. In the case of "application/x-www-form-urlencoded",
 /// it will be represented as a single string and the "from" and "to" parts will
 /// be separated by a space.
-#[derive(Debug, Default, Deserialize, Serialize)]
+#[derive(Debug, Default, Deserialize, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),

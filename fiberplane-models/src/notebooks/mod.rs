@@ -10,6 +10,7 @@ use serde_json::{Map, Value};
 use std::collections::HashMap;
 use strum_macros::Display;
 use time::OffsetDateTime;
+use typed_builder::TypedBuilder;
 use url::Url;
 
 mod cells;
@@ -23,54 +24,72 @@ pub mod operations;
 // this is on purpose a `Map<String, Value>` instead of a `Value` to disallow top level arrays
 pub type FrontMatter = Map<String, Value>;
 
-#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::notebooks")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct Notebook {
+    #[builder(default, setter(into))]
     pub id: String,
+    #[builder(default)]
     pub workspace_id: Base64Uuid,
+    #[builder(setter(into))]
     pub created_at: Timestamp,
+    #[builder(setter(into))]
     pub updated_at: Timestamp,
     pub time_range: TimeRange,
+    #[builder(default, setter(into))]
     pub title: String,
+    #[builder(default)]
     pub cells: Vec<Cell>,
     pub revision: u32,
     pub visibility: NotebookVisibility,
+    #[builder(default)]
     pub read_only: bool,
     pub created_by: CreatedBy,
 
+    #[builder(default)]
     #[serde(default)]
     pub selected_data_sources: SelectedDataSources,
 
+    #[builder(default)]
     #[serde(default)]
     pub labels: Vec<Label>,
 
+    #[builder(default)]
     #[serde(default)]
     pub front_matter: FrontMatter,
 }
 
-#[derive(Debug, Deserialize, Serialize, Clone, PartialEq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::notebooks")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct NewNotebook {
+    #[builder(setter(into))]
     pub title: String,
+    #[builder(default)]
     pub cells: Vec<Cell>,
+    #[builder(setter(into))]
     pub time_range: NewTimeRange,
 
+    #[builder(default)]
     #[serde(default)]
     pub selected_data_sources: SelectedDataSources,
 
+    #[builder(default)]
     #[serde(default)]
     pub labels: Vec<Label>,
 
+    #[builder(default)]
     #[serde(default)]
     pub front_matter: FrontMatter,
 }
@@ -94,6 +113,7 @@ impl From<Notebook> for NewNotebook {
     derive(Serializable),
     fp(rust_module = "fiberplane_models::notebooks")
 )]
+#[non_exhaustive]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum CreatedBy {
     User(UserSummary),
@@ -113,12 +133,13 @@ impl CreatedBy {
     }
 }
 
-#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq)]
+#[derive(Debug, Clone, Deserialize, Serialize, PartialEq, Eq, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::notebooks")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct TriggerSummary {
     pub id: Base64Uuid,
@@ -134,6 +155,7 @@ pub struct TriggerSummary {
     derive(Serializable),
     fp(rust_module = "fiberplane_models::notebooks")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 pub enum NotebookVisibility {
     Private,
@@ -146,48 +168,56 @@ impl Default for NotebookVisibility {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::notebooks")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct NotebookPatch {
     pub visibility: NotebookVisibility,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::notebooks")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct NotebookCopyDestination {
+    #[builder(setter(into))]
     pub title: String,
     pub workspace_id: Base64Uuid,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Deserialize, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::notebooks")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct NewPinnedNotebook {
     /// The ID of the notebook that is being pinned.
     pub notebook_id: Base64Uuid,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize, TypedBuilder)]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct Trigger {
     pub id: Base64Uuid,
+    #[builder(setter(into))]
     pub title: String,
     pub template_id: Base64Uuid,
+    #[builder(default, setter(into, strip_option))]
     pub secret_key: Option<String>,
+    #[builder(default, setter(strip_option))]
     pub default_arguments: Option<Map<String, Value>>,
     #[serde(with = "time::serde::rfc3339")]
     pub created_at: OffsetDateTime,
@@ -197,7 +227,8 @@ pub struct Trigger {
 
 pub type TemplateExpandPayload = Map<String, Value>;
 
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize, TypedBuilder)]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct TriggerInvokeResponse {
     pub notebook_title: String,
@@ -205,12 +236,13 @@ pub struct TriggerInvokeResponse {
     pub notebook_url: Url,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::notebooks")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct NotebookSummary {
     pub id: Base64Uuid,
@@ -226,26 +258,30 @@ pub struct NotebookSummary {
 }
 
 /// Notebook search parameters
-#[derive(Debug, Clone, Default, PartialEq, Eq, Deserialize, Serialize)]
+#[derive(Debug, Clone, Default, PartialEq, Eq, Deserialize, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::notebooks")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct NotebookSearch {
+    #[builder(default)]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub labels: Option<HashMap<String, Option<String>>>,
+    #[builder(default)]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub view: Option<Name>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::notebooks")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct TemplateSummary {
     pub id: Base64Uuid,
@@ -257,16 +293,19 @@ pub struct TemplateSummary {
     pub updated_at: OffsetDateTime,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::notebooks")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct NewTemplate {
     pub name: Name,
+    #[builder(setter(into))]
     pub description: String,
+    #[builder(setter(into))]
     pub body: String,
 }
 
@@ -280,32 +319,39 @@ impl NewTemplate {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::notebooks")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateTemplate {
+    #[builder(default, setter(into))]
     pub description: Option<String>,
+    #[builder(default, setter(into))]
     pub body: Option<String>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Deserialize, Serialize, TypedBuilder)]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct NewTrigger {
+    #[builder(setter(into))]
     pub title: String,
     pub template_name: Name,
+    #[builder(default, setter(into, strip_option))]
     pub default_arguments: Option<Map<String, Value>>,
 }
 
-#[derive(Debug, Default, Clone, PartialEq, Eq, Deserialize, Serialize)]
+#[derive(Debug, Default, Clone, PartialEq, Eq, Deserialize, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::notebooks")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 /// The query string values that are associated with the notebook_cells_append
 /// endpoint.

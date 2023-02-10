@@ -7,7 +7,6 @@ use fiberplane_models::timestamps::TimeRange;
 use fiberplane_models::utils::{char_count, char_slice, char_slice_from};
 use once_cell::sync::Lazy;
 use regex::Regex;
-use std::cell;
 use std::{collections::BTreeSet, fmt::Write};
 use time::{format_description::well_known::Rfc3339, Duration};
 
@@ -182,6 +181,7 @@ fn print_cell(writer: &mut CodeWriter, cell: &Cell) {
                 HeadingType::H1 => "h1",
                 HeadingType::H2 => "h2",
                 HeadingType::H3 => "h3",
+                _ => panic!("Unknown HeadingType"),
             };
             args.push(("content", format_content(&cell.content, &cell.formatting)));
             (heading_type, cell.read_only)
@@ -196,6 +196,7 @@ fn print_cell(writer: &mut CodeWriter, cell: &Cell) {
             let function_name = match cell.list_type {
                 ListType::Ordered => "listItem.ordered",
                 ListType::Unordered => "listItem.unordered",
+                _ => panic!("Unknown ListType"),
             };
             args.push(("content", format_content(&cell.content, &cell.formatting)));
             if let Some(level) = cell.level {
@@ -220,6 +221,10 @@ fn print_cell(writer: &mut CodeWriter, cell: &Cell) {
         }
         // Ignored cell types:
         Cell::Discussion(_) | Cell::Graph(_) | Cell::Log(_) | Cell::Table(_) => return,
+        _ => {
+            // Unknown cell type
+            return;
+        }
     };
 
     // Only print the read only property if it's true
@@ -265,7 +270,10 @@ fn format_content(content: &str, formatting: &Formatting) -> String {
     sorted.sort_by_key(|f| f.offset);
 
     // Convert each annotation to a jsonnet helper function
-    for AnnotationWithOffset { offset, annotation } in sorted {
+    for AnnotationWithOffset {
+        offset, annotation, ..
+    } in sorted
+    {
         // Add any content before this annotation to the output
         if *offset > index {
             output.push_str(&escape_string_and_replace_mustache_substitutions(
@@ -342,6 +350,7 @@ fn format_content(content: &str, formatting: &Formatting) -> String {
                 output.push_str(&format!("fmt.label({args}), "));
                 index += char_count(&label.to_string())
             }
+            _ => (),
         }
     }
     // If the content ends with plain text, make sure to add it to the output

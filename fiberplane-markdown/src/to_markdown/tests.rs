@@ -16,16 +16,18 @@ fn title() {
 fn decrements_headings() {
     let mut converter = NotebookConverter::new();
     converter.convert_cells([
-        Cell::Heading(HeadingCell {
-            content: "H1".to_string(),
-            heading_type: HeadingType::H1,
-            ..Default::default()
-        }),
-        Cell::Heading(HeadingCell {
-            content: "H2".to_string(),
-            heading_type: HeadingType::H2,
-            ..Default::default()
-        }),
+        Cell::Heading(
+            HeadingCell::builder()
+                .content("H1")
+                .heading_type(HeadingType::H1)
+                .build(),
+        ),
+        Cell::Heading(
+            HeadingCell::builder()
+                .content("H2")
+                .heading_type(HeadingType::H2)
+                .build(),
+        ),
     ]);
     assert_eq!(converter.into_markdown(), "## H1\n\n### H2");
 }
@@ -61,14 +63,8 @@ fn formatted_text() {
 fn text_cells() {
     let mut converter = NotebookConverter::new();
     converter.convert_cells([
-        Cell::Text(TextCell {
-            content: "Some text".to_string(),
-            ..Default::default()
-        }),
-        Cell::Text(TextCell {
-            content: "Some more text".to_string(),
-            ..Default::default()
-        }),
+        Cell::Text(TextCell::builder().content("Some text").build()),
+        Cell::Text(TextCell::builder().content("Some more text").build()),
     ]);
     assert_eq!(converter.into_markdown(), "Some text\n\nSome more text");
 }
@@ -80,10 +76,12 @@ fn mentions() {
         "Some @mention".to_string(),
         vec![AnnotationWithOffset::new(
             5,
-            Annotation::Mention(Mention {
-                name: "mention".to_string(),
-                user_id: "user_id".to_string(),
-            }),
+            Annotation::Mention(
+                Mention::builder()
+                    .name("mention")
+                    .user_id("user_id")
+                    .build(),
+            ),
         )],
     );
     assert_eq!(converter.into_markdown(), "Some **@mention**");
@@ -114,10 +112,7 @@ fn labels() {
         "Some foo:bar".to_string(),
         vec![AnnotationWithOffset::new(
             5,
-            Annotation::Label(Label {
-                key: "foo".to_string(),
-                value: "bar".to_string(),
-            }),
+            Annotation::Label(Label::new("foo", "bar")),
         )],
     );
     assert_eq!(converter.into_markdown(), "Some **foo:bar**");
@@ -148,15 +143,13 @@ fn links() {
 fn images() {
     let mut converter = NotebookConverter::new();
     converter.convert_cells(vec![
-        Cell::Image(ImageCell {
-            url: Some("http://example.com/image.png".to_string()),
-            ..Default::default()
-        }),
+        Cell::Image(
+            ImageCell::builder()
+                .url("http://example.com/image.png")
+                .build(),
+        ),
         // This one is ignored because it has no URL
-        Cell::Image(ImageCell {
-            file_id: Some("file_id".to_string()),
-            ..Default::default()
-        }),
+        Cell::Image(ImageCell::builder().file_id("file_id").build()),
     ]);
     let markdown = converter.into_markdown();
     assert_eq!(markdown, "![](http://example.com/image.png)");
@@ -179,14 +172,12 @@ fn inline_code() {
 fn code_blocks() {
     let mut converter = NotebookConverter::new();
     converter.convert_cells([
-        Cell::Code(CodeCell {
-            content: "Some code".to_string(),
-            ..Default::default()
-        }),
-        Cell::Code(CodeCell {
-            content: "Some more code\non multiple lines".to_string(),
-            ..Default::default()
-        }),
+        Cell::Code(CodeCell::builder().content("Some code").build()),
+        Cell::Code(
+            CodeCell::builder()
+                .content("Some more code\non multiple lines")
+                .build(),
+        ),
     ]);
     assert_eq!(
         converter.into_markdown(),
@@ -297,16 +288,18 @@ fn highlighting() {
 fn ordered_lists_without_start_number() {
     let mut converter = NotebookConverter::new();
     converter.convert_cells([
-        Cell::ListItem(ListItemCell {
-            content: "one".to_string(),
-            list_type: ListType::Ordered,
-            ..Default::default()
-        }),
-        Cell::ListItem(ListItemCell {
-            content: "two".to_string(),
-            list_type: ListType::Ordered,
-            ..Default::default()
-        }),
+        Cell::ListItem(
+            ListItemCell::builder()
+                .content("one")
+                .list_type(ListType::Ordered)
+                .build(),
+        ),
+        Cell::ListItem(
+            ListItemCell::builder()
+                .content("two")
+                .list_type(ListType::Ordered)
+                .build(),
+        ),
     ]);
     assert_eq!(converter.into_markdown(), "1. one\n1. two");
 }
@@ -315,18 +308,20 @@ fn ordered_lists_without_start_number() {
 fn ordered_lists_with_start_number() {
     let mut converter = NotebookConverter::new();
     converter.convert_cells([
-        Cell::ListItem(ListItemCell {
-            content: "two".to_string(),
-            list_type: ListType::Ordered,
-            start_number: Some(2),
-            ..Default::default()
-        }),
-        Cell::ListItem(ListItemCell {
-            content: "three".to_string(),
-            list_type: ListType::Ordered,
-            start_number: Some(3),
-            ..Default::default()
-        }),
+        Cell::ListItem(
+            ListItemCell::builder()
+                .content("two")
+                .list_type(ListType::Ordered)
+                .start_number(2)
+                .build(),
+        ),
+        Cell::ListItem(
+            ListItemCell::builder()
+                .content("three")
+                .list_type(ListType::Ordered)
+                .start_number(3)
+                .build(),
+        ),
     ]);
     assert_eq!(
         converter.into_markdown(),
@@ -339,32 +334,36 @@ fn ordered_lists_with_start_number() {
 fn nested_ordered_lists() {
     let mut converter = NotebookConverter::new();
     converter.convert_cells([
-        Cell::ListItem(ListItemCell {
-            content: "one".to_string(),
-            list_type: ListType::Ordered,
-            start_number: Some(1),
-            ..Default::default()
-        }),
-        Cell::ListItem(ListItemCell {
-            content: "one-one".to_string(),
-            list_type: ListType::Ordered,
-            start_number: Some(1),
-            level: Some(1),
-            ..Default::default()
-        }),
-        Cell::ListItem(ListItemCell {
-            content: "one-two".to_string(),
-            list_type: ListType::Ordered,
-            start_number: Some(2),
-            level: Some(1),
-            ..Default::default()
-        }),
-        Cell::ListItem(ListItemCell {
-            content: "two".to_string(),
-            list_type: ListType::Ordered,
-            start_number: Some(2),
-            ..Default::default()
-        }),
+        Cell::ListItem(
+            ListItemCell::builder()
+                .content("one")
+                .list_type(ListType::Ordered)
+                .start_number(1)
+                .build(),
+        ),
+        Cell::ListItem(
+            ListItemCell::builder()
+                .content("one-one")
+                .list_type(ListType::Ordered)
+                .start_number(1)
+                .level(1)
+                .build(),
+        ),
+        Cell::ListItem(
+            ListItemCell::builder()
+                .content("one-two")
+                .list_type(ListType::Ordered)
+                .start_number(2)
+                .level(1)
+                .build(),
+        ),
+        Cell::ListItem(
+            ListItemCell::builder()
+                .content("two")
+                .list_type(ListType::Ordered)
+                .start_number(2)
+                .build(),
+        ),
     ]);
     assert_eq!(
         converter.into_markdown(),
@@ -380,28 +379,32 @@ fn nested_ordered_lists() {
 fn nested_unordered_lists() {
     let mut converter = NotebookConverter::new();
     converter.convert_cells([
-        Cell::ListItem(ListItemCell {
-            content: "one".to_string(),
-            list_type: ListType::Unordered,
-            ..Default::default()
-        }),
-        Cell::ListItem(ListItemCell {
-            content: "one-one".to_string(),
-            list_type: ListType::Unordered,
-            level: Some(1),
-            ..Default::default()
-        }),
-        Cell::ListItem(ListItemCell {
-            content: "one-two".to_string(),
-            list_type: ListType::Unordered,
-            level: Some(1),
-            ..Default::default()
-        }),
-        Cell::ListItem(ListItemCell {
-            content: "two".to_string(),
-            list_type: ListType::Unordered,
-            ..Default::default()
-        }),
+        Cell::ListItem(
+            ListItemCell::builder()
+                .content("one")
+                .list_type(ListType::Unordered)
+                .build(),
+        ),
+        Cell::ListItem(
+            ListItemCell::builder()
+                .content("one-one")
+                .list_type(ListType::Unordered)
+                .level(1)
+                .build(),
+        ),
+        Cell::ListItem(
+            ListItemCell::builder()
+                .content("one-two")
+                .list_type(ListType::Unordered)
+                .level(1)
+                .build(),
+        ),
+        Cell::ListItem(
+            ListItemCell::builder()
+                .content("two")
+                .list_type(ListType::Unordered)
+                .build(),
+        ),
     ]);
     assert_eq!(
         converter.into_markdown(),
@@ -417,16 +420,8 @@ fn nested_unordered_lists() {
 fn checkboxes() {
     let mut converter = NotebookConverter::new();
     converter.convert_cells([
-        Cell::Checkbox(CheckboxCell {
-            content: "one".to_string(),
-            checked: true,
-            ..Default::default()
-        }),
-        Cell::Checkbox(CheckboxCell {
-            content: "two".to_string(),
-            checked: false,
-            ..Default::default()
-        }),
+        Cell::Checkbox(CheckboxCell::builder().content("one").checked(true).build()),
+        Cell::Checkbox(CheckboxCell::builder().content("two").build()),
     ]);
     let markdown = converter.into_markdown();
     assert_eq!(markdown, "- [x] one\n- [ ] two\n");
@@ -436,32 +431,22 @@ fn checkboxes() {
 fn text_cells_after_lists() {
     let mut converter = NotebookConverter::new();
     converter.convert_cells([
-        Cell::ListItem(ListItemCell {
-            content: "one".to_string(),
-            list_type: ListType::Ordered,
-            ..Default::default()
-        }),
-        Cell::ListItem(ListItemCell {
-            content: "two".to_string(),
-            list_type: ListType::Ordered,
-            ..Default::default()
-        }),
-        Cell::Text(TextCell {
-            content: "three".to_string(),
-            ..Default::default()
-        }),
-        Cell::Checkbox(CheckboxCell {
-            content: "four".to_string(),
-            ..Default::default()
-        }),
-        Cell::Checkbox(CheckboxCell {
-            content: "five".to_string(),
-            ..Default::default()
-        }),
-        Cell::Text(TextCell {
-            content: "six".to_string(),
-            ..Default::default()
-        }),
+        Cell::ListItem(
+            ListItemCell::builder()
+                .content("one")
+                .list_type(ListType::Ordered)
+                .build(),
+        ),
+        Cell::ListItem(
+            ListItemCell::builder()
+                .content("two")
+                .list_type(ListType::Ordered)
+                .build(),
+        ),
+        Cell::Text(TextCell::builder().content("three").build()),
+        Cell::Checkbox(CheckboxCell::builder().content("four").build()),
+        Cell::Checkbox(CheckboxCell::builder().content("five").build()),
+        Cell::Text(TextCell::builder().content("six").build()),
     ]);
     assert_eq!(
         converter.into_markdown(),

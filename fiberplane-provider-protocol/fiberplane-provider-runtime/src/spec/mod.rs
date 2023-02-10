@@ -42,6 +42,7 @@ pub async fn make_http_request(req: HttpRequest) -> Result<HttpResponse, HttpReq
         HttpRequestMethod::Get => client.get(url),
         HttpRequestMethod::Head => client.head(url),
         HttpRequestMethod::Post => client.post(url),
+        _ => panic!("Unknown HttpRequestMethod: {:?}", req.method),
     });
     if let Some(body) = req.body {
         builder = builder.body(body);
@@ -93,11 +94,11 @@ pub async fn make_http_request(req: HttpRequest) -> Result<HttpResponse, HttpReq
 
     match status_code {
         _ if body.len() > MAX_HTTP_RESPONSE_SIZE => Err(HttpRequestError::ResponseTooBig),
-        200..=299 => Ok(HttpResponse {
-            body: body.into(),
-            headers,
-            status_code,
-        }),
+        200..=299 => Ok(HttpResponse::builder()
+            .body(body.into())
+            .headers(headers)
+            .status_code(status_code)
+            .build()),
         _ => Err(HttpRequestError::ServerError {
             response: body.into(),
             status_code,

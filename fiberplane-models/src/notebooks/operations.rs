@@ -5,6 +5,7 @@ use crate::timestamps::TimeRange;
 #[cfg(feature = "fp-bindgen")]
 use fp_bindgen::prelude::*;
 use serde::{Deserialize, Serialize};
+use typed_builder::TypedBuilder;
 
 /// An operation is the representation for a mutation to be performed to a notebook.
 ///
@@ -19,6 +20,7 @@ use serde::{Deserialize, Serialize};
     derive(Serializable),
     fp(rust_module = "fiberplane_models::notebooks::operations")
 )]
+#[non_exhaustive]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum Operation {
     MoveCells(MoveCellsOperation),
@@ -35,12 +37,13 @@ pub enum Operation {
 }
 
 /// Moves one or more cells.
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::notebooks::operations")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct MoveCellsOperation {
     /// IDs of all the cells to be moved.
@@ -65,12 +68,13 @@ pub struct MoveCellsOperation {
 /// corrections in cell indices that account for newly inserted and removed
 /// cells. Attempts to move cells to other indices will cause validation to
 /// fail.
-#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::notebooks::operations")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct ReplaceCellsOperation {
     /// Vector of the new cells, including their new indices.
@@ -82,6 +86,7 @@ pub struct ReplaceCellsOperation {
     /// ID is part of the `old_cells` field, it will merely be updated. Only
     /// cells in the `new_cells` field that are not part of the `old_cells` will
     /// be newly inserted.
+    #[builder(default)]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub new_cells: Vec<CellWithIndex>,
 
@@ -94,6 +99,7 @@ pub struct ReplaceCellsOperation {
     /// ID is part of the `new_cells` field, it will merely be updated. Only
     /// cells in the `old_cells` field that are not part of the `new_cells` will
     /// be removed.
+    #[builder(default)]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub old_cells: Vec<CellWithIndex>,
 
@@ -105,6 +111,7 @@ pub struct ReplaceCellsOperation {
     /// is replaced with the text given in the first of the `new_cells`.
     ///
     /// If `None`, no cell is split.
+    #[builder(default)]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub split_offset: Option<u32>,
 
@@ -116,6 +123,7 @@ pub struct ReplaceCellsOperation {
     /// merge offset.
     ///
     /// If `None`, no cells are merged.
+    #[builder(default)]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub merge_offset: Option<u32>,
 
@@ -129,6 +137,7 @@ pub struct ReplaceCellsOperation {
     ///
     /// Indices of new referencing cells do not need to form a cohesive range,
     /// but they should still be ordered in ascending order.
+    #[builder(default)]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub new_referencing_cells: Vec<CellWithIndex>,
 
@@ -142,6 +151,7 @@ pub struct ReplaceCellsOperation {
     ///
     /// Indices of old referencing cells do not need to form a cohesive range,
     /// but they should still be ordered in ascending order.
+    #[builder(default)]
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub old_referencing_cells: Vec<CellWithIndex>,
 }
@@ -211,18 +221,21 @@ impl ReplaceCellsOperation {
 }
 
 /// Replaces the part of the content in any content type cell or the title of a graph cell.
-#[derive(Clone, Debug, Default, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::notebooks::operations")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct ReplaceTextOperation {
     /// ID of the cell whose text we're modifying.
+    #[builder(setter(into))]
     pub cell_id: String,
 
     /// Field to update the text of.
+    #[builder(default, setter(into))]
     pub field: Option<String>,
 
     /// Starting offset where we will be replacing the text.
@@ -232,15 +245,18 @@ pub struct ReplaceTextOperation {
     pub offset: u32,
 
     /// The new text value we're inserting.
+    #[builder(default, setter(into))]
     pub new_text: String,
 
     /// Optional formatting that we wish to apply to the new text.
     ///
     /// Offsets in the formatting are relative to the start of the new text.
+    #[builder(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub new_formatting: Option<Formatting>,
 
     /// The old text that we're replacing.
+    #[builder(default, setter(into))]
     pub old_text: String,
 
     /// Optional formatting that was applied to the old text. This should be **all** the formatting
@@ -249,17 +265,19 @@ pub struct ReplaceTextOperation {
     /// old text's boundaries.
     ///
     /// Offsets in the formatting are relative to the start of the old text.
+    #[builder(default)]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub old_formatting: Option<Formatting>,
 }
 
 /// Updates the notebook time range.
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::notebooks::operations")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateNotebookTimeRangeOperation {
     pub old_time_range: TimeRange,
@@ -267,39 +285,45 @@ pub struct UpdateNotebookTimeRangeOperation {
 }
 
 /// Updates the notebook title.
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::notebooks::operations")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateNotebookTitleOperation {
     pub old_title: String,
     pub title: String,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::notebooks::operations")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct SetSelectedDataSourceOperation {
+    #[builder(setter(into))]
     pub provider_type: String,
+    #[builder(default)]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub old_selected_data_source: Option<SelectedDataSource>,
+    #[builder(default)]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub new_selected_data_source: Option<SelectedDataSource>,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::notebooks::operations")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct CellWithIndex {
     pub cell: Cell,
@@ -307,6 +331,10 @@ pub struct CellWithIndex {
 }
 
 impl CellWithIndex {
+    pub fn new(cell: Cell, index: u32) -> CellWithIndex {
+        CellWithIndex { cell, index }
+    }
+
     pub fn formatting(&self) -> Option<&Formatting> {
         self.cell.formatting()
     }
@@ -321,12 +349,13 @@ impl CellWithIndex {
 }
 
 /// Add an label to an notebook.
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::notebooks::operations")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct AddLabelOperation {
     /// The new label
@@ -334,12 +363,13 @@ pub struct AddLabelOperation {
 }
 
 /// Replace an label in an notebook.
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::notebooks::operations")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct ReplaceLabelOperation {
     // The previous label
@@ -350,24 +380,26 @@ pub struct ReplaceLabelOperation {
 }
 
 /// Remove an label in an notebook.
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::notebooks::operations")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct RemoveLabelOperation {
     pub label: Label,
 }
 
 /// Replaces front matter in a notebook
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::notebooks::operations")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateFrontMatterOperation {
     pub old_front_matter: FrontMatter,
@@ -375,36 +407,41 @@ pub struct UpdateFrontMatterOperation {
 }
 
 /// Removes front matter in a notebook
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::notebooks::operations")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct ClearFrontMatterOperation {
     pub front_matter: FrontMatter,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::notebooks::operations")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct CellAppendText {
+    #[builder(setter(into))]
     pub content: String,
+    #[builder(default)]
     #[serde(default)]
     pub formatting: Formatting,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::notebooks::operations")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct CellReplaceText {
     /// Starting offset where we will be replacing the text.
@@ -414,15 +451,18 @@ pub struct CellReplaceText {
     pub offset: u32,
 
     /// The new text value we're inserting.
+    #[builder(setter(into))]
     pub new_text: String,
 
     /// Optional formatting that we wish to apply to the new text.
     ///
     /// Offsets in the formatting are relative to the start of the new text.
+    #[builder(default, setter(into))]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub new_formatting: Option<Formatting>,
 
     /// The old text that we're replacing.
+    #[builder(setter(into))]
     pub old_text: String,
 
     /// Optional formatting that was applied to the old text. This should be **all** the formatting
@@ -431,6 +471,7 @@ pub struct CellReplaceText {
     /// old text's boundaries.
     ///
     /// Offsets in the formatting are relative to the start of the old text.
+    #[builder(default, setter(into))]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub old_formatting: Option<Formatting>,
 }

@@ -67,11 +67,12 @@ fn parsing_code_cells(markdown: &str, cell_text: &[&str]) {
         .iter()
         .enumerate()
         .map(|(index, content)| {
-            Cell::Code(CodeCell {
-                content: content.to_string(),
-                id: format!("{}", index + 1),
-                ..Default::default()
-            })
+            Cell::Code(
+                CodeCell::builder()
+                    .content(content.to_string())
+                    .id(format!("{}", index + 1))
+                    .build(),
+            )
         })
         .collect();
     assert_eq!(markdown_to_cells(markdown), expected);

@@ -5,29 +5,24 @@ use fiberplane_templates::*;
 
 #[test]
 fn mustache_substitution_with_formatting() {
-    let notebook = NewNotebook {
-        title: r#"Test"#.to_string(),
-        cells: vec![Cell::Text(TextCell {
-            id: "1".to_string(),
-            content: r#"{{greeting}} {{personName}}, great to have you"#.to_string(),
-            formatting: vec![
-                // This bold range intentionally overlaps with the mustache variable substitution
-                AnnotationWithOffset {
-                    annotation: Annotation::StartBold,
-                    offset: 13,
-                },
-                AnnotationWithOffset {
-                    annotation: Annotation::EndBold,
-                    offset: 46,
-                },
-            ],
-            ..Default::default()
-        })],
-        selected_data_sources: Default::default(),
-        time_range: NewTimeRange::Relative(RelativeTimeRange { minutes: -60 }),
-        labels: Vec::new(),
-        front_matter: Default::default(),
-    };
+    let notebook = NewNotebook::builder()
+        .title(r#"Test"#.to_string())
+        .cells(vec![Cell::Text(
+            TextCell::builder()
+                .id("1")
+                .content(r#"{{greeting}} {{personName}}, great to have you"#)
+                .formatting(vec![
+                    // This bold range intentionally overlaps with the mustache variable substitution
+                    AnnotationWithOffset::new(13, Annotation::StartBold),
+                    AnnotationWithOffset::new(46, Annotation::EndBold),
+                ])
+                .build(),
+        )])
+        .selected_data_sources(Default::default())
+        .time_range(NewTimeRange::Relative(
+            RelativeTimeRange::builder().minutes(-60).build(),
+        ))
+        .build();
     let template = notebook_to_template(notebook);
     assert!(template.contains("fmt.bold([personName, ', great to have you'])"),);
 }

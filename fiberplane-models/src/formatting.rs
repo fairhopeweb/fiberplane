@@ -3,6 +3,7 @@ use crate::{notebooks::Label, timestamps::Timestamp};
 use fp_bindgen::prelude::Serializable;
 use serde::{Deserialize, Serialize};
 use time::OffsetDateTime;
+use typed_builder::TypedBuilder;
 
 /// Formatting to be applied in order to turn plain-text into rich-text.
 ///
@@ -14,12 +15,13 @@ pub type Formatting = Vec<AnnotationWithOffset>;
 /// Newtype representing `(offset, Annotation)` tuples.
 ///
 /// Used inside the `Formatting` vector.
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::formatting")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct AnnotationWithOffset {
     pub offset: u32,
@@ -50,6 +52,7 @@ impl AnnotationWithOffset {
     derive(Serializable),
     fp(rust_module = "fiberplane_models::formatting")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "snake_case", tag = "type")]
 pub enum Annotation {
     StartBold,
@@ -108,12 +111,13 @@ impl Annotation {
 
 /// A struct that represents all the formatting that is active at any given
 /// character offset.
-#[derive(Debug, Default, Deserialize, Serialize, Clone, PartialEq, Eq)]
+#[derive(Debug, Default, Deserialize, Serialize, Clone, PartialEq, Eq, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::formatting")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct ActiveFormatting {
     pub bold: bool,
@@ -131,6 +135,69 @@ pub struct ActiveFormatting {
 }
 
 impl ActiveFormatting {
+    pub fn with_bold(&self, bold: bool) -> Self {
+        Self {
+            bold,
+            ..self.clone()
+        }
+    }
+
+    pub fn with_code(&self, code: bool) -> Self {
+        Self {
+            code,
+            ..self.clone()
+        }
+    }
+
+    pub fn with_highlight(&self, highlight: bool) -> Self {
+        Self {
+            highlight,
+            ..self.clone()
+        }
+    }
+
+    pub fn with_italics(&self, italics: bool) -> Self {
+        Self {
+            italics,
+            ..self.clone()
+        }
+    }
+
+    pub fn with_link(&self, link: impl Into<Option<String>>) -> Self {
+        Self {
+            link: link.into(),
+            ..self.clone()
+        }
+    }
+
+    pub fn with_strikethrough(&self, strikethrough: bool) -> Self {
+        Self {
+            strikethrough,
+            ..self.clone()
+        }
+    }
+
+    pub fn with_underline(&self, underline: bool) -> Self {
+        Self {
+            underline,
+            ..self.clone()
+        }
+    }
+
+    pub fn with_label(&self, label: impl Into<Option<Label>>) -> Self {
+        Self {
+            label: label.into(),
+            ..self.clone()
+        }
+    }
+
+    pub fn with_timestamp(&self, timestamp: impl Into<Option<Timestamp>>) -> Self {
+        Self {
+            timestamp: timestamp.into(),
+            ..self.clone()
+        }
+    }
+
     /// Returns a list of annotations that should be inserted to activate
     /// this formatting compared to a reference formatting.
     pub fn annotations_for_toggled_formatting(&self, reference: &Self) -> Vec<Annotation> {
@@ -232,15 +299,18 @@ impl ActiveFormatting {
 /// mention will stop at the first non-matching character. Mentions for
 /// which the first character of the name does not align must be ignored in
 /// their entirety.
-#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq)]
+#[derive(Debug, Deserialize, Serialize, Clone, PartialEq, Eq, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::formatting")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct Mention {
+    #[builder(setter(into))]
     pub name: String,
+    #[builder(setter(into))]
     pub user_id: String,
 }
 

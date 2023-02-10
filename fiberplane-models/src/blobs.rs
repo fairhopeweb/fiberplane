@@ -6,6 +6,7 @@ use fp_bindgen::prelude::Serializable;
 use serde::{Deserialize, Serialize};
 use std::convert::TryFrom;
 use std::fmt::{self, Debug, Formatter};
+use typed_builder::TypedBuilder;
 
 /// Binary blob for passing data in arbitrary encodings.
 ///
@@ -16,15 +17,17 @@ use std::fmt::{self, Debug, Formatter};
 ///
 /// We can also store blobs in cells, but for this we use [EncodedBlob] to allow
 /// JSON serialization.
-#[derive(Clone, Default, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Clone, Default, Deserialize, Eq, PartialEq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::blobs")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct Blob {
     /// Raw data.
+    #[builder(setter(into))]
     pub data: Bytes,
 
     /// MIME type to use for interpreting the raw data.
@@ -34,6 +37,7 @@ pub struct Blob {
     /// in any of the `application/vnd.fiberplane.*` types. For other types of
     /// data, providers are responsible for migrations, and they are able to
     /// include version numbers in their MIME type strings, if desired.
+    #[builder(setter(into))]
     pub mime_type: String,
 }
 
@@ -70,20 +74,23 @@ impl Debug for Blob {
 }
 
 /// base64-encoded version of [Blob].
-#[derive(Clone, Default, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Clone, Default, Deserialize, Eq, PartialEq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::blobs")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct EncodedBlob {
     /// Raw data, encoded using base64 so it can be serialized using JSON.
+    #[builder(setter(into))]
     pub data: String,
 
     /// MIME type to use for interpreting the raw data.
     ///
     /// See [Blob::mime_type].
+    #[builder(setter(into))]
     pub mime_type: String,
 }
 

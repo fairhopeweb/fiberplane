@@ -5,6 +5,7 @@ use fp_bindgen::prelude::Serializable;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use time::OffsetDateTime;
+use typed_builder::TypedBuilder;
 
 #[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 #[cfg_attr(
@@ -12,6 +13,7 @@ use time::OffsetDateTime;
     derive(Serializable),
     fp(rust_module = "fiberplane_models::templates")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub enum TemplateParameterType {
     String,
@@ -28,26 +30,37 @@ pub enum TemplateParameterType {
     Unknown,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+impl Default for TemplateParameterType {
+    fn default() -> Self {
+        Self::Unknown
+    }
+}
+
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::templates")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct TemplateParameter {
+    #[builder(setter(into))]
     pub name: String,
+    #[builder(default)]
     #[serde(rename = "type")]
     pub ty: TemplateParameterType,
+    #[builder(default, setter(into, strip_option))]
     pub default_value: Option<Value>,
 }
 
-#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::templates")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct Template {
     pub id: Base64Uuid,

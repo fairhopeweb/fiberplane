@@ -74,18 +74,9 @@ pub fn incident_analysis() {
     assert_eq!(
         notebook.labels,
         &[
-            Label {
-                key: "environment".to_string(),
-                value: "Production".to_string(),
-            },
-            Label {
-                key: "service".to_string(),
-                value: "API".to_string(),
-            },
-            Label {
-                key: "type".to_string(),
-                value: "incident-analysis".to_string(),
-            },
+            Label::new("environment", "Production"),
+            Label::new("service", "API"),
+            Label::new("type", "incident-analysis"),
         ]
     );
 }

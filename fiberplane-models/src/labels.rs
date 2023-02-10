@@ -3,18 +3,20 @@ use fp_bindgen::prelude::Serializable;
 use serde::{Deserialize, Serialize};
 use std::fmt::{self, Display, Formatter};
 use thiserror::Error;
+use typed_builder::TypedBuilder;
 
 const MAX_LABEL_VALUE_LENGTH: usize = 63;
 const MAX_LABEL_NAME_LENGTH: usize = 63;
 const MAX_LABEL_PREFIX_LENGTH: usize = 253;
 
 /// Labels that are associated with a Notebook.
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::labels")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct Label {
     /// The key of the label. Should be unique for a single Notebook.
@@ -128,6 +130,7 @@ impl Display for Label {
     derive(Serializable),
     fp(rust_module = "fiberplane_models::labels")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 pub enum LabelValidationError {
     #[error("The key in the label was empty")]

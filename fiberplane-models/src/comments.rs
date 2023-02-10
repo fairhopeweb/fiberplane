@@ -4,16 +4,19 @@ use base64uuid::Base64Uuid;
 use fp_bindgen::prelude::Serializable;
 use serde::{Deserialize, Serialize};
 use time::OffsetDateTime;
+use typed_builder::TypedBuilder;
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::comments")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct Thread {
     pub id: Base64Uuid,
+    #[builder(default)]
     pub items: Vec<ThreadItem>,
     pub status: ThreadStatus,
     pub created_by: UserSummary,
@@ -29,18 +32,20 @@ pub struct Thread {
     derive(Serializable),
     fp(rust_module = "fiberplane_models::comments")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 pub enum ThreadStatus {
     Open,
     Resolved,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::comments")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct ThreadSummary {
     pub id: Base64Uuid,
@@ -63,6 +68,7 @@ pub struct ThreadSummary {
     derive(Serializable),
     fp(rust_module = "fiberplane_models::comments")
 )]
+#[non_exhaustive]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum ThreadItem {
     Comment(Comment),
@@ -88,12 +94,13 @@ impl ThreadItem {
     }
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::comments")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct ThreadStatusChange {
     pub id: Base64Uuid,
@@ -103,12 +110,13 @@ pub struct ThreadStatusChange {
     pub created_at: OffsetDateTime,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::comments")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct CommentDelete {
     pub id: Base64Uuid,
@@ -120,72 +128,91 @@ pub struct CommentDelete {
     pub deleted_at: OffsetDateTime,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::comments")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct Comment {
     pub id: Base64Uuid,
     pub created_by: UserSummary,
+    #[builder(setter(into))]
     pub content: String, // limit of 2048 characters
+    #[builder(default)]
     pub formatting: Formatting,
+    #[builder(setter(into))]
     #[serde(with = "time::serde::rfc3339")]
     pub created_at: OffsetDateTime,
+    #[builder(setter(into))]
     #[serde(with = "time::serde::rfc3339")]
     pub updated_at: OffsetDateTime,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::comments")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct UserSummary {
+    #[builder(setter(into))]
     pub id: String,
+    #[builder(setter(into))]
     pub name: String,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::comments")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct NewComment {
+    #[builder(default, setter(into, strip_option))]
     pub id: Option<Base64Uuid>,
+    #[builder(setter(into))]
     pub content: String,
+    #[builder(default)]
     #[serde(default)]
     pub formatting: Formatting,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::comments")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateComment {
+    #[builder(setter(into))]
     pub content: String,
+    #[builder(default)]
     #[serde(default)]
     pub formatting: Formatting,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::comments")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct NewThread {
+    #[builder(default, setter(strip_option))]
     pub id: Option<Base64Uuid>,
+    #[builder(default, setter(strip_option))]
     pub referenced_cell_id: Option<Base64Uuid>,
+    #[builder(default, setter(strip_option))]
     pub comment: Option<NewComment>,
 }

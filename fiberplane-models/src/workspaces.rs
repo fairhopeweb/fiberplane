@@ -8,14 +8,16 @@ use fp_bindgen::prelude::Serializable;
 use serde::{Deserialize, Serialize};
 use strum_macros::Display;
 use time::OffsetDateTime;
+use typed_builder::TypedBuilder;
 
 /// Workspace representation.
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::workspaces")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct Workspace {
     pub id: Base64Uuid,
@@ -35,6 +37,7 @@ pub struct Workspace {
     derive(Serializable),
     fp(rust_module = "fiberplane_models::workspaces")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 pub enum WorkspaceType {
     Personal,
@@ -42,12 +45,13 @@ pub enum WorkspaceType {
 }
 
 /// Payload to be able to invite someone to a workspace.
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::workspaces")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct NewWorkspaceInvite {
     pub email: String,
@@ -65,29 +69,34 @@ impl NewWorkspaceInvite {
 }
 
 /// Response received from create a new workspace endpoint.
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::workspaces")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct WorkspaceInviteResponse {
+    #[builder(setter(into))]
     pub url: String,
 }
 
 /// Payload to create a new organization workspace.
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::workspaces")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct NewWorkspace {
     pub name: Name,
     /// The display name of the workspace. The `name` will be used if none is provided
+    #[builder(default, setter(into, strip_option))]
     pub display_name: Option<String>,
+    #[builder(default, setter(into, strip_option))]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub default_data_sources: Option<SelectedDataSources>,
 }
@@ -103,31 +112,37 @@ impl NewWorkspace {
 }
 
 /// Payload to update workspace settings
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::workspaces")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct UpdateWorkspace {
+    #[builder(default, setter(into, strip_option))]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub display_name: Option<String>,
+    #[builder(default, setter(strip_option))]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub owner: Option<Base64Uuid>,
+    #[builder(default, setter(strip_option))]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub default_data_sources: Option<SelectedDataSources>,
 }
 
 /// Payload to update a workspace members' role
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::workspaces")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct WorkspaceUserUpdate {
+    #[builder(default, setter(strip_option))]
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub role: Option<AuthRole>,
 }
@@ -139,6 +154,7 @@ pub struct WorkspaceUserUpdate {
     derive(Serializable),
     fp(rust_module = "fiberplane_models::workspaces")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "snake_case")]
 pub enum AuthRole {
     #[strum(serialize = "Viewer")]
@@ -154,12 +170,13 @@ impl Default for AuthRole {
     }
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::workspaces")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct WorkspaceInvite {
     pub id: Base64Uuid,
@@ -171,12 +188,13 @@ pub struct WorkspaceInvite {
     pub expires_at: OffsetDateTime,
 }
 
-#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize)]
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::workspaces")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct Membership {
     pub id: Base64Uuid,

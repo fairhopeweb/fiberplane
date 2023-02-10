@@ -5,14 +5,16 @@ use fp_bindgen::prelude::*;
 use serde::{Deserialize, Serialize};
 use std::collections::HashMap;
 use std::fmt::{self, Debug, Formatter};
+use typed_builder::TypedBuilder;
 
 /// HTTP request options.
-#[derive(Clone, Debug, Deserialize, Serialize)]
+#[derive(Clone, Debug, Deserialize, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::providers")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct HttpRequest {
     pub url: String,
@@ -30,6 +32,7 @@ pub struct HttpRequest {
     derive(Serializable),
     fp(rust_module = "fiberplane_models::providers")
 )]
+#[non_exhaustive]
 #[serde(tag = "type", rename_all = "snake_case")]
 pub enum HttpRequestError {
     Offline,
@@ -79,6 +82,7 @@ impl Debug for HttpRequestError {
     derive(Serializable),
     fp(rust_module = "fiberplane_models::providers")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "SCREAMING_SNAKE_CASE")]
 pub enum HttpRequestMethod {
     Delete,
@@ -88,12 +92,13 @@ pub enum HttpRequestMethod {
 }
 
 /// Response to an HTTP request.
-#[derive(Clone, Deserialize, Serialize)]
+#[derive(Clone, Deserialize, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::providers")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct HttpResponse {
     pub body: Bytes,

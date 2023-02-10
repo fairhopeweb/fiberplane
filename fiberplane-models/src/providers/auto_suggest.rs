@@ -3,14 +3,16 @@ use crate::blobs::Blob;
 #[cfg(feature = "fp-bindgen")]
 use fp_bindgen::prelude::Serializable;
 use serde::{Deserialize, Serialize};
+use typed_builder::TypedBuilder;
 
 /// A request for a provider to provide auto-suggestions.
-#[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::providers")
 )]
+#[non_exhaustive]
 pub struct AutoSuggestRequest {
     /// The query being typed by the user, up to the focus offset.
     pub query: String,
@@ -49,12 +51,13 @@ impl AutoSuggestRequest {
 }
 
 /// A suggestion for a provider's auto-suggest functionality.
-#[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize)]
+#[derive(Clone, Debug, Default, Deserialize, Eq, PartialEq, Serialize, TypedBuilder)]
 #[cfg_attr(
     feature = "fp-bindgen",
     derive(Serializable),
     fp(rust_module = "fiberplane_models::providers")
 )]
+#[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct Suggestion {
     /// The offset to start applying the suggestion,
