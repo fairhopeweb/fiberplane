@@ -1940,6 +1940,7 @@ components:
         - name
         - displayName
         - description
+        - color
         - labels
         - createdAt
         - updatedAt
@@ -1954,10 +1955,26 @@ components:
           type: string
         description:
           type: string
+        color:
+          type: integer
+          format: int16
         labels:
           type: array
           items:
             $ref: "#/components/schemas/label"
+        relativeTime:
+          $ref: "#/components/schemas/relativeTime"
+        sortBy:
+          type: string
+          enum:
+            - title
+            - created_at
+            - updated_at
+        sortDirection:
+          type: string
+          enum:
+            - ascending
+            - descending
         createdAt:
           type: string
           format: date-time
@@ -1996,6 +2013,12 @@ components:
           type: array
           items:
             $ref: "#/components/schemas/label"
+    pinned_view:
+      type: object
+      properties:
+        view_id:
+          type: string
+          format: base64uuid
     createCellsRequest:
       type: object
       required:
@@ -2037,6 +2060,22 @@ components:
       description: "Can be any JSON value (string, number, object, array, ...) including 'null'"
     front_matter:
       type: object
+    relativeTime:
+      type: object
+      required:
+        - unit
+        - value
+      properties:
+        unit:
+          type: string
+          enum:
+            - "seconds"
+            - "minutes"
+            - "hours"
+            - "days"
+        value:
+          type: number
+          format: int64
   parameters:
     sortDirection:
       in: query
@@ -2132,6 +2171,14 @@ components:
       in: path
       name: snippet_name
       description: Name of the snippet
+      required: true
+      schema:
+        type: string
+        format: name
+    view_name:
+      in: path
+      name: view_name
+      description: Name of the View
       required: true
       schema:
         type: string
@@ -4027,13 +4074,7 @@ paths:
   /api/workspaces/{workspace_id}/views/{view_name}:
     parameters:
       - $ref: "#/components/parameters/workspace_id"
-      - name: view_name
-        in: path
-        description: Name of the View
-        required: true
-        schema:
-          type: string
-          format: name
+      - $ref: "#/components/parameters/view_name"
     get:
       operationId: view_get
       summary: Retrieve a single view
@@ -4073,6 +4114,44 @@ paths:
       description: Deletes an existing view
       tags:
         - Views
+      responses:
+        "200":
+          description: OK
+  /api/workspaces/{workspace_id}/pinned_views:
+    parameters:
+      - $ref: "#/components/parameters/workspace_id"
+    get:
+      operationId: pinned_views_get
+      description: Get all pinned views for the current user
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/pinned_view"
+    post:
+      operationId: pinned_view_add
+      description: Add an existing view to the pinned views list
+      requestBody:
+        description: Existing view to pin
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/pinned_view"
+      responses:
+        "200":
+          description: OK
+  /api/workspaces/{workspace_id}/pinned_views/{view_name}:
+    parameters:
+      - $ref: "#/components/parameters/workspace_id"
+      - $ref: "#/components/parameters/view_name"
+    delete:
+      operationId: pinned_view_remove
+      description: Remove view from the pinned views list
       responses:
         "200":
           description: OK

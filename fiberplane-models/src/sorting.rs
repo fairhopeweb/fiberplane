@@ -1,3 +1,5 @@
+#[cfg(feature = "fp-bindgen")]
+use fp_bindgen::prelude::Serializable;
 use serde::{Deserialize, Serialize};
 use std::borrow::Cow;
 use strum_macros::IntoStaticStr;
@@ -25,6 +27,16 @@ impl<T: SortField> Default for Sorting<T> {
 
 #[derive(Debug, Deserialize, Serialize, Clone, Copy, PartialEq, Eq, IntoStaticStr)]
 #[cfg_attr(feature = "clap", derive(clap::ValueEnum))]
+#[cfg_attr(
+    feature = "fp-bindgen",
+    derive(Serializable),
+    fp(rust_module = "fiberplane_models::comments")
+)]
+#[cfg_attr(
+    feature = "sqlx",
+    derive(sqlx::Type),
+    sqlx(type_name = "sort_direction")
+)]
 #[serde(rename_all = "snake_case")]
 #[strum(serialize_all = "snake_case")]
 pub enum SortDirection {
@@ -413,5 +425,43 @@ impl SortField for ViewSortFields {
     #[inline]
     fn default_sort_field() -> Self {
         Self::DisplayName
+    }
+}
+
+#[derive(Debug, Deserialize, Serialize, Clone, Copy, PartialEq, Eq, IntoStaticStr)]
+#[cfg_attr(feature = "clap", derive(clap::ValueEnum))]
+#[cfg_attr(
+    feature = "fp-bindgen",
+    derive(Serializable),
+    fp(rust_module = "fiberplane_models::notebooks")
+)]
+#[cfg_attr(
+    feature = "sqlx",
+    derive(sqlx::Type),
+    sqlx(type_name = "notebook_sort_fields")
+)]
+#[serde(rename_all = "snake_case")]
+#[strum(serialize_all = "snake_case")]
+pub enum NotebookSortFields {
+    Title,
+    CreatedAt,
+    UpdatedAt,
+}
+
+impl NotebookSortFields {
+    #[inline]
+    pub fn to_sql(&self) -> &'static str {
+        match self {
+            NotebookSortFields::Title => "title",
+            NotebookSortFields::CreatedAt => "created_at",
+            NotebookSortFields::UpdatedAt => "updated_at",
+        }
+    }
+}
+
+impl SortField for NotebookSortFields {
+    #[inline]
+    fn default_sort_field() -> Self {
+        Self::UpdatedAt
     }
 }

@@ -791,6 +791,7 @@ pub async fn workspace_update(
     Ok(response)
 }
 
+/// Get all workspace data sources
 pub async fn data_source_list(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
@@ -807,7 +808,7 @@ pub async fn data_source_list(
     Ok(response)
 }
 
-/// Create an workspace data-source
+/// Creates a workspace data source
 pub async fn data_source_create(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
@@ -1097,7 +1098,7 @@ pub async fn notebook_create(
     Ok(response)
 }
 
-/// Retrieve workspace image
+/// Retrieves a workspace image
 pub async fn workspace_picture_get(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
@@ -1128,6 +1129,61 @@ pub async fn workspace_picture_update(
         ),
     )?;
     builder = builder.form(&payload);
+    let response = builder.send().await?.error_for_status()?;
+
+    Ok(())
+}
+
+/// Get all pinned views for the current user
+pub async fn pinned_views_get(
+    client: &ApiClient,
+    workspace_id: base64uuid::Base64Uuid,
+) -> Result<Vec<models::PinnedView>> {
+    let mut builder = client.request(
+        Method::GET,
+        &format!(
+            "/api/workspaces/{workspace_id}/pinned_views",
+            workspace_id = workspace_id,
+        ),
+    )?;
+    let response = builder.send().await?.error_for_status()?.json().await?;
+
+    Ok(response)
+}
+
+/// Add an existing view to the pinned views list
+pub async fn pinned_view_add(
+    client: &ApiClient,
+    workspace_id: base64uuid::Base64Uuid,
+    payload: models::PinnedView,
+) -> Result<()> {
+    let mut builder = client.request(
+        Method::POST,
+        &format!(
+            "/api/workspaces/{workspace_id}/pinned_views",
+            workspace_id = workspace_id,
+        ),
+    )?;
+    builder = builder.json(&payload);
+    let response = builder.send().await?.error_for_status()?;
+
+    Ok(())
+}
+
+/// Remove view from the pinned views list
+pub async fn pinned_view_remove(
+    client: &ApiClient,
+    workspace_id: base64uuid::Base64Uuid,
+    view_name: &fiberplane_models::names::Name,
+) -> Result<()> {
+    let mut builder = client.request(
+        Method::DELETE,
+        &format!(
+            "/api/workspaces/{workspace_id}/pinned_views/{view_name}",
+            workspace_id = workspace_id,
+            view_name = view_name,
+        ),
+    )?;
     let response = builder.send().await?.error_for_status()?;
 
     Ok(())
@@ -1205,6 +1261,7 @@ pub async fn proxy_get(
     Ok(response)
 }
 
+/// Deletes a single proxy
 pub async fn proxy_delete(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
@@ -1223,7 +1280,7 @@ pub async fn proxy_delete(
     Ok(())
 }
 
-/// Relay a query to invoke a provider on a remote proxy
+/// Relays a query to invoke a provider on a remote proxy
 pub async fn proxy_relay(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
@@ -1294,7 +1351,7 @@ pub async fn proxy_extract_data(
     Ok(response)
 }
 
-/// Relay a query to invoke a provider on a remote proxy
+/// Relays a query to invoke a provider on a remote proxy
 pub async fn proxy_invoke(
     client: &ApiClient,
     workspace_id: base64uuid::Base64Uuid,
