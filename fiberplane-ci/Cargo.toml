@@ -1,0 +1,20 @@
+[package]
+name = "fiberplane-ci"
+description = "Reusable commands for CI/CD automation"
+readme = "README.md"
+version = "0.1.0"
+authors = { workspace = true }
+edition = { workspace = true }
+license = { workspace = true }
+repository = { workspace = true }
+rust-version = { workspace = true }
+publish = false
+
+[dependencies]
+anyhow = "1"
+clap = { version = "4", features = ["derive"] }
+taplo = "0.12"
+thiserror = "1"
+
+[dev-dependencies]
+pretty_assertions = "1.3"
