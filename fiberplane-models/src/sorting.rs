@@ -71,10 +71,16 @@ pub trait SortField {
 )]
 #[non_exhaustive]
 pub struct Pagination {
-    #[serde(default = "Pagination::default_page")]
+    #[serde(
+        default = "Pagination::default_page",
+        deserialize_with = "crate::deserialize_u32"
+    )]
     pub page: u32,
 
-    #[serde(default = "Pagination::default_limit")]
+    #[serde(
+        default = "Pagination::default_limit",
+        deserialize_with = "crate::deserialize_u32"
+    )]
     pub limit: u32,
 }
 
@@ -114,16 +120,6 @@ impl Default for Pagination {
             limit: Pagination::default_limit(),
         }
     }
-}
-
-/// Simple struct which includes both `sort` and `pagination`, to be used with `#[serde(flatten)]`
-// Debug will automatically put a bound on the generic param = `T: Debug`: https://stackoverflow.com/a/50322720/11494565
-#[derive(Debug, Serialize, Deserialize, Clone, PartialEq, Eq)]
-pub struct PaginatedSearch<T: SortField> {
-    #[serde(flatten)]
-    pub sort: Sorting<T>,
-    #[serde(flatten)]
-    pub pagination: Pagination,
 }
 
 #[derive(Debug, Deserialize, Serialize, Clone, Copy, PartialEq, Eq, IntoStaticStr)]
