@@ -2,7 +2,9 @@ name: Build
 
 on:
   push:
-    branches: ["*"]
+    branches: ["**"]
+  release:
+    type: [published]
 
 env:
   CARGO_TERM_COLOR: always
@@ -11,11 +13,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-
-      - id: branch
-        name: Export branch
-        run: echo "branch=${GITHUB_HEAD_REF:-${GITHUB_REF##refs/heads/}}" >> $GITHUB_OUTPUT
+      - uses: actions/checkout@v3
 
       - name: setup-git-credentials
         uses: de-vri-es/setup-git-credentials@v2
@@ -23,7 +21,7 @@ jobs:
           credentials: "https://fiberplanebot:${{ secrets.PRIVATE_GITHUB_TOKEN }}@github.com/"
 
       - name: Cache Rust dependencies
-        uses: actions/cache@v2
+        uses: actions/cache@v3
         with:
           path: |
             ~/.cargo/registry
@@ -40,9 +38,15 @@ jobs:
           components: rustfmt, clippy
 
       - name: Check format
+        # Skip formatting on main, since it's not critical and should've already
+        # been checked before merging
+        if: ${{ github.event_name == 'push' && github.ref != 'refs/heads/main' }}
         run: cargo fmt -- --check
 
       - name: Lint code
+        # Skip linting on main, since it's not critical and should've already
+        # been checked before merging
+        if: ${{ github.event_name == 'push' && github.ref != 'refs/heads/main' }}
         uses: actions-rs/clippy-check@v1
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
@@ -55,3 +59,11 @@ jobs:
 
       - name: Run tests
         run: cargo test --verbose
+
+      - name: Publish alpha crates
+        if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+        run: cargo xtask publish alphas
+
+      - name: Publish beta crates
+        if: ${{ github.event_name == 'release' && contains(github.event.release.tag_name, '-beta.') }}
+        run: cargo xtask publish betas
