@@ -6,9 +6,11 @@ use fiberplane_models::notebooks::{Cell, HeadingType, ListType, NewNotebook};
 use fiberplane_models::timestamps::TimeRange;
 use fiberplane_models::utils::{char_count, char_slice, char_slice_from};
 use once_cell::sync::Lazy;
+use percent_encoding::percent_decode_str;
 use regex::Regex;
 use std::{collections::BTreeSet, fmt::Write};
 use time::{format_description::well_known::Rfc3339, Duration};
+use tracing::warn;
 
 mod code_writer;
 mod escape_string;
@@ -16,6 +18,7 @@ mod escape_string;
 mod tests;
 
 static MUSTACHE_SUBSTITUTION: Lazy<Regex> = Lazy::new(|| Regex::new(r"\{\{(\w+)\}\}").unwrap());
+const FORM_ENCODED_QUERY_PREFIX: &str = "application/x-www-form-urlencoded,";
 
 // Note: we use the NewNotebook struct because it contains
 // the subset of the Notebook fields that we need to
@@ -212,12 +215,43 @@ fn print_cell(writer: &mut CodeWriter, cell: &Cell) {
             ("text", cell.read_only)
         }
         Cell::Provider(cell) => {
+            const INTENTS_WITH_TEMPLATES_HELPERS: [&str; 3] = [
+                "prometheus,timeseries",
+                "elasticsearch,events",
+                "loki,events",
+            ];
+
             args.push(("title", escape_string(&cell.title)));
-            args.push(("intent", escape_string(&cell.intent)));
-            if let Some(query_data) = &cell.query_data {
-                args.push(("queryData", escape_string(query_data)));
-            }
-            ("provider", cell.read_only)
+            let cell_type = match cell.intent.as_str() {
+                intent if INTENTS_WITH_TEMPLATES_HELPERS.contains(&intent) => {
+                    if let Some(query) = decode_provider_cell_query_data(&cell.query_data) {
+                        args.extend(query.into_iter().filter_map(|(key, value)| {
+                            if key == "query" {
+                                Some(("content", escape_string(value)))
+                            } else {
+                                warn!("Unexpected argument: {key}");
+                                None
+                            }
+                        }))
+                    } else {
+                        warn!(?cell, "Could not parse the query data from the cell");
+                    }
+                    intent
+                        .split_once(',')
+                        .expect("All intents in INTENTS_WITH_TEMPLATE_HELPERS have ',' inside.")
+                        .0
+                }
+                _ => {
+                    // No specific treatment is done for libjsonnet.provider function call,
+                    // we just pass the raw queryData and the raw intent
+                    args.push(("intent", escape_string(&cell.intent)));
+                    if let Some(query_data) = &cell.query_data {
+                        args.push(("queryData", escape_string(query_data)));
+                    }
+                    "provider"
+                }
+            };
+            (cell_type, cell.read_only)
         }
         // Ignored cell types:
         Cell::Discussion(_) | Cell::Graph(_) | Cell::Log(_) | Cell::Table(_) => return,
@@ -236,9 +270,11 @@ fn print_cell(writer: &mut CodeWriter, cell: &Cell) {
     let first_param = args.first().map(|(name, _)| *name);
     match (args.len(), first_param) {
         (0, _) => writer.println(format!("c.{function_name}(),")),
-        (1, Some("content")) => writer.println(format!("c.{}({}),", function_name, args[0].1)),
+        (1, Some(content)) if content == "content" => {
+            writer.println(format!("c.{}({}),", function_name, args[0].1))
+        }
         (1, _) => writer.println(format!("c.{}({}={}),", function_name, args[0].0, args[0].1)),
-        (2, Some("content")) => writer.println(format!(
+        (2, Some(content)) if content == "content" => writer.println(format!(
             "c.{}({}, {}={}),",
             function_name, args[0].1, args[1].0, args[1].1
         )),
@@ -421,4 +457,30 @@ fn parse_template_function_parameters<'a>(
             }
         })
         .collect()
+}
+
+fn decode_provider_cell_query_data<'a>(
+    query_data: &'a Option<impl AsRef<str> + 'a>,
+) -> Option<Vec<(String, String)>> {
+    query_data.as_ref().and_then(|query_data| {
+        query_data
+            .as_ref()
+            .strip_prefix(FORM_ENCODED_QUERY_PREFIX)
+            .map(|encoded_query| {
+                encoded_query
+                    .split('&')
+                    .map(|kv| {
+                        if let Some((key, value)) = kv.split_once('=') {
+                            let value = value.replace('+', " ");
+                            (
+                                percent_decode_str(key).decode_utf8_lossy().to_string(),
+                                percent_decode_str(&value).decode_utf8_lossy().to_string(),
+                            )
+                        } else {
+                            (kv.to_string(), String::new())
+                        }
+                    })
+                    .collect()
+            })
+    })
 }
