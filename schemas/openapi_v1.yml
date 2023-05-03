@@ -2133,6 +2133,126 @@ components:
           type: number
           nullable: true
           format: int64
+    webhook:
+      type: object
+      required:
+        - id
+        - workspaceId
+        - endpoint
+        - events
+        - enabled
+        - createdAt
+        - updatedAt
+      properties:
+        id:
+          type: string
+          format: base64uuid
+        workspaceId:
+          type: string
+          format: base64uuid
+        endpoint:
+          type: string
+        events:
+          type: array
+          items:
+            $ref: "#/components/schemas/webhook_events"
+        sharedSecret:
+          type: string
+          format: password
+        enabled:
+          type: boolean
+        createdBy:
+          type: string
+          format: base64uuid
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+    webhook_events:
+      type: string
+      enum:
+        - ping
+        - frontmatter
+    new_webhook:
+      type: object
+      required:
+        - endpoint
+        - events
+      properties:
+        endpoint:
+          type: string
+        events:
+          type: array
+          items:
+            $ref: "#/components/schemas/webhook_events"
+    update_webhook:
+      type: object
+      properties:
+        endpoint:
+          type: string
+        events:
+          type: array
+          items:
+            $ref: "#/components/schemas/webhook_events"
+        regenerate_shared_secret:
+          type: boolean
+        enabled:
+          type: boolean
+    webhook_delivery:
+      type: object
+      required:
+        - id
+        - webhook_id
+        - event
+        - request_headers
+        - request_body
+        - sent_request_at
+      properties:
+        id:
+          type: string
+          format: base64uuid
+        webhook_id:
+          type: string
+          format: base64uuid
+        event:
+          type: string
+        status_code:
+          type: number
+          format: int32
+        request_headers:
+          type: string
+        request_body:
+          type: string
+        response_headers:
+          type: string
+        response_body:
+          type: string
+        sent_request_at:
+          type: string
+          format: date-time
+        received_response_at:
+          type: string
+          format: date-time
+    webhook_delivery_summary:
+      type: object
+      required:
+        - id
+        - event
+        - successful
+        - timestamp
+      properties:
+        id:
+          type: string
+          format: base64uuid
+        event:
+          type: string
+        successful:
+          type: boolean
+        timestamp:
+          type: string
+          format: date-time
   parameters:
     sortDirection:
       in: query
@@ -2240,6 +2360,22 @@ components:
       schema:
         type: string
         format: name
+    webhook_id:
+      in: path
+      name: webhook_id
+      description: ID of the Webhook
+      required: true
+      schema:
+        type: string
+        format: base64uuid
+    delivery_id:
+      in: path
+      name: delivery_id
+      description: ID of the webhook delivery
+      required: true
+      schema:
+        type: string
+        format: base64uuid
   responses:
     thread:
       description: OK
@@ -4234,3 +4370,141 @@ paths:
       responses:
         "200":
           description: OK
+  /api/workspaces/{workspace_id}/webhooks:
+    parameters:
+      - $ref: "#/components/parameters/workspace_id"
+    get:
+      operationId: webhooks_list
+      summary: Retrieve all webhooks for a specific workspace
+      description: Retrieve all webhooks for a specific workspace
+      tags:
+        - Webhooks
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/limit"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/webhook"
+    post:
+      operationId: webhook_create
+      summary: Create a new webhook
+      description: | 
+        Create a new webhook. Upon execution of this route, a test event ("ping") will be sent to the endpoint.
+        If sending the ping event fails, the webhook will still be created, but it will be disabled.
+        Please check the response of this endpoint to see whenever `enabled` = `false`,
+        and if that is the case, check the latest delivery to see why. Once the endpoint has been fixed, you
+        can re-deliver the ping payload and if that works, manually re-enable the webhook again.
+      tags:
+        - Webhooks
+      requestBody:
+        description: Webhook creation payload
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/new_webhook"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/webhook"
+  /api/workspaces/{workspace_id}/webhooks/{webhook_id}:
+    parameters:
+      - $ref: "#/components/parameters/workspace_id"
+      - $ref: "#/components/parameters/webhook_id"
+    patch:
+      operationId: webhook_update
+      summary: Update an existing webhook
+      description: | 
+        Updates an existing webhook. Upon execution of this route, a test event ("ping") will be sent to the endpoint.
+        If sending the ping event fails, the webhook will still be updated, but will be disabled.
+        Please check the response of this endpoint to see whenever `enabled` = `false`, and if that is the case
+        (and not manually requested), check the latest delivery to see why. Once the endpoint has been fixed, you
+        can re-deliver the ping payload and if that works, manually re-enable the webhook again.
+      tags:
+        - Webhooks
+      requestBody:
+        description: Webhook update payload
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/update_webhook"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/webhook"
+    delete:
+      operationId: webhook_delete
+      summary: Delete an existing webhook
+      description: Deletes an existing webhook
+      tags:
+        - Webhooks
+      responses:
+        "200":
+          description: OK
+  /api/workspaces/{workspace_id}/webhooks/{webhook_id}/deliveries:
+    parameters:
+      - $ref: "#/components/parameters/workspace_id"
+      - $ref: "#/components/parameters/webhook_id"
+    get:
+      operationId: webhook_delivery_list
+      summary: Retrieve a list of deliveries for a specific webhook
+      description: Retrieve a list of deliveries for a specific webhook
+      tags:
+        - Webhooks
+      parameters:
+        - $ref: "#/components/parameters/page"
+        - $ref: "#/components/parameters/limit"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/webhook_delivery_summary"
+  /api/workspaces/{workspace_id}/webhooks/{webhook_id}/deliveries/{delivery_id}:
+    parameters:
+      - $ref: "#/components/parameters/workspace_id"
+      - $ref: "#/components/parameters/webhook_id"
+      - $ref: "#/components/parameters/delivery_id"
+    get:
+      operationId: webhook_delivery_get
+      summary: Retrieve information about a specific delivery for a specific webhook
+      description: Retrieve information about a specific delivery for a specific webhook
+      tags:
+        - Webhooks
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/webhook_delivery"
+  /api/workspaces/{workspace_id}/webhooks/{webhook_id}/deliveries/{delivery_id}/resend:
+    parameters:
+      - $ref: "#/components/parameters/workspace_id"
+      - $ref: "#/components/parameters/webhook_id"
+      - $ref: "#/components/parameters/delivery_id"
+    post:
+      operationId: webhook_delivery_resend
+      summary: Resend a specific delivery
+      description: Resend a specific delivery
+      tags:
+        - Webhooks
+      responses:
+        "200":
+          description: OK. Resend has been queued.

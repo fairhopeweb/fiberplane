@@ -30,6 +30,7 @@ pub(crate) mod models {
     pub(crate) use fiberplane_models::tokens::*;
     pub(crate) use fiberplane_models::users::*;
     pub(crate) use fiberplane_models::views::*;
+    pub(crate) use fiberplane_models::webhooks::*;
     pub(crate) use fiberplane_models::workspaces::*;
 }
 
@@ -1864,4 +1865,167 @@ pub async fn view_update(
     let response = builder.send().await?.error_for_status()?.json().await?;
 
     Ok(response)
+}
+
+#[doc = r#"Retrieve all webhooks for a specific workspace"#]
+pub async fn webhooks_list(
+    client: &ApiClient,
+    workspace_id: base64uuid::Base64Uuid,
+    page: Option<i32>,
+    limit: Option<i32>,
+) -> Result<Vec<models::Webhook>> {
+    let mut builder = client.request(
+        Method::GET,
+        &format!(
+            "/api/workspaces/{workspace_id}/webhooks",
+            workspace_id = workspace_id,
+        ),
+    )?;
+    if let Some(page) = page {
+        builder = builder.query(&[("page", page)]);
+    }
+    if let Some(limit) = limit {
+        builder = builder.query(&[("limit", limit)]);
+    }
+    let response = builder.send().await?.error_for_status()?.json().await?;
+
+    Ok(response)
+}
+
+#[doc = r#"Create a new webhook. Upon execution of this route, a test event ("ping") will be sent to the endpoint.
+If sending the ping event fails, the webhook will still be created, but it will be disabled.
+Please check the response of this endpoint to see whenever `enabled` = `false`,
+and if that is the case, check the latest delivery to see why. Once the endpoint has been fixed, you
+can re-deliver the ping payload and if that works, manually re-enable the webhook again.
+"#]
+pub async fn webhook_create(
+    client: &ApiClient,
+    workspace_id: base64uuid::Base64Uuid,
+    payload: models::NewWebhook,
+) -> Result<models::Webhook> {
+    let mut builder = client.request(
+        Method::POST,
+        &format!(
+            "/api/workspaces/{workspace_id}/webhooks",
+            workspace_id = workspace_id,
+        ),
+    )?;
+    builder = builder.json(&payload);
+    let response = builder.send().await?.error_for_status()?.json().await?;
+
+    Ok(response)
+}
+
+#[doc = r#"Deletes an existing webhook"#]
+pub async fn webhook_delete(
+    client: &ApiClient,
+    workspace_id: base64uuid::Base64Uuid,
+    webhook_id: base64uuid::Base64Uuid,
+) -> Result<()> {
+    let mut builder = client.request(
+        Method::DELETE,
+        &format!(
+            "/api/workspaces/{workspace_id}/webhooks/{webhook_id}",
+            workspace_id = workspace_id,
+            webhook_id = webhook_id,
+        ),
+    )?;
+    let response = builder.send().await?.error_for_status()?;
+
+    Ok(())
+}
+
+#[doc = r#"Updates an existing webhook. Upon execution of this route, a test event ("ping") will be sent to the endpoint.
+If sending the ping event fails, the webhook will still be updated, but will be disabled.
+Please check the response of this endpoint to see whenever `enabled` = `false`, and if that is the case
+(and not manually requested), check the latest delivery to see why. Once the endpoint has been fixed, you
+can re-deliver the ping payload and if that works, manually re-enable the webhook again.
+"#]
+pub async fn webhook_update(
+    client: &ApiClient,
+    workspace_id: base64uuid::Base64Uuid,
+    webhook_id: base64uuid::Base64Uuid,
+    payload: models::UpdateWebhook,
+) -> Result<models::Webhook> {
+    let mut builder = client.request(
+        Method::PATCH,
+        &format!(
+            "/api/workspaces/{workspace_id}/webhooks/{webhook_id}",
+            workspace_id = workspace_id,
+            webhook_id = webhook_id,
+        ),
+    )?;
+    builder = builder.json(&payload);
+    let response = builder.send().await?.error_for_status()?.json().await?;
+
+    Ok(response)
+}
+
+#[doc = r#"Retrieve a list of deliveries for a specific webhook"#]
+pub async fn webhook_delivery_list(
+    client: &ApiClient,
+    workspace_id: base64uuid::Base64Uuid,
+    webhook_id: base64uuid::Base64Uuid,
+    page: Option<i32>,
+    limit: Option<i32>,
+) -> Result<Vec<models::WebhookDeliverySummary>> {
+    let mut builder = client.request(
+        Method::GET,
+        &format!(
+            "/api/workspaces/{workspace_id}/webhooks/{webhook_id}/deliveries",
+            workspace_id = workspace_id,
+            webhook_id = webhook_id,
+        ),
+    )?;
+    if let Some(page) = page {
+        builder = builder.query(&[("page", page)]);
+    }
+    if let Some(limit) = limit {
+        builder = builder.query(&[("limit", limit)]);
+    }
+    let response = builder.send().await?.error_for_status()?.json().await?;
+
+    Ok(response)
+}
+
+#[doc = r#"Retrieve information about a specific delivery for a specific webhook"#]
+pub async fn webhook_delivery_get(
+    client: &ApiClient,
+    workspace_id: base64uuid::Base64Uuid,
+    webhook_id: base64uuid::Base64Uuid,
+    delivery_id: base64uuid::Base64Uuid,
+) -> Result<models::WebhookDelivery> {
+    let mut builder = client.request(
+        Method::GET,
+        &format!(
+            "/api/workspaces/{workspace_id}/webhooks/{webhook_id}/deliveries/{delivery_id}",
+            workspace_id = workspace_id,
+            webhook_id = webhook_id,
+            delivery_id = delivery_id,
+        ),
+    )?;
+    let response = builder.send().await?.error_for_status()?.json().await?;
+
+    Ok(response)
+}
+
+#[doc = r#"Resend a specific delivery"#]
+pub async fn webhook_delivery_resend(
+    client: &ApiClient,
+    workspace_id: base64uuid::Base64Uuid,
+    webhook_id: base64uuid::Base64Uuid,
+    delivery_id: base64uuid::Base64Uuid,
+) -> Result<()> {
+    let mut builder = client.request(
+        Method::POST,
+        &format!(
+            "/api/workspaces/{workspace_id}/webhooks/{webhook_id}/deliveries/{delivery_id}/resend",
+            workspace_id = workspace_id,
+            webhook_id = webhook_id,
+            delivery_id = delivery_id,
+        ),
+    )?;
+    let response = builder.send().await?.error_for_status()?;
+
+    Ok(())
 }
