@@ -60,7 +60,8 @@ var SvgChartBar = function SvgChartBar(props) {
     xmlns: "http://www.w3.org/2000/svg",
     width: 20,
     height: 20,
-    fill: "none"
+    fill: "none",
+    viewBox: "0 0 20 20"
   }, props), _path$6 || (_path$6 = /*#__PURE__*/React.createElement("path", {
     fill: "currentColor",
     d: "M17.813 15.625h-.625v-12.5a.625.625 0 0 0-.625-.625h-4.375a.625.625 0 0 0-.626.625V6.25h-3.75a.625.625 0 0 0-.625.625V10h-3.75a.625.625 0 0 0-.624.625v5h-.626a.625.625 0 1 0 0 1.25h15.626a.624.624 0 1 0 0-1.25ZM8.438 7.5h3.124v8.125H8.438V7.5Zm-4.376 3.75h3.125v4.375H4.063V11.25Z"
@@ -74,7 +75,8 @@ var SvgChartLine = function SvgChartLine(props) {
     xmlns: "http://www.w3.org/2000/svg",
     width: 20,
     height: 20,
-    fill: "none"
+    fill: "none",
+    viewBox: "0 0 20 20"
   }, props), _path$5 || (_path$5 = /*#__PURE__*/React.createElement("path", {
     fill: "currentColor",
     d: "M17.5 15.625H3.125v-2.844L7.531 8.93l4.594 3.445a.625.625 0 0 0 .79-.031l5-4.375a.625.625 0 0 0-.83-.938l-4.616 4.04-4.594-3.446a.625.625 0 0 0-.79.031l-3.96 3.469V3.75a.625.625 0 0 0-1.25 0v12.5a.625.625 0 0 0 .625.625h15a.624.624 0 1 0 0-1.25Z"
@@ -88,7 +90,8 @@ var SvgCheck = function SvgCheck(props) {
     xmlns: "http://www.w3.org/2000/svg",
     width: 20,
     height: 20,
-    fill: "none"
+    fill: "none",
+    viewBox: "0 0 20 20"
   }, props), _path$4 || (_path$4 = /*#__PURE__*/React.createElement("path", {
     fill: "currentColor",
     d: "M8.125 15a.665.665 0 0 1-.445-.18l-4.375-4.375a.633.633 0 0 1 .89-.89l3.93 3.937L16.43 5.18a.633.633 0 0 1 .89.89l-8.75 8.75a.665.665 0 0 1-.445.18Z"
@@ -102,7 +105,8 @@ var SvgCombined = function SvgCombined(props) {
     xmlns: "http://www.w3.org/2000/svg",
     width: 20,
     height: 20,
-    fill: "none"
+    fill: "none",
+    viewBox: "0 0 20 20"
   }, props), _path$3 || (_path$3 = /*#__PURE__*/React.createElement("path", {
     fill: "currentColor",
     fillRule: "evenodd",
@@ -118,7 +122,8 @@ var SvgPercentage = function SvgPercentage(props) {
     xmlns: "http://www.w3.org/2000/svg",
     width: 20,
     height: 20,
-    fill: "none"
+    fill: "none",
+    viewBox: "0 0 20 20"
   }, props), _path$2 || (_path$2 = /*#__PURE__*/React.createElement("path", {
     fill: "currentColor",
     fillRule: "evenodd",
@@ -134,7 +139,8 @@ var SvgStacked = function SvgStacked(props) {
     xmlns: "http://www.w3.org/2000/svg",
     width: 20,
     height: 20,
-    fill: "none"
+    fill: "none",
+    viewBox: "0 0 20 20"
   }, props), _path$1 || (_path$1 = /*#__PURE__*/React.createElement("path", {
     fill: "currentColor",
     fillRule: "evenodd",
@@ -150,7 +156,8 @@ var SvgTriangleDown = function SvgTriangleDown(props) {
     xmlns: "http://www.w3.org/2000/svg",
     width: 20,
     height: 20,
-    fill: "none"
+    fill: "none",
+    viewBox: "0 0 20 20"
   }, props), _path || (_path = /*#__PURE__*/React.createElement("path", {
     fill: "currentColor",
     d: "m10.143 13 3.344-6h-6.69l3.346 6Z"
@@ -578,7 +585,7 @@ const isMac = os === "mac";
 
 /**
  * Control what kind fo chart you're viewing (and more)
- */ function ChartControls({ graphType , onChangeGraphType , onChangeStackingType , showStackingControls , stackingType  }) {
+ */ function ChartControls({ graphType , onChangeGraphType , onChangeStackingType , stackingControlsShown , stackingType  }) {
     if (!onChangeGraphType && !onChangeStackingType) {
         return null;
     }
@@ -621,7 +628,7 @@ const isMac = os === "mac";
                             })
                         ]
                     }),
-                    showStackingControls && onChangeStackingType && /*#__PURE__*/ jsxs(ControlsSet, {
+                    stackingControlsShown && onChangeStackingType && /*#__PURE__*/ jsxs(ControlsSet, {
                         children: [
                             /*#__PURE__*/ jsx(ControlsSetLabel, {
                                 children: "Stacking"
@@ -1492,15 +1499,16 @@ function getChartColor(i) {
     return colors[i % colors.length];
 }
 
-function ChartLegendItem({ color , onHover , onToggleTimeseriesVisibility , readOnly , setSize , timeseries , uniqueKeys  }) {
+function ChartLegendItem({ color , onHover , onToggleTimeseriesVisibility , readOnly , index , setSize , timeseries , uniqueKeys  }) {
     const [ref, { height  }] = useMeasure();
     useEffect(()=>{
         if (height) {
-            setSize(height);
+            setSize(index, height);
         }
     }, [
         height,
-        setSize
+        setSize,
+        index
     ]);
     const toggleTimeseriesVisibility = onToggleTimeseriesVisibility && !readOnly ? (event)=>{
         preventDefault(event);
@@ -1544,42 +1552,42 @@ function ChartLegendItem({ color , onHover , onToggleTimeseriesVisibility , read
     });
 }
 const ColorBlock = styled.div`
-  background: ${({ color , selected  })=>selected ? color : "transparent"};
-  border: 2px solid ${({ color  })=>color};
-  width: 14px;
-  height: 14px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: ${({ theme  })=>theme.colorBackground};
-  border-radius: ${({ theme  })=>theme.borderRadius400};
+    background: ${({ color , selected  })=>selected ? color : "transparent"};
+    border: 2px solid ${({ color  })=>color};
+    width: 14px;
+    height: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: ${({ theme  })=>theme.colorBackground};
+    border-radius: ${({ theme  })=>theme.borderRadius400};
 `;
 const InteractiveItemStyling = css`
-  cursor: pointer;
+    cursor: pointer;
 
-  &:hover {
-    background: ${({ theme  })=>theme.colorPrimaryAlpha100};
-  }
+    &:hover {
+        background: ${({ theme  })=>theme.colorPrimaryAlpha100};
+    }
 `;
 const LegendItemContainer = styled(Container)`
-  border-radius: ${({ theme  })=>theme.borderRadius500};
-  display: flex;
-  align-items: center;
-  font: ${({ theme  })=>theme.fontAxisShortHand};
-  padding: 8px 8px 8px 14px;
-  gap: 10px;
-  word-wrap: anywhere;
+    border-radius: ${({ theme  })=>theme.borderRadius500};
+    display: flex;
+    align-items: center;
+    font: ${({ theme  })=>theme.fontAxisShortHand};
+    padding: 8px 8px 8px 14px;
+    gap: 10px;
+    word-wrap: anywhere;
 
-  ${({ readOnly  })=>readOnly === false && InteractiveItemStyling}
+    ${({ readOnly  })=>readOnly === false && InteractiveItemStyling}
 `;
 const Text = styled.div`
-  flex: 1;
+    flex: 1;
 `;
 
 const DEFAULT_HEIGHT = 293;
 const DEFAULT_SIZE = 50;
 const EXPANDED_HEIGHT = 592;
-const Legend = /*#__PURE__*/ memo(function Legend({ onToggleTimeseriesVisibility , readOnly =false , timeseriesData  }) {
+const Legend = /*#__PURE__*/ memo(function Legend({ onToggleTimeseriesVisibility , readOnly =false , timeseriesData , footerShown =true  }) {
     const { expandButton , gradient , isExpanded , onScroll , ref  } = useExpandable({
         defaultHeight: DEFAULT_HEIGHT
     });
@@ -1604,7 +1612,7 @@ const Legend = /*#__PURE__*/ memo(function Legend({ onToggleTimeseriesVisibility
         update
     ]);
     const getSize = (index)=>sizeMap.current.get(index) ?? DEFAULT_SIZE;
-    const setSize = (index, size)=>{
+    const setSize = useHandler((index, size)=>{
         const oldSize = getSize(index);
         sizeMap.current.set(index, size);
         listRef.current?.resetAfterIndex(index);
@@ -1612,7 +1620,7 @@ const Legend = /*#__PURE__*/ memo(function Legend({ onToggleTimeseriesVisibility
         if (heightRef.current < maxHeight) {
             update();
         }
-    };
+    });
     const onMouseOut = ()=>setFocusedTimeseries(null);
     const render = useHandler(({ data , index , style  })=>{
         const timeseries = data[index];
@@ -1625,7 +1633,8 @@ const Legend = /*#__PURE__*/ memo(function Legend({ onToggleTimeseriesVisibility
                 readOnly: readOnly,
                 timeseries: timeseries,
                 uniqueKeys: uniqueKeys,
-                setSize: (height)=>setSize(index, height)
+                index: index,
+                setSize: setSize
             })
         });
     });
@@ -1649,7 +1658,7 @@ const Legend = /*#__PURE__*/ memo(function Legend({ onToggleTimeseriesVisibility
                     gradient
                 ]
             }),
-            /*#__PURE__*/ jsxs(Footer, {
+            footerShown && /*#__PURE__*/ jsxs(Footer, {
                 children: [
                     /*#__PURE__*/ jsx(Results, {
                         children: resultsText
@@ -1661,29 +1670,29 @@ const Legend = /*#__PURE__*/ memo(function Legend({ onToggleTimeseriesVisibility
     });
 });
 const ExpandableContainer = styled.div`
-  max-height: ${({ maxHeight  })=>maxHeight};
-  overflow: auto;
+    max-height: ${({ maxHeight  })=>maxHeight};
+    overflow: auto;
 `;
 const Footer = styled.div`
-  width: 100%;
-  height: 50px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+    width: 100%;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 `;
 const ChartLegendContainer = styled(Container)`
-  flex-direction: column;
-  font: ${({ theme  })=>theme.fontLegendShortHand};
-  letter-spacing: ${({ theme  })=>theme.fontLegendLetterSpacing};
-  letter-spacing: 0.02em;
-  padding: 10px 0 0;
-  position: relative;
-  word-wrap: break-word;
+    flex-direction: column;
+    font: ${({ theme  })=>theme.fontLegendShortHand};
+    letter-spacing: ${({ theme  })=>theme.fontLegendLetterSpacing};
+    letter-spacing: 0.02em;
+    padding: 10px 0 0;
+    position: relative;
+    word-wrap: break-word;
 `;
 const Results = styled.span`
-  font: ${({ theme  })=>theme.fontResultsSummaryShortHand};
-  letter-spacing: ${({ theme  })=>theme.fontResultsSummaryLetterSpacing};
-  color: ${({ theme  })=>theme.colorBase400};
+    font: ${({ theme  })=>theme.fontResultsSummaryShortHand};
+    letter-spacing: ${({ theme  })=>theme.fontResultsSummaryLetterSpacing};
+    color: ${({ theme  })=>theme.colorBase400};
 `;
 
 const TimeseriesTableCaption = styled.caption`
@@ -2547,7 +2556,7 @@ function ChartContent({ timeseriesData , xScaleProps , yScale  }) {
     });
 }
 
-function Bottom({ yMax , xScale , xScaleFormatter  }) {
+function Bottom({ yMax , xScale , xScaleFormatter , strokeDasharray  }) {
     const { colorBase300 , colorBase500 , fontAxisFontSize , fontAxisFontFamily , fontAxisFontStyle , fontAxisFontWeight , fontAxisLetterSpacing , fontAxisLineHeight  } = useTheme();
     const axisBottomTickLabelProps = {
         textAnchor: "middle",
@@ -2565,12 +2574,13 @@ function Bottom({ yMax , xScale , xScaleFormatter  }) {
         stroke: colorBase300,
         hideTicks: true,
         tickFormat: xScaleFormatter,
-        tickLabelProps: ()=>axisBottomTickLabelProps
+        tickLabelProps: ()=>axisBottomTickLabelProps,
+        strokeDasharray: strokeDasharray
     });
 }
 var Bottom$1 = /*#__PURE__*/ memo(Bottom);
 
-const GridWithAxes = /*#__PURE__*/ memo(function GridWithAxes({ xMax , yMax , xScale , yScale , xScaleFormatter  }) {
+const GridWithAxes = /*#__PURE__*/ memo(function GridWithAxes({ xMax , yMax , xScale , yScale , xScaleFormatter , gridColumnsShown =true , gridBordersShown =true , gridDashArray  }) {
     const [targetLower = 0, targetUpper = 0] = yScale.domain();
     const { colorBase300  } = useTheme();
     const lower = useCustomSpring(targetLower);
@@ -2599,32 +2609,38 @@ const GridWithAxes = /*#__PURE__*/ memo(function GridWithAxes({ xMax , yMax , xS
                 scale: temporaryScale,
                 width: xMax,
                 height: yMax,
-                stroke: colorBase300
+                stroke: colorBase300,
+                strokeDasharray: gridDashArray
             }),
-            /*#__PURE__*/ jsx("line", {
+            gridBordersShown && /*#__PURE__*/ jsx("line", {
                 x1: xMax,
                 x2: xMax,
                 y1: 0,
                 y2: yMax,
                 stroke: colorBase300,
-                strokeWidth: 1
+                strokeWidth: 1,
+                strokeDasharray: gridDashArray
             }),
-            /*#__PURE__*/ jsx(GridColumns, {
+            gridColumnsShown && /*#__PURE__*/ jsx(GridColumns, {
                 scale: xScale,
                 width: xMax,
                 height: yMax,
-                stroke: colorBase300
+                stroke: colorBase300,
+                strokeDasharray: gridDashArray
             }),
             /*#__PURE__*/ jsx(Bottom$1, {
                 xMax: xMax,
                 xScale: xScale,
                 yMax: yMax,
-                xScaleFormatter: xScaleFormatter
+                xScaleFormatter: xScaleFormatter,
+                strokeDasharray: gridDashArray
             }),
             /*#__PURE__*/ jsx(AxisLeft, {
                 scale: temporaryScale,
                 orientation: Orientation.left,
                 stroke: colorBase300,
+                strokeWidth: gridBordersShown ? 1 : 0,
+                strokeDasharray: gridDashArray,
                 hideTicks: true,
                 tickLabelProps: ()=>axisLeftTickLabelProps,
                 tickFormat: temporaryScale.tickFormat(10, "~s"),
@@ -2742,7 +2758,10 @@ function MainChartContent(props) {
                                 yMax: yMax,
                                 xScale: xScaleProps.xScale,
                                 yScale: yScale,
-                                xScaleFormatter: xScaleFormatter
+                                xScaleFormatter: xScaleFormatter,
+                                gridColumnsShown: props.gridColumnsShown,
+                                gridBordersShown: props.gridBordersShown,
+                                gridDashArray: props.gridDashArray
                             }),
                             /*#__PURE__*/ jsx(Group, {
                                 innerRef: graphContentRef,
@@ -2833,26 +2852,26 @@ function ReadOnlyMetricsChart(props) {
     });
 }
 const InnerMetricsChart = /*#__PURE__*/ memo(function InnerMetricsChart(props) {
-    const hasMultipleTimeseries = props.timeseriesData.length > 1;
+    const { readOnly , legendShown =true , chartControlsShown =true , stackingControlsShown =true  } = props;
     return /*#__PURE__*/ jsxs(FocusedTimeseriesContextProvider, {
         children: [
-            !props.readOnly && /*#__PURE__*/ jsx(ChartControls, {
+            !readOnly && chartControlsShown && /*#__PURE__*/ jsx(ChartControls, {
                 ...props,
-                showStackingControls: hasMultipleTimeseries
+                stackingControlsShown: stackingControlsShown
             }),
             /*#__PURE__*/ jsx(MainChartContent, {
                 ...props
             }),
-            hasMultipleTimeseries && /*#__PURE__*/ jsx(Legend, {
+            legendShown && /*#__PURE__*/ jsx(Legend, {
                 ...props
             })
         ]
     });
 });
 const StyledChartSizeContainerProvider = styled(ChartSizeContainerProvider)`
-  display: flex;
-  gap: 12px;
-  flex-direction: column;
+    display: flex;
+    gap: 12px;
+    flex-direction: column;
 `;
 
 export { MetricsChart };

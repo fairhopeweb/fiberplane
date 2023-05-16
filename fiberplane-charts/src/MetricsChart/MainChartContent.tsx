@@ -95,6 +95,9 @@ export function MainChartContent(props: MetricsChartProps): JSX.Element {
                             xScale={xScaleProps.xScale}
                             yScale={yScale}
                             xScaleFormatter={xScaleFormatter}
+                            gridColumnsShown={props.gridColumnsShown}
+                            gridBordersShown={props.gridBordersShown}
+                            gridDashArray={props.gridDashArray}
                         />
                         <Group
                             innerRef={graphContentRef}

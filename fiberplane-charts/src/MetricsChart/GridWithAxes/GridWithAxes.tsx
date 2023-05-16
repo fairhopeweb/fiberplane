@@ -14,6 +14,9 @@ type Props = {
     xScale: XScaleTypes;
     yScale: ValueScale;
     xScaleFormatter?: TickFormatter<Date | NumberValue>;
+    gridColumnsShown?: boolean;
+    gridBordersShown?: boolean;
+    gridDashArray?: string;
 };
 
 export const GridWithAxes = memo(function GridWithAxes({
@@ -22,6 +25,9 @@ export const GridWithAxes = memo(function GridWithAxes({
     xScale,
     yScale,
     xScaleFormatter,
+    gridColumnsShown = true,
+    gridBordersShown = true,
+    gridDashArray,
 }: Props) {
     const [targetLower = 0, targetUpper = 0] = yScale.domain();
 
@@ -61,31 +67,37 @@ export const GridWithAxes = memo(function GridWithAxes({
                 width={xMax}
                 height={yMax}
                 stroke={colorBase300}
+                strokeDasharray={gridDashArray}
             />
-            <line
+            {gridBordersShown && <line
                 x1={xMax}
                 x2={xMax}
                 y1={0}
                 y2={yMax}
                 stroke={colorBase300}
                 strokeWidth={1}
-            />
-            <GridColumns
+                strokeDasharray={gridDashArray}
+            />}
+            {gridColumnsShown && <GridColumns
                 scale={xScale}
                 width={xMax}
                 height={yMax}
                 stroke={colorBase300}
-            />
+                strokeDasharray={gridDashArray}
+            />}
             <Bottom
                 xMax={xMax}
                 xScale={xScale}
                 yMax={yMax}
                 xScaleFormatter={xScaleFormatter}
+                strokeDasharray={gridDashArray}
             />
             <AxisLeft
                 scale={temporaryScale}
                 orientation={Orientation.left}
                 stroke={colorBase300}
+                strokeWidth={gridBordersShown ? 1 : 0}
+                strokeDasharray={gridDashArray}
                 hideTicks={true}
                 tickLabelProps={() => axisLeftTickLabelProps}
                 tickFormat={temporaryScale.tickFormat(10, "~s")}

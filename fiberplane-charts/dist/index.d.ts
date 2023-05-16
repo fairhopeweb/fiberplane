@@ -251,6 +251,37 @@ type MetricsChartProps = {
      * may not see any results.
      */
     timeseriesData: Array<Timeseries>;
+    /**
+     * Show the legend. (default: true)
+     */
+    legendShown?: boolean;
+    /**
+     * Show the chart controls. (default: true)
+     *
+     * Setting this to false will also hide the stacking controls
+     */
+    chartControlsShown?: boolean;
+    /**
+     * Show the stacking controls. (default: true)
+     */
+    stackingControlsShown?: boolean;
+    /**
+     * Show the footer (which can contain the expand button & results text). (default: true)
+     */
+    footerShown?: boolean;
+    /**
+     * Show the grid column (vertical) lines. (default: true)
+     */
+    gridColumnsShown?: boolean;
+    /**
+     * Show the line/border at the outer edge of the chart. (default: true)
+     */
+    gridBordersShown?: boolean;
+    /**
+     * Customize the grid line style. (defaults to a solid line). This parameter is passed
+     * directly to the svg's stroke-dasharray attribute for several of the lines in the chart.
+     */
+    gridDashArray?: string;
 };
 type TotalBarType = {
     graphType: "bar";

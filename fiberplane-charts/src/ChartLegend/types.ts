@@ -23,6 +23,11 @@ export type ChartLegendProps = {
      * Array of timeseries data to display in the legend.
      */
     timeseriesData: Array<Timeseries>;
+
+    /**
+     * Show the footer. (default: true)
+     */
+    footerShown?: boolean;
 };
 
 export type ToggleTimeseriesEvent = {
