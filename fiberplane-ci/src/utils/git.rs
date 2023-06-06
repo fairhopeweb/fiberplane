@@ -2,45 +2,6 @@ use anyhow::{bail, Result};
 use duct::cmd;
 use std::str::Utf8Error;
 
-/// Returns whether a path in the repo has changed since the given commit.
-pub fn did_change(repo_dir: &str, path: &str, since_commit: &str) -> Result<bool> {
-    let output = cmd!(
-        "git",
-        "diff",
-        "--quiet",
-        "--ignore-space-change",
-        "HEAD",
-        since_commit,
-        "--",
-        path
-    )
-    .dir(repo_dir)
-    .unchecked()
-    .run()?;
-    match output.status.code() {
-        Some(1) => Ok(true),
-        Some(0) => Ok(false),
-        Some(code) => bail!("Unexpected exit code ({code}) from `git diff`"),
-        None => bail!("`git diff` terminated unexpectedly"),
-    }
-}
-
-/// Returns whether a path in the repo has changed since the previous release
-/// branch was created.
-///
-/// If no previous release branch can be found at all, we consider that a new
-/// release is in order, so this function will return `true` in that case.
-pub fn did_change_since_previous_release(repo_dir: &str, path: &str) -> Result<bool> {
-    let Some(latest_release_branch) = get_latest_release_branch(repo_dir)? else {
-        return Ok(true); // No release found? Report as having changes.
-    };
-
-    let main_tip = get_latest_commit(repo_dir, "main")?;
-    let release_branch_tip = get_latest_commit(repo_dir, &latest_release_branch)?;
-    let common_ancestor = get_common_ancestor(repo_dir, &main_tip, &release_branch_tip)?;
-    did_change(repo_dir, path, &common_ancestor)
-}
-
 /// Returns whether a crate in the repo has changed since the previous release
 /// branch was created.
 ///
@@ -168,19 +129,34 @@ pub fn get_latest_commit(repo_dir: &str, branch_name: &str) -> Result<String> {
 
 /// Returns the name of most recent release branch.
 pub fn get_latest_release_branch(repo_dir: &str) -> Result<Option<String>> {
-    let output = cmd!("git", "branch", "--list", "release-*")
-        .dir(repo_dir)
-        .stdout_capture()
-        .run()?
-        .stdout;
+    let output = cmd!(
+        "git",
+        "branch",
+        "--list",
+        "release-*",
+        "--format",
+        "%(refname)"
+    )
+    .dir(repo_dir)
+    .stdout_capture()
+    .run()?
+    .stdout;
     let release_branches = output
         .split(|byte| byte == &b'\n')
         .map(|slice| std::str::from_utf8(slice).map(str::trim))
         .collect::<Result<Vec<&str>, _>>()?;
     let latest_release_branch = release_branches
         .iter()
+        .filter(|ref_name| ref_name.starts_with("refs/heads/"))
+        .map(|ref_name| &ref_name[11..])
+        // Verify the branch matches the `release-YYYY-WW` scheme.
+        .filter(|branch| {
+            branch.len() == 15
+                && branch.chars().skip(8).take(4).all(|c| c.is_ascii_digit())
+                && branch.chars().nth(12).unwrap() == '-'
+                && branch.chars().skip(13).all(|c| c.is_ascii_digit())
+        })
         .reduce(|latest_release, release_branch| std::cmp::max(latest_release, release_branch))
-        .cloned()
         .map(str::to_owned);
     Ok(latest_release_branch)
 }
