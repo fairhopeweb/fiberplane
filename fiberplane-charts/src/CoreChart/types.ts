@@ -1,25 +1,56 @@
-import {
-  GraphType,
-  ShowTooltipFn,
-  StackingType,
-  TimeRange,
-  Timeseries,
-} from "../types";
-import { ChartLegendProps } from "../ChartLegend";
+import type { ScaleLinear } from "d3-scale";
 
-export type CoreChartProps = {
+import type { AbstractChart, ShapeList } from "../Mondrian";
+import type { TimeRange } from "../providerTypes";
+
+/**
+ * Coordinats within the chart, normalized to values between 0.0 and 1.0.
+ */
+export type ChartCoordinates = { x: number; y: number };
+
+export type CoreChartProps<S, P> = {
   /**
-   * The type of chart to display.
+   * The chart to render.
    */
-  graphType: GraphType;
+  chart: AbstractChart<S, P>;
 
   /**
-   * Handler that is invoked when the graph type is changed.
+   * Override the colors that the charts will use. If not specified several colors of the theme are used
+   */
+  colors?: Array<string>;
+
+  /**
+   * Indicates which of the shape lists should be focused.
    *
-   * If no handler is specified, no UI for changing the graph type is
-   * presented.
+   * `null` is used to indicate no shape list is focused.
    */
-  onChangeGraphType?: (graphType: GraphType) => void;
+  focusedShapeList: ShapeList<S, P> | null;
+
+  /**
+   * Show the line/border at the outer edge of the chart. (default: true)
+   */
+  gridBordersShown?: boolean;
+
+  /**
+   * Show the grid column (vertical) lines. (default: true)
+   */
+  gridColumnsShown?: boolean;
+
+  /**
+   * Customize the grid line style. (defaults to a solid line). This parameter is passed
+   * directly to the svg's stroke-dasharray attribute for several of the lines in the chart.
+   */
+  gridDashArray?: string;
+
+  /**
+   * Show the grid row (horizontal) lines. (default: true)
+   */
+  gridRowsShown?: boolean;
+
+  /**
+   * Override the color of the grid lines. (defaults to the theme's grid color)
+   */
+  gridStrokeColor?: string;
 
   /**
    * Handler that is invoked when the time range is changed.
@@ -30,12 +61,9 @@ export type CoreChartProps = {
   onChangeTimeRange?: (timeRange: TimeRange) => void;
 
   /**
-   * Handler that is invoked when the stacking type is changed.
-   *
-   * If no handler is specified, no UI for changing the stacking type is
-   * presented.
+   * Handler that is invoked when the focused shape list is changed.
    */
-  onChangeStackingType?: (stackingType: StackingType) => void;
+  onFocusedShapeListChange?: (shapeList: ShapeList<S, P> | null) => void;
 
   /**
    * Whether the chart is read-only.
@@ -49,12 +77,7 @@ export type CoreChartProps = {
    *
    * If no callback is provided, no tooltips will be shown.
    */
-  showTooltip?: ShowTooltipFn;
-
-  /**
-   * The type of stacking to apply to the chart.
-   */
-  stackingType: StackingType;
+  showTooltip?: ShowTooltipFn<S, P>;
 
   /**
    * The time range for which to display the data.
@@ -63,65 +86,35 @@ export type CoreChartProps = {
    * may not see any results.
    */
   timeRange: TimeRange;
+};
 
-  /**
-   * Array of timeseries data to display in the chart.
-   *
-   * Make sure the timeseries contains data for the given time range, or you
-   * may not see any results.
-   */
-  timeseriesData: Array<Timeseries>;
+export type Dimensions = { xMax: number; yMax: number };
 
-  /**
-   * Show the legend. (default: true)
-   */
-  legendShown?: boolean;
+export type Scale = ScaleLinear<number, number>;
 
-  /**
-   * Show the chart controls. (default: true)
-   *
-   * Setting this to false will also hide the stacking controls
-   */
-  chartControlsShown?: boolean;
+export type Scales = Dimensions & {
+  xScale: Scale;
+  yScale: Scale;
+};
 
-  /**
-   * Show the stacking controls. (default: true)
-   */
-  stackingControlsShown?: boolean;
+export type ShowTooltipFn<S, P> = (
+  anchor: TooltipAnchor,
+  closestSource: [S, P],
+) => CloseTooltipFn;
 
-  /**
-   * Show the footer (which can contain the expand button & results text). (default: true)
-   */
-  footerShown?: boolean;
+/**
+ * Function to invoke to close the tooltip.
+ */
+export type CloseTooltipFn = () => void;
 
-  /**
-   * Show the grid column (vertical) lines. (default: true)
-   */
-  gridColumnsShown?: boolean;
+/**
+ * Anchor to determine where the tooltip should be positioned.
+ *
+ * Positioning relative to the anchor is left to the callback provided.
+ */
+export type TooltipAnchor = HTMLElement | VirtualElement;
 
-  /**
-   * Show the grid row (horizontal) lines. (default: true)
-   */
-  gridRowsShown?: boolean;
-
-  /**
-   * Show the line/border at the outer edge of the chart. (default: true)
-   */
-  gridBordersShown?: boolean;
-
-  /**
-   * Customize the grid line style. (defaults to a solid line). This parameter is passed
-   * directly to the svg's stroke-dasharray attribute for several of the lines in the chart.
-   */
-  gridDashArray?: string;
-
-  /**
-   * Override the color of the grid lines. (defaults to the theme's grid color)
-   */
-  gridStrokeColor?: string;
-
-  /**
-   * Override the colors that the charts will use. If not specified several colors of the theme are used
-   */
-  colors?: Array<string>;
-} & Pick<ChartLegendProps, "onToggleTimeseriesVisibility">;
+export type VirtualElement = {
+  getBoundingClientRect: () => DOMRect;
+  contextElement: Element;
+};

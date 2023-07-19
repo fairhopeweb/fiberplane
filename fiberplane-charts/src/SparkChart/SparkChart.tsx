@@ -1,25 +1,43 @@
 import styled, { useTheme } from "styled-components";
-import { ChartSizeContainerProvider } from "../ChartSizeContainerProvider";
 import { useMemo } from "react";
-import { CoreChart, CoreChartProps } from "../CoreChart";
+
+import {
+  ChartSizeContainerProvider,
+  CoreChart,
+  CoreChartProps,
+} from "../CoreChart";
+import { Metric, Timeseries } from "../providerTypes";
+import { TimeseriesSourceData, generateFromTimeseries } from "../Mondrian";
 
 type Props = Pick<
-  CoreChartProps,
-  | "colors"
-  | "graphType"
-  | "onChangeGraphType"
-  | "onChangeTimeRange"
-  | "stackingType"
-  | "timeRange"
-  | "timeseriesData"
->;
+  CoreChartProps<Timeseries, Metric>,
+  "colors" | "onChangeTimeRange"
+> &
+  TimeseriesSourceData;
 
-export function SparkChart(props: Props) {
-  const { colors, ...rest } = props;
+export function SparkChart({
+  colors,
+  graphType,
+  stackingType,
+  timeRange,
+  timeseriesData,
+  onChangeTimeRange,
+}: Props) {
   const theme = useTheme();
 
-  const chartColors = useMemo((): Array<string> => {
-    return (
+  const chart = useMemo(
+    () =>
+      generateFromTimeseries({
+        graphType,
+        stackingType,
+        timeRange,
+        timeseriesData,
+      }),
+    [graphType, stackingType, timeRange, timeseriesData],
+  );
+
+  const chartColors = useMemo(
+    (): Array<string> =>
       colors || [
         theme["colorSupport1400"],
         theme["colorSupport2400"],
@@ -32,13 +50,20 @@ export function SparkChart(props: Props) {
         theme["colorSupport9400"],
         theme["colorSupport10400"],
         theme["colorSupport11400"],
-      ]
-    );
-  }, [theme, colors]);
+      ],
+    [theme, colors],
+  );
 
   return (
     <StyledChartSizeContainerProvider>
-      <CoreChart {...rest} colors={chartColors} gridShown={false} />
+      <CoreChart
+        chart={chart}
+        colors={chartColors}
+        focusedShapeList={null}
+        gridShown={false}
+        onChangeTimeRange={onChangeTimeRange}
+        timeRange={timeRange}
+      />
     </StyledChartSizeContainerProvider>
   );
 }

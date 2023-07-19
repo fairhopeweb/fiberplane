@@ -1,57 +1,21 @@
-import { memo, useMemo } from "react";
+import { memo, useMemo, useState } from "react";
 import styled, { useTheme } from "styled-components";
 
 import { ChartControls } from "./ChartControls";
-import { ChartSizeContainerProvider } from "../ChartSizeContainerProvider";
-import {
-  CoreControlsContext,
-  InteractiveControlsContext,
-  InteractiveControlsStateContext,
-} from "../context";
-import { FocusedTimeseriesContextProvider } from "./FocusedTimeseriesContextProvider";
-import { Legend } from "../ChartLegend";
+import { ChartSizeContainerProvider } from "../CoreChart";
+import type { CloseTooltipFn, MetricsChartProps, TooltipAnchor } from "./types";
 import { CoreChart } from "../CoreChart";
-import type { CoreChartProps } from "../CoreChart";
-import { useCoreControls, useInteractiveControls } from "../hooks";
-import { HEIGHT, MARGINS } from "../constants";
+import { HEIGHT, MARGINS } from "../CoreChart/constants";
+import type { Metric, Timeseries } from "../providerTypes";
+import { noop } from "../utils";
+import { ShapeList, generateFromTimeseries } from "../Mondrian";
+import { TimeseriesLegend } from "../TimeseriesLegend";
+import { Tooltip } from "./Tooltip";
+import { useHandler } from "../hooks";
 
-export function MetricsChart(props: CoreChartProps) {
-  return props.readOnly ? (
-    <ReadOnlyMetricsChart {...props} />
-  ) : (
-    <InteractiveMetricsChart {...props} />
-  );
-}
-
-function InteractiveMetricsChart(props: CoreChartProps) {
-  const coreControls = useCoreControls(props);
-  const { interactiveControls, interactiveControlsState } =
-    useInteractiveControls();
-
+export function MetricsChart(props: MetricsChartProps) {
   return (
-    <CoreControlsContext.Provider value={coreControls}>
-      <InteractiveControlsContext.Provider value={interactiveControls}>
-        <InteractiveControlsStateContext.Provider
-          value={interactiveControlsState}
-        >
-          <StyledChartSizeContainerProvider
-            overrideHeight={HEIGHT}
-            marginTop={MARGINS.top}
-            marginRight={MARGINS.right}
-            marginBottom={MARGINS.bottom}
-            marginLeft={MARGINS.left}
-          >
-            <InnerMetricsChart {...props} />
-          </StyledChartSizeContainerProvider>
-        </InteractiveControlsStateContext.Provider>
-      </InteractiveControlsContext.Provider>
-    </CoreControlsContext.Provider>
-  );
-}
-
-function ReadOnlyMetricsChart(props: CoreChartProps) {
-  return (
-    <ChartSizeContainerProvider
+    <StyledChartSizeContainerProvider
       overrideHeight={HEIGHT}
       marginTop={MARGINS.top}
       marginRight={MARGINS.right}
@@ -59,24 +23,45 @@ function ReadOnlyMetricsChart(props: CoreChartProps) {
       marginLeft={MARGINS.left}
     >
       <InnerMetricsChart {...props} />
-    </ChartSizeContainerProvider>
+    </StyledChartSizeContainerProvider>
   );
 }
+
 const InnerMetricsChart = memo(function InnerMetricsChart(
-  props: CoreChartProps,
+  props: MetricsChartProps,
 ) {
   const {
-    readOnly,
-    legendShown = true,
     chartControlsShown = true,
-    stackingControlsShown = true,
     colors,
+    graphType,
+    legendShown = true,
+    readOnly,
+    stackingControlsShown = true,
+    stackingType,
+    timeRange,
+    timeseriesData,
   } = props;
+
+  const chart = useMemo(
+    () =>
+      generateFromTimeseries({
+        graphType,
+        stackingType,
+        timeRange,
+        timeseriesData,
+      }),
+    [graphType, stackingType, timeRange, timeseriesData],
+  );
+
+  const [focusedShapeList, setFocusedShapeList] = useState<ShapeList<
+    Timeseries,
+    Metric
+  > | null>(null);
 
   const theme = useTheme();
 
-  const chartColors = useMemo(() => {
-    return (
+  const chartColors = useMemo(
+    () =>
       colors || [
         theme["colorSupport1400"],
         theme["colorSupport2400"],
@@ -89,26 +74,51 @@ const InnerMetricsChart = memo(function InnerMetricsChart(
         theme["colorSupport9400"],
         theme["colorSupport10400"],
         theme["colorSupport11400"],
-      ]
-    );
-  }, [theme, colors]);
+      ],
+    [theme, colors],
+  );
+
+  const showTooltip = useHandler(
+    (
+      anchor: TooltipAnchor,
+      [timeseries, metric]: [Timeseries, Metric],
+    ): CloseTooltipFn =>
+      props.showTooltip?.(
+        anchor,
+        <Tooltip timeseries={timeseries} metric={metric} />,
+      ) ?? noop,
+  );
 
   return (
-    <FocusedTimeseriesContextProvider>
-      {!readOnly && chartControlsShown && (
+    <>
+      {chartControlsShown && !readOnly && (
         <ChartControls
           {...props}
           stackingControlsShown={stackingControlsShown}
         />
       )}
-      <CoreChart {...props} colors={chartColors} />
-      {legendShown && <Legend {...props} colors={chartColors} />}
-    </FocusedTimeseriesContextProvider>
+      <CoreChart
+        {...props}
+        chart={chart}
+        colors={chartColors}
+        focusedShapeList={focusedShapeList}
+        onFocusedShapeListChange={setFocusedShapeList}
+        showTooltip={showTooltip}
+      />
+      {legendShown && (
+        <TimeseriesLegend
+          {...props}
+          chart={chart}
+          colors={chartColors}
+          onFocusedShapeListChange={setFocusedShapeList}
+        />
+      )}
+    </>
   );
 });
 
 const StyledChartSizeContainerProvider = styled(ChartSizeContainerProvider)`
-    display: flex;
-    gap: 12px;
-    flex-direction: column;
+  display: flex;
+  gap: 12px;
+  flex-direction: column;
 `;

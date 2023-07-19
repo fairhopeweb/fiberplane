@@ -1,156 +1,158 @@
-import { Group } from "@visx/group";
-import { Line } from "@visx/shape";
-import styled from "styled-components";
-import { useContext, useId, useMemo, useState } from "react";
+import { useContext, useEffect, useId } from "react";
 
 import { ChartContent } from "./ChartContent";
-import {
-  ChartSizeContext,
-  InteractiveControlsState,
-  InteractiveControlsStateContext,
-  TooltipContext,
-} from "../context";
-import { Container } from "../BaseComponents";
-import { getTimeFormatter } from "../utils";
-import { GridWithAxes } from "./GridWithAxes";
-import { useMouseControls, useScales, useTooltip } from "../hooks";
-import { ZoomBar } from "./ZoomBar";
+import { ChartSizeContext } from "./ChartSizeContext";
 import type { CoreChartProps } from "./types";
+import { GridWithAxes } from "./GridWithAxes";
+import {
+  InteractiveControlsState,
+  useInteractiveControls,
+  useMouseControls,
+  useScales,
+  useTooltip,
+} from "./hooks";
+import { ZoomBar } from "./ZoomBar";
 
-export function CoreChart({
-  gridShown = true,
-  ...props
-}: CoreChartProps &
-  Required<Pick<CoreChartProps, "colors">> & {
+type Props<S, P> = CoreChartProps<S, P> &
+  Required<Pick<CoreChartProps<S, P>, "colors">> & {
     gridShown?: boolean;
-  }): JSX.Element {
+  };
+
+export function CoreChart<S, P>({
+  chart,
+  colors,
+  gridShown = true,
+  onChangeTimeRange,
+  readOnly = false,
+  showTooltip,
+  timeRange,
+  ...props
+}: Props<S, P>): JSX.Element {
+  const interactiveControls = useInteractiveControls(readOnly);
+  const { mouseInteraction, updatePressedKeys } = interactiveControls;
+
   const { width, height, xMax, yMax, marginTop, marginLeft } =
     useContext(ChartSizeContext);
-  const interactiveControlsState = useContext(InteractiveControlsStateContext);
+  const dimensions = { xMax, yMax };
 
-  const { xScaleProps, yScale } = useScales(props);
+  const {
+    onMouseDown,
+    onMouseUp,
+    onWheel,
+    onMouseMove: onMouseMoveControls,
+  } = useMouseControls({
+    dimensions,
+    interactiveControls,
+    onChangeTimeRange,
+    timeRange,
+  });
 
-  const { onMouseDown, onMouseUp, onMouseEnter, onMouseMove, graphContentRef } =
-    useMouseControls(props);
+  const {
+    graphTooltip,
+    onMouseMove: onMouseMoveTooltip,
+    onMouseLeave,
+  } = useTooltip({
+    chart,
+    colors,
+    dimensions,
+    showTooltip: modifierPressed(interactiveControls) ? undefined : showTooltip,
+  });
 
-  const [shiftKeyPressed, setShiftKeyPressed] = useState(false);
-
-  const onKeyHandler = (event: React.KeyboardEvent) => {
-    setShiftKeyPressed(event.shiftKey);
+  const onMouseMove = (event: React.MouseEvent<SVGSVGElement>) => {
+    updatePressedKeys(event);
+    onMouseMoveControls(event);
+    onMouseMoveTooltip(event);
   };
-
-  const onMouseMoveWithShiftDetection = (
-    event: React.MouseEvent<HTMLElement>,
-  ) => {
-    setShiftKeyPressed(event.shiftKey);
-    onMouseMove(event);
-  };
-
-  const { graphTooltip, showTooltip, hideTooltip } = useTooltip(
-    props.showTooltip,
-  );
-  const tooltipApiValue = useMemo(
-    () => ({ showTooltip, hideTooltip }),
-    [showTooltip, hideTooltip],
-  );
 
   const clipPathId = useId();
 
-  // Use a custom formatter when `xScale` is a `ScaleBand<number>`. We want to
-  // display the time, not the timestamp (number).
-  const xScaleFormatter =
-    xScaleProps.graphType === "bar" && xScaleProps.stackingType === "none"
-      ? getTimeFormatter(xScaleProps.xScale)
-      : undefined;
+  const cursor = getCursorFromState(interactiveControls);
+
+  const scales = useScales(dimensions, mouseInteraction);
+
+  useEffect(() => {
+    const wheelListenerOptions: AddEventListenerOptions = { passive: false };
+    window.addEventListener("keydown", updatePressedKeys);
+    window.addEventListener("keyup", updatePressedKeys);
+    window.addEventListener("wheel", onWheel, wheelListenerOptions);
+    return () => {
+      window.removeEventListener("keydown", updatePressedKeys);
+      window.removeEventListener("keyup", updatePressedKeys);
+      window.removeEventListener("wheel", onWheel, wheelListenerOptions);
+    };
+  }, [onWheel, updatePressedKeys]);
 
   return (
-    <TooltipContext.Provider value={tooltipApiValue}>
-      <StyledContainer
-        onKeyDown={onKeyHandler}
-        onKeyUp={onKeyHandler}
-        onMouseDown={onMouseDown}
-        onMouseMove={onMouseMoveWithShiftDetection}
-        onMouseUp={onMouseUp}
-        onMouseEnter={onMouseEnter}
-      >
-        <svg
-          width={width}
-          height={height}
-          style={{
-            cursor: getCursorFromState(
-              interactiveControlsState,
-              shiftKeyPressed,
-            ),
-          }}
-        >
-          <defs>
-            <clipPath id={clipPathId}>
-              <rect x={0} y={0} width={xMax} height={yMax} />
-            </clipPath>
-          </defs>
-          <Group left={marginLeft} top={marginTop}>
-            {gridShown && (
-              <GridWithAxes
-                xMax={xMax}
-                yMax={yMax}
-                xScale={xScaleProps.xScale}
-                yScale={yScale}
-                xScaleFormatter={xScaleFormatter}
-                gridColumnsShown={props.gridColumnsShown}
-                gridRowsShown={props.gridRowsShown}
-                gridBordersShown={props.gridBordersShown}
-                gridDashArray={props.gridDashArray}
-                gridStrokeColor={props.gridStrokeColor}
-              />
-            )}
-            <Group innerRef={graphContentRef} clipPath={`url(#${clipPathId})`}>
-              <ChartContent
-                timeseriesData={props.timeseriesData}
-                xScaleProps={xScaleProps}
-                yScale={yScale}
-                colors={props.colors}
-              />
-            </Group>
-            <ZoomBar />
-          </Group>
-          {graphTooltip && (
-            <g>
-              <Line
-                from={{ x: graphTooltip.left, y: 0 }}
-                to={{ x: graphTooltip.left, y: yMax }}
-                stroke={graphTooltip.color}
-                strokeWidth={1}
-                pointerEvents="none"
-                strokeDasharray="1 1"
-              />
-              <circle
-                cx={graphTooltip.left}
-                cy={graphTooltip.top}
-                r={4}
-                fill={graphTooltip.color}
-                pointerEvents="none"
-              />
-            </g>
-          )}
-        </svg>
-      </StyledContainer>
-    </TooltipContext.Provider>
+    // rome-ignore lint/a11y/noSvgWithoutTitle: title would interfere with tooltip
+    <svg
+      width={width}
+      height={height}
+      onMouseDown={onMouseDown}
+      onMouseMove={onMouseMove}
+      onMouseUp={onMouseUp}
+      onMouseLeave={onMouseLeave}
+      style={{ cursor, marginTop: 2 }}
+    >
+      <defs>
+        <clipPath id={clipPathId}>
+          <rect x={0} y={0} width={xMax} height={yMax} />
+        </clipPath>
+      </defs>
+      <g transform={`translate(${marginLeft}, ${marginTop})`}>
+        {gridShown && <GridWithAxes {...props} chart={chart} scales={scales} />}
+        <g clipPath={`url(#${clipPathId})`}>
+          <ChartContent
+            {...props}
+            chart={chart}
+            colors={colors}
+            scales={scales}
+          />
+        </g>
+        <ZoomBar dimensions={dimensions} mouseInteraction={mouseInteraction} />
+      </g>
+      {graphTooltip && (
+        <g>
+          <line
+            x1={graphTooltip.left}
+            y1={0}
+            x2={graphTooltip.left}
+            y2={yMax}
+            stroke={graphTooltip.color}
+            strokeWidth={1}
+            pointerEvents="none"
+            strokeDasharray="1 1"
+          />
+          <circle
+            cx={graphTooltip.left}
+            cy={graphTooltip.top}
+            r={4}
+            fill={graphTooltip.color}
+            pointerEvents="none"
+          />
+        </g>
+      )}
+    </svg>
   );
 }
 
-const StyledContainer = styled(Container)`
-  margin-top: 2px;
-`;
+function modifierPressed(state: InteractiveControlsState): boolean {
+  return state.dragKeyPressed || state.zoomKeyPressed;
+}
 
-function getCursorFromState(
-  interactiveControlsState: InteractiveControlsState,
-  shiftKey: boolean,
-): string {
-  switch (interactiveControlsState.type) {
+function getCursorFromState(state: InteractiveControlsState): string {
+  switch (state.mouseInteraction.type) {
     case "none":
-      return shiftKey ? "grab" : "default";
+      if (state.dragKeyPressed) {
+        return "grab";
+      }
+
+      if (state.zoomKeyPressed) {
+        return "zoom-in";
+      }
+
+      return "default";
     case "drag":
-      return interactiveControlsState.start === null ? "grab" : "grabbing";
+      return "grabbing";
     case "zoom":
       return "zoom-in";
   }

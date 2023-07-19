@@ -1,28 +1,53 @@
-import { ChartLegendProps } from "../ChartLegend/types";
+import type { ChartControlsProps } from "./ChartControls";
 import type {
-  GraphType,
-  StackingType,
-  Timeseries,
-  TimeRange,
-  ShowTooltipFn,
-} from "../types";
-import type { GroupedScales, TimeScale } from "./scales";
+  CloseTooltipFn,
+  CoreChartProps,
+  TooltipAnchor,
+  VirtualElement,
+} from "../CoreChart";
+import type { Metric, Timeseries } from "../providerTypes";
+import type { TimeseriesLegendProps } from "../TimeseriesLegend";
+import type { TimeseriesSourceData } from "../Mondrian";
 
-export type TotalBarType = {
-  graphType: "bar";
-  stackingType: "none";
-} & GroupedScales;
+export type MetricsChartProps = Omit<
+  CoreChartProps<Timeseries, Metric>,
+  "chart" | "focusedShapeList" | "onFocusedShapeListChange" | "showTooltip"
+> &
+  Pick<TimeseriesLegendProps, "footerShown" | "onToggleTimeseriesVisibility"> &
+  ChartControlsProps &
+  TimeseriesSourceData & {
+    /**
+     * Show the chart controls. (default: true)
+     *
+     * Setting this to false will also hide the stacking controls
+     */
+    chartControlsShown?: boolean;
 
-export type LineBarType = {
-  graphType: "line";
-  stackingType: StackingType;
-  xScale: TimeScale;
-};
+    /**
+     * Show the legend. (default: true)
+     */
+    legendShown?: boolean;
 
-export type StackedBarType = {
-  graphType: "bar";
-  stackingType: Exclude<StackingType, "none">;
-  xScale: TimeScale;
-};
+    /**
+     * Handler to display a tooltips with information about hovered metrics.
+     */
+    showTooltip?: ShowTooltipFn;
 
-export type XScaleProps = TotalBarType | LineBarType | StackedBarType;
+    /**
+     * Show the stacking controls. (default: true)
+     */
+    stackingControlsShown?: boolean;
+  };
+
+/**
+ * Function to display a tooltip relative to the given anchor containing the
+ * given React content.
+ *
+ * Should return a function to close the tooltip.
+ */
+export type ShowTooltipFn = (
+  anchor: TooltipAnchor,
+  content: React.ReactNode,
+) => CloseTooltipFn;
+
+export type { CloseTooltipFn, TooltipAnchor, VirtualElement };

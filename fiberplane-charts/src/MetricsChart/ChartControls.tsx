@@ -7,10 +7,10 @@ import {
   Icon,
   IconButton,
 } from "../BaseComponents";
-import type { GraphType, StackingType } from "../types";
+import type { GraphType, StackingType } from "../providerTypes";
 import { preventDefault } from "../utils";
 
-type Props = {
+export type ChartControlsProps = {
   graphType: GraphType;
   onChangeGraphType?: (graphType: GraphType) => void;
   onChangeStackingType?: (stackingType: StackingType) => void;
@@ -27,7 +27,7 @@ export function ChartControls({
   onChangeStackingType,
   stackingControlsShown,
   stackingType,
-}: Props): JSX.Element | null {
+}: ChartControlsProps): JSX.Element | null {
   if (!onChangeGraphType && !onChangeStackingType) {
     return null;
   }

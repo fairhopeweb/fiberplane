@@ -1846,44 +1846,44 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@rometools/cli-darwin-arm64@npm:12.0.0":
-  version: 12.0.0
-  resolution: "@rometools/cli-darwin-arm64@npm:12.0.0"
+"@rometools/cli-darwin-arm64@npm:12.1.3":
+  version: 12.1.3
+  resolution: "@rometools/cli-darwin-arm64@npm:12.1.3"
   conditions: os=darwin & cpu=arm64
   languageName: node
   linkType: hard
 
-"@rometools/cli-darwin-x64@npm:12.0.0":
-  version: 12.0.0
-  resolution: "@rometools/cli-darwin-x64@npm:12.0.0"
+"@rometools/cli-darwin-x64@npm:12.1.3":
+  version: 12.1.3
+  resolution: "@rometools/cli-darwin-x64@npm:12.1.3"
   conditions: os=darwin & cpu=x64
   languageName: node
   linkType: hard
 
-"@rometools/cli-linux-arm64@npm:12.0.0":
-  version: 12.0.0
-  resolution: "@rometools/cli-linux-arm64@npm:12.0.0"
+"@rometools/cli-linux-arm64@npm:12.1.3":
+  version: 12.1.3
+  resolution: "@rometools/cli-linux-arm64@npm:12.1.3"
   conditions: os=linux & cpu=arm64
   languageName: node
   linkType: hard
 
-"@rometools/cli-linux-x64@npm:12.0.0":
-  version: 12.0.0
-  resolution: "@rometools/cli-linux-x64@npm:12.0.0"
+"@rometools/cli-linux-x64@npm:12.1.3":
+  version: 12.1.3
+  resolution: "@rometools/cli-linux-x64@npm:12.1.3"
   conditions: os=linux & cpu=x64
   languageName: node
   linkType: hard
 
-"@rometools/cli-win32-arm64@npm:12.0.0":
-  version: 12.0.0
-  resolution: "@rometools/cli-win32-arm64@npm:12.0.0"
+"@rometools/cli-win32-arm64@npm:12.1.3":
+  version: 12.1.3
+  resolution: "@rometools/cli-win32-arm64@npm:12.1.3"
   conditions: os=win32 & cpu=arm64
   languageName: node
   linkType: hard
 
-"@rometools/cli-win32-x64@npm:12.0.0":
-  version: 12.0.0
-  resolution: "@rometools/cli-win32-x64@npm:12.0.0"
+"@rometools/cli-win32-x64@npm:12.1.3":
+  version: 12.1.3
+  resolution: "@rometools/cli-win32-x64@npm:12.1.3"
   conditions: os=win32 & cpu=x64
   languageName: node
   linkType: hard
@@ -2476,24 +2476,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@visx/axis@npm:^3.1.0":
-  version: 3.1.0
-  resolution: "@visx/axis@npm:3.1.0"
-  dependencies:
-    "@types/react": "*"
-    "@visx/group": 3.0.0
-    "@visx/point": 3.0.1
-    "@visx/scale": 3.0.0
-    "@visx/shape": 3.0.0
-    "@visx/text": 3.0.0
-    classnames: ^2.3.1
-    prop-types: ^15.6.0
-  peerDependencies:
-    react: ^16.3.0-0 || ^17.0.0-0 || ^18.0.0-0
-  checksum: 9f69e37823bba06ffddf2126b93eb3b3468fa88a82e40c7a1a0678dfdb7950a2e430db06055d6e746504e2092107012e5a9d3815c4de16f87cc3cc3bbdba574b
-  languageName: node
-  linkType: hard
-
 "@visx/clip-path@npm:3.0.0":
   version: 3.0.0
   resolution: "@visx/clip-path@npm:3.0.0"
@@ -2516,28 +2498,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@visx/event@npm:^3.0.1":
-  version: 3.0.1
-  resolution: "@visx/event@npm:3.0.1"
-  dependencies:
-    "@types/react": "*"
-    "@visx/point": 3.0.1
-  checksum: 0cb4dd578bbe54bd428a0cfae9e64db141b039c2c6c1412d1cd1d04e1613d193212b031124948ca3b7eed877cdea87d161cc3a008b973c6f217e21a8a2dd27b0
-  languageName: node
-  linkType: hard
-
-"@visx/gradient@npm:^3.0.0":
-  version: 3.0.0
-  resolution: "@visx/gradient@npm:3.0.0"
-  dependencies:
-    "@types/react": "*"
-    prop-types: ^15.5.7
-  peerDependencies:
-    react: ^16.0.0-0 || ^17.0.0-0 || ^18.0.0-0
-  checksum: 471b4a4e1ec329e26cedb5aeef627b7c6393b54d85f76fa2707ec4f2b75a67007c5d9e4c9ffbdf58d37853228c21e285780466ab958b22dbba41f209c5212182
-  languageName: node
-  linkType: hard
-
 "@visx/grid@npm:^3.0.1":
   version: 3.0.1
   resolution: "@visx/grid@npm:3.0.1"
@@ -2556,7 +2516,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@visx/group@npm:3.0.0, @visx/group@npm:^3.0.0":
+"@visx/group@npm:3.0.0":
   version: 3.0.0
   resolution: "@visx/group@npm:3.0.0"
   dependencies:
@@ -2609,22 +2569,6 @@ __metadata:
   peerDependencies:
     react: ^16.3.0-0 || ^17.0.0-0 || ^18.0.0-0
   checksum: d6e71e0c5dd90957a38b1404e8357cd2192f741f8c7b4f73fac3c007e4b0af398f5cf648f5f1ecc5ca72759e729cfa58fff4f8a409f95a344219309881e58b37
-  languageName: node
-  linkType: hard
-
-"@visx/text@npm:3.0.0":
-  version: 3.0.0
-  resolution: "@visx/text@npm:3.0.0"
-  dependencies:
-    "@types/lodash": ^4.14.172
-    "@types/react": "*"
-    classnames: ^2.3.1
-    lodash: ^4.17.21
-    prop-types: ^15.7.2
-    reduce-css-calc: ^1.3.0
-  peerDependencies:
-    react: ^16.3.0-0 || ^17.0.0-0 || ^18.0.0-0
-  checksum: a8456fceb785db17487103ee3c2c5acb5988f0ec883735ecaf60fa734d8876c0d72eab6862dc8e272cf87644694bc21aff5c9cb9eccf4e948bd0899926513efd
   languageName: node
   linkType: hard
 
@@ -2895,13 +2839,6 @@ __metadata:
   peerDependencies:
     "@babel/core": ^7.0.0
   checksum: 5566ca2762766c9319b4973d018d2fa08c0fcf6415c72cc54f4c8e7199e851ea8f5e6c6730f03ed7ed44fc8beefa959dd15911f2647dee47c615ff4faeddb1ad
-  languageName: node
-  linkType: hard
-
-"balanced-match@npm:^0.4.2":
-  version: 0.4.2
-  resolution: "balanced-match@npm:0.4.2"
-  checksum: 205ebb42ce8529fa8e043a808b41bfb9818d5f98a8eb76a1cd5483f8a98dd0baefc8a9d940f36b591b1316a04f56b35c32b60ac9b1f848e41e4698672cec6c1e
   languageName: node
   linkType: hard
 
@@ -3669,11 +3606,7 @@ __metadata:
     "@types/react-window": ^1.8.5
     "@types/styled-components": ^5.1.26
     "@types/throttle-debounce": ^5.0.0
-    "@visx/axis": ^3.1.0
-    "@visx/event": ^3.0.1
-    "@visx/gradient": ^3.0.0
     "@visx/grid": ^3.0.1
-    "@visx/group": ^3.0.0
     "@visx/scale": ^3.0.0
     "@visx/shape": ^3.0.0
     "@visx/threshold": ^3.0.0
@@ -3701,7 +3634,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "fiberplane@workspace:."
   dependencies:
-    rome: ^12.0.0
+    rome: ^12.1.3
     typescript: ^5.0.4
   languageName: unknown
   linkType: soft
@@ -4814,13 +4747,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"math-expression-evaluator@npm:^1.2.14":
-  version: 1.4.0
-  resolution: "math-expression-evaluator@npm:1.4.0"
-  checksum: 451c7b734ccb02759980e03f10c63fb3888b6af0253582ae38e8ca7ef037e15b9b2b82ef3476e79ed257694e8eacc9156b44379d3153de8e6c071a4664f70f93
-  languageName: node
-  linkType: hard
-
 "mdn-data@npm:2.0.28":
   version: 2.0.28
   resolution: "mdn-data@npm:2.0.28"
@@ -5279,7 +5205,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prop-types@npm:^15.5.10, prop-types@npm:^15.5.7, prop-types@npm:^15.6.0, prop-types@npm:^15.6.2, prop-types@npm:^15.7.2":
+"prop-types@npm:^15.5.10, prop-types@npm:^15.6.2":
   version: 15.8.1
   resolution: "prop-types@npm:15.8.1"
   dependencies:
@@ -5341,26 +5267,6 @@ __metadata:
     string_decoder: ^1.1.1
     util-deprecate: ^1.0.1
   checksum: bdcbe6c22e846b6af075e32cf8f4751c2576238c5043169a1c221c92ee2878458a816a4ea33f4c67623c0b6827c8a400409bfb3cf0bf3381392d0b1dfb52ac8d
-  languageName: node
-  linkType: hard
-
-"reduce-css-calc@npm:^1.3.0":
-  version: 1.3.0
-  resolution: "reduce-css-calc@npm:1.3.0"
-  dependencies:
-    balanced-match: ^0.4.2
-    math-expression-evaluator: ^1.2.14
-    reduce-function-call: ^1.0.1
-  checksum: 72696db02ede8772fe5ba9c47c6d451557bea0d11525f4e54b6adfcc4e540558755bb0ad454824cb6b998f0bd940eb2ef594f35b3d509dfa37934d93ece0f707
-  languageName: node
-  linkType: hard
-
-"reduce-function-call@npm:^1.0.1":
-  version: 1.0.3
-  resolution: "reduce-function-call@npm:1.0.3"
-  dependencies:
-    balanced-match: ^1.0.0
-  checksum: d0169016ea22b59d55fa3206507c8f2d009574abd0f9b86552035a8405d52f6d7d5b60d084c5950d6f2884df7de42f87a6260b1b386b79ede63bfc87ea0c3ce8
   languageName: node
   linkType: hard
 
@@ -5546,16 +5452,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"rome@npm:^12.0.0":
-  version: 12.0.0
-  resolution: "rome@npm:12.0.0"
+"rome@npm:^12.1.3":
+  version: 12.1.3
+  resolution: "rome@npm:12.1.3"
   dependencies:
-    "@rometools/cli-darwin-arm64": 12.0.0
-    "@rometools/cli-darwin-x64": 12.0.0
-    "@rometools/cli-linux-arm64": 12.0.0
-    "@rometools/cli-linux-x64": 12.0.0
-    "@rometools/cli-win32-arm64": 12.0.0
-    "@rometools/cli-win32-x64": 12.0.0
+    "@rometools/cli-darwin-arm64": 12.1.3
+    "@rometools/cli-darwin-x64": 12.1.3
+    "@rometools/cli-linux-arm64": 12.1.3
+    "@rometools/cli-linux-x64": 12.1.3
+    "@rometools/cli-win32-arm64": 12.1.3
+    "@rometools/cli-win32-x64": 12.1.3
   dependenciesMeta:
     "@rometools/cli-darwin-arm64":
       optional: true
@@ -5571,7 +5477,7 @@ __metadata:
       optional: true
   bin:
     rome: bin/rome
-  checksum: e26adcf06da28ec61b048b69f0387ad72c0f105444cb59f633f330aa9975e382f4055c6d17748e6630b303a33d87c5a3a0fc465bbb1054b74b88f01d14a70529
+  checksum: 341e5520a23277bdc2571db279e72fe9427a95f4e3025cd215a989d381fe6690f6aa1c0fb9abbd318a8bfd85ff1cec2304e92b732329c8a46c69e259eeb080cc
   languageName: node
   linkType: hard
 

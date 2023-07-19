@@ -7,11 +7,13 @@
         ],
         "noEmit": true,
         "moduleResolution": "bundler",
+        "isolatedModules": true,
         "jsx": "react-jsx",
         "rootDir": "src",
         "strict": true,
         "noImplicitReturns": true,
         "noFallthroughCasesInSwitch": true,
-        "noUnusedParameters": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": true
     }
 }
