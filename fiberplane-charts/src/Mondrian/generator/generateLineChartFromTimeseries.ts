@@ -7,17 +7,20 @@ import type {
   TimeseriesSourceData,
 } from "../types";
 import {
+  attachSuggestionsToXAxis,
+  calculateSmallestTimeInterval,
   calculateYAxisRange,
   createMetricBuckets,
   extendMinMax,
   getInitialMinMax,
   getTimeFromTimestamp,
   getXAxisFromTimeRange,
-  MinMax,
   normalizeAlongLinearAxis,
+  splitIntoContinuousLines,
 } from "./utils";
 import { identity } from "../../utils";
 import type { Metric, Timeseries } from "../../providerTypes";
+import type { MinMax } from "./types";
 
 export function generateLineChartFromTimeseries(
   input: TimeseriesSourceData,
@@ -31,10 +34,15 @@ export function generateLineChartFromTimeseries(
   const xAxis = getXAxisFromTimeRange(input.timeRange);
   const yAxis = calculateYAxisRange(buckets, identity);
 
+  const interval = calculateSmallestTimeInterval(buckets);
+  if (interval) {
+    attachSuggestionsToXAxis(xAxis, buckets, interval);
+  }
+
   const shapeLists: Array<ShapeList<Timeseries, Metric>> =
     input.timeseriesData.map((timeseries) => ({
       shapes: timeseries.visible
-        ? getShapes(timeseries.metrics, xAxis, yAxis)
+        ? getShapes(timeseries.metrics, xAxis, yAxis, interval)
         : [],
       source: timeseries,
     }));
@@ -46,6 +54,7 @@ function getShapes(
   metrics: Array<Metric>,
   xAxis: Axis,
   yAxis: Axis,
+  interval: number | null,
 ): Array<Shape<Metric>> {
   switch (metrics.length) {
     case 0:
@@ -54,18 +63,31 @@ function getShapes(
       const metric = metrics[0];
       return Number.isNaN(metric.value)
         ? []
-        : [{ type: "point", ...getPointForMetric(metric, xAxis, yAxis) }];
+        : [
+            {
+              type: "point",
+              ...getPointForMetric(metric, xAxis, yAxis),
+            },
+          ];
     }
-    default:
-      // TODO: Implement gap detection: https://github.com/autometrics-dev/explorer/issues/35
-      return [
-        {
-          type: "line",
-          points: metrics.map((metric) =>
-            getPointForMetric(metric, xAxis, yAxis),
-          ),
-        },
-      ];
+    default: {
+      const lines = splitIntoContinuousLines(metrics, interval ?? undefined);
+      return lines.map((line) =>
+        // If the line only containes one metric value, render it as a point
+        // Otherwise, render a line
+        line.length === 1
+          ? {
+              type: "point",
+              ...getPointForMetric(line[0], xAxis, yAxis),
+            }
+          : {
+              type: "line",
+              points: line.map((metric) =>
+                getPointForMetric(metric, xAxis, yAxis),
+              ),
+            },
+      );
+    }
   }
 }
 

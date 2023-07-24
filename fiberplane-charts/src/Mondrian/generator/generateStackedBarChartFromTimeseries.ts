@@ -6,16 +6,17 @@ import type {
   ShapeList,
 } from "../types";
 import {
-  StackedChartBuckets,
   calculateBucketsAndAxesForStackedChart,
   calculateBarWidth,
   calculateSmallestTimeInterval,
   extendAxisWithInterval,
   getTimeFromTimestamp,
   normalizeAlongLinearAxis,
+  attachSuggestionsToXAxis,
 } from "./utils";
-import type { Metric, Timeseries } from "../../providerTypes";
 import { compact } from "../../utils";
+import type { Metric, Timeseries } from "../../providerTypes";
+import type { StackedChartBuckets } from "./types";
 
 export function generateStackedBarChartFromTimeseries(
   input: TimeseriesSourceData,
@@ -26,6 +27,7 @@ export function generateStackedBarChartFromTimeseries(
   const interval = calculateSmallestTimeInterval(buckets);
   if (interval) {
     extendAxisWithInterval(xAxis, interval);
+    attachSuggestionsToXAxis(xAxis, buckets, interval);
   }
 
   const barWidth = calculateBarWidth(xAxis, interval ?? 0, 1);

@@ -5,10 +5,9 @@ import styled, { css, useTheme } from 'styled-components';
 import { debounce } from 'throttle-debounce';
 import { Area } from '@visx/shape';
 import { Threshold } from '@visx/threshold';
-import { GridRows, GridColumns } from '@visx/grid';
 import { useMotionValue, animate } from 'framer-motion';
-import { getTicks, scaleLinear } from '@visx/scale';
 import { utcFormat } from 'd3-time-format';
+import { scaleLinear } from '@visx/scale';
 import { VariableSizeList } from 'react-window';
 
 const ButtonGroup = styled.span`
@@ -905,9 +904,9 @@ const LineShape = /*#__PURE__*/ memo(function LineShape({ anyFocused , color , f
 
 const PointShape = /*#__PURE__*/ memo(function PointShape({ color , focused , point , scales  }) {
     return /*#__PURE__*/ jsx("circle", {
-        x: scales.xScale(point.x),
-        y: scales.yScale(point.y),
-        radius: focused ? 2 : 1,
+        cx: scales.xScale(point.x),
+        cy: scales.yScale(point.y),
+        r: focused ? 2 : 1,
         stroke: color,
         fill: color
     });
@@ -965,9 +964,9 @@ function ChartContent({ chart , colors , focusedShapeList , scales  }) {
 }
 
 const LABEL_OFFSET = 8;
-const BottomAxis = /*#__PURE__*/ memo(function BottomAxis({ numTicks , scales: { xMax , xScale , yMax  } , strokeColor , strokeDasharray , xAxis  }) {
+function BottomAxis({ scales: { xMax , xScale , yMax  } , strokeColor , strokeDasharray , ticks , xAxis: { maxValue , minValue  }  }) {
     const { colorBase500 , fontAxisFontSize , fontAxisFontFamily , fontAxisFontStyle , fontAxisFontWeight , fontAxisLetterSpacing  } = useTheme();
-    const formatter = getTimeFormatter(xAxis, numTicks);
+    const formatter = getTimeFormatter(ticks);
     return /*#__PURE__*/ jsxs("g", {
         transform: `translate(0, ${yMax})`,
         children: [
@@ -979,8 +978,8 @@ const BottomAxis = /*#__PURE__*/ memo(function BottomAxis({ numTicks , scales: {
                 stroke: strokeColor,
                 strokeDasharray: strokeDasharray
             }),
-            getTicks(xScale, numTicks).map((value, index)=>/*#__PURE__*/ jsx("text", {
-                    x: xScale(value),
+            ticks.map((time, index)=>/*#__PURE__*/ jsx("text", {
+                    x: xScale((time - minValue) / (maxValue - minValue)),
                     y: fontAxisFontSize,
                     dy: LABEL_OFFSET,
                     fill: colorBase500,
@@ -990,21 +989,22 @@ const BottomAxis = /*#__PURE__*/ memo(function BottomAxis({ numTicks , scales: {
                     fontSize: fontAxisFontSize,
                     letterSpacing: fontAxisLetterSpacing,
                     textAnchor: "middle",
-                    children: formatter(value)
+                    children: formatter(time)
                 }, index))
         ]
     });
-});
-function getTimeFormatter({ minValue , maxValue  }, numTicks) {
-    const timeScale = getTimeScale(minValue, maxValue, numTicks);
-    const formatter = getFormatter(timeScale);
-    return (item)=>{
-        const value = new Date(minValue + item.valueOf() * (maxValue - minValue));
-        return formatter(value);
-    };
 }
-function getTimeScale(time1, time2, numTicks) {
-    const delta = (time2 - time1) / numTicks;
+function getTimeFormatter(ticks) {
+    if (ticks.length < 2) {
+        // If there's only a single tick, just display the full timestamp.
+        return (time)=>new Date(time).toISOString();
+    }
+    const timeScale = getTimeScale(ticks[0], ticks[1]);
+    const formatter = getFormatter(timeScale);
+    return (time)=>formatter(new Date(time));
+}
+function getTimeScale(time1, time2) {
+    const delta = time2 - time1;
     if (delta < 1000) {
         return "milliseconds";
     } else if (delta < 60 * 1000) {
@@ -1032,7 +1032,39 @@ function getFormatter(unit) {
     }
 }
 
-const LeftAxis = /*#__PURE__*/ memo(function LeftAxis({ numTicks , scales: { yMax , yScale  } , strokeColor , strokeDasharray , strokeWidth  }) {
+function GridColumns({ scales: { xScale , yMax  } , xAxis: { maxValue , minValue  } , xTicks , ...lineProps }) {
+    return /*#__PURE__*/ jsx("g", {
+        children: xTicks.map((time, index)=>{
+            const x = xScale((time - minValue) / (maxValue - minValue));
+            return /*#__PURE__*/ jsx("line", {
+                x1: x,
+                y1: 0,
+                x2: x,
+                y2: yMax,
+                strokeWidth: 1,
+                ...lineProps
+            }, index);
+        })
+    });
+}
+
+function GridRows({ xMax , yScale , yTicks , ...lineProps }) {
+    return /*#__PURE__*/ jsx("g", {
+        children: yTicks.map((value, index)=>{
+            const y = yScale(value);
+            return /*#__PURE__*/ jsx("line", {
+                x1: 0,
+                y1: y,
+                x2: xMax,
+                y2: y,
+                strokeWidth: 1,
+                ...lineProps
+            }, index);
+        })
+    });
+}
+
+function LeftAxis({ scales: { yMax , yScale  } , strokeColor , strokeDasharray , strokeWidth , ticks  }) {
     const { colorBase500 , fontAxisFontSize , fontAxisFontFamily , fontAxisFontStyle , fontAxisFontWeight , fontAxisLetterSpacing  } = useTheme();
     const tickLabelProps = {
         dx: "-0.45em",
@@ -1045,7 +1077,8 @@ const LeftAxis = /*#__PURE__*/ memo(function LeftAxis({ numTicks , scales: { yMa
         letterSpacing: fontAxisLetterSpacing,
         fill: colorBase500
     };
-    const formatter = yScale.tickFormat(10, "~s");
+    const numTicks = ticks.length - 1;
+    const formatter = yScale.tickFormat(numTicks, "~s");
     return /*#__PURE__*/ jsxs("g", {
         children: [
             /*#__PURE__*/ jsx("line", {
@@ -1057,7 +1090,7 @@ const LeftAxis = /*#__PURE__*/ memo(function LeftAxis({ numTicks , scales: { yMa
                 strokeDasharray: strokeDasharray,
                 strokeWidth: strokeWidth
             }),
-            getTicks(yScale, numTicks).map((value, index)=>(index > 0 || index < numTicks - 1) && value.valueOf() !== 0 ? // rome-ignore lint/suspicious/noArrayIndexKey: no better key available
+            ticks.map((value, index)=>(index > 0 || index < numTicks - 1) && value.valueOf() !== 0 ? // rome-ignore lint/suspicious/noArrayIndexKey: no better key available
                 /*#__PURE__*/ jsx("text", {
                     x: 0,
                     y: yScale(value),
@@ -1066,26 +1099,37 @@ const LeftAxis = /*#__PURE__*/ memo(function LeftAxis({ numTicks , scales: { yMa
                 }, index) : null)
         ]
     });
-});
+}
 
 const GridWithAxes = /*#__PURE__*/ memo(function GridWithAxes({ chart , gridColumnsShown =true , gridRowsShown =true , gridBordersShown =true , gridDashArray , gridStrokeColor , scales  }) {
     const { xMax , xScale , yMax , yScale  } = scales;
     const { colorBase300  } = useTheme();
     const strokeColor = gridStrokeColor || colorBase300;
-    const minValue = useCustomSpring(chart.yAxis.minValue);
-    const maxValue = useCustomSpring(chart.yAxis.maxValue);
+    const { xAxis , yAxis  } = chart;
+    const minValue = useCustomSpring(yAxis.minValue);
+    const maxValue = useCustomSpring(yAxis.maxValue);
     const animatedScale = yScale.copy().domain([
         minValue,
         maxValue
     ]);
+    const xTicks = useMemo(()=>getTicks(xAxis, xMax, xScale, 12), [
+        xAxis,
+        xMax,
+        xScale
+    ]);
+    const yTicks = useMemo(()=>getTicks(yAxis, yMax, animatedScale, 8), [
+        yAxis,
+        yMax,
+        animatedScale
+    ]);
     return /*#__PURE__*/ jsxs(Fragment, {
         children: [
             gridRowsShown && /*#__PURE__*/ jsx(GridRows, {
-                scale: animatedScale,
-                width: xMax,
-                height: yMax,
                 stroke: strokeColor,
-                strokeDasharray: gridDashArray
+                strokeDasharray: gridDashArray,
+                xMax: xMax,
+                yScale: animatedScale,
+                yTicks: yTicks
             }),
             gridBordersShown && /*#__PURE__*/ jsx("line", {
                 x1: xMax,
@@ -1097,32 +1141,100 @@ const GridWithAxes = /*#__PURE__*/ memo(function GridWithAxes({ chart , gridColu
                 strokeDasharray: gridDashArray
             }),
             gridColumnsShown && /*#__PURE__*/ jsx(GridColumns, {
-                scale: xScale,
-                width: xMax,
-                height: yMax,
+                scales: scales,
                 stroke: strokeColor,
-                strokeDasharray: gridDashArray
+                strokeDasharray: gridDashArray,
+                xAxis: xAxis,
+                xTicks: xTicks
             }),
             /*#__PURE__*/ jsx(BottomAxis, {
-                numTicks: 10,
                 scales: scales,
                 strokeColor: strokeColor,
                 strokeDasharray: gridDashArray,
-                xAxis: chart.xAxis
+                ticks: xTicks,
+                xAxis: xAxis
             }),
             /*#__PURE__*/ jsx(LeftAxis, {
-                numTicks: 6,
                 scales: {
                     ...scales,
                     yScale: animatedScale
                 },
                 strokeColor: strokeColor,
                 strokeDasharray: gridDashArray,
-                strokeWidth: gridBordersShown ? 1 : 0
+                strokeWidth: gridBordersShown ? 1 : 0,
+                ticks: yTicks
             })
         ]
     });
 });
+function getTicks(axis, max, scale, numTicks) {
+    const suggestions = axis.tickSuggestions;
+    const ticks = suggestions ? getTicksFromSuggestions(axis, suggestions, numTicks) : getTicksFromRange(axis.minValue, axis.maxValue, numTicks);
+    extendTicksToFitAxis(ticks, axis, max, scale, 2 * numTicks);
+    return ticks;
+}
+function getTicksFromRange(minValue, maxValue, numTicks) {
+    const interval = (maxValue - minValue) / numTicks;
+    const ticks = [
+        minValue
+    ];
+    let tick = minValue + interval;
+    while(tick < maxValue){
+        ticks.push(tick);
+        tick += interval;
+    }
+    return ticks;
+}
+function getTicksFromSuggestions(axis, suggestions, numTicks) {
+    const len = suggestions.length;
+    if (len < 2) {
+        return suggestions;
+    }
+    const suggestionInterval = suggestions[1] - suggestions[0];
+    const axisRange = axis.maxValue - axis.minValue;
+    const ticksPerRange = axisRange / suggestionInterval;
+    if (ticksPerRange < numTicks) {
+        return suggestions;
+    }
+    const ticks = [];
+    const divisionFactor = Math.ceil(ticksPerRange / numTicks);
+    for(let i = 0; i < len; i++){
+        if (i % divisionFactor === 0) {
+            ticks.push(suggestions[i]);
+        }
+    }
+    return ticks;
+}
+/**
+ * Extends the ticks to cover the full range of the axis.
+ *
+ * Due to animations/translations it is possible the ticks don't yet cover the
+ * full range of the axis. This function extends the ticks as necessary, and
+ * also includes a slight margin to prevent a "pop-in" effect of suddenly
+ * appearing tick labels from the right edge.
+ *
+ * @note This function mutates the input ticks.
+ */ function extendTicksToFitAxis(ticks, axis, max, scale, maxTicks) {
+    if (ticks.length < 2) {
+        return;
+    }
+    const interval = ticks[1] - ticks[0];
+    const scaleToAxis = (value)=>scale((value - axis.minValue) / (axis.maxValue - axis.minValue));
+    // Trim ticks from the start if the user has dragged them beyond the Y axis.
+    while(ticks.length && scaleToAxis(ticks[0]) < 0){
+        ticks.shift();
+    }
+    let preTick = ticks[0] - interval;
+    while(ticks.length < maxTicks && scaleToAxis(preTick) >= 0){
+        ticks.unshift(preTick);
+        preTick -= interval;
+    }
+    let postTick = ticks[ticks.length - 1] + interval;
+    while(ticks.length < maxTicks && scaleToAxis(postTick) < 1.1 * max){
+        ticks.push(postTick);
+        postTick += interval;
+    }
+}
 const spring = {
     type: "tween",
     duration: 1,
@@ -1863,9 +1975,52 @@ function getCursorFromState(state) {
     }
 }
 
+/**
+ * Converts an RFC 3339-formatted timestamp to a time expressed in milliseconds.
+ */ function getTimeFromTimestamp(timestamp) {
+    const time = new Date(timestamp).getTime();
+    if (Number.isNaN(time)) {
+        throw new TypeError(`Invalid timestamp: ${timestamp}`);
+    }
+    return time;
+}
+
+/**
+ * Adds suggestions to the axis based on the position of the first bucket and
+ * the interval between buckets.
+ *
+ * @note This function mutates its input axis.
+ */ function attachSuggestionsToXAxis(xAxis, buckets, interval) {
+    if (interval <= 0) {
+        return;
+    }
+    const firstBucketTime = getFirstBucketTime(buckets);
+    if (!firstBucketTime) {
+        return;
+    }
+    const suggestions = [];
+    let suggestion = firstBucketTime;
+    while(suggestion < xAxis.maxValue){
+        if (suggestion >= xAxis.minValue) {
+            suggestions.push(suggestion);
+        }
+        suggestion += interval;
+    }
+    xAxis.tickSuggestions = suggestions;
+}
+function getFirstBucketTime(buckets) {
+    let firstBucketTimestamp;
+    for (const timestamp of buckets.keys()){
+        if (!firstBucketTimestamp || timestamp < firstBucketTimestamp) {
+            firstBucketTimestamp = timestamp;
+        }
+    }
+    return firstBucketTimestamp ? getTimeFromTimestamp(firstBucketTimestamp) : undefined;
+}
+
 const BAR_PADDING = 0.2;
 const BAR_PLUS_PADDING = 1 + BAR_PADDING;
-const HALF_PADDING = 0.5 * BAR_PADDING;
+
 /**
  * Calculates the width of bars in bar charts.
  */ function calculateBarWidth(xAxis, interval, numBarsPerGroup) {
@@ -1873,6 +2028,8 @@ const HALF_PADDING = 0.5 * BAR_PADDING;
     const numBars = numGroups * numBarsPerGroup;
     return 1 / (numBars * BAR_PLUS_PADDING);
 }
+
+const HALF_PADDING = 0.5 * BAR_PADDING;
 /**
  * Calculates the (left) X coordinate for a bar in a bar chart.
  *
@@ -1884,120 +2041,7 @@ const HALF_PADDING = 0.5 * BAR_PADDING;
  */ function calculateBarX(groupX, barWidth, barIndex, numShapeLists) {
     return groupX + (barIndex - 0.5 * numShapeLists) * (barWidth * BAR_PLUS_PADDING) - barWidth * HALF_PADDING;
 }
-/**
- * Wrapper around `createMetricBuckets()` and axes creation specialized for
- * usage with stacked charts.
- */ function calculateBucketsAndAxesForStackedChart(input) {
-    const buckets = createMetricBuckets(input.timeseriesData, ({ currentY , total  }, value)=>({
-            currentY,
-            total: total + value
-        }), {
-        currentY: 0,
-        total: 0
-    });
-    const isPercentage = input.stackingType === "percentage";
-    const xAxis = getXAxisFromTimeRange(input.timeRange);
-    const yAxis = isPercentage ? {
-        minValue: 0,
-        maxValue: 1
-    } : calculateStackedYAxisRange(buckets, ({ total  })=>total);
-    return {
-        buckets,
-        isPercentage,
-        xAxis,
-        yAxis
-    };
-}
-/**
- * Calculates the smallest interval between any two timestamps present in the
- * given buckets.
- *
- * Returns `null` if there are insufficient timestamps to calculate an interval.
- */ function calculateSmallestTimeInterval(buckets) {
-    const timestamps = Array.from(buckets.keys(), getTimeFromTimestamp);
-    if (timestamps.length < 2) {
-        return null;
-    }
-    timestamps.sort();
-    let smallestInterval = Infinity;
-    for(let i = 1; i < timestamps.length; i++){
-        const interval = timestamps[i] - timestamps[i - 1];
-        if (interval < smallestInterval) {
-            smallestInterval = interval;
-        }
-    }
-    return smallestInterval;
-}
-/**
- * Detects the range to display along the Y axis by looking at all the min-max
- * values inside the buckets.
- *
- * When rendering a stacked chart, use `calculateStackedYAxisRange()` instead.
- */ function calculateYAxisRange(buckets, getMinMax) {
-    const minMax = getBucketsMinMax(buckets, getMinMax);
-    if (!minMax) {
-        return getYAxisForConstantValue(0);
-    }
-    const [minValue, maxValue] = minMax;
-    if (minValue === maxValue) {
-        return getYAxisForConstantValue(minValue);
-    }
-    return {
-        minValue,
-        maxValue
-    };
-}
-/**
- * Detects the range to display along the Y axis by looking at all the totals
- * inside the buckets.
- *
- * This function is used for stacked charts. When rendering a normal chart, use
- * `calculateYAxisRange()` instead.
- */ function calculateStackedYAxisRange(buckets, getTotalValue) {
-    if (buckets.size === 0) {
-        return getYAxisForConstantValue(0);
-    }
-    const minMax = getInitialMinMax(0);
-    for (const value of buckets.values()){
-        extendMinMax(minMax, getTotalValue(value));
-    }
-    const [minValue, maxValue] = minMax;
-    if (minValue === maxValue) {
-        return getYAxisForConstantValue(minValue);
-    }
-    return {
-        minValue,
-        maxValue
-    };
-}
-function createMetricBuckets(timeseriesData, reducer, initialValue) {
-    const buckets = new Map();
-    for (const timeseries of timeseriesData){
-        if (!timeseries.visible) {
-            continue;
-        }
-        for (const { time , value  } of timeseries.metrics){
-            if (!Number.isNaN(value)) {
-                buckets.set(time, reducer(buckets.get(time) ?? initialValue, value));
-            }
-        }
-    }
-    return buckets;
-}
-/**
- * Extends the range of an axis with the given interval.
- *
- * The range of the interval is divided among ends of the axis. The purpose of
- * this is to extend the axis with enough space to display the bars for the
- * first and last buckets displayed on the bar chart.
- *
- * @note This function mutates its input axis.
- */ function extendAxisWithInterval(axis, interval) {
-    const halfInterval = 0.5 * interval;
-    axis.minValue -= halfInterval;
-    axis.maxValue += halfInterval;
-    return axis;
-}
+
 /**
  * Extends the given min-max, if necessary, with the given value.
  *
@@ -2010,23 +2054,7 @@ function createMetricBuckets(timeseriesData, reducer, initialValue) {
     }
     return minMax;
 }
-function getBucketsMinMax(buckets, getMinMax) {
-    let minMax;
-    for (const value of buckets.values()){
-        const bucketMinMax = getMinMax(value);
-        if (!minMax) {
-            minMax = bucketMinMax;
-            continue;
-        }
-        if (bucketMinMax[0] < minMax[0]) {
-            minMax[0] = bucketMinMax[0];
-        }
-        if (bucketMinMax[1] > minMax[1]) {
-            minMax[1] = bucketMinMax[1];
-        }
-    }
-    return minMax;
-}
+
 /**
  * Returns the initial min-max based on a single value.
  */ function getInitialMinMax(value) {
@@ -2035,23 +2063,7 @@ function getBucketsMinMax(buckets, getMinMax) {
         value
     ];
 }
-/**
- * Converts an RFC 3339-formatted timestamp to a time expressed in milliseconds.
- */ function getTimeFromTimestamp(timestamp) {
-    const time = new Date(timestamp).getTime();
-    if (Number.isNaN(time)) {
-        throw new TypeError(`Invalid timestamp: ${timestamp}`);
-    }
-    return time;
-}
-/**
- * Returns the X axis to display results for the given time range.
- */ function getXAxisFromTimeRange(timeRange) {
-    return {
-        minValue: getTimeFromTimestamp(timeRange.from),
-        maxValue: getTimeFromTimestamp(timeRange.to)
-    };
-}
+
 /**
  * Returns the Y axis to display results if all results have the same value.
  *
@@ -2077,11 +2089,195 @@ function getBucketsMinMax(buckets, getMinMax) {
         };
     }
 }
+
+/**
+ * Detects the range to display along the Y axis by looking at all the totals
+ * inside the buckets.
+ *
+ * This function is used for stacked charts. When rendering a normal chart, use
+ * `calculateYAxisRange()` instead.
+ */ function calculateStackedYAxisRange(buckets, getTotalValue) {
+    if (buckets.size === 0) {
+        return getYAxisForConstantValue(0);
+    }
+    const minMax = getInitialMinMax(0);
+    for (const value of buckets.values()){
+        extendMinMax(minMax, getTotalValue(value));
+    }
+    const [minValue, maxValue] = minMax;
+    if (minValue === maxValue) {
+        return getYAxisForConstantValue(minValue);
+    }
+    return {
+        minValue,
+        maxValue
+    };
+}
+
+function createMetricBuckets(timeseriesData, reducer, initialValue) {
+    const buckets = new Map();
+    for (const timeseries of timeseriesData){
+        if (!timeseries.visible) {
+            continue;
+        }
+        for (const { time , value  } of timeseries.metrics){
+            if (!Number.isNaN(value)) {
+                buckets.set(time, reducer(buckets.get(time) ?? initialValue, value));
+            }
+        }
+    }
+    return buckets;
+}
+
+/**
+ * Returns the X axis to display results for the given time range.
+ */ function getXAxisFromTimeRange(timeRange) {
+    return {
+        minValue: getTimeFromTimestamp(timeRange.from),
+        maxValue: getTimeFromTimestamp(timeRange.to)
+    };
+}
+
+/**
+ * Wrapper around `createMetricBuckets()` and axes creation specialized for
+ * usage with stacked charts.
+ */ function calculateBucketsAndAxesForStackedChart(input) {
+    const buckets = createMetricBuckets(input.timeseriesData, ({ currentY , total  }, value)=>({
+            currentY,
+            total: total + value
+        }), {
+        currentY: 0,
+        total: 0
+    });
+    const isPercentage = input.stackingType === "percentage";
+    const xAxis = getXAxisFromTimeRange(input.timeRange);
+    const yAxis = isPercentage ? {
+        minValue: 0,
+        maxValue: 1
+    } : calculateStackedYAxisRange(buckets, ({ total  })=>total);
+    return {
+        buckets,
+        isPercentage,
+        xAxis,
+        yAxis
+    };
+}
+
+/**
+ * Calculates the smallest interval between any two timestamps present in the
+ * given buckets.
+ *
+ * Returns `null` if there are insufficient timestamps to calculate an interval.
+ */ function calculateSmallestTimeInterval(buckets) {
+    const timestamps = Array.from(buckets.keys(), getTimeFromTimestamp);
+    if (timestamps.length < 2) {
+        return null;
+    }
+    timestamps.sort();
+    let smallestInterval = Infinity;
+    for(let i = 1; i < timestamps.length; i++){
+        const interval = timestamps[i] - timestamps[i - 1];
+        if (interval < smallestInterval) {
+            smallestInterval = interval;
+        }
+    }
+    return smallestInterval;
+}
+
+/**
+ * Detects the range to display along the Y axis by looking at all the min-max
+ * values inside the buckets.
+ *
+ * When rendering a stacked chart, use `calculateStackedYAxisRange()` instead.
+ */ function calculateYAxisRange(buckets, getMinMax) {
+    const minMax = getBucketsMinMax(buckets, getMinMax);
+    if (!minMax) {
+        return getYAxisForConstantValue(0);
+    }
+    const [minValue, maxValue] = minMax;
+    if (minValue === maxValue) {
+        return getYAxisForConstantValue(minValue);
+    }
+    return {
+        minValue,
+        maxValue
+    };
+}
+function getBucketsMinMax(buckets, getMinMax) {
+    let minMax;
+    for (const value of buckets.values()){
+        const bucketMinMax = getMinMax(value);
+        if (!minMax) {
+            minMax = bucketMinMax;
+            continue;
+        }
+        if (bucketMinMax[0] < minMax[0]) {
+            minMax[0] = bucketMinMax[0];
+        }
+        if (bucketMinMax[1] > minMax[1]) {
+            minMax[1] = bucketMinMax[1];
+        }
+    }
+    return minMax;
+}
+
+/**
+ * Extends the range of an axis with the given interval.
+ *
+ * The range of the interval is divided among ends of the axis. The purpose of
+ * this is to extend the axis with enough space to display the bars for the
+ * first and last buckets displayed on the bar chart.
+ *
+ * @note This function mutates its input axis.
+ */ function extendAxisWithInterval(axis, interval) {
+    const halfInterval = 0.5 * interval;
+    axis.minValue -= halfInterval;
+    axis.maxValue += halfInterval;
+    return axis;
+}
+
 /**
  * Takes an absolute value and normalizes it to a value between 0.0 and 1.0 for
  * the given axis.
  */ function normalizeAlongLinearAxis(value, axis) {
     return (value - axis.minValue) / (axis.maxValue - axis.minValue);
+}
+
+/**
+ * Takes an array of metrics and divides it into a lines of metrics without
+ * gaps.
+ *
+ * Any metric that has a `NaN` value, or that follows more than `1.5 * interval`
+ * after the previous metric is considered to introduce a gap in the metrics.
+ */ function splitIntoContinuousLines(metrics, interval) {
+    const lines = [];
+    let currentLine = [];
+    let previousTime = null;
+    for (const metric of metrics){
+        if (Number.isNaN(metric.value)) {
+            if (currentLine.length > 0) {
+                lines.push(currentLine);
+                currentLine = [];
+            }
+            continue;
+        }
+        const newTime = getTimeFromTimestamp(metric.time);
+        if (previousTime && interval && newTime - previousTime > 1.5 * interval) {
+            if (currentLine.length > 0) {
+                lines.push(currentLine);
+                currentLine = [
+                    metric
+                ];
+            }
+        } else {
+            currentLine.push(metric);
+        }
+        previousTime = newTime;
+    }
+    if (currentLine.length > 0) {
+        lines.push(currentLine);
+    }
+    return lines;
 }
 
 function generateBarChartFromTimeseries(input) {
@@ -2093,6 +2289,7 @@ function generateBarChartFromTimeseries(input) {
     const interval = calculateSmallestTimeInterval(buckets);
     if (interval) {
         extendAxisWithInterval(xAxis, interval);
+        attachSuggestionsToXAxis(xAxis, buckets, interval);
     }
     const barWidth = calculateBarWidth(xAxis, interval ?? 0, numShapeLists);
     const barArgs = {
@@ -2130,8 +2327,12 @@ function generateLineChartFromTimeseries(input) {
     const buckets = createMetricBuckets(input.timeseriesData, (maybeMinMax, value)=>maybeMinMax ? extendMinMax(maybeMinMax, value) : getInitialMinMax(value));
     const xAxis = getXAxisFromTimeRange(input.timeRange);
     const yAxis = calculateYAxisRange(buckets, identity);
+    const interval = calculateSmallestTimeInterval(buckets);
+    if (interval) {
+        attachSuggestionsToXAxis(xAxis, buckets, interval);
+    }
     const shapeLists = input.timeseriesData.map((timeseries)=>({
-            shapes: timeseries.visible ? getShapes$1(timeseries.metrics, xAxis, yAxis) : [],
+            shapes: timeseries.visible ? getShapes$1(timeseries.metrics, xAxis, yAxis, interval) : [],
             source: timeseries
         }));
     return {
@@ -2140,7 +2341,7 @@ function generateLineChartFromTimeseries(input) {
         yAxis
     };
 }
-function getShapes$1(metrics, xAxis, yAxis) {
+function getShapes$1(metrics, xAxis, yAxis, interval) {
     switch(metrics.length){
         case 0:
             return [];
@@ -2155,13 +2356,18 @@ function getShapes$1(metrics, xAxis, yAxis) {
                 ];
             }
         default:
-            // TODO: Implement gap detection: https://github.com/autometrics-dev/explorer/issues/35
-            return [
-                {
-                    type: "line",
-                    points: metrics.map((metric)=>getPointForMetric$1(metric, xAxis, yAxis))
-                }
-            ];
+            {
+                const lines = splitIntoContinuousLines(metrics, interval ?? undefined);
+                return lines.map((line)=>// If the line only containes one metric value, render it as a point
+                    // Otherwise, render a line
+                    line.length === 1 ? {
+                        type: "point",
+                        ...getPointForMetric$1(line[0], xAxis, yAxis)
+                    } : {
+                        type: "line",
+                        points: line.map((metric)=>getPointForMetric$1(metric, xAxis, yAxis))
+                    });
+            }
     }
 }
 function getPointForMetric$1(metric, xAxis, yAxis) {
@@ -2178,6 +2384,7 @@ function generateStackedBarChartFromTimeseries(input) {
     const interval = calculateSmallestTimeInterval(buckets);
     if (interval) {
         extendAxisWithInterval(xAxis, interval);
+        attachSuggestionsToXAxis(xAxis, buckets, interval);
     }
     const barWidth = calculateBarWidth(xAxis, interval ?? 0, 1);
     const barArgs = {
@@ -2220,28 +2427,27 @@ function getBarShape(metric, { xAxis , yAxis , barWidth , isPercentage , buckets
 
 function generateStackedLineChartFromTimeseries(input) {
     const axesAndBuckets = calculateBucketsAndAxesForStackedChart(input);
+    const { buckets , xAxis , yAxis  } = axesAndBuckets;
+    const interval = calculateSmallestTimeInterval(buckets);
+    if (interval) {
+        attachSuggestionsToXAxis(xAxis, buckets, interval);
+    }
     const shapeLists = input.timeseriesData.map((timeseries)=>({
-            shapes: timeseries.visible ? getShapes(timeseries.metrics, axesAndBuckets) : [],
+            shapes: timeseries.visible ? getShapes(timeseries.metrics, axesAndBuckets, interval) : [],
             source: timeseries
         }));
     return {
         shapeLists,
-        xAxis: axesAndBuckets.xAxis,
-        yAxis: axesAndBuckets.yAxis
+        xAxis,
+        yAxis
     };
 }
-function getShapes(metrics, axesAndBuckets) {
-    if (metrics.length === 0) {
-        return [];
-    }
-    // TODO: Implement gap detection: https://github.com/autometrics-dev/explorer/issues/35
-    const points = compact(metrics.map((metric)=>getPointForMetric(metric, axesAndBuckets)));
-    return [
-        {
+function getShapes(metrics, axesAndBuckets, interval) {
+    const lines = splitIntoContinuousLines(metrics, interval ?? undefined);
+    return lines.map((line)=>({
             type: "area",
-            points
-        }
-    ];
+            points: compact(line.map((metric)=>getPointForMetric(metric, axesAndBuckets)))
+        }));
 }
 function getPointForMetric(metric, { buckets , isPercentage , xAxis , yAxis  }) {
     const bucketValue = buckets.get(metric.time);

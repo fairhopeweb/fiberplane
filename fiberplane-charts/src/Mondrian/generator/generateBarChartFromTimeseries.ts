@@ -6,6 +6,7 @@ import type {
   TimeseriesSourceData,
 } from "../types";
 import {
+  attachSuggestionsToXAxis,
   calculateBarWidth,
   calculateBarX,
   calculateSmallestTimeInterval,
@@ -16,11 +17,11 @@ import {
   getInitialMinMax,
   getTimeFromTimestamp,
   getXAxisFromTimeRange,
-  MinMax,
   normalizeAlongLinearAxis,
 } from "./utils";
 import { compact, identity } from "../../utils";
 import type { Metric, Timeseries } from "../../providerTypes";
+import type { MinMax } from "./types";
 
 export function generateBarChartFromTimeseries(
   input: TimeseriesSourceData,
@@ -39,9 +40,11 @@ export function generateBarChartFromTimeseries(
   const yAxis = calculateYAxisRange(buckets, identity);
 
   const numShapeLists = visibleTimeseriesData.length;
+
   const interval = calculateSmallestTimeInterval(buckets);
   if (interval) {
     extendAxisWithInterval(xAxis, interval);
+    attachSuggestionsToXAxis(xAxis, buckets, interval);
   }
 
   const barWidth = calculateBarWidth(xAxis, interval ?? 0, numShapeLists);

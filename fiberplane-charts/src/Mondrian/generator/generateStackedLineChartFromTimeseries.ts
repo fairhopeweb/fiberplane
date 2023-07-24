@@ -6,12 +6,15 @@ import type {
   TimeseriesSourceData,
 } from "../types";
 import {
+  attachSuggestionsToXAxis,
   calculateBucketsAndAxesForStackedChart,
+  calculateSmallestTimeInterval,
   getTimeFromTimestamp,
   normalizeAlongLinearAxis,
+  splitIntoContinuousLines,
 } from "./utils";
-import type { Metric, Timeseries } from "../../providerTypes";
 import { compact } from "../../utils";
+import type { Metric, Timeseries } from "../../providerTypes";
 
 type AxesAndBuckets = ReturnType<typeof calculateBucketsAndAxesForStackedChart>;
 
@@ -19,36 +22,36 @@ export function generateStackedLineChartFromTimeseries(
   input: TimeseriesSourceData,
 ): AbstractChart<Timeseries, Metric> {
   const axesAndBuckets = calculateBucketsAndAxesForStackedChart(input);
+  const { buckets, xAxis, yAxis } = axesAndBuckets;
+
+  const interval = calculateSmallestTimeInterval(buckets);
+  if (interval) {
+    attachSuggestionsToXAxis(xAxis, buckets, interval);
+  }
 
   const shapeLists: Array<ShapeList<Timeseries, Metric>> =
     input.timeseriesData.map((timeseries) => ({
       shapes: timeseries.visible
-        ? getShapes(timeseries.metrics, axesAndBuckets)
+        ? getShapes(timeseries.metrics, axesAndBuckets, interval)
         : [],
       source: timeseries,
     }));
 
-  return {
-    shapeLists,
-    xAxis: axesAndBuckets.xAxis,
-    yAxis: axesAndBuckets.yAxis,
-  };
+  return { shapeLists, xAxis, yAxis };
 }
 
 function getShapes(
   metrics: Array<Metric>,
   axesAndBuckets: AxesAndBuckets,
+  interval: number | null,
 ): Array<Shape<Metric>> {
-  if (metrics.length === 0) {
-    return [];
-  }
-
-  // TODO: Implement gap detection: https://github.com/autometrics-dev/explorer/issues/35
-  const points = compact(
-    metrics.map((metric) => getPointForMetric(metric, axesAndBuckets)),
-  );
-
-  return [{ type: "area", points }];
+  const lines = splitIntoContinuousLines(metrics, interval ?? undefined);
+  return lines.map((line) => ({
+    type: "area",
+    points: compact(
+      line.map((metric) => getPointForMetric(metric, axesAndBuckets)),
+    ),
+  }));
 }
 
 function getPointForMetric(
