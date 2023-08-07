@@ -2379,10 +2379,10 @@ function getBucketsMinMax(buckets, getMinMax) {
         if (previousTime && interval && newTime - previousTime > 1.5 * interval) {
             if (currentLine.length > 0) {
                 lines.push(currentLine);
-                currentLine = [
-                    metric
-                ];
             }
+            currentLine = [
+                metric
+            ];
         } else {
             currentLine.push(metric);
         }
