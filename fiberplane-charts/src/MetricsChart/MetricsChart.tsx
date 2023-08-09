@@ -42,6 +42,7 @@ const InnerMetricsChart = memo(function InnerMetricsChart(
     areaGradientShown = true,
     chartControlsShown = true,
     colors,
+    customChartControls,
     events,
     eventColor = theme.colorPrimary400,
     graphType,
@@ -104,10 +105,9 @@ const InnerMetricsChart = memo(function InnerMetricsChart(
   return (
     <>
       {chartControlsShown && !readOnly && (
-        <ChartControls
-          {...props}
-          stackingControlsShown={stackingControlsShown}
-        />
+        <ChartControls {...props} stackingControlsShown={stackingControlsShown}>
+          {customChartControls}
+        </ChartControls>
       )}
       <CoreChart
         {...props}

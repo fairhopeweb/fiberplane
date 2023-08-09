@@ -15,7 +15,7 @@ type Props = {
   gridColumnsShown?: boolean;
   gridRowsShown?: boolean;
   gridBordersShown?: boolean;
-  gridDashArray?: string;
+  gridDasharray?: string;
   gridStrokeColor?: string;
   scales: Scales;
   tickFormatters: TickFormatters;
@@ -26,7 +26,7 @@ export const GridWithAxes = memo(function GridWithAxes({
   gridColumnsShown = true,
   gridRowsShown = true,
   gridBordersShown = true,
-  gridDashArray,
+  gridDasharray,
   gridStrokeColor,
   scales,
   tickFormatters,
@@ -59,7 +59,7 @@ export const GridWithAxes = memo(function GridWithAxes({
       {gridRowsShown && (
         <GridRows
           stroke={strokeColor}
-          strokeDasharray={gridDashArray}
+          strokeDasharray={gridDasharray}
           xMax={xMax}
           yScale={animatedScale}
           yTicks={yTicks}
@@ -72,15 +72,14 @@ export const GridWithAxes = memo(function GridWithAxes({
           y1={0}
           y2={yMax}
           stroke={strokeColor}
-          strokeWidth={1}
-          strokeDasharray={gridDashArray}
+          strokeDasharray={gridDasharray}
         />
       )}
       {gridColumnsShown && (
         <GridColumns
           scales={scales}
           stroke={strokeColor}
-          strokeDasharray={gridDashArray}
+          strokeDasharray={gridDasharray}
           xAxis={xAxis}
           xTicks={xTicks}
         />
@@ -89,16 +88,16 @@ export const GridWithAxes = memo(function GridWithAxes({
         formatter={tickFormatters.xFormatter}
         scales={scales}
         strokeColor={strokeColor}
-        strokeDasharray={gridDashArray}
+        strokeDasharray={gridDasharray}
         ticks={xTicks}
         xAxis={xAxis}
       />
       <LeftAxis
         formatter={tickFormatters.yFormatter}
+        gridBordersShown={gridBordersShown}
         scales={{ ...scales, yScale: animatedScale }}
         strokeColor={strokeColor}
-        strokeDasharray={gridDashArray}
-        strokeWidth={gridBordersShown ? 1 : 0}
+        strokeDasharray={gridDasharray}
         ticks={yTicks}
       />
     </>

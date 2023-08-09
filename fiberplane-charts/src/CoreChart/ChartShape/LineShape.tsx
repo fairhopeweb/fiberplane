@@ -18,7 +18,6 @@ export const LineShape = memo(function LineShape<P>({
 }: Props<P>): JSX.Element {
   const id = useId();
   const gradientId = `line-${id}`;
-  const gradiantRef = `url(#${gradientId})`;
 
   const x = (point: { x: number }) => scales.xScale(point.x);
   const y = (point: { y: number }) => scales.yScale(point.y);
@@ -36,8 +35,8 @@ export const LineShape = memo(function LineShape<P>({
       {areaGradientShown && (
         <path
           d={createAreaPathDef(line.points, { x, y0: y, y1: scales.yScale(0) })}
-          strokeWidth={0}
-          fill={gradiantRef}
+          stroke="none"
+          fill={`url(#${gradientId})`}
         />
       )}
       <path
@@ -45,7 +44,7 @@ export const LineShape = memo(function LineShape<P>({
         stroke={color}
         strokeDasharray={line.strokeDasharray?.join(" ")}
         strokeWidth={focused ? 1.5 : 1}
-        fill="transparent"
+        fill="none"
       />
     </g>
   );

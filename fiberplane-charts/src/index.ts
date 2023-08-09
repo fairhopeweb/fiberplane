@@ -1,4 +1,10 @@
-export type { Axis, SeriesSource } from "./Mondrian";
+export {
+  ButtonGroup,
+  ControlsSet,
+  ControlsSetLabel,
+  Icon,
+  IconButton,
+} from "./BaseComponents";
 export type { ChartTheme } from "./styled-components";
 export type {
   GraphType,
@@ -14,4 +20,6 @@ export type { TickFormatters, TickFormattersFactory } from "./CoreChart";
 export type { ToggleTimeseriesEvent } from "./TimeseriesLegend";
 
 export * from "./MetricsChart";
+export * from "./Mondrian";
 export * from "./SparkChart";
+export * from "./tickFormatters";

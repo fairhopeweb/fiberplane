@@ -1,3 +1,144 @@
+import * as styled_components from 'styled-components';
+import * as react from 'react';
+
+declare const ButtonGroup: styled_components.StyledComponent<"span", styled_components.DefaultTheme, {}, never>;
+
+declare const ControlsSet: styled_components.StyledComponent<"div", styled_components.DefaultTheme, {}, never>;
+declare const ControlsSetLabel: styled_components.StyledComponent<"span", styled_components.DefaultTheme, {}, never>;
+
+declare const ICON_MAP: {
+    readonly chart_bar: react.FunctionComponent<react.SVGProps<SVGSVGElement> & {
+        title?: string | undefined;
+    }>;
+    readonly chart_line: react.FunctionComponent<react.SVGProps<SVGSVGElement> & {
+        title?: string | undefined;
+    }>;
+    readonly check: react.FunctionComponent<react.SVGProps<SVGSVGElement> & {
+        title?: string | undefined;
+    }>;
+    readonly combined: react.FunctionComponent<react.SVGProps<SVGSVGElement> & {
+        title?: string | undefined;
+    }>;
+    readonly percentage: react.FunctionComponent<react.SVGProps<SVGSVGElement> & {
+        title?: string | undefined;
+    }>;
+    readonly stacked: react.FunctionComponent<react.SVGProps<SVGSVGElement> & {
+        title?: string | undefined;
+    }>;
+    readonly triangle_down: react.FunctionComponent<react.SVGProps<SVGSVGElement> & {
+        title?: string | undefined;
+    }>;
+};
+
+type IconType = keyof typeof ICON_MAP;
+type Props$1 = React.SVGProps<SVGSVGElement> & {
+    type: IconType;
+};
+declare function Icon({ type, ...svgProps }: Props$1): JSX.Element;
+
+declare const IconButton: react.ForwardRefExoticComponent<react.ButtonHTMLAttributes<HTMLButtonElement> & {
+    active?: boolean | undefined;
+} & react.RefAttributes<HTMLButtonElement>>;
+
+interface ChartTheme {
+  colorBackground: string;
+  colorForeground: string;
+  colorBase100: string;
+  colorBase200: string;
+  colorBase300: string;
+  colorBase400: string;
+  colorBase500: string;
+  colorBase600: string;
+  colorBase700: string;
+  colorBase800: string;
+  colorPrimary50: string;
+  colorPrimary100: string;
+  colorPrimary200: string;
+  colorPrimary300: string;
+  colorPrimary400: string;
+  colorPrimary500: string;
+  colorPrimary600: string;
+  colorPrimary700: string;
+  colorPrimary800: string;
+  colorPrimaryAlpha50: string;
+  colorPrimaryAlpha100: string;
+  colorPrimaryAlpha200: string;
+  colorPrimaryAlpha300: string;
+  colorPrimaryAlpha400: string;
+  colorSupport1100: string;
+  colorSupport1200: string;
+  colorSupport1300: string;
+  colorSupport1400: string;
+  colorSupport2100: string;
+  colorSupport2200: string;
+  colorSupport2300: string;
+  colorSupport2400: string;
+  colorSupport3100: string;
+  colorSupport3200: string;
+  colorSupport3300: string;
+  colorSupport3400: string;
+  colorSupport4100: string;
+  colorSupport4200: string;
+  colorSupport4300: string;
+  colorSupport4400: string;
+  colorSupport5100: string;
+  colorSupport5200: string;
+  colorSupport5300: string;
+  colorSupport5400: string;
+  colorSupport6100: string;
+  colorSupport6200: string;
+  colorSupport6300: string;
+  colorSupport6400: string;
+  colorSupport7100: string;
+  colorSupport7200: string;
+  colorSupport7300: string;
+  colorSupport7400: string;
+  colorSupport8100: string;
+  colorSupport8200: string;
+  colorSupport8300: string;
+  colorSupport8400: string;
+  colorSupport9100: string;
+  colorSupport9200: string;
+  colorSupport9300: string;
+  colorSupport9400: string;
+  colorSupport10100: string;
+  colorSupport10200: string;
+  colorSupport10300: string;
+  colorSupport10400: string;
+  colorSupport11100: string;
+  colorSupport11200: string;
+  colorSupport11300: string;
+  colorSupport11400: string;
+  fontAxisFontSize: string;
+  fontAxisFontFamily: string;
+  fontAxisFontWeight: string;
+  fontAxisFontStyle: string;
+  fontAxisLetterSpacing: string;
+  fontAxisLineHeight: string;
+  fontAxisShortHand: string;
+  fontControlsLetterSpacing: string;
+  fontControlsShortHand: string;
+  fontLegendLetterSpacing: string;
+  fontLegendShortHand: string;
+  fontResultsSummaryLetterSpacing: string;
+  fontResultsSummaryShortHand: string;
+  effectFocusOutline: string;
+  effectFocus: string;
+  effectNone: string;
+  borderRadius300: string;
+  borderRadius400: string;
+  borderRadius500: string;
+  borderRadius600: string;
+  borderRadius700: string;
+  borderRadiusNone: string;
+  borderRadiusRound: string;
+}
+
+declare module "styled-components" {
+  // rome-ignore lint/suspicious/noEmptyInterface: <explanation>
+  export interface DefaultTheme extends ChartTheme {}
+}
+
 type GraphType = "bar" | "line";
 /**
  * A single metric value.
@@ -87,6 +228,42 @@ type TimeseriesSourceData = {
      * may not see any results.
      */
     timeseriesData: Array<Timeseries>;
+    /**
+     * The time range to be displayed.
+     */
+    timeRange: TimeRange;
+};
+/**
+ * All the data necessary to generate an abstract chart from an array of
+ * timeseries.
+ *
+ * Note we only support generating line charts from combined timeseries and
+ * events data. If `graphType` is anything other than `"line"`, the events will
+ * be ignored.
+ */
+type TimeseriesAndEventsSourceData = {
+    /**
+     * The type of stacking to apply to the chart.
+     *
+     * @warning This property is accepted for consistency, but setting it to
+     *          anything except `"line"` will cause the events to be ignored.
+     */
+    graphType: GraphType;
+    /**
+     * The type of stacking to apply to the chart.
+     */
+    stackingType: StackingType;
+    /**
+     * Array of timeseries data to display in the chart.
+     *
+     * Make sure the timeseries contains data for the given time range, or you
+     * may not see any results.
+     */
+    timeseriesData: Array<Timeseries>;
+    /**
+     * Array of events to display in the chart.
+     */
+    events: Array<ProviderEvent>;
     /**
      * The time range to be displayed.
      */
@@ -263,104 +440,14 @@ type Rectangle<P> = {
     source: P;
 };
 
-interface ChartTheme {
-  colorBackground: string;
-  colorForeground: string;
-  colorBase100: string;
-  colorBase200: string;
-  colorBase300: string;
-  colorBase400: string;
-  colorBase500: string;
-  colorBase600: string;
-  colorBase700: string;
-  colorBase800: string;
-  colorPrimary50: string;
-  colorPrimary100: string;
-  colorPrimary200: string;
-  colorPrimary300: string;
-  colorPrimary400: string;
-  colorPrimary500: string;
-  colorPrimary600: string;
-  colorPrimary700: string;
-  colorPrimary800: string;
-  colorPrimaryAlpha50: string;
-  colorPrimaryAlpha100: string;
-  colorPrimaryAlpha200: string;
-  colorPrimaryAlpha300: string;
-  colorPrimaryAlpha400: string;
-  colorSupport1100: string;
-  colorSupport1200: string;
-  colorSupport1300: string;
-  colorSupport1400: string;
-  colorSupport2100: string;
-  colorSupport2200: string;
-  colorSupport2300: string;
-  colorSupport2400: string;
-  colorSupport3100: string;
-  colorSupport3200: string;
-  colorSupport3300: string;
-  colorSupport3400: string;
-  colorSupport4100: string;
-  colorSupport4200: string;
-  colorSupport4300: string;
-  colorSupport4400: string;
-  colorSupport5100: string;
-  colorSupport5200: string;
-  colorSupport5300: string;
-  colorSupport5400: string;
-  colorSupport6100: string;
-  colorSupport6200: string;
-  colorSupport6300: string;
-  colorSupport6400: string;
-  colorSupport7100: string;
-  colorSupport7200: string;
-  colorSupport7300: string;
-  colorSupport7400: string;
-  colorSupport8100: string;
-  colorSupport8200: string;
-  colorSupport8300: string;
-  colorSupport8400: string;
-  colorSupport9100: string;
-  colorSupport9200: string;
-  colorSupport9300: string;
-  colorSupport9400: string;
-  colorSupport10100: string;
-  colorSupport10200: string;
-  colorSupport10300: string;
-  colorSupport10400: string;
-  colorSupport11100: string;
-  colorSupport11200: string;
-  colorSupport11300: string;
-  colorSupport11400: string;
-  fontAxisFontSize: string;
-  fontAxisFontFamily: string;
-  fontAxisFontWeight: string;
-  fontAxisFontStyle: string;
-  fontAxisLetterSpacing: string;
-  fontAxisLineHeight: string;
-  fontAxisShortHand: string;
-  fontControlsLetterSpacing: string;
-  fontControlsShortHand: string;
-  fontLegendLetterSpacing: string;
-  fontLegendShortHand: string;
-  fontResultsSummaryLetterSpacing: string;
-  fontResultsSummaryShortHand: string;
-  effectFocusOutline: string;
-  effectFocus: string;
-  effectNone: string;
-  borderRadius300: string;
-  borderRadius400: string;
-  borderRadius500: string;
-  borderRadius600: string;
-  borderRadius700: string;
-  borderRadiusNone: string;
-  borderRadiusRound: string;
-}
-
-declare module "styled-components" {
-  // rome-ignore lint/suspicious/noEmptyInterface: <explanation>
-  export interface DefaultTheme extends ChartTheme {}
-}
+/**
+ * Generates an abstract chart from the given timeseries data.
+ */
+declare function generateFromTimeseries(input: TimeseriesSourceData): AbstractChart<Timeseries, Metric>;
+/**
+ * Generates an abstract chart from the given timeseries data.
+ */
+declare function generateFromTimeseriesAndEvents(input: TimeseriesAndEventsSourceData): AbstractChart<SeriesSource, Metric | ProviderEvent>;
 
 type CoreChartProps<S, P> = {
     /**
@@ -391,9 +478,9 @@ type CoreChartProps<S, P> = {
     gridColumnsShown?: boolean;
     /**
      * Customize the grid line style. (defaults to a solid line). This parameter is passed
-     * directly to the svg's stroke-dasharray attribute for several of the lines in the chart.
+     * directly to the SVG `stroke-dasharray` attribute for several of the lines in the chart.
      */
-    gridDashArray?: string;
+    gridDasharray?: string;
     /**
      * Show the grid row (horizontal) lines. (default: true)
      */
@@ -510,6 +597,7 @@ type ToggleTimeseriesEvent = {
 };
 
 type ChartControlsProps = {
+    children?: JSX.Element;
     graphType: GraphType;
     onChangeGraphType?: (graphType: GraphType) => void;
     onChangeStackingType?: (stackingType: StackingType) => void;
@@ -530,6 +618,11 @@ type MetricsChartProps = Omit<CoreChartProps<SeriesSource, Metric | ProviderEven
      * If not specified, several colors from the theme are used.
      */
     colors?: Array<string>;
+    /**
+     * Optional custom controls to show in the controls toolbar, in addition to
+     * the built-in controls (such as for toggling chart type).
+     */
+    customChartControls?: JSX.Element;
     /**
      * Optional events to display on the chart.
      */
@@ -561,4 +654,68 @@ type Props = Pick<CoreChartProps<Timeseries, Metric>, "onChangeTimeRange" | "are
 };
 declare function SparkChart({ areaGradientShown, colors, graphType, stackingType, timeRange, timeseriesData, onChangeTimeRange, }: Props): JSX.Element;
 
-export { Axis, ChartTheme, CloseTooltipFn, GraphType, Metric, MetricsChart, MetricsChartProps, OtelMetadata, ProviderEvent, SeriesSource, SparkChart, StackingType, TickFormatters, TickFormattersFactory, TimeRange, Timeseries, Timestamp, ToggleTimeseriesEvent, TooltipAnchor, VirtualElement };
+type FormatterKind = 
+/**
+ * Formats a number of bytes.
+ *
+ * ## Examples
+ *
+ * `0.1B`, `10B`, `10kB`.
+ */
+"bytes"
+/**
+ * Formats a duration expressed in seconds.
+ *
+ * ## Examples
+ *
+ * `0.1s`, `10s`, `2h47`.
+ */
+ | "duration"
+/**
+ * Formats a value with an optional exponent component, also referred to as
+ * "E notation".
+ *
+ * ## Examples
+ *
+ * `0.1`, `10`, `1.0e4`.
+ */
+ | "exponent"
+/**
+ * Formats a percentage value.
+ *
+ * ## Examples
+ *
+ * `0.1%`, `10%`, `10000%`.
+ */
+ | "percentage"
+/**
+ * Formats a value using scientific notation.
+ *
+ * ## Examples
+ *
+ * `100m`, `10`, `10k`.
+ */
+ | "scientific"
+/**
+ * Formats a time stamp expressed in seconds since the UNIX epoch.
+ *
+ * For brevity, the formatter omits the most significant parts of the time
+ * that are constant across the axis.
+ *
+ * Currently, only UTC formatting is supported.
+ *
+ * ## Examples
+ *
+ * `Fri 13`, `17:15`, `57.200`
+ */
+ | "time";
+type TickFormatter = (value: number) => string;
+declare function getFormatterForAxis(axis: Axis, kind: FormatterKind): TickFormatter;
+declare function getBytesFormatterForAxis(axis: Axis): TickFormatter;
+declare function getDurationFormatterForAxis(axis: Axis): TickFormatter;
+declare function getExponentFormatter(): TickFormatter;
+declare function getPercentageFormatter(): TickFormatter;
+declare function getScientificFormatterForAxis(axis: Axis): TickFormatter;
+declare function getTimeFormatterForAxis(axis: Axis): TickFormatter;
+
+export { AbstractChart, Area, AreaPoint, Axis, ButtonGroup, ChartTheme, CloseTooltipFn, ControlsSet, ControlsSetLabel, FormatterKind, GraphType, Icon, IconButton, Line, Metric, MetricsChart, MetricsChartProps, OtelMetadata, Point, ProviderEvent, Rectangle, SeriesSource, Shape, ShapeList, SparkChart, StackingType, TickFormatter, TickFormatters, TickFormattersFactory, TimeRange, Timeseries, TimeseriesAndEventsSourceData, TimeseriesSourceData, Timestamp, ToggleTimeseriesEvent, TooltipAnchor, VirtualElement, generateFromTimeseries, generateFromTimeseriesAndEvents, getBytesFormatterForAxis, getDurationFormatterForAxis, getExponentFormatter, getFormatterForAxis, getPercentageFormatter, getScientificFormatterForAxis, getTimeFormatterForAxis };

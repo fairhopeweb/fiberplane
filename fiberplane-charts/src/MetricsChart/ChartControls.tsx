@@ -11,6 +11,7 @@ import type { GraphType, StackingType } from "../providerTypes";
 import { preventDefault } from "../utils";
 
 export type ChartControlsProps = {
+  children?: JSX.Element;
   graphType: GraphType;
   onChangeGraphType?: (graphType: GraphType) => void;
   onChangeStackingType?: (stackingType: StackingType) => void;
@@ -22,6 +23,7 @@ export type ChartControlsProps = {
  * Control what kind fo chart you're viewing (and more)
  */
 export function ChartControls({
+  children,
   graphType,
   onChangeGraphType,
   onChangeStackingType,
@@ -34,7 +36,7 @@ export function ChartControls({
 
   return (
     <ControlsContainer>
-      <ControlsGroup key="core">
+      <ControlsGroup key="built_in">
         {onChangeGraphType && (
           <ControlsSet>
             <ControlsSetLabel>Type</ControlsSetLabel>
@@ -110,7 +112,7 @@ export function ChartControls({
           </ControlsSet>
         )}
       </ControlsGroup>
-      <ControlsGroup key="meta" />
+      {children && <ControlsGroup key="custom">{children}</ControlsGroup>}
     </ControlsContainer>
   );
 }

@@ -2,7 +2,7 @@ import { memo, useId } from "react";
 
 import type { Area } from "../../Mondrian";
 import type { CommonShapeProps } from "./types";
-import { createAreaPathDef } from "./paths/createAreaPathDef";
+import { createAreaPathDef } from "./paths";
 
 type Props<P> = CommonShapeProps & {
   area: Area<P>;
@@ -39,7 +39,7 @@ export const AreaShape = memo(function AreaShape<P>({
         stroke={color}
         strokeDasharray={area.strokeDasharray?.join(" ")}
         strokeWidth={focused ? 1.5 : 1}
-        fill={areaGradientShown ? gradientRef : "transparent"}
+        fill={areaGradientShown ? gradientRef : "none"}
       />
     </g>
   );
