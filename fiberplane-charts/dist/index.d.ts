@@ -1,10 +1,10 @@
 import * as styled_components from 'styled-components';
 import * as react from 'react';
 
-declare const ButtonGroup: styled_components.StyledComponent<"span", styled_components.DefaultTheme, {}, never>;
+declare const ButtonGroup: styled_components.StyledComponent<"span", any, {}, never>;
 
-declare const ControlsSet: styled_components.StyledComponent<"div", styled_components.DefaultTheme, {}, never>;
-declare const ControlsSetLabel: styled_components.StyledComponent<"span", styled_components.DefaultTheme, {}, never>;
+declare const ControlsSet: styled_components.StyledComponent<"div", any, {}, never>;
+declare const ControlsSetLabel: styled_components.StyledComponent<"span", any, {}, never>;
 
 declare const ICON_MAP: {
     readonly chart_bar: react.FunctionComponent<react.SVGProps<SVGSVGElement> & {
@@ -41,102 +41,59 @@ declare const IconButton: react.ForwardRefExoticComponent<react.ButtonHTMLAttrib
 } & react.RefAttributes<HTMLButtonElement>>;
 
 interface ChartTheme {
-  colorBackground: string;
-  colorForeground: string;
-  colorBase100: string;
-  colorBase200: string;
-  colorBase300: string;
-  colorBase400: string;
-  colorBase500: string;
-  colorBase600: string;
-  colorBase700: string;
-  colorBase800: string;
-  colorPrimary50: string;
-  colorPrimary100: string;
-  colorPrimary200: string;
-  colorPrimary300: string;
-  colorPrimary400: string;
-  colorPrimary500: string;
-  colorPrimary600: string;
-  colorPrimary700: string;
-  colorPrimary800: string;
-  colorPrimaryAlpha50: string;
-  colorPrimaryAlpha100: string;
-  colorPrimaryAlpha200: string;
-  colorPrimaryAlpha300: string;
-  colorPrimaryAlpha400: string;
-  colorSupport1100: string;
-  colorSupport1200: string;
-  colorSupport1300: string;
-  colorSupport1400: string;
-  colorSupport2100: string;
-  colorSupport2200: string;
-  colorSupport2300: string;
-  colorSupport2400: string;
-  colorSupport3100: string;
-  colorSupport3200: string;
-  colorSupport3300: string;
-  colorSupport3400: string;
-  colorSupport4100: string;
-  colorSupport4200: string;
-  colorSupport4300: string;
-  colorSupport4400: string;
-  colorSupport5100: string;
-  colorSupport5200: string;
-  colorSupport5300: string;
-  colorSupport5400: string;
-  colorSupport6100: string;
-  colorSupport6200: string;
-  colorSupport6300: string;
-  colorSupport6400: string;
-  colorSupport7100: string;
-  colorSupport7200: string;
-  colorSupport7300: string;
-  colorSupport7400: string;
-  colorSupport8100: string;
-  colorSupport8200: string;
-  colorSupport8300: string;
-  colorSupport8400: string;
-  colorSupport9100: string;
-  colorSupport9200: string;
-  colorSupport9300: string;
-  colorSupport9400: string;
-  colorSupport10100: string;
-  colorSupport10200: string;
-  colorSupport10300: string;
-  colorSupport10400: string;
-  colorSupport11100: string;
-  colorSupport11200: string;
-  colorSupport11300: string;
-  colorSupport11400: string;
-  fontAxisFontSize: string;
-  fontAxisFontFamily: string;
-  fontAxisFontWeight: string;
-  fontAxisFontStyle: string;
-  fontAxisLetterSpacing: string;
-  fontAxisLineHeight: string;
-  fontAxisShortHand: string;
-  fontControlsLetterSpacing: string;
-  fontControlsShortHand: string;
-  fontLegendLetterSpacing: string;
-  fontLegendShortHand: string;
-  fontResultsSummaryLetterSpacing: string;
-  fontResultsSummaryShortHand: string;
-  effectFocusOutline: string;
-  effectFocus: string;
-  effectNone: string;
-  borderRadius300: string;
-  borderRadius400: string;
-  borderRadius500: string;
-  borderRadius600: string;
-  borderRadius700: string;
-  borderRadiusNone: string;
-  borderRadiusRound: string;
-}
-
-declare module "styled-components" {
-  // rome-ignore lint/suspicious/noEmptyInterface: <explanation>
-  export interface DefaultTheme extends ChartTheme {}
+    axisColor?: string;
+    axisFontFamily?: string;
+    axisFontSize?: string;
+    axisFontStyle?: string;
+    axisFontWeight?: string;
+    axisLetterSpacing?: string;
+    buttonActiveBackgroundColor?: string;
+    buttonActiveColor?: string;
+    buttonBackgroundColor?: string;
+    buttonBorderRadius?: string;
+    buttonColor?: string;
+    buttonDisabledBackgroundColor?: string;
+    buttonDisabledColor?: string;
+    buttonFocusBackgroundColor?: string;
+    buttonFocusBorderColor?: string;
+    buttonFocusColor?: string;
+    buttonFocusOutline?: string;
+    buttonFont?: string;
+    buttonHoverBackgroundColor?: string;
+    buttonHoverColor?: string;
+    buttonGroupBackgroundColor?: string;
+    buttonGroupBorderRadius?: string;
+    /**
+     * The color to use for rendering events.
+     */
+    eventColor?: string;
+    /**
+     * The color to use for the gradient applied to an expandable event.
+     */
+    expandableGradientColor?: string;
+    /**
+     * The color applied to the grid lines.
+     */
+    gridStrokeColor?: string;
+    legendItemBorderRadius?: string;
+    legendItemCheckboxBorderRadius?: string;
+    legendItemCheckboxColor?: string;
+    legendItemColor?: string;
+    legendItemEmphasisBackgroundColor?: string;
+    legendItemEmphasisBorderRadius?: string;
+    legendItemEmphasisColor?: string;
+    legendItemEmphasisFont?: string;
+    legendItemFont?: string;
+    legendItemOnHoverBackgroundColor?: string;
+    legendItemOnHoverColor?: string;
+    legendResultsColor?: string;
+    legendResultsFont?: string;
+    legendResultsLetterSpacing?: string;
+    /**
+     * The colors to use for other shape lists (usually timeseries).
+     */
+    shapeListColors?: Array<string>;
+    targetLatencyColor?: string;
 }
 
 type GraphType = "bar" | "line";
@@ -502,10 +459,6 @@ type CoreChartProps<S, P> = {
      */
     gridShown?: boolean;
     /**
-     * Override the color of the grid lines. (defaults to the theme's grid color)
-     */
-    gridStrokeColor?: string;
-    /**
      * Handler that is invoked when the time range is changed.
      *
      * If no handler is specified, no UI for changing the time range is
@@ -625,12 +578,6 @@ type MetricsChartProps = Omit<CoreChartProps<SeriesSource, Metric | ProviderEven
      */
     chartControlsShown?: boolean;
     /**
-     * Override the colors to use for the timeseries.
-     *
-     * If not specified, several colors from the theme are used.
-     */
-    colors?: Array<string>;
-    /**
      * Optional custom controls to show in the controls toolbar, in addition to
      * the built-in controls (such as for toggling chart type).
      */
@@ -640,12 +587,6 @@ type MetricsChartProps = Omit<CoreChartProps<SeriesSource, Metric | ProviderEven
      */
     events?: Array<ProviderEvent>;
     /**
-     * Override for the color to use for events.
-     *
-     * If not specified, a color from the theme is used.
-     */
-    eventColor?: string;
-    /**
      * Show the legend. (default: true)
      */
     legendShown?: boolean;
@@ -654,18 +595,18 @@ type MetricsChartProps = Omit<CoreChartProps<SeriesSource, Metric | ProviderEven
      */
     stackingControlsShown?: boolean;
     /**
+     * Optional object containing theme overrides for the chart colors, fonts
+     * and button styles. If a property is not specified, the default value
+     * will be used.
+     */
+    chartTheme?: ChartTheme;
+    /**
      * Optional target latency to draw on the chart, in seconds.
      *
-     * You will also need to specify the `targetLatencyColor` for the latency
-     * to appear.
+     * You will also need to specify the `targetLatencyColor` in `ChartTheme`
+     * for the latency to appear.
      */
     targetLatency?: number;
-    /**
-     * The color to use for drawing target latencies.
-     *
-     * If not specified, no target latency can be drawn.
-     */
-    targetLatencyColor?: string;
 };
 
 declare function MetricsChart(props: MetricsChartProps): JSX.Element;
@@ -675,7 +616,7 @@ type Props = Pick<CoreChartProps<Timeseries, Metric>, "onChangeTimeRange" | "are
      * Override the colors for the timeseries. If not specified several colors
      * of the theme are used.
      */
-    colors?: Array<string>;
+    colors: Array<string>;
 };
 declare function SparkChart({ areaGradientShown, colors, graphType, stackingType, timeRange, timeseriesData, onChangeTimeRange, }: Props): JSX.Element;
 

@@ -1,19 +1,71 @@
-import styled, { css, useTheme } from 'styled-components';
-import { jsx, jsxs, Fragment } from 'react/jsx-runtime';
 import * as React from 'react';
-import { forwardRef, createContext, useRef, useCallback, useState, useEffect, useReducer, useMemo, useLayoutEffect, memo, useId, useContext, Fragment as Fragment$1 } from 'react';
+import { createContext, useContext, forwardRef, useRef, useCallback, useState, useEffect, useReducer, useMemo, useLayoutEffect, memo, useId, Fragment as Fragment$1 } from 'react';
+import styled, { css } from 'styled-components';
+import { jsx, jsxs, Fragment } from 'react/jsx-runtime';
 import { debounce } from 'throttle-debounce';
 import { useMotionValue, animate } from 'framer-motion';
 import { VariableSizeList } from 'react-window';
 
-const ButtonGroup = styled.span`
-  display: flex;
-  gap: 8px;
-  align-items: center;
-  padding: 4px 8px;
-  background: ${({ theme  })=>theme.colorBase200};
-  border-radius: ${({ theme  })=>theme.borderRadius500};
-`;
+const defaultChartTheme = {
+    axisColor: "#a4a4a4",
+    axisFontFamily: "inherit",
+    axisFontSize: "12px",
+    axisFontStyle: "normal",
+    axisFontWeight: "400",
+    axisLetterSpacing: "inherit",
+    buttonActiveBackgroundColor: "#606266",
+    buttonActiveColor: "white",
+    buttonBackgroundColor: "transparent",
+    buttonBorderRadius: "6px",
+    buttonColor: "#1f2023",
+    buttonDisabledBackgroundColor: "transparent",
+    buttonDisabledColor: "#a4a4a4",
+    buttonFocusBackgroundColor: "white",
+    buttonFocusBorderColor: "#285fff",
+    buttonFocusColor: "#606266",
+    buttonFocusOutline: "rgb(183, 201, 255) solid 2px",
+    buttonFont: "normal 600 14px / 16px sans-serif",
+    buttonGroupBackgroundColor: "#f3f3f3",
+    buttonGroupBorderRadius: "6px",
+    buttonHoverBackgroundColor: "#e7e7e7",
+    buttonHoverColor: "#1f2023",
+    eventColor: "#285fff",
+    expandableGradientColor: "rgb(255 255 255 / 75%)",
+    gridStrokeColor: "#e7e7e7",
+    legendItemBorderRadius: "6px",
+    legendItemCheckboxBorderRadius: "4px",
+    legendItemCheckboxColor: "#285fff",
+    legendItemColor: "black",
+    legendItemEmphasisBackgroundColor: "#f3f3f3",
+    legendItemEmphasisBorderRadius: "4px",
+    legendItemEmphasisColor: "black",
+    legendItemEmphasisFont: "inherit",
+    legendItemFont: "inherit",
+    legendItemOnHoverBackgroundColor: "#a4a4a4",
+    legendItemOnHoverColor: "inherit",
+    legendResultsColor: "inherit",
+    legendResultsFont: "inherit",
+    legendResultsLetterSpacing: "inherit",
+    shapeListColors: [
+        "#c00eae",
+        "#23304a",
+        "#cf3411"
+    ],
+    targetLatencyColor: "inherit"
+};
+const ChartThemeContext = createContext(defaultChartTheme);
+
+const ButtonGroup = styled.span(()=>{
+    const theme = useContext(ChartThemeContext);
+    return css`
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    padding: 4px 8px;
+    background: ${theme.buttonGroupBackgroundColor};
+    border-radius: ${theme.buttonGroupBorderRadius};
+  `;
+});
 
 const Box = styled.div`
   box-sizing: border-box;
@@ -38,11 +90,13 @@ const ControlsSet = styled.div`
   gap: 8px;
   align-items: center;
 `;
-const ControlsSetLabel = styled.span`
-  font: ${({ theme  })=>theme.fontControlsShortHand};
-  letter-spacing: ${({ theme  })=>theme.fontControlsLetterSpacing};
-  color: ${({ theme  })=>theme.colorBase500};
-`;
+const ControlsSetLabel = styled.span(()=>{
+    const theme = useContext(ChartThemeContext);
+    return css`
+    font: ${theme.buttonFont};
+    color: ${theme.buttonColor};
+  `;
+});
 
 var _path$6;
 function _extends$6() { _extends$6 = Object.assign ? Object.assign.bind() : function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; }; return _extends$6.apply(this, arguments); }
@@ -172,10 +226,12 @@ function Icon({ type , ...svgProps }) {
     });
 }
 
-const buttonStyling = css`
+const buttonStyling = css(()=>{
+    const theme = useContext(ChartThemeContext);
+    return css`
     --color: var(--button-normal-color);
     --backgroundColor: var(--button-normal-backgroundColor);
-  
+
     outline: none;
     cursor: pointer;
     display: inline-flex;
@@ -184,7 +240,7 @@ const buttonStyling = css`
     transition-property: background-color, border-color;
     transition-duration: 0.2s;
     transition-timing-function: linear;
-    border-radius: ${({ theme  })=>theme.borderRadius500};
+    border-radius: ${theme.buttonBorderRadius};
     box-sizing: border-box;
     height: var(--icon-button-height, 20px);
     width: var(--icon-button-width, 20px);
@@ -192,71 +248,48 @@ const buttonStyling = css`
     color: var(--color);
     background-color: var(--background);
     border: 1px solid var(--background);
-  
+
     :focus,
     :hover,
     :active,
     .active {
       cursor: pointer;
     }
-  
+
     :focus {
-      border-color: ${({ theme  })=>theme.colorPrimary500};
-      outline: ${({ theme  })=>theme.effectFocusOutline};
-  
+      border-color: ${theme.buttonFocusBorderColor};
+      outline: ${theme.buttonFocusOutline};
+
       --background: var(--button-focus-backgroundColor);
       --color: var(--button-focus-color);
     }
-  
+
     &:disabled {
       cursor: default;
-  
+
       --color: var(--button-disabled-color);
       --background: var(--button-disabled-backgroundColor);
     }
-  
+
     &.active,
     &:active:not([data-dragging], [disabled]) {
       --background: var(--button-active-backgroundColor);
       --color: var(--button-active-color);
     }
-  
+
     :hover:not([data-disabled][data-dragging], [disabled]) {
       --background: var(--button-hover-backgroundColor);
       --color: var(--button-hover-color);
       border: none;
     }
-  
+
     & svg {
       flex: 0 0 var(--icon-button-icon-size);
       width: var(--icon-button-icon-size);
       height: var(--icon-button-icon-size);
     }
   `;
-function useIconButtonTheme(theme) {
-    return {
-        normal: {
-            color: theme.colorBase800,
-            backgroundColor: "transparent"
-        },
-        hover: {
-            color: theme.colorBase800,
-            backgroundColor: theme.colorBase300
-        },
-        active: {
-            color: theme.colorBackground,
-            backgroundColor: theme.colorBase600
-        },
-        focus: {
-            color: theme.colorBase600,
-            backgroundColor: theme.colorBackground
-        },
-        disabled: {
-            color: theme.colorBase500,
-            backgroundColor: "transparent"
-        }
-    };
-}
+});
 const StyledButton = styled.button`
   ${buttonStyling}
 `;
@@ -268,24 +301,23 @@ const buttonSize = {
 };
 const IconButton = /*#__PURE__*/ forwardRef(function IconButton(props, ref) {
     const { className ="" , style ={} , active =false , children , ...otherProps } = props;
-    const theme = useTheme();
-    const iconButtonTheme = useIconButtonTheme(theme);
+    const theme = useContext(ChartThemeContext);
     const newStyle = {
         ...style,
         "--icon-button-padding": buttonSize.padding,
         "--icon-button-width": buttonSize.width,
         "--icon-button-height": buttonSize.height,
         "--icon-button-icon-size": buttonSize.iconSize,
-        "--button-normal-color": iconButtonTheme.normal.color,
-        "--button-normal-backgroundColor": iconButtonTheme.normal.backgroundColor,
-        "--button-hover-color": iconButtonTheme.hover.color,
-        "--button-hover-backgroundColor": iconButtonTheme.hover.backgroundColor,
-        "--button-active-color": iconButtonTheme.active.color,
-        "--button-active-backgroundColor": iconButtonTheme.active.backgroundColor,
-        "--button-focus-color": iconButtonTheme.focus.color,
-        "--button-focus-backgroundColor": iconButtonTheme.focus.backgroundColor,
-        "--button-disabled-color": iconButtonTheme.disabled.color,
-        "--button-disabled-backgroundColor": iconButtonTheme.disabled.backgroundColor
+        "--button-normal-color": theme.buttonColor,
+        "--button-normal-backgroundColor": theme.buttonBackgroundColor,
+        "--button-hover-color": theme.buttonHoverColor,
+        "--button-hover-backgroundColor": theme.buttonHoverBackgroundColor,
+        "--button-active-color": theme.buttonActiveColor,
+        "--button-active-backgroundColor": theme.buttonActiveBackgroundColor,
+        "--button-focus-color": theme.buttonFocusColor,
+        "--button-focus-backgroundColor": theme.buttonFocusBackgroundColor,
+        "--button-disabled-color": theme.buttonDisabledColor,
+        "--button-disabled-backgroundColor": theme.buttonDisabledBackgroundColor
     };
     const elementProps = {
         ...otherProps,
@@ -633,21 +665,23 @@ const Expand = styled.div`
     background: rgba(71, 151, 255, 30%);
   }
 `;
-const Gradient = styled.div`
-  width: 100%;
-  position: absolute;
-  bottom: 0;
-  height: 39px;
-  background-image: linear-gradient(
-    to bottom,
-    transparent,
-  /* FIXME: This var supports style overrides for dark mode */
-    var(--fp-expandable-fade-color, rgb(255 255 255 / 75%)) 50%
-  );
+const Gradient = styled.div(()=>{
+    const theme = useContext(ChartThemeContext);
+    return css`
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    height: 39px;
+    background-image: linear-gradient(
+      to bottom,
+      transparent,
+      ${theme.expandableGradientColor} 50%
+    );
 
-  border-bottom-right-radius: 6px;
-  pointer-events: none;
-`;
+    border-bottom-right-radius: 6px;
+    pointer-events: none;
+  `;
+});
 // The container is sticky, but zero height to prevent the gradient itself
 // from reserving any space.
 const GradientContainer = styled.div`
@@ -1026,7 +1060,7 @@ function ChartContent({ areaGradientShown , chart , focusedShapeList , getShapeL
 
 const LABEL_OFFSET = 8;
 function BottomAxis({ formatter , scales: { xMax , xScale , yMax  } , strokeColor , strokeDasharray , ticks , xAxis: { maxValue , minValue  }  }) {
-    const { colorBase500 , fontAxisFontSize , fontAxisFontFamily , fontAxisFontStyle , fontAxisFontWeight , fontAxisLetterSpacing  } = useTheme();
+    const { axisColor , axisFontSize , axisFontFamily , axisFontStyle , axisFontWeight , axisLetterSpacing  } = useContext(ChartThemeContext);
     return /*#__PURE__*/ jsxs("g", {
         transform: `translate(0, ${yMax})`,
         children: [
@@ -1040,14 +1074,14 @@ function BottomAxis({ formatter , scales: { xMax , xScale , yMax  } , strokeColo
             }),
             ticks.map((time, index)=>/*#__PURE__*/ jsx("text", {
                     x: xScale((time - minValue) / (maxValue - minValue)),
-                    y: fontAxisFontSize,
+                    y: axisFontSize,
                     dy: LABEL_OFFSET,
-                    fill: colorBase500,
-                    fontFamily: fontAxisFontFamily,
-                    fontStyle: fontAxisFontStyle,
-                    fontWeight: fontAxisFontWeight,
-                    fontSize: fontAxisFontSize,
-                    letterSpacing: fontAxisLetterSpacing,
+                    fill: axisColor,
+                    fontFamily: axisFontFamily,
+                    fontStyle: axisFontStyle,
+                    fontWeight: axisFontWeight,
+                    fontSize: axisFontSize,
+                    letterSpacing: axisLetterSpacing,
                     textAnchor: "middle",
                     children: formatter(time)
                 }, index))
@@ -1127,17 +1161,17 @@ function GridRows({ xMax , yScale , yTicks , ...lineProps }) {
 }
 
 function LeftAxis({ formatter , gridBordersShown , scales: { yMax , yScale  } , strokeColor , strokeDasharray , ticks  }) {
-    const { colorBase500 , fontAxisFontSize , fontAxisFontFamily , fontAxisFontStyle , fontAxisFontWeight , fontAxisLetterSpacing  } = useTheme();
+    const { axisColor , axisFontSize , axisFontFamily , axisFontStyle , axisFontWeight , axisLetterSpacing  } = useContext(ChartThemeContext);
     const tickLabelProps = {
         dx: "-0.45em",
         dy: "0.25em",
         textAnchor: "end",
-        fontFamily: fontAxisFontFamily,
-        fontStyle: fontAxisFontStyle,
-        fontWeight: fontAxisFontWeight,
-        fontSize: fontAxisFontSize,
-        letterSpacing: fontAxisLetterSpacing,
-        fill: colorBase500
+        fontFamily: axisFontFamily,
+        fontStyle: axisFontStyle,
+        fontWeight: axisFontWeight,
+        fontSize: axisFontSize,
+        letterSpacing: axisLetterSpacing,
+        fill: axisColor
     };
     const numTicks = ticks.length - 1;
     return /*#__PURE__*/ jsxs("g", {
@@ -1161,10 +1195,9 @@ function LeftAxis({ formatter , gridBordersShown , scales: { yMax , yScale  } , 
     });
 }
 
-const GridWithAxes = /*#__PURE__*/ memo(function GridWithAxes({ chart , gridColumnsShown =true , gridRowsShown =true , gridBordersShown =true , gridDasharray , gridStrokeColor , scales , tickFormatters  }) {
+const GridWithAxes = /*#__PURE__*/ memo(function GridWithAxes({ chart , gridColumnsShown =true , gridRowsShown =true , gridBordersShown =true , gridDasharray , scales , tickFormatters  }) {
     const { xMax , xScale , yMax  } = scales;
-    const { colorBase300  } = useTheme();
-    const strokeColor = gridStrokeColor || colorBase300;
+    const { gridStrokeColor  } = useContext(ChartThemeContext);
     const { xAxis , yAxis  } = chart;
     const minValue = useCustomSpring(yAxis.minValue);
     const maxValue = useCustomSpring(yAxis.maxValue);
@@ -1188,7 +1221,7 @@ const GridWithAxes = /*#__PURE__*/ memo(function GridWithAxes({ chart , gridColu
     return /*#__PURE__*/ jsxs(Fragment, {
         children: [
             gridRowsShown && /*#__PURE__*/ jsx(GridRows, {
-                stroke: strokeColor,
+                stroke: gridStrokeColor,
                 strokeDasharray: gridDasharray,
                 xMax: xMax,
                 yScale: animatedScale,
@@ -1199,12 +1232,12 @@ const GridWithAxes = /*#__PURE__*/ memo(function GridWithAxes({ chart , gridColu
                 x2: xMax,
                 y1: 0,
                 y2: yMax,
-                stroke: strokeColor,
+                stroke: gridStrokeColor,
                 strokeDasharray: gridDasharray
             }),
             gridColumnsShown && /*#__PURE__*/ jsx(GridColumns, {
                 scales: scales,
-                stroke: strokeColor,
+                stroke: gridStrokeColor,
                 strokeDasharray: gridDasharray,
                 xAxis: xAxis,
                 xTicks: xTicks
@@ -1212,7 +1245,7 @@ const GridWithAxes = /*#__PURE__*/ memo(function GridWithAxes({ chart , gridColu
             /*#__PURE__*/ jsx(BottomAxis, {
                 formatter: tickFormatters.xFormatter,
                 scales: scales,
-                strokeColor: strokeColor,
+                strokeColor: gridStrokeColor,
                 strokeDasharray: gridDasharray,
                 ticks: xTicks,
                 xAxis: xAxis
@@ -1224,7 +1257,7 @@ const GridWithAxes = /*#__PURE__*/ memo(function GridWithAxes({ chart , gridColu
                     ...scales,
                     yScale: animatedScale
                 },
-                strokeColor: strokeColor,
+                strokeColor: gridStrokeColor,
                 strokeDasharray: gridDasharray,
                 ticks: yTicks
             })
@@ -2718,16 +2751,19 @@ function TimeseriesLegendItem({ color , onHover , onToggleTimeseriesVisibility ,
             toggleTimeseriesVisibility(event);
         }
     };
+    const chartTheme = useContext(ChartThemeContext);
     return /*#__PURE__*/ jsx("div", {
         ref: ref,
         style: style,
         onClick: toggleTimeseriesVisibility,
         onKeyDown: onKeyDown,
         children: /*#__PURE__*/ jsxs(LegendItemContainer, {
+            $chartTheme: chartTheme,
             onMouseOver: timeseries.visible ? onHover : noop,
             interactive: !readOnly && onToggleTimeseriesVisibility !== undefined,
             children: [
                 /*#__PURE__*/ jsx(ColorBlock, {
+                    $chartTheme: chartTheme,
                     color: color,
                     selected: timeseries.visible,
                     children: timeseries.visible && /*#__PURE__*/ jsx(Icon, {
@@ -2747,6 +2783,7 @@ function TimeseriesLegendItem({ color , onHover , onToggleTimeseriesVisibility ,
 const FormattedTimeseries = /*#__PURE__*/ memo(function FormattedTimeseries({ metric , emphasizedKeys =[]  }) {
     const { name , labels  } = metric;
     const labelEntries = sortBy(Object.entries(labels), ([key])=>key);
+    const chartTheme = useContext(ChartThemeContext);
     return /*#__PURE__*/ jsxs(Text, {
         children: [
             name && `${name}: `,
@@ -2760,6 +2797,7 @@ const FormattedTimeseries = /*#__PURE__*/ memo(function FormattedTimeseries({ me
                                 value && [
                                     ": ",
                                     emphasizedKeys.includes(key) ? /*#__PURE__*/ jsx(Emphasis, {
+                                        $chartTheme: chartTheme,
                                         children: value
                                     }, key) : value
                                 ]
@@ -2770,56 +2808,46 @@ const FormattedTimeseries = /*#__PURE__*/ memo(function FormattedTimeseries({ me
         ]
     });
 });
-const ColorBlock = styled.div`
-    background: ${({ color , selected  })=>selected ? color : "transparent"};
-    border: 2px solid ${({ color  })=>color};
+const ColorBlock = styled.div(({ $chartTheme , color , selected  })=>css`
+    background: ${selected ? color : "transparent"};
+    border: 2px solid ${color};
     width: 14px;
     height: 14px;
     display: flex;
     align-items: center;
     justify-content: center;
-    color: ${({ theme  })=>theme.colorBackground};
-    border-radius: ${({ theme  })=>theme.borderRadius400};
-`;
-const Emphasis = styled.span`
-    /* FIXME: These vars are to support style overrides for dark mode */
-    background-color: var(
-        --fp-chart-legend-emphasis-bg,
-        ${({ theme  })=>theme.colorBase200}
-    );
-    color: var(--fp-chart-legend-emphasis-color, currentColor);
-    /* TODO (Jacco): we should try and find out what to do with this styling */
-    /* stylelint-disable-next-line scale-unlimited/declaration-strict-value */
-    font-weight: 600;
-    border-radius: ${({ theme  })=>theme.borderRadius500};
+    color: ${$chartTheme.legendItemCheckboxColor};
+    border-radius: ${$chartTheme.legendItemCheckboxBorderRadius};
+  `);
+const Emphasis = styled.span(({ $chartTheme  })=>css`
+    background-color: ${$chartTheme.legendItemEmphasisBackgroundColor};
+    color: ${$chartTheme.legendItemEmphasisColor};
+    font: ${$chartTheme.legendItemEmphasisFont};
+    border-radius: ${$chartTheme.legendItemEmphasisBorderRadius};
     padding: 1px 4px;
     display: inline-block;
-`;
-const InteractiveItemStyling = css`
-    cursor: pointer;
-
-    &:hover {
-        /* FIXME: These vars are to support style overrides for dark mode */
-        background: var(
-            --fp-chart-legend-hover-bg,
-            ${({ theme  })=>theme.colorPrimaryAlpha100}
-        );
-        color: var(--fp-chart-legend-hover-color, currentColor);
-    }
-`;
-const LegendItemContainer = styled(Container)`
-    border-radius: ${({ theme  })=>theme.borderRadius500};
+  `);
+const LegendItemContainer = styled(Container)(({ $chartTheme , interactive  })=>css`
+    border-radius: ${$chartTheme.legendItemBorderRadius};
     display: flex;
     align-items: center;
-    font: ${({ theme  })=>theme.fontAxisShortHand};
+    font: ${$chartTheme.legendItemFont};
+    color: ${$chartTheme.legendItemColor};
     padding: 8px 8px 8px 14px;
     gap: 10px;
     word-wrap: anywhere;
 
-    ${({ interactive  })=>interactive && InteractiveItemStyling}
-`;
+    ${interactive && css`
+        cursor: pointer;
+
+        &:hover {
+            background: ${$chartTheme.legendItemOnHoverBackgroundColor};
+            color: ${$chartTheme.legendItemOnHoverColor};
+        }
+      `}
+  `);
 const Text = styled.div`
-    flex: 1;
+  flex: 1;
 `;
 
 const DEFAULT_HEIGHT = 293;
@@ -2913,42 +2941,50 @@ function TimeseriesLegend({ footerShown =true , getShapeListColor , onFocusedSha
     });
 }
 const Footer = styled.div`
-    width: 100%;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
+  width: 100%;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 `;
 const ChartLegendContainer = styled(Container)`
-    flex-direction: column;
-    font: ${({ theme  })=>theme.fontLegendShortHand};
-    letter-spacing: ${({ theme  })=>theme.fontLegendLetterSpacing};
-    letter-spacing: 0.02em;
-    padding: 10px 0 0;
-    position: relative;
-    word-wrap: break-word;
+  flex-direction: column;
+  padding: 10px 0 0;
+  position: relative;
+  word-wrap: break-word;
 `;
-const Results = styled.span`
-    font: ${({ theme  })=>theme.fontResultsSummaryShortHand};
-    letter-spacing: ${({ theme  })=>theme.fontResultsSummaryLetterSpacing};
-    color: ${({ theme  })=>theme.colorBase400};
-`;
+const Results = styled.span(()=>{
+    const theme = useContext(ChartThemeContext);
+    return css`
+    font: ${theme.legendResultsFont};
+    letter-spacing: ${theme.legendResultsLetterSpacing};
+    color: ${theme.legendResultsColor};
+  `;
+});
 
 function MetricsChart(props) {
-    return /*#__PURE__*/ jsx(StyledChartSizeContainerProvider$1, {
-        overrideHeight: HEIGHT,
-        marginTop: MARGINS.top,
-        marginRight: MARGINS.right,
-        marginBottom: MARGINS.bottom,
-        marginLeft: MARGINS.left,
-        children: /*#__PURE__*/ jsx(InnerMetricsChart, {
-            ...props
+    const chartTheme = useMemo(()=>({
+            ...defaultChartTheme,
+            ...props.chartTheme
+        }), [
+        props.chartTheme
+    ]);
+    return /*#__PURE__*/ jsx(ChartThemeContext.Provider, {
+        value: chartTheme,
+        children: /*#__PURE__*/ jsx(StyledChartSizeContainerProvider$1, {
+            overrideHeight: HEIGHT,
+            marginTop: MARGINS.top,
+            marginRight: MARGINS.right,
+            marginBottom: MARGINS.bottom,
+            marginLeft: MARGINS.left,
+            children: /*#__PURE__*/ jsx(InnerMetricsChart, {
+                ...props
+            })
         })
     });
 }
 const InnerMetricsChart = /*#__PURE__*/ memo(function InnerMetricsChart(props) {
-    const theme = useTheme();
-    const { areaGradientShown =true , chartControlsShown =true , colors , customChartControls , events , eventColor =theme.colorPrimary400 , graphType , legendShown =true , readOnly , stackingControlsShown =true , stackingType , targetLatency , targetLatencyColor , timeRange , timeseriesData  } = props;
+    const { areaGradientShown =true , chartControlsShown =true , customChartControls , events , graphType , legendShown =true , readOnly , stackingControlsShown =true , stackingType , targetLatency , timeRange , timeseriesData  } = props;
     const chart = useMemo(()=>generate({
             events: events ?? [],
             graphType,
@@ -2964,21 +3000,9 @@ const InnerMetricsChart = /*#__PURE__*/ memo(function InnerMetricsChart(props) {
         timeRange,
         timeseriesData
     ]);
+    const { eventColor , shapeListColors , targetLatencyColor  } = useContext(ChartThemeContext);
     const [focusedShapeList, setFocusedShapeList] = useState(null);
     const getShapeListColor = useMemo(()=>{
-        const shapeListColors = colors || [
-            theme["colorSupport1400"],
-            theme["colorSupport2400"],
-            theme["colorSupport3400"],
-            theme["colorSupport4400"],
-            theme["colorSupport5400"],
-            theme["colorSupport6400"],
-            theme["colorSupport7400"],
-            theme["colorSupport8400"],
-            theme["colorSupport9400"],
-            theme["colorSupport10400"],
-            theme["colorSupport11400"]
-        ];
         return (source, index)=>{
             switch(source.type){
                 case "timeseries":
@@ -2990,10 +3014,9 @@ const InnerMetricsChart = /*#__PURE__*/ memo(function InnerMetricsChart(props) {
             }
         };
     }, [
-        colors,
         eventColor,
-        targetLatencyColor,
-        theme
+        shapeListColors,
+        targetLatencyColor
     ]);
     const onFocusedShapeListChange = useHandler((shapeList)=>{
         if (!shapeList || isTimeseriesShapeList(shapeList)) {
@@ -3034,7 +3057,6 @@ function isTimeseriesShapeList(shapeList) {
 }
 
 function SparkChart({ areaGradientShown =false , colors , graphType , stackingType , timeRange , timeseriesData , onChangeTimeRange  }) {
-    const theme = useTheme();
     const chart = useMemo(()=>generateFromTimeseries({
             graphType,
             stackingType,
@@ -3048,23 +3070,9 @@ function SparkChart({ areaGradientShown =false , colors , graphType , stackingTy
         timeseriesData
     ]);
     const getShapeListColor = useMemo(()=>{
-        const shapeListColors = colors || [
-            theme["colorSupport1400"],
-            theme["colorSupport2400"],
-            theme["colorSupport3400"],
-            theme["colorSupport4400"],
-            theme["colorSupport5400"],
-            theme["colorSupport6400"],
-            theme["colorSupport7400"],
-            theme["colorSupport8400"],
-            theme["colorSupport9400"],
-            theme["colorSupport10400"],
-            theme["colorSupport11400"]
-        ];
-        return (_source, index)=>shapeListColors[index % shapeListColors.length];
+        return (_source, index)=>colors[index % colors.length];
     }, [
-        colors,
-        theme
+        colors
     ]);
     return /*#__PURE__*/ jsx(StyledChartSizeContainerProvider, {
         children: /*#__PURE__*/ jsx(CoreChart, {
