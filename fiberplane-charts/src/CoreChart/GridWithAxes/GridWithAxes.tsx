@@ -16,6 +16,7 @@ import { GridRows } from "./GridRows";
 import { LeftAxis } from "./LeftAxis";
 import type { Scale, Scales, TickFormatters } from "../types";
 import { ChartThemeContext } from "../../theme";
+import { noop } from "../../utils";
 
 type Props = {
   chart: AbstractChart<unknown, unknown>;
@@ -24,6 +25,7 @@ type Props = {
   gridBordersShown?: boolean;
   gridDasharray?: string;
   scales: Scales;
+  shouldAnimateYScale?: boolean;
   tickFormatters: TickFormatters;
 };
 
@@ -34,6 +36,7 @@ export const GridWithAxes = memo(function GridWithAxes({
   gridBordersShown = true,
   gridDasharray,
   scales,
+  shouldAnimateYScale,
   tickFormatters,
 }: Props) {
   const { xMax, xScale, yMax } = scales;
@@ -41,8 +44,8 @@ export const GridWithAxes = memo(function GridWithAxes({
   const { gridStrokeColor } = useContext(ChartThemeContext);
 
   const { xAxis, yAxis } = chart;
-  const minValue = useCustomSpring(yAxis.minValue);
-  const maxValue = useCustomSpring(yAxis.maxValue);
+  const minValue = useCustomSpring(yAxis.minValue, shouldAnimateYScale);
+  const maxValue = useCustomSpring(yAxis.maxValue, shouldAnimateYScale);
 
   const animatedScale = createLinearScaleForRangeWithCustomDomain(
     [yMax, 0],
@@ -242,7 +245,7 @@ const spring: Tween = {
   easings: ["anticipate"],
 };
 
-function useCustomSpring(value: number) {
+function useCustomSpring(value: number, shouldAnimate = true) {
   const motionValue = useMotionValue(value);
   const [current, setCurrent] = useState(value);
 
@@ -251,9 +254,15 @@ function useCustomSpring(value: number) {
   }, [motionValue]);
 
   useEffect(() => {
-    const controls = animate(motionValue, value, spring);
-    return controls.stop;
-  }, [motionValue, value]);
+    if (shouldAnimate) {
+      const controls = animate(motionValue, value, spring);
+      return controls.stop;
+    }
+
+    setCurrent(value);
+
+    return noop;
+  }, [motionValue, value, shouldAnimate]);
 
   return current;
 }
