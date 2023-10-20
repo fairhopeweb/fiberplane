@@ -15,7 +15,7 @@ major version hasn't changed.
 
 ## [Unreleased]
 
-TBD
+- `fiberplane-charts': Fix issue where SparkCharts would still get some grid lines.
 
 ## [v1.0.0-beta.6] - 2023-10-18
 
