@@ -22,6 +22,9 @@ major version hasn't changed.
   `UpdateTemplate` payloads. Consequence of the change above, templates will describe the front
   matter they use exclusively in their body now, not through extra API handling. Therefore the field
   is not necessary.
+- `API` schema: Add routes to manipulate the front matter schema granularly.
+- `fiberplane-api-client`: Add methods to manipulate the front matter schema granularly.
+- `fiberplane-models`: Add structures to support the new front matter endpoints.
 - `fiberplane-ui`: Reduce UI library theming complexity & add fallback values.
 - `fiberplane-templates`: Add jsonnet functions in `fiberplane.libsonnet` to allow templates to manipulate
   front matter when creating a notebook.
