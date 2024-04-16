@@ -484,6 +484,47 @@ local notebook = {
       self
     ),
 
+    /**
+     * Add a front matter value and schema to the notebook. Recommended to be
+     * used with the `frontmatter.*` helpers.
+     *
+     * @function notebook.Notebook#addFrontMatter
+     * @param {object} value - Map of frontMatter and frontMatterSchema to add to the notebook.
+     * @returns {notebook.Notebook}
+     *
+     * @example notebook.addFrontMatter(
+     *   frontMatter.pagerdutyIncident(pagerduty_frontmatter)
+     * )
+     */
+    addFrontMatter(value):: self {
+      frontMatter+: value.frontMatter,
+      frontMatterSchema+: value.frontMatterSchema,
+    },
+
+  },
+};
+
+local frontMatter = {
+  /**
+    * Creates a PagerDuty Incident frontmatter value and schema.
+    *
+    * @function frontMatter.pagerdutyIncident
+    * @param {string} frontMatterValue - The value of the front matter as defined by the api. Recommended to use the value provided by the PagerDuty integration.
+    * @param {string} key - The key of the front matter entry
+    * @param {string} displayName - The display name of the front matter entry
+    * @returns {object}
+    */
+  pagerdutyIncident(frontMatterValue, key='pagerduty_incident', displayName='PagerDuty Incident'):: {
+    frontMatterSchema: [{
+      key: key,
+      schema: {
+        type: 'pagerduty_incident',
+        displayName: displayName,
+      },
+    }],
+    frontMatter: {
+      [key]: frontMatterValue,
+    },
   },
 };
 
@@ -869,4 +910,15 @@ local snippet = function(cells)
    * @borrows format.FormattedContent#link as link
    */
   format: formattedContent(),
+
+  /**
+   * Functions for creating frontmatter
+   * @namespace frontMatter
+   *
+   * @example <caption>Adding a PagerDuty incident to a notebook</caption>
+   * notebook.addFrontMatter(
+   *   frontMatter.pagerdutyIncident(pagerduty_frontmatter)
+   * )
+   */
+  frontMatter: frontMatter,
 }
