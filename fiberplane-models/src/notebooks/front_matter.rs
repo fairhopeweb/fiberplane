@@ -80,7 +80,7 @@ pub enum FrontMatterValue {
 
     /// A PagerDuty incident front matter value
     #[serde(rename = "pagerduty_incident")]
-    PagerDutyIncident(FrontMatterPagerDutyIncident),
+    PagerDutyIncident(Box<FrontMatterPagerDutyIncident>),
 
     /// A GitHub pull request front matter value
     #[serde(rename = "github_pull_request")]
@@ -619,8 +619,11 @@ impl std::ops::Deref for FrontMatterUserList {
 #[non_exhaustive]
 #[serde(rename_all = "camelCase")]
 pub struct FrontMatterPagerDutyIncident {
-    /// Incident ID
+    /// Unique incident ID
     pub incident_id: String,
+
+    /// User friendly identifier for the incident
+    pub number: u64,
 
     /// Title as indicated by PagerDuty
     pub title: String,
@@ -629,17 +632,52 @@ pub struct FrontMatterPagerDutyIncident {
     pub status: String,
 
     /// The date the incident was created
-    pub creation_date: Timestamp,
+    #[builder(default = Timestamp::now_utc(), setter(into))]
+    pub created_at: Timestamp,
 
-    /// Incident URL
-    #[builder(default, setter())]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    pub html_url: Option<String>,
+    /// Timestamp that the PagerDuty receiver was last updated.
+    #[builder(default = Timestamp::now_utc(), setter(into))]
+    pub updated_at: Timestamp,
+
+    /// Timestamp that the PagerDuty receiver was last updated.
+    #[builder(default, setter(into))]
+    pub resolved_at: Option<Timestamp>,
+
+    /// URL to the incident api endpoint
+    pub api_url: String,
+
+    /// URL to the incident web page
+    pub html_url: String,
+
+    /// The incident key is used to deduplicate incidents.
+    pub incident_key: String,
+
+    /// The service that the incident is associated with
+    #[builder(default, setter(into))]
+    pub service: Option<PagerDutyResourceReference>,
+
+    #[builder(default, setter(into))]
+    pub escalation_policy: Option<PagerDutyResourceReference>,
+
+    #[builder(default, setter(into))]
+    pub priority: Option<PagerDutyResourceReference>,
+
+    #[builder(default, setter(into))]
+    pub urgency: Option<String>,
+
+    #[builder(default, setter(into))]
+    pub resolve_reason: Option<String>,
+
+    #[builder(default, setter(into))]
+    pub assignees: Option<String>,
+
+    #[builder(default, setter(into))]
+    pub teams: Option<String>,
 }
 
 impl From<FrontMatterPagerDutyIncident> for FrontMatterValue {
     fn from(v: FrontMatterPagerDutyIncident) -> Self {
-        Self::PagerDutyIncident(v)
+        Self::PagerDutyIncident(Box::new(v))
     }
 }
 
@@ -651,6 +689,42 @@ impl TryFrom<serde_json::Value> for FrontMatterPagerDutyIncident {
             message: format!("invalid pagerduty incident: {err}"),
         })
     }
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
+#[cfg_attr(
+    feature = "fp-bindgen",
+    derive(Serializable),
+    fp(rust_module = "fiberplane_models::notebooks::front_matter")
+)]
+#[non_exhaustive]
+#[serde(rename_all = "camelCase")]
+pub struct PagerDutyResourceReference {
+    pub id: String,
+    pub summary: String,
+    pub api_url: String,
+    pub html_url: String,
+
+    #[serde(rename = "type")]
+    pub ty: PagerDutyResourceReferenceType,
+}
+
+#[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, Display)]
+#[cfg_attr(
+    feature = "fp-bindgen",
+    derive(Serializable),
+    fp(rust_module = "fiberplane_models::notebooks::front_matter")
+)]
+#[non_exhaustive]
+pub enum PagerDutyResourceReferenceType {
+    EscalationPolicy,
+    Incident,
+    IncidentWorkflow,
+    Priority,
+    Service,
+    Team,
+    User,
+    WorkflowTrigger,
 }
 
 #[derive(Clone, Debug, Deserialize, PartialEq, Eq, Serialize, TypedBuilder)]
