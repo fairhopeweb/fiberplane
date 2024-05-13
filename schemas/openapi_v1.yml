@@ -2416,7 +2416,7 @@ components:
             - github
         linked:
           type: boolean
-    softRedirect:
+    oidLinkupLocation:
       type: object
       required:
         - location
@@ -3997,7 +3997,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/softRedirect"
+                $ref: "#/components/schemas/oidLinkupLocation"
   /api/logout:
     post:
       operationId: logout
@@ -5519,12 +5519,8 @@ paths:
       tags:
         - Integrations
       responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/softRedirect"
+        "307":
+          description: OK. Follow Location header
         default:
           description: Error
           content:
@@ -5542,12 +5538,8 @@ paths:
       tags:
         - Integrations
       responses:
-        "200":
-          description: OK
-          content:
-            application/json:
-              schema:
-                $ref: "#/components/schemas/softRedirect"
+        "307":
+          description: OK. Follow Location header
         default:
           description: Error
           content:
